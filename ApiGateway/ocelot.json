@@ -1,0 +1,99 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/auth/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "identityservice",
+          "Port": 5006
+        }
+      ],
+      "UpstreamPathTemplate": "/api/auth/{everything}",
+      "UpstreamHttpMethod": [ "POST", "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "adminservice",
+          "Port": 5001
+        }
+      ],
+      "UpstreamPathTemplate": "/admin/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "deliveryservice",
+          "Port": 5002
+        }
+      ],
+      "UpstreamPathTemplate": "/delivery/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "depotservice",
+          "Port": 5003
+        }
+      ],
+      "UpstreamPathTemplate": "/depot/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "salesservice",
+          "Port": 5004
+        }
+      ],
+      "UpstreamPathTemplate": "/sales/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "verificationservice",
+          "Port": 5005
+        }
+      ],
+      "UpstreamPathTemplate": "/verification/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:8080"
+  }
+}

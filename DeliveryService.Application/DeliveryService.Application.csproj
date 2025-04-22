@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Commands\Handlers\" />
+    <Folder Include="Queries\Handlers\" />
+    <Folder Include="DTOs\" />
+    <Folder Include="Queries\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DeliveryService.Domain\DeliveryService.Domain.csproj" />
+    <ProjectReference Include="..\DeliveryService.Infraestructure\DeliveryService.Infraestructure.csproj" />
+  </ItemGroup>
+
+</Project>
