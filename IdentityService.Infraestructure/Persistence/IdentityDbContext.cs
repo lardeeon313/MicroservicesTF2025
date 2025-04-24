@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using IdentityService.Domain.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace IdentityService.Infraestructure.Persistence
 {
-    public class IdentityDbContext : DbContext
-    {
+    public class IdentityDbContext : IdentityDbContext<ApplicationUser>
+    {   
         public IdentityDbContext(DbContextOptions<IdentityDbContext> options)
             : base(options)
         {

@@ -12,10 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\Handlers\" />
-    <Folder Include="Queries\Handlers\" />
-    <Folder Include="DTOs\" />
-    <Folder Include="Queries\" />
+    <PackageReference Include="FluentValidation" Version="11.10.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.0" />
   </ItemGroup>
 
 </Project>
