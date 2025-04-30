@@ -45,16 +45,17 @@ namespace IdentityService.API.Controllers
             var command = new RegisterCommand
             {
                 UserName = request.UserName,
+                Name = request.Name,
+                LastName = request.LastName,
                 Email = request.Email,
                 Password = request.Password
-
             };
 
             var result = await _registerCommandHandler.Handle(command);
-            if (result.Contains("succesfully"))
-                return Ok(result);
+            if (!result.Success)
+                return BadRequest(new { error = result.Message});
             
-            return BadRequest(result);
+            return Ok(new { message = result.Message});
         }
 
         /// <summary>

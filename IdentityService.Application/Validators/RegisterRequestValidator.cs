@@ -16,6 +16,14 @@ namespace IdentityService.Application.Validators
                 NotEmpty().WithMessage("Username is required").
                 MinimumLength(4).WithMessage("Username must be at least 4 characters long");
 
+            RuleFor(x => x.Name).
+                NotEmpty().WithMessage("Name is required").
+                MinimumLength(4).WithMessage("Name must be at least 4 characters long");
+
+            RuleFor(x => x.LastName).
+                NotEmpty().WithMessage("Lastname is required").
+                MinimumLength(4).WithMessage("Lastname must be at least 4 characters long");
+
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("Email is required")
                 .EmailAddress().WithMessage("Email is not valid");
@@ -27,8 +35,6 @@ namespace IdentityService.Application.Validators
                 .Matches(@"[a-z]").WithMessage("Password must contain at least one lowercase letter")
                 .Matches(@"[0-9]").WithMessage("Password must contain at least one digit")
                 .Matches(@"[\@\!\?\*\.\$]").WithMessage("Password must contain a special character");
-
-            
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using IdentityService.Application.Interfaces;
+﻿using IdentityService.Application.Common;
+using IdentityService.Application.Interfaces;
 using IdentityService.Domain.Entities;
 using IdentityService.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
@@ -18,15 +19,17 @@ namespace IdentityService.Application.Commands.Register
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly RoleManager<IdentityRole> _roleManager = roleManager;
 
-        public async Task<string> Handle(RegisterCommand command)
+        public async Task<CommandResult> Handle(RegisterCommand command)
         {
             var existingUser = await _userManager.FindByEmailAsync(command.Email);
             if (existingUser != null)
-                return "User already exists.";
+                return new CommandResult { Success = true , Message = "User it exists"};
 
             var user = new ApplicationUser
             {
                 UserName = command.UserName,
+                Name = command.Name,
+                LastName = command.LastName,
                 Email = command.Email,
                 HightDate = DateTime.UtcNow,
                 Employed_Status = EmployedStatus.Active
@@ -34,7 +37,10 @@ namespace IdentityService.Application.Commands.Register
 
             var result = await _userManager.CreateAsync(user, command.Password);
             if (!result.Succeeded)
-                return string.Join(" ", result.Errors.Select(e => e.Description));
+            {
+                var errorMessages = string.Join(" ", result.Errors.Select(e => e.Description));
+                return new CommandResult { Success = false, Message = $"Error al crear el usuario: {errorMessages}" };
+            }
 
             //Asigna un rol neutro por ahora...
             const string defaultRole = "Default";
@@ -44,7 +50,7 @@ namespace IdentityService.Application.Commands.Register
 
             await _userManager.AddToRoleAsync(user, defaultRole);
 
-            return "User registered with default role.";
+            return new CommandResult { Success = true, Message = "Usuario registrado exitosamente con rol default." };
 
         }
     }

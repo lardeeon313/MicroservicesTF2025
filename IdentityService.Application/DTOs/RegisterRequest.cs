@@ -16,6 +16,14 @@ namespace IdentityService.Application.DTOs
         [Display(Name = "Username")]
         public string UserName { get; set; } = string.Empty;
 
+        [Required, MaxLength(50)]
+        [Display(Name = "Name")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required, MaxLength(50)]
+        [Display(Name = "Lastname")]
+        public string LastName { get; set; } = string.Empty;
+
         [Required, EmailAddress]
         [Display(Name = "Email adress")]
         public string Email { get; set; } = string.Empty;
