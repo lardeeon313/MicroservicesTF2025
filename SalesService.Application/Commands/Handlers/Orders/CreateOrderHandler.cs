@@ -1,5 +1,4 @@
-﻿using SalesService.Application.Commands;
-using SalesService.Application.Exceptions;
+﻿using SalesService.Application.Exceptions;
 using SalesService.Application.Validations;
 using SalesService.Infrastructure.Persistence;
 using SalesService.Infrastructure.Messaging;
@@ -7,8 +6,9 @@ using SalesService.Domain.Entities;
 using SalesService.Infraestructure;
 using Microsoft.EntityFrameworkCore;
 using SalesService.Infraestructure.Messaging.Publisher;
+using SalesService.Application.Commands.Orders;
 
-namespace SalesService.Application.Commands.Handlers
+namespace SalesService.Application.Commands.Handlers.Orders
 {
     public class CreateOrderHandler
     {

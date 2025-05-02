@@ -1,12 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using SalesService.Application.Commands.Handlers;
 using SalesService.Infrastructure.Persistence;
 using System.Reflection;
 using SalesService.Application.Handlers;
 using SalesService.Infraestructure.Messaging.Publisher;
 using SalesService.Domain.IRepositories;
 using SalesService.Domain.Entities;
+using SalesService.Application.Commands.Handlers.Customer;
+using SalesService.Application.Commands.Handlers.Orders;
 
 var builder = WebApplication.CreateBuilder(args);
 

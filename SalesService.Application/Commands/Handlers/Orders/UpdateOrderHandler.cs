@@ -1,11 +1,11 @@
-﻿using SalesService.Application.Commands;
-using SalesService.Application.Exceptions;
+﻿using SalesService.Application.Exceptions;
 using SalesService.Infrastructure.Persistence;
 using SalesService.Domain.Entities;
 using SalesService.Infraestructure;
 using Microsoft.EntityFrameworkCore;
+using SalesService.Application.Commands.Orders;
 
-namespace SalesService.Application.Handlers
+namespace SalesService.Application.Commands.Handlers.Orders
 {
     public class UpdateOrderHandler
     {

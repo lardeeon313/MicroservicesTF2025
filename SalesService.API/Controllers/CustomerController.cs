@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SalesService.Application.Commands;
+using SalesService.Application.Commands.Customer;
+using SalesService.Application.Commands.Handlers.Customer;
 using SalesService.Application.Handlers;
 using SalesService.Application.Queries;
 

@@ -1,6 +1,6 @@
 ﻿using SalesService.Application.DTOs;
 
-namespace SalesService.Application.Commands
+namespace SalesService.Application.Commands.Orders
 {
     public class UpdateOrderCommand
     {

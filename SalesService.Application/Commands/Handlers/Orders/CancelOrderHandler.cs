@@ -1,28 +1,28 @@
-﻿using SalesService.Application.Commands;
+﻿using SalesService.Application.Commands.Orders;
 using SalesService.Application.Exceptions;
 using SalesService.Infraestructure;
 using SalesService.Infrastructure.Persistence;
 
-namespace SalesService.Application.Handlers
+namespace SalesService.Application.Commands.Handlers.Orders
 {
-    public class AttachReceiptHandler
+    public class CancelOrderHandler
     {
         private readonly SalesDbContext _context;
 
-        public AttachReceiptHandler(SalesDbContext context)
+        public CancelOrderHandler(SalesDbContext context)
         {
             _context = context;
         }
 
-        public async Task HandleAsync(AttachReceiptCommand cmd)
+        public async Task HandleAsync(CancelOrderCommand cmd)
         {
             var order = await _context.Orders.FindAsync(cmd.OrderId);
             if (order == null)
                 throw new ValidationException("Order not found.");
-            if (order.Status != "Issued")
-                throw new ValidationException("Can only attach receipt to issued orders.");
+            if (order.Status == "Confirmed")
+                throw new ValidationException("Cannot cancel a confirmed order.");
 
-            order.PaymentReceipt = cmd.Base64File;
+            order.Status = "Canceled";
             await _context.SaveChangesAsync();
         }
     }

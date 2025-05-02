@@ -1,4 +1,4 @@
-﻿using SalesService.Application.Commands;
+﻿using SalesService.Application.Commands.Orders;
 using SalesService.Application.Exceptions;
 
 namespace SalesService.Application.Validations

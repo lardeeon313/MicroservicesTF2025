@@ -11,5 +11,10 @@ namespace SalesService.Domain.IRepositories
     public interface ICustomerRepository
     {
         Task AddAsync(Customer customer);
+        Task<Customer?> GetByIdAsync(Guid customerId);
+        Task<IEnumerable<Customer>> GetAllAsync();
+        Task UpdateAsync(Customer customer);
+        Task DeleteAsync(Guid customerId);
+        Task GetByEmailAsync(string email);
     }
 }
