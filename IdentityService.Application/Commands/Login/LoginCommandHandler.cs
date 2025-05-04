@@ -26,6 +26,8 @@ namespace IdentityService.Application.Commands.Login
                 return null;
             }
 
+            
+
             var token = await _tokenService.GenerateToken(user);
             var roles = await _userManager.GetRolesAsync(user);
 

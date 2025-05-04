@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SalesService.Application.Commands.Handlers.Interfaces;
 using SalesService.Application.Commands;
 using SalesService.Domain.Entities.DummyEntitie;
+using SalesService.Application.Commands.Handlers.Interfaces;
 
 namespace SalesService.API.Controllers
 {

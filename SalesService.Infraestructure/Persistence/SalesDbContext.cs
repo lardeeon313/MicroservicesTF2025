@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SalesService.Domain.Entities.Customer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,6 @@ namespace SalesService.Infraestructure
 {
     public class SalesDbContext(DbContextOptions<SalesDbContext> options) : DbContext(options)
     {
-
-        // public DbSet<Dummy> Dummies => Set<Dummy>();
-
+        public DbSet<Customer> Customers { get; set; } 
     }
 }
