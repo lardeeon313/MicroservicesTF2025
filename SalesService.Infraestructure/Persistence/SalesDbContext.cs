@@ -1,14 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SalesService.Domain.Entities;
+using SalesService.Domain.Entities.Customer;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace SalesService.Infrastructure.Persistence
+namespace SalesService.Infraestructure
 {
-    public class SalesDbContext : DbContext
+    public class SalesDbContext(DbContextOptions<SalesDbContext> options) : DbContext(options)
     {
-        public SalesDbContext(DbContextOptions<SalesDbContext> options) : base(options) { }
-
-        public DbSet<Customer> Customers { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<Customer> Customers { get; set; } 
     }
 }

@@ -1,3 +1,5 @@
+using IdentityService.Application.Services.Interfaces;
+using IdentityService.Application.Services;
 using IdentityService.Domain.Entities;
 using IdentityService.Infraestructure.Persistence;
 using Microsoft.AspNetCore.Identity;
@@ -5,6 +7,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
+using Microsoft.OpenApi.Models;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using IdentityService.Application.Validators;
+using IdentityService.Application.Interfaces;
+using IdentityService.Application.Commands.Register;
+using IdentityService.Application.DTOs;
+using IdentityService.Application.Commands.Login;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,15 +25,23 @@ builder.Services.AddSwaggerGen(options =>
 {
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    options.IncludeXmlComments(xmlPath);
+    options.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
+
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Identity Service API",
+        Version = "v1",
+        Description = "Microservice responsible for user identity, authentication, and role-based acces",
+        Contact = new OpenApiContact
+        {
+            Name = "Milton Argüello, Bustos Santiago, Diego Aguirre"
+        }
+    });
 });
 
-// Obtener la cadena de conexión del appsettings.json
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Registrar el DbContext
-builder.Services.AddDbContext<IdentityDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+// Se registra la dependencia del TokenService
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 // Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -51,6 +69,23 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey ?? ""))
     };
 });
+
+// FluentValidation
+builder.Services.AddScoped<IValidator<RegisterRequest>, RegisterRequestValidator>();
+builder.Services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
+
+// Obtener la cadena de conexión del appsettings.json
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Registrar el DbContext
+builder.Services.AddDbContext<IdentityDbContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+        b => b.MigrationsAssembly("IdentityService.Infraestructure")));
+
+
+// Se registra los Command Handlers
+builder.Services.AddScoped<IRegisterCommandHandler, RegisterCommandHandler>();
+builder.Services.AddScoped<ILoginCommandHandler, LoginCommandHandler>();
 
 
 var app = builder.Build();
