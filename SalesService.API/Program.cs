@@ -1,36 +1,75 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using SalesService.Infrastructure.Persistence;
-using System.Reflection;
-using SalesService.Application.Handlers;
+using SalesService.Infraestructure;
 using SalesService.Infraestructure.Messaging.Publisher;
 using SalesService.Domain.IRepositories;
-using SalesService.Domain.Entities;
-using SalesService.Application.Commands.Handlers.Customer;
-using SalesService.Application.Commands.Handlers.Orders;
+using SalesService.Infraestructure.Persistence.Repositories;
+using System.Reflection;
+using SalesService.Application.Commands.Customers.Delete;
+using SalesService.Application.Validators.Customer;
+using FluentValidation;
+using SalesService.Application.DTOs.Customer;
+using Microsoft.OpenApi.Models;
+using SalesService.Application.Queries.Customers.GetCustomerByEmail;
+using Microsoft.Extensions.DependencyInjection;
+using SalesService.Application.Commands.Customers.Update;
+using SalesService.Application.Commands.Customers.Register;
+using SalesService.Application.Queries.Customers.GetAllCustomers;
+using SalesService.Application.Queries.Customers.GetCustomer;
+using SalesService.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add controllers
+// Add services to the container.
 builder.Services.AddControllers();
-
-// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    options.IncludeXmlComments(xmlPath);
+    options.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
+
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Sales Service API",    
+        Version = "v1",
+        Description = "The microservice is responsible for capturing sales and issuing orders.",
+        Contact = new OpenApiContact
+        {
+            Name = "Milton Argüello, Bustos Santiago, Diego Aguirre"
+        }
+    });
 });
+
+// Add FluentValidation
+builder.Services.AddScoped<IValidator<RegisterCustomerRequest>, RegisterCustomerValidator>();
+builder.Services.AddScoped<IValidator<UpdateCustomerRequest>, UpdateCustomerValidator>();
+
+// Add services Command Handlers
+builder.Services.AddScoped<ICustomerDeleteCommandHandler, CustomerDeleteCommandHandler>();
+builder.Services.AddScoped<ICustomerUpdateCommandHandler, CustomerUpdateCommandHandler>();
+builder.Services.AddScoped<ICustomerRegisterCommandHandler, CustomerRegisterCommandHandler>();
+builder.Services.AddScoped<IGetAllCustomersQueryHandler, GetAllCustomersQueryHandler>();
+builder.Services.AddScoped<IGetCustomerByIdQueryHandler, GetCustomerByIdQueryHandler>();
+builder.Services.AddScoped<IGetCustomerByEmailQueryHandler, GetCustomerByEmailQueryHandler>();
+
+
+
+// Add services Repository and DbContext
+builder.Services.AddScoped<IDummyRepository, DummyRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+
+// Add RabbitMQ
+builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
 
 // Obtener la cadena de conexión del appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// DbContext
+// Registrar el DbContext
 builder.Services.AddDbContext<SalesDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+        b => b.MigrationsAssembly("SalesService.API")));
 
-// Autenticación y Autorización
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
@@ -45,78 +84,38 @@ builder.Services.AddAuthentication("Bearer")
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("SalesOnly", policy => policy.RequireRole("SalesStaff"));
 
-// Repositorios
-builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+var app = builder.Build();
 
-// RabbitMQ
-builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
-
-// Handlers - Commands
-builder.Services.AddScoped<CreateOrderHandler>();
-builder.Services.AddScoped<UpdateOrderHandler>();
-builder.Services.AddScoped<CancelOrderHandler>();
-builder.Services.AddScoped<AttachReceiptHandler>();
-builder.Services.AddScoped<RegisterCustomerHandler>();
-
-// Handlers - Queries
-builder.Services.AddScoped<GetOrdersHandler>();
-builder.Services.AddScoped<GetOrderDetailHandler>();
-builder.Services.AddScoped<GetCustomerByEmailHandler>();
-
-// Validaciones (si se usan explícitamente)
-//builder.Services.AddScoped<CreateOrderValidator>();//
-
-// Migrar automáticamente la base de datos
-using (var scope = builder.Services.BuildServiceProvider().CreateScope())
+// Migrar automaticamente, cada vez que levante el servicio.
+using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<SalesDbContext>();
     dbContext.Database.Migrate();
 }
 
-// Swagger UI
-if (builder.Environment.IsDevelopment() || builder.Environment.IsProduction())
-{
-    builder.Services.AddSwaggerGen();
-}
-
-// Replace the problematic code block with the following:
-
-// Migrar automáticamente la base de datos
-var app = builder.Build();
-
-// Middleware
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Sales Service API V1");
-        c.RoutePrefix = string.Empty;
+        c.RoutePrefix = string.Empty; // opcional: Swagger se verá en la raíz
     });
 }
 
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseMiddleware<ExceptionMiddleware>();
+
 app.UseAuthentication();
+
 app.UseAuthorization();
+
 app.MapControllers();
+
 app.Run();
-
-// Ensure that OrderRepository implements IOrderRepository  
-internal class OrderRepository : IOrderRepository
-{
-    // Implementation of IOrderRepository methods and properties  
-    public Task AddAsync(Order order)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-// Ensure that CustomerRepository implements ICustomerRepository  
-internal class CustomerRepository : ICustomerRepository
-{
-    // Implementation of ICustomerRepository methods and properties  
-    public Task AddAsync(Customer customer)
-    {
-        throw new NotImplementedException();
-    }
-}

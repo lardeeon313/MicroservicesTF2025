@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace SalesService.Domain.Enums
 {
-    internal class OrderStatus
+    public enum OrderStatus
     {
+        Issued,     // Emitido
+        Confirmed,  // Confirmado por depósito
+        Canceled    // Cancelado por ventas
     }
 }
+

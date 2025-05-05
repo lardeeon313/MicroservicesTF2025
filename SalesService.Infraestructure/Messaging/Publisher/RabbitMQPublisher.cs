@@ -1,19 +1,17 @@
 ﻿using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
-using SalesService.Infrastructure.Messaging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace SalesService.Infraestructure.Messaging.Publisher
 {
     public class RabbitMQPublisher(IConfiguration config) : IRabbitMQPublisher
     {
         private readonly IConfiguration _config = config;
-
-        public void Publish(OrderCreatedEvent @event)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task PublishAsync<T>(T message, string queueName)
         {

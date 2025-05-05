@@ -1,5 +1,4 @@
-﻿using SalesService.Domain.Entities;
-using SalesService.Domain.Entities.DummyEntitie;
+﻿using SalesService.Domain.Entities.Customer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +14,6 @@ namespace SalesService.Domain.IRepositories
         Task<IEnumerable<Customer>> GetAllAsync();
         Task UpdateAsync(Customer customer);
         Task DeleteAsync(Guid customerId);
-        Task GetByEmailAsync(string email);
+        Task<Customer?> GetByEmailAsync(string? email);
     }
 }

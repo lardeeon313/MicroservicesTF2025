@@ -6,7 +6,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "identityservice",
-          "Port": 5006
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/auth/{everything}",
