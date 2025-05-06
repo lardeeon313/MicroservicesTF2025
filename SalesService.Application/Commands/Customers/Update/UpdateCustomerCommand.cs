@@ -8,14 +8,7 @@ namespace SalesService.Application.Commands.Customers.Update
 {
     public class UpdateCustomerCommand
     {
-        public Guid Id { get; set; }
-        public string FirstName { get; set; } = null!;
-        public string LastName { get; set; } = null!;
-        public string Email { get; set; } = null!;
-        public string PhoneNumber { get; set; } = null!;
-        public string Address { get; set; } = null!;
-
-        public UpdateCustomerCommand(Guid id,string address, string firstName, string lastName, string email, string phoneNumber)
+        public UpdateCustomerCommand(Guid id, string? firstName, string? lastName, string? email, string? phoneNumber, string? address)
         {
             Id = id;
             FirstName = firstName;
@@ -24,5 +17,13 @@ namespace SalesService.Application.Commands.Customers.Update
             PhoneNumber = phoneNumber;
             Address = address;
         }
+
+        public Guid Id { get; set; }
+        public string? FirstName { get; set; } 
+        public string? LastName { get; set; } 
+        public string? Email { get; set; } 
+        public string? PhoneNumber { get; set; } 
+        public string? Address { get; set; }
+
     }
 }

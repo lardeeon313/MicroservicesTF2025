@@ -106,19 +106,14 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     });
 }
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
+// Middleware global de excepciones
 app.UseMiddleware<ExceptionMiddleware>();
 
+// Seguridad
 app.UseAuthentication();
-
 app.UseAuthorization();
 
+// Ruteo
 app.MapControllers();
 
 app.Run();

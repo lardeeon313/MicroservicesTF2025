@@ -11,25 +11,24 @@ namespace SalesService.Application.DTOs.Customer
     {
         public Guid Id { get; set; }
 
-        [Required, MaxLength(50)]
+        [MaxLength(50)]
         [Display(Name = "FirstName")]
-        public string FirstName { get; set; } = default!;
+        public string? FirstName { get; set; } 
 
-        [Required, MaxLength(50)]
+        [MaxLength(50)]
         [Display(Name = "LastName")]
-        public string LastName { get; set; } = default!;
+        public string? LastName { get; set; } 
 
         [EmailAddress, RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Invalid email format")]
         [Display(Name = "Email")]
-        [Required]
-        public string Email { get; set; } = default!;
+        public string? Email { get; set; } 
 
-        [Required, MaxLength(50)]
+        [MaxLength(50)]
         [Display(Name = "PhoneNumber")]
-        public string PhoneNumber { get; set; } = default!;
+        public string? PhoneNumber { get; set; } 
 
-        [Required, MaxLength(50)]
+        [MaxLength(50)]
         [Display(Name = "Address")]
-        public string Address { get; set; } = default!;
+        public string? Address { get; set; } 
     }
 }
