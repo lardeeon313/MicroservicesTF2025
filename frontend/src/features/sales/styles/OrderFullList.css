@@ -1,0 +1,32 @@
+#Buscador {
+  position: relative;
+  padding: 10px;
+  border: 2px solid #ccc;
+  outline: none;
+  background-color: white;
+  transition: border-color 0.3s ease;
+}
+
+/* Línea animada abajo */
+#Buscador::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background-color: #d9534f;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+/* Hover activa la línea */
+#Buscador:hover::after {
+  transform: scaleX(1);
+}
+
+/* Opcional: cambiar también el color del borde al hacer hover */
+#Buscador:hover {
+  border-color: #d9534f;
+}

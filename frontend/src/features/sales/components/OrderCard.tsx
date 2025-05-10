@@ -1,69 +1,74 @@
-//import { OrderProps } from "../types/Order";
+import { FaEye, FaEdit, FaTrash } from "react-icons/fa"; // Íconos de FontAwesome
 import { OrderProps } from "./Order";
 import caja from "../styles/Caja (2).png";
 import localizacion from "../styles/Localization.png";
 import { useNavigate } from "react-router-dom";
 import { BusinessRules } from "../pages/BusinessRules/BusinessRules";
 
-//Apartado principal para ver el listado del pedido 
-
 interface Props {
   order: OrderProps;
-  //OnDelete permite eliminar el pedido visualmente si este no esta en el estado de Confirmado 
-  onDelete?: (id:string) => void;
+  onDelete?: (id: string) => void;
 }
 
-export const OrderCard = ({ order,onDelete }: Props) => {
-  const statusColors = {
+export const OrderCard = ({ order, onDelete }: Props) => {
+  const statusColors: Record<string, string> = {
     Emitido: "bg-yellow-500",
     "En preparacion": "bg-amber-700",
+    EnPreparacion: "bg-amber-700",
     Entregado: "bg-green-700",
-    EnPreparacion:"bg-amber-700",
-    Confirmado:"bg-red-600"
+    Confirmado: "bg-red-600",
   };
-  const navegador = useNavigate(); //permitira acceder a dicha page desde el boton: 
+
+  const navegador = useNavigate();
 
   return (
-    <div className="bg-white border rounded-md p-4 shadow mb-4">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <img src={caja} alt="Pedido" className="h-8" />
-          <h2 className="text-lg font-bold">{order.id}</h2>
+    <div className="bg-white border border-gray-300 rounded-xl p-5 shadow-md mb-5 transition hover:shadow-lg">
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex items-center gap-3">
+          <img src={caja} alt="Pedido" className="h-8 w-8" />
+          <div>
+            <h2 className="text-md font-bold text-gray-800">{order.id}</h2>
+          </div>
         </div>
-        <div className={`px-3 py-1 text-white rounded text-sm ${statusColors[order.estado]}`}>
+
+        <div className={`px-3 py-1 rounded-full text-white text-sm font-semibold ${statusColors[order.estado] || "bg-gray-400"}`}>
           {order.estado}
-          {order.estado === "Confirmado"}
         </div>
       </div>
 
-      <div className="ml-10 mt-3 text-sm flex items-start gap-2">
-        <img src={localizacion} alt="Ubicación" className="h-4 mt-1" />
+      <div className="flex items-start gap-3 mb-4 ml-2">
+        <img src={localizacion} alt="Ubicación" className="h-5 mt-1" />
         <div>
-          <p className="text-gray-800">{order.cliente}</p>
+          <p className="text-gray-800 font-medium">{order.cliente}</p>
           <p className="text-gray-500 text-xs">{order.tipoLocal}</p>
         </div>
       </div>
 
-      {/**Basandose en el crud  */}
-      <div className="text-right mt-4">
-        <button className="bg-black text-white px-4 py-1 rounded hover:bg-gray-800 text-sm cursor-pointer"
-        onClick={() => navegador(`/sales/detalle/${order.id}`)}>
-          Ver detalle
+      <div className="flex justify-end gap-2 flex-wrap">
+        <button
+          className="bg-black text-white px-4 py-1.5 rounded-full text-sm hover:bg-gray-800 transition flex items-center gap-2"
+          onClick={() => navegador(`/sales/detalle/${order.id}`)}
+        >
+          <FaEye /> Ver detalle
         </button>
         <BusinessRules estado={order.estado} actionType="update">
-          <button className="bg-yellow-500 text-white px-4 py-1 rounded hover:bg-yellow-600 text-sm cursor-pointer"
-          onClick={() => navegador(`/sales/editar/${order.id}`)}>
-            Actualizar pedido
+          <button
+            className="bg-yellow-500 text-white px-4 py-1.5 rounded-full text-sm hover:bg-yellow-600 transition flex items-center gap-2"
+            onClick={() => navegador(`/sales/editar/${order.id}`)}
+          >
+            <FaEdit /> Actualizar pedido
           </button>
         </BusinessRules>
         <BusinessRules estado={order.estado} actionType="delete">
-          <button className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-800 text-sm cursor-pointer"
-          onClick={() => {
-            if(onDelete){
-              onDelete(order.id)
-            }
-          }}>
-            Eliminar Pedido
+          <button
+            className="bg-red-500 text-white px-4 py-1.5 rounded-full text-sm hover:bg-red-700 transition flex items-center gap-2"
+            onClick={() => {
+              if (onDelete) {
+                onDelete(order.id);
+              }
+            }}
+          >
+            <FaTrash /> Eliminar Pedido
           </button>
         </BusinessRules>
       </div>
