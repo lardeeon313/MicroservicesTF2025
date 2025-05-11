@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SalesService.Application.DTOs.Order.Request;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,12 +13,12 @@ namespace SalesService.Application.Commands.Orders.Cancel
     public class CancelOrderCommand
     {
         public int Id { get; set; }
-        public string Reason { get; set; }  
+        public string Reason { get; set; }
 
-        public CancelOrderCommand(int id, string reason)
+        public CancelOrderCommand(CancelOrderRequest request)
         {
-            Id = id;
-            Reason = reason;
+            Id = request.OrderId;
+            Reason = request.reason;
         }
     }
     

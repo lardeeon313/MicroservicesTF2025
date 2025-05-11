@@ -120,14 +120,13 @@ namespace SalesService.API.Controllers
         /// <summary>
         /// Cancela una orden de pedido
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="reason"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpPut("cancel/{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> CancelOrder(int id,string reason)
+        public async Task<IActionResult> CancelOrder(CancelOrderRequest request)
         {
-            var command = new CancelOrderCommand(id,reason);
+            var command = new CancelOrderCommand(request);
             var result = await _cancelOrderCommandHandler.Handle(command);
             return Ok(new { message = "Order cancelled successfully." });
         }
@@ -135,14 +134,13 @@ namespace SalesService.API.Controllers
         /// <summary>
         /// Elimina la nota de pedido
         /// </summary>
-        /// <param name="id"></param>
-        /// /// <param name="reason"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpDelete("delete/{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> DeleteOrder(int id,string reason)
+        public async Task<IActionResult> DeleteOrder(DeleteOrderRequest request)
         {
-            var command = new DeleteOrderCommand(id,reason);
+            var command = new DeleteOrderCommand(request);
             var result = await _deleteOrderCommandHandler.HandleAsync(command);
             return Ok(new { message = "Order deleted successfully." });
         }
