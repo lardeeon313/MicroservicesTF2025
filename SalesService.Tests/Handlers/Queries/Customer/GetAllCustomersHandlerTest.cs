@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
 using SalesService.Application.Queries.Customers.GetAllCustomers;
-using SalesService.Domain.Entities.Customer;
+using SalesService.Domain.Entities.CustomerEntity;
 using SalesService.Domain.IRepositories;
 using System;
 using System.Collections.Generic;

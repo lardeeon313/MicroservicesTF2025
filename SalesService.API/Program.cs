@@ -20,11 +20,29 @@ using SalesService.Application.Commands.Customers.Register;
 using SalesService.Application.Queries.Customers.GetAllCustomers;
 using SalesService.Application.Queries.Customers.GetCustomer;
 using SalesService.API.Middleware;
+using SalesService.Application.Validators.Order;
+using SalesService.Application.DTOs.Order.Request;
+using SalesService.Application.Commands.Orders.Register;
+using SalesService.Application.Commands.Orders.Update;
+using SalesService.Application.Commands.Orders.Cancel;
+using SalesService.Application.Commands.Orders.Delete;
+using SalesService.Application.Queries.Orders.GetById;
+using SalesService.Application.Queries.Orders.GetByStatus;
+using SalesService.Application.Queries.Orders.GetByIdCustomer;
+using SalesService.Application.Queries.Orders.GetAll;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using SalesService.Application.Commands.Orders.UpdateStatus;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -47,8 +65,13 @@ builder.Services.AddSwaggerGen(options =>
 // Add FluentValidation
 builder.Services.AddScoped<IValidator<RegisterCustomerRequest>, RegisterCustomerValidator>();
 builder.Services.AddScoped<IValidator<UpdateCustomerRequest>, UpdateCustomerValidator>();
+builder.Services.AddScoped<IValidator<UpdateOrderRequest>, UpdateOrderValidator>();
+builder.Services.AddScoped<IValidator<RegisterOrderItemRequest>, RegisterOrderItemValidator>();
+builder.Services.AddScoped<IValidator<RegisterOrderRequest>, RegisterOrderValidator>();
+builder.Services.AddScoped<IValidator<UpdateOrderStatusRequest>, UpdateOrderStatusValidator>();
+    
 
-// Add services Command Handlers
+// Add services Command Handlers / Customer
 builder.Services.AddScoped<ICustomerDeleteCommandHandler, CustomerDeleteCommandHandler>();
 builder.Services.AddScoped<ICustomerUpdateCommandHandler, CustomerUpdateCommandHandler>();
 builder.Services.AddScoped<ICustomerRegisterCommandHandler, CustomerRegisterCommandHandler>();
@@ -56,11 +79,25 @@ builder.Services.AddScoped<IGetAllCustomersQueryHandler, GetAllCustomersQueryHan
 builder.Services.AddScoped<IGetCustomerByIdQueryHandler, GetCustomerByIdQueryHandler>();
 builder.Services.AddScoped<IGetCustomerByEmailQueryHandler, GetCustomerByEmailQueryHandler>();
 
+// Add services Command Handlers / Order 
+builder.Services.AddScoped<IRegisterOrderCommandHandler, RegisterOrderCommandHandler>();
+builder.Services.AddScoped<IUpdateOrderCommandHandler, UpdateOrderCommandHandler>();
+builder.Services.AddScoped<ICancelOrderCommandHandler, CancelOrderCommandHandler>();
+builder.Services.AddScoped<IDeleteOrderCommandHandler, DeleteOrderCommandHandler>();
+builder.Services.AddScoped<IUpdateOrderStatusCommandHandler, UpdateOrderStatusCommandHandler>();
+builder.Services.AddScoped<IGetOrderByIdQueryHandler, GetOrderByIdQueryHandler>();
+builder.Services.AddScoped<IGetOrderByStatusQueryHandler, GetOrderByStatusQueryHandler>();
+builder.Services.AddScoped<IGetOrderByIdCustomerQueryHandler, GetOrderByIdCustomerQueryHandler>();
+builder.Services.AddScoped<IGetAllOrdersQueryHandler, GetAllOrdersQueryHandler>();
+
+
+
 builder.Services.AddScoped<ICreateDummyCommandHandler, CreateDummyCommandHandler>();
 
 // Add services Repository and DbContext
 builder.Services.AddScoped<IDummyRepository, DummyRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 // Add RabbitMQ
 builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();

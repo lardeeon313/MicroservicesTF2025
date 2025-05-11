@@ -2,7 +2,8 @@
 using Moq;
 using SalesService.Application.Queries.Customers.GetCustomer;
 using SalesService.Application.Queries.Customers.GetCustomerById;
-using SalesService.Domain.Entities.Customer;
+using SalesService.Domain.Entities;
+using SalesService.Domain.Entities.CustomerEntity;
 using SalesService.Domain.IRepositories;
 using System;
 using System.Collections.Generic;

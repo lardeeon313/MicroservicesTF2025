@@ -1,4 +1,4 @@
-﻿using SalesService.Domain.Entities.Customer;
+﻿using SalesService.Domain.Entities.CustomerEntity;
 using System;
 using System.Collections.Generic;
 using System.Linq;

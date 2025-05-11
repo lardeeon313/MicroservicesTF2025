@@ -1,5 +1,5 @@
 ﻿using SalesService.Application.DTOs.Customer;
-using SalesService.Domain.Entities.Customer;
+using SalesService.Domain.Entities;
 using SalesService.Domain.IRepositories;
 using System;
 using System.Collections.Generic;

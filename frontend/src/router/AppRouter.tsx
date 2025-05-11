@@ -20,6 +20,7 @@ const AppRouter = () => {
         <Route path="/unauthorized" element={<Unauthorized/>} />
         <Route path="/404notfound" element={<NotFoundPage/>}/>
         <Route path="/" element={<HomePage/>}></Route>
+        <Route path="/ventas" element={<SalesDashboard/>}></Route>
         
 
         <Route 

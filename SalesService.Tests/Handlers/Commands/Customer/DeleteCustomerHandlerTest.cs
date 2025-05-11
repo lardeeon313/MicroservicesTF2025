@@ -2,7 +2,7 @@
 using Moq;
 using SalesService.Application.Commands.Customers.Delete;
 using SalesService.Application.IntegrationEvents.Customer;
-using SalesService.Domain.Entities.Customer;
+using SalesService.Domain.Entities.CustomerEntity;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Messaging.Publisher;
 using System;
