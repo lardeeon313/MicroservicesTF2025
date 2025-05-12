@@ -1,6 +1,8 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState } from "react";
+import { FiSearch,FiCheckCircle  } from 'react-icons/fi';
+import styles from '../styles/CustomerForm.module.css';
 
 interface Cliente {
   id: number
@@ -34,47 +36,55 @@ const CustomerForm: React.FC<CustomerFormProps> = ({ onSelectClient }) => {
   }
 
   return (
-    <div className="w-full">
-      <div className="relative mb-4">
-        <input
-          type="text"
-          placeholder="Buscar Cliente"
-          className="w-full p-2 border border-gray-300 rounded-md bg-white"
-          value={searchTerm}
-          onChange={handleSearch}
-        />
-        <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white px-2">
-          🔍
-        </button>
-      </div>
+    <div className="w-full space-y-4">
+    {/* Input de búsqueda */}
+    <div className="relative">
+      <input
+        type="text"
+        placeholder="Buscar Cliente"
+        className="w-full p-3 pr-10 border border-gray-300 rounded-md shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        value={searchTerm}
+        onChange={handleSearch}
+        id="SearchBuscador"
+      />
+      <button className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800">
+        <FiSearch size={18} />
+      </button>
+    </div>
 
-      <div className="bg-gray-100 rounded-md border border-gray-300 min-h-[100px] mb-4">
-        {/* Aquí se mostrarían los resultados de la búsqueda */}
-        {filteredClientes.map((cliente) => (
+    {/* Resultados */}
+    <div className="w-full bg-gray-50 rounded-md border border-gray-300 min-h-[100px] shadow-sm">
+      {filteredClientes.length === 0 ? (
+        <div className="text-center text-gray-400 py-4">No se encontraron clientes.</div>
+      ) : (
+        filteredClientes.map((cliente) => (
           <div
             key={cliente.id}
-            className="flex items-start p-2 border-b border-gray-200 cursor-pointer hover:bg-gray-100"
+            className={styles.clienteItem}
             onClick={() => onSelectClient(cliente)}
           >
-            <div className="mr-2 mt-1">{cliente.icono}</div>
+            <div className={styles.clienteIcon}>{cliente.icono}</div>
             <div>
-              <div className="font-semibold">{cliente.nombre}</div>
-              <div className="text-sm text-gray-600">{cliente.direccion}</div>
+              <div className={styles.clienteNombre}>{cliente.nombre}</div>
+              <div className={styles.clienteDireccion}>{cliente.direccion}</div>
             </div>
           </div>
-        ))}
-      </div>
-
-      <div className="flex justify-end">
-        <button
-          className="bg-black text-white px-4 py-1 rounded-md text-sm"
-          onClick={() => filteredClientes.length > 0 && onSelectClient(filteredClientes[0])}
-          disabled={filteredClientes.length === 0}
-        >
-          Seleccionar Cliente
-        </button>
-      </div>
+        ))
+      )}
     </div>
+
+    {/* Botón */}
+    <div className="flex justify-end">
+      <button
+        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium shadow hover:bg-blue-700 disabled:opacity-50 transition"
+        onClick={() => filteredClientes.length > 0 && onSelectClient(filteredClientes[0])}
+        disabled={filteredClientes.length === 0}
+      >
+        <FiCheckCircle size={16} />
+        Seleccionar Cliente
+      </button>
+    </div>
+  </div>
   )
 }
 

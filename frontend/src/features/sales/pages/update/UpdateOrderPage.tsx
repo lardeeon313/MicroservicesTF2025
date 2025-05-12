@@ -6,6 +6,7 @@ import Swal from "sweetalert2"
 import { v4 as uuidv4 } from "uuid"
 import type { OrderProps, ProductoProps } from "../../components/Order"
 import Header from "../../components/Header"
+import { Formik } from "formik"
 
 //código para actualizar PEDIDO, desde la pestaña de Listado de Pedidos
 
@@ -16,7 +17,13 @@ interface Props {
 export const UpdateOrderPage: React.FC<Props> = ({ pedidoOriginal }) => {
   const [pedido, setPedido] = useState<OrderProps>({ ...pedidoOriginal })
   const [pedidoModificado, setPedidoModificado] = useState<OrderProps | null>(null)
+  //validadores de fecha: 
+  const fechaPedidoDate = new Date(pedido.fechaPedido);
+  const fechaEntregaDate = new Date(pedido.fechaEntrega);
 
+  const diferenciaMilisegundos = fechaEntregaDate.getTime() - fechaPedidoDate.getTime();
+  const diferenciaDias = diferenciaMilisegundos / (1000 * 60 * 60 * 24);
+ 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setPedido((prev) => ({
@@ -56,6 +63,15 @@ export const UpdateOrderPage: React.FC<Props> = ({ pedidoOriginal }) => {
   }
 
   const handleUpdatePedido = () => {
+    //reglas de negocio de las fechas: 
+      if(fechaEntregaDate <= fechaPedidoDate){
+        Swal.fire("Error", "La fecha de entrega debe ser posterior a la fecha de pedido", "error");
+      return;
+      }
+      if(diferenciaDias < 5){
+        Swal.fire("Error", "La fecha de entrega debe ser al menos 5 días posterior a la fecha de pedido", "error");
+      return;
+    }
     setPedidoModificado(pedido)
     Swal.fire("¡Actualizado!", "El pedido fue modificado exitosamente.", "success")
   }
@@ -410,4 +426,4 @@ export const UpdateOrderPage: React.FC<Props> = ({ pedidoOriginal }) => {
   )
 }
 
-export default UpdateOrderPage
+export default UpdateOrderPage;

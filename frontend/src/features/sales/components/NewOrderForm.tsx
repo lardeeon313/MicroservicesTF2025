@@ -101,12 +101,31 @@ const NewOrderForm: React.FC<NewOrderFormProps> = ({ cliente, datosNuevoCliente 
     /*if (!datosNuevoCliente && !cliente) {
       return { valido: false, mensaje: "Debe seleccionar un cliente" }
     }*/
+
+    //los datos del nuevo cliente: 
     
     return { valido: true }
   }
 
+  const VerificarDatosClienteNuevo = () => {
+    const nombre = (document.querySelector("#nombreCliente") as HTMLInputElement)?.value.trim();
+    const telefono = (document.querySelector("#telefonoCliente") as HTMLInputElement)?.value.trim();
+    const correo = (document.querySelector("#correoCliente") as HTMLInputElement)?.value.trim();
+    const direccion = (document.querySelector("#direccionCliente") as HTMLInputElement)?.value.trim();
+
+    if (!nombre || !telefono || !correo || !direccion) {
+      return {
+        valido: false,
+        mensaje: "Por favor completá todos los campos del nuevo cliente antes de emitir el pedido."
+      };
+  }
+
+  return { valido: true };
+  }
+
   const handleSubmit = () => {
-    const resultado = validarFormulario()
+    const resultado = validarFormulario() 
+    const resultadodos = VerificarDatosClienteNuevo();
     
     if (!resultado.valido) {
       // Mostrar alerta de error
@@ -117,6 +136,15 @@ const NewOrderForm: React.FC<NewOrderFormProps> = ({ cliente, datosNuevoCliente 
         confirmButtonText: 'Entendido'
       })
       return
+    }
+    if(!resultadodos.valido){
+      Swal.fire({
+        title: 'Error',
+        text: resultadodos.mensaje,
+        icon: 'error',
+        confirmButtonText: 'Entendido'
+      });
+      return;
     }
     
     // Si todo está correcto, mostrar alerta de éxito
@@ -146,65 +174,76 @@ const NewOrderForm: React.FC<NewOrderFormProps> = ({ cliente, datosNuevoCliente 
   }
 
   return (
-    <div className="space-y-6">
-      <div className="bg-green-800 text-white p-2 mb-4 text-center">Crear Nota de Pedido</div>
-      
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Fecha de Pedido
-        </label>
-        <input
-          type="date"
-          className="border border-gray-300 rounded px-4 py-2 w-full"
-          value={fechaPedido}
-          onChange={(e) => setFechaPedido(e.target.value)}
-        />
-
-        <label className="block text-sm font-medium text-gray-700 mb-1 mt-2">
-          Fecha de entrega
-        </label>
-        <input
-          type="date"
-          className="border border-gray-300 rounded px-4 py-2 w-full"
-          value={fechaEntrega}
-          onChange={(e) => setFechaEntrega(e.target.value)}
-        />
+    <div className="w-full space-y-4">
+      <div className="bg-green-700 text-white text-lg font-semibold py-3 rounded shadow text-center">
+        Crear Nota de Pedido
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full table-fixed border border-black text-sm">
-          <thead className="bg-gray-200 text-center">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-800 mb-1">
+            Fecha de Pedido
+          </label>
+          <input
+            type="date"
+            className="border border-gray-300 rounded-md px-4 py-2 w-full focus:ring-2 focus:ring-green-400 focus:outline-none"
+            value={fechaPedido}
+            onChange={(e) => setFechaPedido(e.target.value)}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-800 mb-1">
+            Fecha de entrega
+          </label>
+          <input
+            type="date"
+            className="border border-gray-300 rounded-md px-4 py-2 w-full focus:ring-2 focus:ring-green-400 focus:outline-none"
+            value={fechaEntrega}
+            onChange={(e) => setFechaEntrega(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="w-full">
+        <table className="w-full table-fixed border-collapse border border-gray-200">
+          <thead className="bg-gray-100 text-gray-800">
             <tr>
-              <th className="border border-black px-2 py-1">Producto</th>
-              <th className="border border-black px-2 py-1">Marca</th>
-              <th className="border border-black px-2 py-1">Unidad</th>
-              <th className="border border-black px-2 py-1">Embalaje</th>
-              <th className="border border-black px-2 py-1">Cantidad</th>
-              <th className="border border-black px-2 py-1">Acciones</th>
+              {["Producto", "Marca", "Unidad", "Embalaje", "Cantidad", "Acciones"].map((header, i) => (
+                <th key={i} className="px-3 py-2 border text-sm font-medium" style={{ width: i === 5 ? '100px' : 'auto' }}>
+                  {header}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {rows.map((row, index) => (
-              <tr key={index}>
+              <tr key={index} className="bg-white hover:bg-gray-50 transition">
                 {["producto", "marca", "unidad", "embalaje", "cantidad"].map((field, i) => (
-                  <td key={i} className="border border-black px-2 py-1">
+                  <td key={i} className="border px-2 py-1">
                     <input
                       type="text"
-                      className="w-full px-2 py-1 border-gray-300 rounded"
+                      className="w-full px-2 py-1 border border-gray-300 rounded-md text-sm focus:ring-1 focus:ring-green-400 focus:outline-none"
                       value={(row as any)[field]}
                       onChange={(e) => handleInputChange(index, field, e.target.value)}
-                      placeholder={field === "producto" ? "Nombre del producto" : 
-                                  field === "marca" ? "Nombre de la marca" :
-                                  field === "unidad" ? "Unidad correspondiente" :
-                                  field === "embalaje" ? "Embalaje correspondiente" :
-                                  "Cantidad de 5 unidades"}
+                      placeholder={
+                        field === "producto"
+                          ? "Nombre del producto"
+                          : field === "marca"
+                          ? "Nombre de la marca"
+                          : field === "unidad"
+                          ? "Unidad correspondiente"
+                          : field === "embalaje"
+                          ? "Embalaje correspondiente"
+                          : "Cantidad de unidades"
+                      }
                     />
                   </td>
                 ))}
-                <td className="border border-black text-center">
+                <td className="border text-center px-2 py-1">
                   <button
                     onClick={() => handleRemoveRow(index)}
-                    className="text-white bg-red-500 hover:bg-red-600 px-2 py-1 rounded"
+                    className="bg-red-500 text-white hover:bg-red-600 px-3 py-1 rounded-md text-sm shadow"
                   >
                     Eliminar
                   </button>
@@ -213,28 +252,28 @@ const NewOrderForm: React.FC<NewOrderFormProps> = ({ cliente, datosNuevoCliente 
             ))}
           </tbody>
         </table>
+      </div>
 
-        <div className="mt-2 flex justify-between">
-          <button
-            onClick={handleAddRow}
-            disabled={rows.length >= MAX_ROWS}
-            className={`px-4 py-2 rounded text-white ${
-              rows.length >= MAX_ROWS
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-green-600 hover:bg-green-700"
-            }`}
-          >
-            Agregar fila
-          </button>
-        </div>
+      <div className="mt-4 flex justify-start">
+        <button
+          onClick={handleAddRow}
+          disabled={rows.length >= MAX_ROWS}
+          className={`px-4 py-2 rounded-md text-white font-medium shadow ${
+            rows.length >= MAX_ROWS
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-green-600 hover:bg-green-700"
+          }`}
+        >
+          Agregar fila
+        </button>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-800 mb-1">
           Observaciones
         </label>
         <textarea
-          className="w-full border border-gray-300 rounded px-4 py-2"
+          className="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-green-400 focus:outline-none"
           rows={4}
           value={observaciones}
           onChange={(e) => setObservaciones(e.target.value)}
@@ -242,8 +281,8 @@ const NewOrderForm: React.FC<NewOrderFormProps> = ({ cliente, datosNuevoCliente 
       </div>
 
       <div className="flex justify-end">
-        <button 
-          className="bg-black text-white font-semibold px-6 py-2 rounded w-full"
+        <button
+          className="bg-black text-white font-semibold px-6 py-2 rounded-md w-full hover:bg-gray-900 transition shadow"
           onClick={handleSubmit}
         >
           Emitir Pedido

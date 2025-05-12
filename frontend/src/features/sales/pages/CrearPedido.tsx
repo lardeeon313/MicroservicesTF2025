@@ -4,6 +4,7 @@ import React, { useState } from "react"
 import CustomerForm from "../components/CustomerForm"
 import NewOrderForm from "../components/NewOrderForm"
 import Header from "../components/Header"
+import '../styles/Title.css';
 
 interface Cliente {
   id: number
@@ -22,7 +23,9 @@ const CrearPedido: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       <Header/>
-      <h2 className="text-xl font-semibold mb-4">Crear Pedido para Cliente Existente</h2>
+      <h2 className="text-2xl font-bold text-center mb-4 bg-gradient-to-r from-gray-700 to-gray-600 bg-clip-text text-transparent pt-8" id="Title">
+        Crear Pedido para Cliente Existente
+      </h2>
       
       <div className="grid grid-cols-2 gap-4 mb-4">
         <button className="bg-gray-300 text-center py-2 rounded">

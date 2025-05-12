@@ -5,6 +5,8 @@ import { useFormik } from "formik"
 import { clienteValidationSchema } from "../validations/NewCustomerValidation"
 import Header from "../components/Header"
 import NewOrderForm from "../components/NewOrderForm"
+import '../styles/NewCustomerForm.module.css';
+import '../styles/Title.css';
 
 const NuevoClienteForm: React.FC = () => {
   const formik = useFormik({
@@ -24,7 +26,9 @@ const NuevoClienteForm: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
-      <h2 className="text-xl font-semibold mb-4">Crear Pedido para Nuevo Cliente</h2>
+      <h2 className="text-2xl font-bold text-center mb-4 bg-gradient-to-r from-gray-700 to-gray-600 bg-clip-text text-transparent pt-8" id="Title">
+        Crear Pedido para Nuevo Cliente
+      </h2>
 
       <div className="grid grid-cols-2 gap-4 mb-4">
         <button className="bg-gray-200 text-center py-2 rounded">
@@ -41,7 +45,7 @@ const NuevoClienteForm: React.FC = () => {
       >
         {/* NOMBRE */}
         <div className="flex flex-col">
-          <div className="flex items-center bg-white rounded border border-gray-300 p-2">
+          <div className="flex items-center bg-white rounded border border-gray-300 p-2 hover:bg-[#f0f4f8] transition duration-300">
             <span className="mr-2">👤</span>
             <input
               type="text"
@@ -51,6 +55,7 @@ const NuevoClienteForm: React.FC = () => {
               value={formik.values.nombre}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
+              id="nombreCliente"
             />
           </div>
           {formik.touched.nombre && formik.errors.nombre && (
@@ -60,7 +65,7 @@ const NuevoClienteForm: React.FC = () => {
 
         {/* TELEFONO */}
         <div className="flex flex-col">
-          <div className="flex items-center bg-white rounded border border-gray-300 p-2">
+          <div className="flex items-center bg-white rounded border border-gray-300 p-2 hover:bg-[#f0f4f8] transition duration-300">
             <span className="mr-2">📞</span>
             <input
               type="text"
@@ -70,6 +75,7 @@ const NuevoClienteForm: React.FC = () => {
               value={formik.values.telefono}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
+              id="telefonoCliente"
             />
           </div>
           {formik.touched.telefono && formik.errors.telefono && (
@@ -79,7 +85,7 @@ const NuevoClienteForm: React.FC = () => {
 
         {/* CORREO */}
         <div className="flex flex-col">
-          <div className="flex items-center bg-white rounded border border-gray-300 p-2">
+          <div className="flex items-center bg-white rounded border border-gray-300 p-2 hover:bg-[#f0f4f8] transition duration-300">
             <span className="mr-2">✉️</span>
             <input
               type="email"
@@ -89,6 +95,7 @@ const NuevoClienteForm: React.FC = () => {
               value={formik.values.correo}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
+              id="correoCliente"
             />
           </div>
           {formik.touched.correo && formik.errors.correo && (
@@ -98,7 +105,7 @@ const NuevoClienteForm: React.FC = () => {
 
         {/* DIRECCIÓN */}
         <div className="flex flex-col">
-          <div className="flex items-center bg-white rounded border border-gray-300 p-2">
+          <div className="flex items-center bg-white rounded border border-gray-300 p-2 hover:bg-[#f0f4f8] transition duration-300">
             <span className="mr-2">🏠</span>
             <input
               type="text"
@@ -108,6 +115,7 @@ const NuevoClienteForm: React.FC = () => {
               value={formik.values.direccion}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
+              id="direccionCliente"
             />
           </div>
           {formik.touched.direccion && formik.errors.direccion && (
