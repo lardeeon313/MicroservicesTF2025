@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SalesService.Application.Commands.Orders.Cancel;
 using SalesService.Application.Commands.Orders.Delete;
@@ -11,10 +12,13 @@ using SalesService.Application.Queries.Orders.GetAll;
 using SalesService.Application.Queries.Orders.GetById;
 using SalesService.Application.Queries.Orders.GetByIdCustomer;
 using SalesService.Application.Queries.Orders.GetByStatus;
+using SalesService.Application.Queries.Orders.GetPagedOrders;
 using SalesService.Application.Validators.Order;
 
 namespace SalesService.API.Controllers
 {
+    [AllowAnonymous]
+    //[Authorize] Una vez finalizado con adminservice, esto se activara. 
     [ApiController]
     [Route("api/[controller]")]
     public class OrderController(
@@ -27,6 +31,7 @@ namespace SalesService.API.Controllers
         IGetOrderByStatusQueryHandler getOrderByStatusQueryHandler,
         IGetAllOrdersQueryHandler getAllOrdersQueryHandler,
         IGetOrderByIdCustomerQueryHandler getOrderByIdCustomerQueryHandler,
+        IGetPagedOrdersQueryHandler getPagedOrdersQueryHandler,
         IValidator<UpdateOrderStatusRequest> updateOrderStatusValidator,
         IValidator<RegisterOrderRequest> registerOrderValidator,
         IValidator<RegisterOrderItemRequest> registerOrderItemValidator,
@@ -38,6 +43,7 @@ namespace SalesService.API.Controllers
         private readonly IUpdateOrderStatusCommandHandler _updateOrderStatusCommandHandler = updateOrderStatusCommandHandler;
         private readonly ICancelOrderCommandHandler _cancelOrderCommandHandler = cancelOrderCommandHandler;
         private readonly IDeleteOrderCommandHandler _deleteOrderCommandHandler = deleteOrderCommandHandler;
+        private readonly IGetPagedOrdersQueryHandler _getPagedOrdersQueryHandler = getPagedOrdersQueryHandler;
         private readonly IGetOrderByIdQueryHandler _getOrderByIdQueryHandler = getOrderByIdQueryHandler;
         private readonly IGetOrderByStatusQueryHandler _getOrderByStatusQueryHandler = getOrderByStatusQueryHandler;
         private readonly IGetAllOrdersQueryHandler _getAllOrdersQueryHandler = getAllOrdersQueryHandler;
@@ -192,6 +198,15 @@ namespace SalesService.API.Controllers
             return Ok(result);
         }
 
+        /// <summary>Obtiene pedidos con un maximo de 20</summary>
+        [HttpGet("paged")]
+        [ProducesResponseType(typeof(IEnumerable<OrderDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetPagedOrders([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
+        {
+            var query = new GetPagedOrdersQuery(pageNumber, pageSize);
+            var result = await _getPagedOrdersQueryHandler.Handle(query, cancellationToken);
+            return Ok(result);
+        }
 
 
     }

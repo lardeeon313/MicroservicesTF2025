@@ -68,6 +68,22 @@ namespace SalesService.Infraestructure.Persistence.Repositories
                 .ToListAsync();
         }
 
+        public async Task<(List<Order> Orders, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            var query = _context.Orders
+                .Include(o => o.Customer)
+                .OrderByDescending(o => o.OrderDate);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var orders = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return (orders, totalCount);
+        }
+
         public Task UpdateAsync(Order order)
         {
             _context.Orders.Update(order);

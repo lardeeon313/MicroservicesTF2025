@@ -33,6 +33,7 @@ using SalesService.Application.Queries.Orders.GetAll;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using SalesService.Application.Commands.Orders.UpdateStatus;
+using SalesService.Application.Queries.Orders.GetPagedOrders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,6 +81,7 @@ builder.Services.AddScoped<IGetCustomerByIdQueryHandler, GetCustomerByIdQueryHan
 builder.Services.AddScoped<IGetCustomerByEmailQueryHandler, GetCustomerByEmailQueryHandler>();
 
 // Add services Command Handlers / Order 
+builder.Services.AddScoped<IGetPagedOrdersQueryHandler,  GetPagedOrdersQueryHandler>();
 builder.Services.AddScoped<IRegisterOrderCommandHandler, RegisterOrderCommandHandler>();
 builder.Services.AddScoped<IUpdateOrderCommandHandler, UpdateOrderCommandHandler>();
 builder.Services.AddScoped<ICancelOrderCommandHandler, CancelOrderCommandHandler>();
@@ -121,8 +123,8 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
-builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("SalesOnly", policy => policy.RequireRole("SalesStaff"));
+//builder.Services.AddAuthorizationBuilder()
+ //   .AddPolicy("SalesOnly", policy => policy.RequireRole("SalesStaff"));
 
 var app = builder.Build();
 
@@ -147,8 +149,8 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 app.UseMiddleware<ExceptionMiddleware>();
 
 // Seguridad
-app.UseAuthentication();
-app.UseAuthorization();
+//app.UseAuthentication();
+//app.UseAuthorization();
 
 // Ruteo
 app.MapControllers();

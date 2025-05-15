@@ -11,6 +11,9 @@ namespace SalesService.Application.DTOs.Order
     {
         public int Id { get; set; }
         public Guid CustomerId { get; set; }
+
+        public string? CustomerFirstName { get; set; }
+        public string? CustomerLastName { get; set; }
         public string? DeliveryDetail { get; set; } 
         public DateTime OrderDate { get; set; }
         public OrderStatus Status { get; set; } 

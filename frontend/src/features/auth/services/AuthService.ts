@@ -4,7 +4,7 @@ import API from "../../../api/axios";
 
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
     try {
-        const response = await API.post<LoginResponse>("auth/login",credentials);
+        const response = await API.post<LoginResponse>("api/auth/login",credentials);
         return response.data;
     } catch(error) {
         if (error instanceof AxiosError) {
@@ -16,7 +16,7 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
 
 export const register = async (userData: RegisterRequest): Promise<RegisterResponse> => {
     try{
-        const response = await API.post<RegisterResponse>("auth/register", userData);
+        const response = await API.post<RegisterResponse>("api/auth/register", userData);
         return response.data
     } catch (error) {
         if (error instanceof AxiosError) {
