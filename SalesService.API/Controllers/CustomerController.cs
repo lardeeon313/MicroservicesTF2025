@@ -8,6 +8,7 @@ using SalesService.Application.Queries.Customers.GetAllCustomers;
 using SalesService.Application.Queries.Customers.GetCustomer;
 using SalesService.Application.Queries.Customers.GetCustomerByEmail;
 using SalesService.Application.Queries.Customers.GetCustomerById;
+using SalesService.Application.Queries.Customers.GetPagedCustomers;
 
 
 namespace SalesService.API.Controllers
@@ -22,10 +23,12 @@ namespace SalesService.API.Controllers
         IGetCustomerByEmailQueryHandler getCustomerByEmailQueryHandler,
         IGetCustomerByIdQueryHandler getCustomerByIdQueryHandler,
         IGetAllCustomersQueryHandler getAllCustomersQueryHandler,
+        IGetPagedCustomersQueryHandler getPagedCustomersQueryHandler,
         IValidator<RegisterCustomerRequest> registerCustomerValidator,
         IValidator<UpdateCustomerRequest> updateCustomerValidator
         ) : ControllerBase
     {
+        private readonly IGetPagedCustomersQueryHandler _getPagedCustomersQueryHandler = getPagedCustomersQueryHandler;
         private readonly ICustomerDeleteCommandHandler _customerDeleteCommandHandler = customerDeleteCommandHandler;
         private readonly ICustomerRegisterCommandHandler _customerRegisterCommandHandler = customerRegisterCommandHandler;
         private readonly ICustomerUpdateCommandHandler _customerUpdateCommandHandler = customerUpdateCommandHandler;
@@ -169,5 +172,13 @@ namespace SalesService.API.Controllers
                 : NotFound(new { message = "Customer not found with that email." });
         }
 
+        [HttpGet("paged")]
+        [ProducesResponseType(typeof(PagedCustomerResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetPagedCustomers([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
+        {
+            var query = new GetPagedCustomersQuery(pageNumber, pageSize);
+            var result = await _getPagedCustomersQueryHandler.HandleAsync(query, cancellationToken);
+            return Ok(result);
+        }
     }
 }

@@ -1,11 +1,13 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import OrderTable from "../../components/Orders/OrderTable";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
-import Header from "../../components/Header";
 import { usePagedOrders } from "../../hooks/usePagedOrders";
-import { deleteOrder } from "../../services/OrderService";
+import { deleteOrder, updateOrderStatus } from "../../services/OrderService";
+import { OrderStatus } from "../../types/OrderTypes";
+import { handleFormikError } from "../../../../components/ErrorHandler";
+import { Pagination } from "../../../../components/Pagination";
 
 export default function OrdersPage() {
     const [searchId, setSearchId]  = useState("");
@@ -26,6 +28,13 @@ export default function OrdersPage() {
     })
 
     const handleDelete = async (id: number) => {
+      const order = orders.find((o) => o.id === id);
+      if (!order) return;
+
+      if (order.status === OrderStatus.Confirmed) {
+        return Swal.fire("Acción no permitida", "No se puede eliminar una orden ya fue confirmada por Deposito.", "warning");
+      }
+
       const confirmResult = await Swal.fire({
         title: "¿Estás seguro que quieres eliminar el pedido?",
         text: "Esta acción no se puede deshacer.",
@@ -61,7 +70,6 @@ export default function OrdersPage() {
             orderId: id,
             reason: reasonResult.value,
           });
-
           await Swal.fire("¡Listo!", `Se eliminó el pedido #${id}`, "success");
           refetch(); // actualiza la tabla
         } catch (error) {
@@ -71,64 +79,130 @@ export default function OrdersPage() {
       }
     };
 
-      const handleActionChange = (action: string, id: number) => {
-    if (action === "emitir") {
-      Swal.fire("Pedido Emitido", `El pedido #${id} fue emitido.`, "success");
-    } else if (action === "cancelar") {
-      Swal.fire("Pedido Cancelado", `El pedido #${id} fue cancelado.`, "info");
-    }
-  };
+      const handleActionChange = async (action: string, id: number) => {
+        const order = orders.find((o) => o.id === id);
+        if (!order) return;
+
+        if (order.status === OrderStatus.Issued) {
+          return Swal.fire("Acción no permitida", "No se puede modificar una orden ya emitida.", "warning");
+        }
+
+        if (order.status === OrderStatus.Canceled) {
+          return Swal.fire("Acción no permitida", "No se puede cambiar el estado de un pedido ya cancelado", "warning")
+        }
+
+        const statusMap: Record<string ,OrderStatus> = {
+          emitir: OrderStatus.Issued,
+          cancelar: OrderStatus.Canceled,
+          pendiente: OrderStatus.Pending
+        };
+
+        if (order.status === statusMap[action]) {
+          return Swal.fire("Accion no permitida", "La órden ya se encuentra en ese estado.", "info" )
+        }
+
+        const confirmResult = await Swal.fire({
+          title: "¿Estás seguro?",
+          text: "Esta acción no se puede deshacer.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Sí, continuar",
+          cancelButtonText: "Cancelar",
+        });
+
+        if (!confirmResult.isConfirmed) return;
+
+
+        const newStatus = statusMap[action];
+        if (!newStatus) return;
+
+        try {
+          await updateOrderStatus(id, {
+            orderId: id,
+            status: newStatus
+          });
+          Swal.fire(
+            "Estado actualizado",
+            `El pedido #${id} fue marcado como "${newStatus}".`,
+            "success"
+          );
+          refetch(); // Actualiza la pagina
+        } catch (error) {
+          handleFormikError({
+            error,
+            customMessages: {
+              500: "Error interno del servidor",
+              404: "No se pudo actualizar el estado del pedido"
+            }
+          })
+        }
+      };
+
+      const handleView = (id: number) => {
+        navigate(`/sales/orders/view/${id}`);
+      };
+      
+      const handleEdit = (id: number) => {
+        const order = orders.find((o) => o.id === id);
+        if (!order) return;
+
+        if (order.status === OrderStatus.Issued) {
+          return Swal.fire("Acción no permitida", "No se puede editar una orden ya emitida.", "warning");
+        }
+
+        navigate(`/sales/orders/update/${id}`);
+      };
+
 
   return (
-    <div className="p-4">
-      <Header />
-      <div className="flex flex-col md:flex-row gap-4 mb-4">
-        <input
-          type="text"
-          placeholder="Buscar por ID"
-          className="border border-gray-300 rounded px-3 py-2 w-full md:w-1/2"
-          value={searchId}
-          onChange={(e) => setSearchId(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Buscar por Cliente"
-          className="border border-gray-300 rounded px-3 py-2 w-full md:w-1/2"
-          value={searchCustomer}
-          onChange={(e) => setSearchCustomer(e.target.value)}
-        />
+    <div className="container m-0 pt-10 min-w-full min-h-full">
+      <div className="flex items-center justify-between mb-6">
+        <Link to="/sales" className="text-red-600 hover:underline pl-10">
+          ← Volver al menu principal
+        </Link>
       </div>
+      <div className="container mx-auto py-10 px-16 sm:max-w-7xl">
+        <h1 className="text-center text-4xl font-bold text-red-600 mb-12">Gestión de Pedidos</h1>
+        <div className="flex flex-col md:flex-row mb-4 w-full justify-between">
+          <input
+            type="text"
+            placeholder="Buscar por ID"
+            className="border border-gray-300 rounded px-3 py-2 focus:bg-red-100 focus:outline-gray-400 focus:transition-colors focus:duration-500 outline-gray-200 "
+            value={searchId}
+            onChange={(e) => setSearchId(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Buscar por Cliente"
+            className="border border-gray-300 rounded px-3 py-2 focus:bg-red-100 focus:outline-gray-400 focus:transition-colors focus:duration-500 outline-gray-200"
+            value={searchCustomer}
+            onChange={(e) => setSearchCustomer(e.target.value)}
+          />
+        </div>
 
-      <OrderTable
-        orders={filteredOrders}
-        loading={loading}
-        error={error}
-        onRefetch={refetch}
-        onView={(id) => navigate(`/orders/view/${id}`)}
-        onEdit={(id) => navigate(`/orders/update/${id}`)}
-        onDelete={handleDelete}
-        onActionChange={handleActionChange}
-      />
+        <OrderTable
+          orders={filteredOrders}
+          loading={loading}
+          error={error}
+          onRefetch={refetch}
+          onView={handleView}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onActionChange={handleActionChange}
+        />
 
-      {/* Paginación */}
-      <div className="flex justify-center mt-6 gap-4">
-        <button
-          onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-          disabled={page === 1}
-          className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
-        >
-          Anterior
-        </button>
-        <span className="text-gray-700 mt-2">Página {page} de {totalPages}</span>
-        <button
-          onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
-          disabled={page === totalPages}
-          className="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
-        >
-          Siguiente
-        </button>
+        <div className="flex items-center justify-end py-4 px-6">
+          <Link to="/sales/orders/registerOrder" className="text-red-600 hover:underline">
+            Registrar Nuevo Pedido
+          </Link>
+        </div>
+
+        {/* Paginación */}
+        <div className="flex justify-center mt-6 gap-4 ">
+          <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage}/>
+        </div>
+
       </div>
-
     </div>
   );
 }

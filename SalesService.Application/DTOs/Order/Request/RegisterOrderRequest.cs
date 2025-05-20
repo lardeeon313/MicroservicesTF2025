@@ -16,10 +16,10 @@ namespace SalesService.Application.DTOs.Order.Request
         [Required, MinLength(1)]
         public List<RegisterOrderItemRequest> Items { get; set; } = new();
 
-        [MaxLength(220)]
+        [DataType(DataType.DateTime)]
         public DateTime? DeliveryDate { get; set; }
 
-        [DataType(DataType.DateTime)]
+        [MaxLength(220)]
         public string? DeliveryDetail { get; set; }
     }
 }

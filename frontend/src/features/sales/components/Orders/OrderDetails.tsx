@@ -1,42 +1,70 @@
-import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { Order } from "../../types/OrderTypes";
+import { Link } from "react-router-dom";
+import { OrderTableData } from "../../types/OrderTypes";
 
 type Props = {
-  order: Order | null;
-  loading: boolean;
+  order: OrderTableData | null;
 };
 
-export default function OrderDetails({ order, loading }: Props) {
-  const navigate = useNavigate();
-
+export default function OrderDetails({ order }: Props) {
   const formatDate = (date: string) =>
     new Date(date).toLocaleDateString("es-AR");
 
+  if (!order) return null;
+
   return (
-    <div className="p-4 max-w-3xl mx-auto">
-      <button
-        className="mb-4 flex items-center text-sm text-blue-600 hover:underline"
-        onClick={() => navigate(-1)}
-      >
-        <ArrowLeft className="w-4 h-4 mr-1" /> Volver
-      </button>
-
-      <div className="bg-white rounded-2xl border border-gray-200 shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Detalle de la Orden</h2>
-
-        {loading && <p className="text-gray-600">Cargando orden...</p>}
-
+    <div>
         {order && (
-          <div className="space-y-2 text-sm text-gray-700">
-            <div><span className="font-medium">ID:</span> {order.id}</div>
-            <div><span className="font-medium">Cliente:</span> {order.customerFirstName} {order.customerLastName}</div>
-            <div><span className="font-medium">Fecha Pedido:</span> {formatDate(order.orderDate)}</div>
-            <div><span className="font-medium">Fecha Entrega:</span> {order.deliveryDate ? formatDate(order.deliveryDate) : "No asignada"}</div>
-            <div><span className="font-medium">Estado:</span> {order.status}</div>
+          <div className="space-y-6 mt-10 w-3xl">
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-1">Cliente:</label> 
+              <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{order.customerFirstName} {order.customerLastName}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-1">Fecha Pedido:</label> 
+              <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{formatDate(order.orderDate)}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-1">Fecha Entrega:</label> 
+              <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{order.deliveryDate ? formatDate(order.deliveryDate) : "No asignada"}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-1">Detalles de entrega:</label>
+              <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{order.deliveryDetail || "No especificado"}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-1">Estado:</label> 
+              <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{order.status}</p>
+            </div>
+            <div className="space-y-4 pt-2">
+                <table className="table-fixed w-full border-separate">
+                  <thead>
+                    <tr>
+                      <th className="w-1/3 text-left px-4 py-2">Producto</th>
+                      <th className="w-1/3 text-left px-4 py-2">Marca</th>
+                      <th className="w-1/3 text-left px-4 py-2">Cantidad</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {order.items.map((item, index) => (
+                      <tr key={index} className="align-top">
+                        <td className="pr-2 px-4 py-2">{item.productName}</td>
+                        <td className="pr-2 px-4 py-2">{item.productBrand}</td>
+                        <td className="pr-2 px-4 py-2">{item.quantity}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+            </div>
+            <div className="mt-10">
+              <Link 
+                to={`/sales/orders/update/${order.id}`}
+                className="flex w-full justify-center items-center rounded-md bg-red-700 px-3 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-red-600 transition duration-150 disabled:opacity-50"
+              >
+                Editar órden
+              </Link>
+            </div>        
           </div>
         )}
       </div>
-    </div>
   );
 }

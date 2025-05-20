@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { CustomerResponse } from "../../types/CustomerTypes";
 
 interface Props {
@@ -6,40 +7,33 @@ interface Props {
 
 const CustomerDetail = ({ customer }: Props) => {
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-3xl">
-        <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900">
-          Detalle del Cliente
-        </h2>
+    <div className="space-y-6 mt-10 w-3x1">
+      <label className="block text-sm font-medium text-gray-900 mb-1">Nombre</label>
+      <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">
+        {customer.firstName} {customer.lastName}
+      </p>
+          
+      <label className="block text-sm font-medium text-gray-900 mb-1">Email</label>
+      <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{customer.email}</p>
 
-        <div className="mt-10 space-y-6">
-          <div className="bg-white p-6 rounded-md shadow-sm">
-            <p className="text-sm text-gray-600 mb-1 font-semibold">Nombre</p>
-            <p className="text-base text-gray-900">
-              {customer.firstName} {customer.lastName}
-            </p>
-          </div>
+      <label className="block text-sm font-medium text-gray-900 mb-1">Teléfono</label>
+      <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{customer.phoneNumber}</p>
 
-          <div className="bg-white p-6 rounded-md shadow-sm">
-            <p className="text-sm text-gray-600 mb-1 font-semibold">Email</p>
-            <p className="text-base text-gray-900">{customer.email}</p>
-          </div>
+      <label className="block text-sm font-medium text-gray-900 mb-1">Dirección</label>
+      <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{customer.address}</p>
 
-          <div className="bg-white p-6 rounded-md shadow-sm">
-            <p className="text-sm text-gray-600 mb-1 font-semibold">Teléfono</p>
-            <p className="text-base text-gray-900">{customer.phoneNumber}</p>
-          </div>
-
-          <div className="bg-white p-6 rounded-md shadow-sm">
-            <p className="text-sm text-gray-600 mb-1 font-semibold">Dirección</p>
-            <p className="text-base text-gray-900">{customer.address}</p>
-          </div>
-        </div>
+      <div className="mt-10">
+        <Link 
+          to={`/sales/customer/update/${customer.id}`}
+          className="flex w-full justify-center items-center rounded-md bg-red-700 px-3 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-red-600 transition duration-150 disabled:opacity-50"
+        >
+          Editar Cliente
+        </Link>
       </div>
 
-        
-
     </div>
+
+      
   );
 };
 

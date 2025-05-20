@@ -117,14 +117,13 @@ const RegisterOrderForm = ({
                             className="text-red-700 text-sm pt-1"
                           />
                         </td>
-                        <td className="p-2 px-4 py-2 text-center">
+                        <td className="p-2 py-2 text-center">
                           <button
                             type="button"
                             disabled={values.items.length === 1}
                             onClick={() => remove(index)}
                             className="block w-full rounded-md text-red-700 font-semibold bg-white px-3 py-1.5 hover:bg-red-600 hover:text-white transition duration-150"
-                          >
-                            Quitar
+                          >Quitar
                           </button>
                         </td>
                       </tr>

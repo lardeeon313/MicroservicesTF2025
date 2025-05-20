@@ -1,4 +1,5 @@
-﻿using SalesService.Application.IntegrationEvents.Order;
+﻿using SalesService.Application.DTOs.Order;
+using SalesService.Application.IntegrationEvents.Order;
 using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Messaging.Publisher;

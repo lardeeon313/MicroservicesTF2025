@@ -12,11 +12,14 @@ import NotFoundPage from "../features/common/pages/NotFoundPage";
 import HomePage from "../features/common/pages/HomePage";
 import OrdersPage from "../features/sales/pages/orders/OrdersPage";
 import RegisterOrderPage from "../features/sales/pages/orders/RegisterOrderPage";
-import DashboardPage from "../features/sales/pages/DashboardPage";
 import RegisterCustomerPage from "../features/sales/pages/customers/RegisterCustomerPage";
 import ViewCustomerPage from "../features/sales/pages/customers/ViewCustomerPage";
 import ViewOrderPage from "../features/sales/pages/orders/ViewOrderPage";
 import EditOrderPage from "../features/sales/pages/orders/EditOrderPage";
+import EditCustomerPage from "../features/sales/pages/customers/EditCustomerPage";
+import CustomersPage from "../features/sales/pages/customers/CustomersPage";
+import { DashboardPage } from "../features/sales/pages/DashboardPage";
+import { DashboardReportsPage } from "../features/sales/pages/reports/DashboardReportsPage";
 
 const AppRouter = () => {
   return (
@@ -32,9 +35,13 @@ const AppRouter = () => {
         <Route path="/sales/orders" element={<OrdersPage/>}/>
         <Route path="/sales/orders/view/:id" element={<ViewOrderPage/>} />
         <Route path="/sales/orders/registerOrder" element={<RegisterOrderPage/>}/>
-        <Route path="/sales/orders/editOrder/:id" element={<EditOrderPage/>}/>
+        <Route path="/sales/orders/update/:id" element={<EditOrderPage/>}/>
         <Route path="/sales/customer/registerCustomer" element={<RegisterCustomerPage/>}/>
-        <Route path="/sales/customer/viewCustomer" element={<ViewCustomerPage/>}/>
+        <Route path="/sales/customer/viewCustomer/:id" element={<ViewCustomerPage/>}/>
+        <Route path="/sales/customers" element={<CustomersPage/>}/>
+        <Route path="/sales/customer/update/:id" element={<EditCustomerPage/>}/>
+        <Route path="/sales/reports" element={<DashboardReportsPage/>}/>
+
 
 
 

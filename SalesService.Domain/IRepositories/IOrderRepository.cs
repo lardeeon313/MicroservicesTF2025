@@ -22,6 +22,8 @@ namespace SalesService.Domain.IRepositories
         Task DeleteAsync(Order order);
         Task AttachReceiptAsync(int orderId, string receiptBase64);
         Task<(List<Order> Orders, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
+        Task<DateTime?> GetLastOrderDateByCustomerId(Guid customerId);
+
 
     }
 }

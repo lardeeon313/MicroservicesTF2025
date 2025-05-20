@@ -34,7 +34,7 @@ namespace SalesService.Tests.Handlers
         public async Task Handle_ShouldCancelOrder_WhenOrderIsPending()
         {
             // Arrange
-            var command = new CancelOrderCommand (1 , "Error de Carga");
+            var command = new CancelOrderCommand(1, "Error de Carga");
             var order = new Order { Id = 1 , Status = OrderStatus.Pending };
 
             _orderRepositoryMock.Setup(r => r.GetByIdAsync(command.Id)).ReturnsAsync(order);

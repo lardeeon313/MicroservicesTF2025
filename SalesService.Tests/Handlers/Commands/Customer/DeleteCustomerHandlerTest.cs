@@ -28,6 +28,7 @@ namespace SalesService.Tests.Handlers
 
 
         // Test exitoso, cuando eliminamos el Cliente.
+        [Fact]
         public async Task DeleteHandle_ShouldDeleteCustomer_WhenCustomerExists()
         {
             // Arrange

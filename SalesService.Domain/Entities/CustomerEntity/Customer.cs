@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SalesService.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -20,5 +21,9 @@ namespace SalesService.Domain.Entities.CustomerEntity
 
         public string Address { get; set; } = string.Empty;
         public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
+
+        public CustomerStatus Status { get; set; } = CustomerStatus.Inactive;
+        public string? SatisfactionDescription { get; set; }
+        public int? SatisfactionScore { get; set; }
     }
 }

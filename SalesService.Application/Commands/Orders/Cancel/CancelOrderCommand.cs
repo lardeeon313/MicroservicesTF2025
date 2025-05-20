@@ -20,6 +20,12 @@ namespace SalesService.Application.Commands.Orders.Cancel
             Id = request.OrderId;
             Reason = request.reason;
         }
+
+        public CancelOrderCommand(int id, string reason)
+        {
+            Id = id;
+            Reason = reason;
+        }
     }
     
 }

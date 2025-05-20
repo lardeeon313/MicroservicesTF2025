@@ -1,12 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
-import Footer from "../../components/Footer";
 import RegisterCustomerForm from "../../components/Forms/RegisterCustomerForm";
 import { RegisterCustomerRequest } from "../../types/CustomerTypes";
 import { registerCustomer } from "../../services/CustomerService";
 import toast from "react-hot-toast";
 import { FormikHelpers } from "formik";
 import { useState } from "react";
-import { handleFormikError } from "../../../../components/Form/ErrorHandler";
+import { handleFormikError } from "../../../../components/ErrorHandler";
 
 export default function RegisterCustomerPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,7 +20,7 @@ export default function RegisterCustomerPage() {
       await registerCustomer(values);
       toast.success("Cliente registrado con éxito!");
       resetForm();
-      navigate("/sales/registerOrder");
+      navigate("/sales/customers");
     } catch (error) {
       handleFormikError({
         error,
@@ -37,12 +36,11 @@ export default function RegisterCustomerPage() {
   return (
     <div className="container m-0 pt-10 min-w-full ">
       <div className="flex items-center justify-between mb-6">
-        <Link to="/sales/orders/registerOrder" className="text-red-600 hover:underline pl-10">
+        <Link to="/sales/customers" className="text-red-600 hover:underline pl-10">
           ← Volver atrás
         </Link>
       </div>
       <RegisterCustomerForm isSubmitting={isSubmitting} onSubmit={handleSubmit} />
-      <Footer />
     </div>
   );
 }

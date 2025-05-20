@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
-
 import RegisterOrderForm from "../../components/Forms/RegisterOrderForm";
-import Footer from "../../components/Footer";
-
 import { RegisterOrderRequest } from "../../types/OrderTypes";
 import { CustomerResponse } from "../../types/CustomerTypes";
 import { registerOrder } from "../../services/OrderService";
 import { getAllCustomers } from "../../services/CustomerService";
-import { handleFormikError } from "../../../../components/Form/ErrorHandler";
+import { handleFormikError } from "../../../../components/ErrorHandler";
 
 const initialValues: RegisterOrderRequest = {
   customerId: "",
@@ -60,12 +57,12 @@ export default function RegisterOrderPage() {
   return (
     <div className="container m-0 pt-10 min-w-full">
       <div className="flex items-center justify-between mb-6">
-        <Link to="/orders" className="text-red-600 hover:underline pl-10">
+        <Link to="/sales/orders" className="text-red-600 hover:underline pl-10">
           ← Volver al listado
         </Link>
       </div>
       <div className="sm:mx-auto sm:w-full sm:max-w-3xl justify-center">
-        <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900">
+        <h2 className="text-center text-4xl font-bold text-red-600 mb-12">
           Registrar Orden
         </h2>
         <RegisterOrderForm
@@ -75,7 +72,6 @@ export default function RegisterOrderPage() {
           isSubmitting={isSubmitting}
         />
       </div>
-      <Footer />
     </div>
   );
 }

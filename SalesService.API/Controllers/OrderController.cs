@@ -141,11 +141,15 @@ namespace SalesService.API.Controllers
         /// Elimina la nota de pedido
         /// </summary>
         /// <param name="request"></param>
+        /// /// <param name="id"></param>
         /// <returns></returns>
         [HttpDelete("delete/{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> DeleteOrder(DeleteOrderRequest request)
+        public async Task<IActionResult> DeleteOrder([FromRoute] int id, [FromBody] DeleteOrderRequest request)
         {
+            if (id != request.OrderId)
+                return BadRequest(new { error = "Order ID in the URL does not match the Order ID in the request body." });
+
             var command = new DeleteOrderCommand(request);
             var result = await _deleteOrderCommandHandler.HandleAsync(command);
             return Ok(new { message = "Order deleted successfully." });

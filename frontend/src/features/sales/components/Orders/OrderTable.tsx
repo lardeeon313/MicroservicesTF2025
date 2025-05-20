@@ -1,6 +1,8 @@
-import { CalendarDays, Package, User, BadgeCheck, FileText, Eye, Pencil, Trash } from "lucide-react"
+import { CalendarDays, Package, User, BadgeCheck, Eye, Pencil, Trash } from "lucide-react"
 import { OrderTableData } from "../../types/OrderTypes";
 import formatDate from "../../../../utils/formateDate";
+import { OrderStatusBadge } from "./OrderStatusBadge";
+import LoadingSpinner from "../../../../components/LoadingSpinner";
 
 interface Props {
   orders: OrderTableData[];
@@ -24,8 +26,9 @@ export default function OrderTable({
   onActionChange,
 }: Props) {
   if (loading)
-    return <div className="text-center py-8 text-gray-600">Cargando órdenes...</div>;
-
+    return (
+      <LoadingSpinner message="Cargando órdenes..."/>
+    )
   if (error)
     return (
       <div className="text-center py-8">
@@ -38,52 +41,56 @@ export default function OrderTable({
     return <div className="text-center py-8 text-gray-500">No hay órdenes registradas.</div>;
 
   return (
-      <div className="overflow-x-auto rounded shadow border border-gray-200">
-        <table className="min-w-full text-sm text-gray-800">
-          <thead className="bg-gray-100 uppercase text-xs font-semibold tracking-wide text-gray-600">
-            <tr>
-              <th className="px-4 py-2 text-left">ID</th>
-              <th className="px-4 py-2 text-left"><User className="inline w-4 h-4 mr-1" /> Cliente</th>
-              <th className="px-4 py-2 text-left"><CalendarDays className="inline w-4 h-4 mr-1" /> Fecha Pedido</th>
-              <th className="px-4 py-2 text-left"><Package className="inline w-4 h-4 mr-1" /> Fecha Entrega</th>
-              <th className="px-4 py-2 text-left"><BadgeCheck className="inline w-4 h-4 mr-1" /> Estado</th>
-              <th className="px-4 py-2 text-left"><FileText className="inline w-4 h-4 mr-1" /> Total</th>
-              <th className="px-4 py-2 text-left">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order) => (
-              <tr key={order.id} className="border-t hover:bg-gray-50 transition">
-                <td className="px-4 py-2">{order.id}</td>
-                <td className="px-4 py-2">{order.customerFirstName ?? ""} {order.customerLastName ?? ""}</td>
-                <td className="px-4 py-2">{formatDate(order.orderDate)}</td>
-                <td className="px-4 py-2">{order.deliveryDate ? formatDate(order.deliveryDate) : "No asignada"}</td>
-                <td className="px-4 py-2">{order.status}</td>
-                <td className="px-4 py-2">{order.totalAmount !== null ? `$${order.totalAmount?.toFixed(2)}` : "Pendiente"}</td>
-                <td className="px-4 py-2 space-x-2">
-                  <button className="bg-blue-500 text-white px-2 py-1 rounded text-xs" onClick={() => onView(order.id)}>
-                    <Eye className="w-4 h-4" />
-                  </button>
-                  <button className="bg-yellow-500 text-white px-2 py-1 rounded text-xs" onClick={() => onEdit(order.id)}>
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                  <button className="bg-red-600 text-white px-2 py-1 rounded text-xs" onClick={() => onDelete(order.id)}>
-                    <Trash className="w-4 h-4" />
-                  </button>
-                  <select
-                    onChange={(e) => onActionChange(e.target.value, order.id)}
-                    defaultValue=""
-                    className="text-xs border border-gray-300 rounded px-2 py-1 ml-2"
-                  >
-                    <option value="" disabled>Acción</option>
-                    <option value="emitir">Emitir</option>
-                    <option value="cancelar">Cancelar</option>
-                  </select>
-                </td>
+      <div className="w-full overflow-hidden rounded-lg border border-gray-200 shadow">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-gray-800">
+            <thead className="bg-gray-100 text-xs font-semibold uppercase tracking-wide text-gray-600">
+              <tr>
+                <th className="px-4 py-3 text-left">ID</th>
+                <th className="px-4 py-3 text-left"><User className="inline w-4 h-4 mr-1" /> Cliente</th>
+                <th className="px-4 py-3 text-left"><CalendarDays className="inline w-4 h-4 mr-1" /> Fecha Pedido</th>
+                <th className="px-4 py-3 text-left"><Package className="inline w-4 h-4 mr-1" /> Fecha Entrega</th>
+                <th className="px-4 py-3 text-left"><BadgeCheck className="inline w-4 h-4 mr-1" /> Estado</th>
+                <th className="px-4 py-3 text-center">Acciones</th>
+                <th className="px-4 py-3 text-center">Cambiar estado</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {orders.map((order) => (
+                <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-4 py-3 font-medium">V-{order.id}</td>
+                  <td className="px-4 py-3">{order.customerFirstName ?? ""} {order.customerLastName ?? ""}</td>
+                  <td className="px-4 py-3">{formatDate(order.orderDate)}</td>
+                  <td className="px-4 py-3">{order.deliveryDate ? formatDate(order.deliveryDate) : "No asignada"}</td>
+                  <td className="px-4 py-3"><OrderStatusBadge status={order.status}></OrderStatusBadge></td>
+                  <td className="px-4 py-3 space-x-2 text-center">
+                    <button onClick={() => onView(order.id)}>
+                      <Eye className="w-5 h-5 text-blue-600 hover:text-gray-700 transition-colors" />
+                    </button>
+                    <button onClick={() => onEdit(order.id)}>
+                      <Pencil className="w-5 h-5 text-yellow-600 hover:text-gray-700 transition-colors" />
+                    </button>
+                    <button onClick={() => onDelete(order.id)}>
+                      <Trash className="w-5 h-5 text-red-600 hover:text-gray-700 transition-colors" />
+                    </button>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <select
+                      onChange={(e) => onActionChange(e.target.value, order.id)}
+                      defaultValue=""
+                      className="text-sm  rounded border border-gray-300 px-2 py-1 focus:outline-none"
+                    >
+                      <option value="" disabled>Estado</option>
+                      <option value="emitir">Emitir</option>
+                      <option value="cancelar">Cancelar</option>
+                      <option value="pendiente">Pendiente</option>
+                    </select>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
   );
 }

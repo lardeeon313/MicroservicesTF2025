@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { getCustomerById, updateCustomer } from "../../services/CustomerService";
 import EditCustomerForm from "../../components/Forms/EditCustomerForm";
 import { UpdateCustomerRequest } from "../../types/CustomerTypes";
-import { handleFormikError } from "../../../../components/Form/ErrorHandler";
+import { handleFormikError } from "../../../../components/ErrorHandler";
+import LoadingSpinner from "../../../../components/LoadingSpinner";
 
 const EditCustomerPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -43,7 +44,7 @@ const EditCustomerPage = () => {
         try {
             await updateCustomer(values);
             toast.success("Cliente actualizado correctamente");
-            navigate(`/sales/viewCustomer/${id}`);
+            navigate(`/sales/customers`);
         } catch (error) {
             handleFormikError({
                 error,
@@ -58,12 +59,23 @@ const EditCustomerPage = () => {
     };
 
   return (
-    <div className="px-6 py-10">
+    <div className="container m-0 pt-10 min-w-full h-screen">
+      <div className="flex items-center justify-between mb-6">
+        <Link to="/sales/customers" className="text-red-600 hover:underline pl-10">
+          ← Volver al listado
+        </Link>
+      </div>
+      <div className="sm:mx-auto sm:w-full sm:max-w-3xl justify-center">
+        <h2 className="text-center text-4xl font-bold text-red-600 mb-12">
+          Editar Cliente
+        </h2>
+      
       {initialValues ? (
         <EditCustomerForm initialValues={initialValues} onSubmit={handleSubmit} isSubmitting={isSubmitting} />
       ) : (
-        <p className="text-center text-gray-500">Cargando datos del cliente...</p>
+        <LoadingSpinner message="Cargando datos del cliente..." height="h-screen"/> 
       )}
+      </div>
     </div>
   );
 };

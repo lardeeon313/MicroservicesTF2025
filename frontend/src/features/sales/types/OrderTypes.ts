@@ -1,26 +1,26 @@
-import { Customer } from "./CustomerTypes";
+import { Customer, CustomerResponse } from "./CustomerTypes";
 
 export enum OrderStatus {
-    Pending = "Pending",
-    Issued = "Issued",
-    Confirmed = "Confirmed",
-    InPreparation = "InPreparation",
-    Prepared = "Prepared",
-    Invoiced = "Invoiced",   
-    Verify = "Verify",
-    OnTheWay = "OnTheWay",   
-    Delivered = "Delivered",  
-    Canceled = "Canceled"
+    Pending = "pending",
+    Issued = "issued",
+    Confirmed = "confirmed",
+    InPreparation = "inPreparation",
+    Prepared = "prepared",
+    Invoiced = "invoiced",   
+    Verify = "verify",
+    OnTheWay = "onTheWay",   
+    Delivered = "delivered",  
+    Canceled = "canceled"
 }
 
 export enum PaymentType {
-  Transfer = "Transfer",
-  Credit_Card = "Credit_Card ",
-  Debit_Card = "Debit_Card",
-  Cash = "Cash",
-  Current_Account = "Current_Account",
-  Check = "Check",
-  Promissory_Note = "Promissory_Note",
+  Transfer = "Transferencia",
+  Credit_Card = "Tarjeta de Credito",
+  Debit_Card = "Tarjeta de Debito",
+  Cash = "Efectivo",
+  Current_Account = "Cuenta Corriente",
+  Check = "Cheque",
+  Promissory_Note = "Pagaré",
 }
 
 
@@ -123,4 +123,17 @@ export interface OrderTableData {
   customerFirstName?: string;
   customerLastName?: string;
   items: OrderItem[];
+}
+
+export interface OrderDetailResponse {
+  id: string;
+  customer: CustomerResponse;
+  deliveryDate: string;
+  deliveryDetail: string;
+  status: OrderStatus;
+  items: {
+    productName: string;
+    productBrand: string;
+    quantity: number;
+  }[];
 }

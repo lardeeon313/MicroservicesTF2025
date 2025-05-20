@@ -51,6 +51,10 @@ namespace SalesService.Application.Commands.Orders.Register
             // Guardar la orden en la base de datos
             await _orderRepository.AddAsync(order);
 
+            // Actualizar el estado del cliente a "Active"
+            customer.Status = CustomerStatus.Active;
+            await _customerRepository.UpdateAsync(customer);
+
             // Creamos el evento
             var integrationEvent = new OrderRegisteredIntegrationEvent
             {

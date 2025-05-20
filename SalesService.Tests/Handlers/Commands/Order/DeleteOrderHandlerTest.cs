@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SalesService.Tests.Handlers
+namespace SalesService.Tests.Handlers.Commands
 {
     /// <summary>
     /// Pruebas unitarias para DeleteOrderCommandHandler.
@@ -32,7 +32,7 @@ namespace SalesService.Tests.Handlers
         [Fact(DisplayName = "Debería eliminar una orden y publicar evento")]
         public async Task HandleAsync_ShouldDeleteOrder_AndPublishEvent()
         {
-            var command = new DeleteOrderCommand(3,"Pedido duplicado");
+            var command = new DeleteOrderCommand(3, "Pedido duplicado");
             var order = new Order { Id = 3 };
 
             _repositoryMock.Setup(r => r.GetByIdAsync(command.Id)).ReturnsAsync(order);

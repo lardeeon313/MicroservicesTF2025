@@ -17,5 +17,11 @@ namespace SalesService.Application.Commands.Orders.Delete
             Id = request.OrderId;
             Reason = request.reason;
         }
+
+        public DeleteOrderCommand(int id, string reason)
+        {
+            Id = id;
+            Reason = reason;
+        }
     }
 }

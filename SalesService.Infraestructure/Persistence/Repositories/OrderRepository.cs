@@ -68,6 +68,16 @@ namespace SalesService.Infraestructure.Persistence.Repositories
                 .ToListAsync();
         }
 
+        public async Task<DateTime?> GetLastOrderDateByCustomerId(Guid customerId)
+        {
+            return await _context.Orders
+                .Where(o => o.CustomerId == customerId)
+                .OrderByDescending(o => o.OrderDate)
+                .Select(o => (DateTime?)o.OrderDate)
+                .FirstOrDefaultAsync();
+
+        }
+
         public async Task<(List<Order> Orders, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var query = _context.Orders

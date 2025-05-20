@@ -38,4 +38,19 @@ export interface UpdateCustomerRequest {
   address?: string;
 }
 
+// Get: CustomerPaginated 
+export type GetCustomersPaginatedParams = {
+  page: number, 
+  pageSize: number; 
+  search?: string
+}
+
+export type GetCustomersPaginatedResponse = {
+  data: CustomerResponse[];
+  totalCount: number;
+};
+
+
+
+
 

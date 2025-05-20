@@ -57,5 +57,19 @@ namespace SalesService.Infraestructure.Persistence.Repositories
                     .SetProperty(c => c.PhoneNumber, customer.PhoneNumber)
                     .SetProperty(c => c.Address, customer.Address));
         }
+
+        public async Task<(List<Customer> Customers, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+        {
+            var query = _context.Customers.OrderBy(c => c.FirstName);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var customers = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return (customers, totalCount);
+        }
     }
 }

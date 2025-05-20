@@ -19,7 +19,7 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-3xl">
-        <h2 className="text-center text-3xl font-bold tracking-tight text-gray-900">
+        <h2 className="text-center text-4xl font-bold text-red-600 mb-12">
           Registrar Cliente
         </h2>
 

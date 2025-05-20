@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getPagedOrders } from "../services/OrderService";
 import { OrderTableData } from "../types/OrderTypes";
-import { handleFormikError } from "../../../components/Form/ErrorHandler";
+import { handleFormikError } from "../../../components/ErrorHandler";
 
 export function usePagedOrders(page: number, pageSize: number) {
   const [orders, setOrders] = useState<OrderTableData[]>([]);
@@ -9,7 +9,7 @@ export function usePagedOrders(page: number, pageSize: number) {
   const [error] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState(1);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
         setLoading(true);
         const result = await getPagedOrders(page, pageSize);
@@ -27,11 +27,12 @@ export function usePagedOrders(page: number, pageSize: number) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page,pageSize]);
+
 
   useEffect(() => {
     fetchData();
-  }, [page, pageSize]);
+  }, [fetchData])
 
   return { orders, loading, error, totalPages, refetch: fetchData };
 }

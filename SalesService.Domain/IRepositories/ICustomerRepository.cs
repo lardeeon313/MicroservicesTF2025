@@ -15,5 +15,7 @@ namespace SalesService.Domain.IRepositories
         Task UpdateAsync(Customer customer);
         Task DeleteAsync(Guid customerId);
         Task<Customer?> GetByEmailAsync(string? email);
+        Task<(List<Customer> Customers, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
+
     }
 }

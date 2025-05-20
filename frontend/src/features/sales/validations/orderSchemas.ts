@@ -16,12 +16,12 @@ export const registerOrderValidationSchema = Yup.object().shape({
 })
 
 export const EditOrderValidationSchema = Yup.object({
-        deliveryDetail: Yup.string().required("Requerido"),
-        deliveryDate: Yup.string().required("Requerido"),
-        status: Yup.string().required("Requerido"),
+        deliveryDetail: Yup.string(),
+        deliveryDate: Yup.string(),
+        status: Yup.string(),
         items: Yup.array().of(
             Yup.object().shape({
-            id: Yup.number().required(),
+            id: Yup.number().notRequired(),
             productName: Yup.string().required("Requerido"),
             productBrand: Yup.string().required("Requerido"),
             quantity: Yup.number().min(1).required("Requerido"),

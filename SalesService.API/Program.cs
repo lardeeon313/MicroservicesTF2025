@@ -34,6 +34,8 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using SalesService.Application.Commands.Orders.UpdateStatus;
 using SalesService.Application.Queries.Orders.GetPagedOrders;
+using SalesService.Application.Queries.Customers.GetPagedCustomers;
+using SalesService.Infraestructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +65,9 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+// Add Service CustomerStatusUpdater
+/*        builder.Services.AddHostedService<CustomerStatusUpdaterService>();      */
+
 // Add FluentValidation
 builder.Services.AddScoped<IValidator<RegisterCustomerRequest>, RegisterCustomerValidator>();
 builder.Services.AddScoped<IValidator<UpdateCustomerRequest>, UpdateCustomerValidator>();
@@ -81,6 +86,7 @@ builder.Services.AddScoped<IGetCustomerByIdQueryHandler, GetCustomerByIdQueryHan
 builder.Services.AddScoped<IGetCustomerByEmailQueryHandler, GetCustomerByEmailQueryHandler>();
 
 // Add services Command Handlers / Order 
+builder.Services.AddScoped<IGetPagedCustomersQueryHandler,  GetPagedCustomersQueryHandler>();
 builder.Services.AddScoped<IGetPagedOrdersQueryHandler,  GetPagedOrdersQueryHandler>();
 builder.Services.AddScoped<IRegisterOrderCommandHandler, RegisterOrderCommandHandler>();
 builder.Services.AddScoped<IUpdateOrderCommandHandler, UpdateOrderCommandHandler>();

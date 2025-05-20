@@ -1,4 +1,5 @@
 ﻿using SalesService.Application.DTOs.Order;
+using SalesService.Domain.Entities.CustomerEntity;
 using SalesService.Domain.IRepositories;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,8 @@ namespace SalesService.Application.Queries.Orders.GetById
             {
                 Id = order.Id,
                 CustomerId = order.CustomerId,
+                CustomerFirstName = order.Customer?.FirstName,
+                CustomerLastName = order.Customer?.LastName,
                 DeliveryDetail = order.DeliveryDetail,
                 DeliveryDate = order.DeliveryDate,
                 ModifiedStatusDate = order.ModifiedStatusDate,
