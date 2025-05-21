@@ -67,7 +67,7 @@ export default function CustomersPage() {
 return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="flex items-center justify-between mb-6">
-        <Link to="/sales" className="text-red-600 hover:underline pl-10">
+        <Link to="/sales/home" className="text-red-600 hover:underline pl-10">
           ← Volver al menú principal
         </Link>
       </div>

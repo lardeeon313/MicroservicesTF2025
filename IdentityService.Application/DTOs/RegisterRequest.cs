@@ -31,5 +31,9 @@ namespace IdentityService.Application.DTOs
         [Required, MinLength(6)]
         [Display(Name = "Password")]
         public string Password { get; set; } = string.Empty;
+
+        [Required]
+        [Display(Name = "Role")]
+        public string Role { get; set; } = string.Empty;
     }
 }

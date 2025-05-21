@@ -1,7 +1,9 @@
 using DepotService.Infraestructure;
+using DepotService.Infraestructure.Messaging;
 using DepotService.Infraestructure.Messaging.Consumers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,11 +15,23 @@ builder.Services.AddSwaggerGen(options =>
 {
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    options.IncludeXmlComments(xmlPath);
+    options.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
+
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Depot Service API",
+        Version = "v1",
+        Description = "The microservice is responsible for capturing orders and working for it.",
+        Contact = new OpenApiContact
+        {
+            Name = "Milton Argüello, Bustos Santiago, Diego Aguirre"
+        }
+    });
 });
 
 // Add HostedService RabbitConsumer
 builder.Services.AddHostedService<DummyCreatedConsumer>();
+builder.Services.AddHostedService<OrderIssuedConsumer>();
 
 // Obtener la cadena de conexión del appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -39,7 +53,7 @@ builder.Services.AddAuthentication("Bearer")
     });
 
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("DepotAcces", policy => policy.RequireRole("WarehouseManager, Operator, BillingManager"));
+    .AddPolicy("DepotAcces", policy => policy.RequireRole("DepotManager, DepotOperator, BillingManager"));
 
 var app = builder.Build();
 

@@ -1,10 +1,10 @@
-import { decodeToken } from "../utils/jwtUtils";
+import { getTokenPayload } from "../utils/jwtUtils";
 import { Link } from "react-router-dom";
 import { useAuth } from "../features/auth/context/useAuth";
 
 const Navbar = () => {
   const { token, logout, isAuthenticated } = useAuth();
-  const user = token ? decodeToken(token) : null;
+  const user = token ? getTokenPayload(token) : null;
 
   return (
     <nav className="bg-gray-800 text-white px-4 py-3 flex justify-between items-center">

@@ -11,6 +11,7 @@ const RegisterForm = () => {
 
   const handleSubmit = async (values: RegisterRequest) => {
     try {
+      console.log(values)
       await register(values);
       toast.success("Registro exitoso! ahora puedes iniciar sesión.")
         // Redireccionar al Login
@@ -35,7 +36,7 @@ const RegisterForm = () => {
         </h2>
 
         <Formik 
-          initialValues={{userName: "", name: "", lastName: "", email: "", password: "", confirmPassword: ""}}
+          initialValues={{userName: "", name: "", lastName: "", email: "", password: "", confirmPassword: "", role: ""}} // Campo Rol TEMPORAL
           validationSchema={registerValidationSchema}
           onSubmit={handleSubmit}
         >
@@ -103,6 +104,29 @@ const RegisterForm = () => {
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-red-200 sm:text-sm/6"
                   />
                   <ErrorMessage name="email" component="div" className="text-red-700 text-sm"/>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="role" className="block text-sm/6 font-medium text-gray-900">
+                  Rol
+                </label>
+                <div className="mt-2">
+                  <Field
+                    as="select"
+                    name="role"
+                    className="block w-full rounded-md bg-white px-2 py-2 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-red-200 sm:text-sm/6"
+                  >
+                    <option value="">Seleccionar rol</option>
+                    <option value="Admin">Admin</option>
+                    <option value="SalesStaff">Ventas</option>
+                    <option value="DepotManager">Encargado Depósito</option>
+                    <option value="DepotOperator">Operario Deposito</option>
+                    <option value="BillingManager">Encargado Facturación</option>
+                    <option value="Delivery">Logística</option>
+                    <option value="VerificationStaff">Verificación</option>
+                  </Field>
+                  <ErrorMessage name="role" component="div" className="text-red-700 text-sm" />
                 </div>
               </div>
 

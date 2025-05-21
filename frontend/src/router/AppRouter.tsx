@@ -1,4 +1,4 @@
-import {  Routes, Route } from "react-router-dom";
+import {  Routes, Route, Outlet } from "react-router-dom";
 import RegisterPage from "../features/auth/pages/RegisterPage";
 import LoginPage from "../features/auth/pages/LoginPage";
 import ProtectedRoute from "../features/auth/components/ProtectedRoute";
@@ -19,7 +19,7 @@ import EditOrderPage from "../features/sales/pages/orders/EditOrderPage";
 import EditCustomerPage from "../features/sales/pages/customers/EditCustomerPage";
 import CustomersPage from "../features/sales/pages/customers/CustomersPage";
 import { DashboardPage } from "../features/sales/pages/DashboardPage";
-import { DashboardReportsPage } from "../features/sales/pages/reports/DashboardReportsPage";
+import { DashboardReportsPage } from "../features/sales/pages/DashboardReportsPage";
 
 const AppRouter = () => {
   return (
@@ -31,19 +31,26 @@ const AppRouter = () => {
         <Route path="/" element={<HomePage/>}></Route>
 
 
-        <Route path="/sales" element={<DashboardPage/>}/>
-        <Route path="/sales/orders" element={<OrdersPage/>}/>
-        <Route path="/sales/orders/view/:id" element={<ViewOrderPage/>} />
-        <Route path="/sales/orders/registerOrder" element={<RegisterOrderPage/>}/>
-        <Route path="/sales/orders/update/:id" element={<EditOrderPage/>}/>
-        <Route path="/sales/customer/registerCustomer" element={<RegisterCustomerPage/>}/>
-        <Route path="/sales/customer/viewCustomer/:id" element={<ViewCustomerPage/>}/>
-        <Route path="/sales/customers" element={<CustomersPage/>}/>
-        <Route path="/sales/customer/update/:id" element={<EditCustomerPage/>}/>
-        <Route path="/sales/reports" element={<DashboardReportsPage/>}/>
-
-
-
+        <Route
+        path="/sales"
+        element={
+            <ProtectedRoute requiredRole="SalesStaff">
+            <Outlet />
+            </ProtectedRoute>
+        }
+        >
+        <Route path="home" element={<DashboardPage/>}/>
+        <Route path="orders" element={<OrdersPage />} />
+        <Route path="orders/view/:id" element={<ViewOrderPage />} />
+        <Route path="orders/registerOrder" element={<RegisterOrderPage />} />
+        <Route path="orders/update/:id" element={<EditOrderPage />} />
+        <Route path="customer/registerCustomer" element={<RegisterCustomerPage />} />
+        <Route path="customer/viewCustomer/:id" element={<ViewCustomerPage />} />
+        <Route path="customers" element={<CustomersPage />} />
+        <Route path="customer/update/:id" element={<EditCustomerPage />} />
+        <Route path="reports/dashboard" element={<DashboardReportsPage />} />
+        </Route>
+        
 
 
         <Route 
@@ -64,14 +71,6 @@ const AppRouter = () => {
             }>
         </Route>
 
-        <Route
-            path="/sales"
-            element = {
-                <ProtectedRoute requiredRole="SalesStaff">
-                    <DashboardPage/>
-                </ProtectedRoute>
-            }>
-        </Route>
 
         <Route
             path="/depot/warehousemanager"

@@ -12,10 +12,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\Handlers\" />
-    <Folder Include="Queries\Handlers\" />
-    <Folder Include="DTOs\" />
+    <Folder Include="DTOs\BillingManager\" />
+    <Folder Include="DTOs\DepotManager\Response\" />
+    <Folder Include="DTOs\DepotOperator\" />
     <Folder Include="Queries\" />
+    <Folder Include="Validators\BillingManager\" />
+    <Folder Include="Validators\DepotOperator\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
   </ItemGroup>
 
 </Project>

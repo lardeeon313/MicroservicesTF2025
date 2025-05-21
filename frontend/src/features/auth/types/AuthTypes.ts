@@ -19,7 +19,7 @@ export interface RegisterRequest {
     lastName: string;
     email: string;
     password: string;
-    confirmPassword: string;
+    role: string; // Temporal!
 }
 
 export interface RegisterResponse {
@@ -36,8 +36,9 @@ export interface authContextType {
 export interface JwtPayload {
     name: string;
     email: string;
-    role: string;
+    role: string | string[];
     exp: number;
+    key: string
 }
 
 export interface ProtectedRouteProps {

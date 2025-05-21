@@ -71,10 +71,10 @@
       ],
       "UpstreamPathTemplate": "/sales/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
-      /*"AuthenticationOptions": {
+      "AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []
-      }*/
+      }
     },
     {
       "DownstreamPathTemplate": "/api/{everything}",

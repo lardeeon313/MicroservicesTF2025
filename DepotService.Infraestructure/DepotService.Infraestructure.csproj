@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <Folder Include="Messaging\Publisher\" />
-    <Folder Include="Persistence\Repositories\" />
   </ItemGroup>
 
   <ItemGroup>

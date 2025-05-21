@@ -18,7 +18,7 @@ const cards = [
     title: "Crear Pedido",
     description: "Generá un nuevo pedido para un cliente.",
     icon: <FilePlus2 className="h-10 w-10 text-red-600" />,
-    link: "/sales/order/registerOrder",
+    link: "/sales/orders/registerOrder",
   },
   {
     title: "Crear Cliente",

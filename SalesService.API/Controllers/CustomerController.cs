@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SalesService.Application.Commands.Customers.Delete;
 using SalesService.Application.Commands.Customers.Register;
@@ -13,7 +14,7 @@ using SalesService.Application.Queries.Customers.GetPagedCustomers;
 
 namespace SalesService.API.Controllers
 {
-
+    [Authorize(Policy = "SalesOnly")]
     [ApiController]
     [Route("api/[controller]")]
     public class CustomerController(

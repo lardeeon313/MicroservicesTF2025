@@ -42,6 +42,26 @@ namespace IdentityService.Application.Commands.Register
                 return new CommandResult { Success = false, Message = $"Error al crear el usuario: {errorMessages}" };
             }
 
+            // Aplicamos logica para asignar el rol, que el usuario selecciono en el front. Temporalmente sera asi... hasta adminservice.
+            var selectedRole = command.Role;
+            var validRoles = new[]
+            {
+                "DepotManager", "DepotOperator", "BillingManager", "SalesStaff", "Delivery", "VerificationStaff", "Admin"
+            };
+
+            if (!validRoles.Contains(selectedRole))
+            {
+                return new CommandResult { Success = false, Message = $"Rol inválido: {selectedRole}" };
+            }
+
+            if (!await _roleManager.RoleExistsAsync(selectedRole))
+                await _roleManager.CreateAsync(new IdentityRole(selectedRole));
+
+            await _userManager.AddToRoleAsync(user, selectedRole);
+
+            return new CommandResult { Success = true, Message = "Usuario registrado exitosamente con rol Seleccionado." };
+
+            /*
             //Asigna un rol neutro por ahora...
             const string defaultRole = "Default";
 
@@ -51,7 +71,7 @@ namespace IdentityService.Application.Commands.Register
             await _userManager.AddToRoleAsync(user, defaultRole);
 
             return new CommandResult { Success = true, Message = "Usuario registrado exitosamente con rol default." };
-
+            */
         }
     }
 }
