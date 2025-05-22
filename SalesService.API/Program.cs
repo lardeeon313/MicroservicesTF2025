@@ -1,31 +1,111 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using SalesService.Application.Commands.Handlers.Interfaces;
-using SalesService.Application.Commands.Handlers;
 using SalesService.Infraestructure;
 using SalesService.Infraestructure.Messaging.Publisher;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Persistence.Repositories;
 using System.Reflection;
+using SalesService.Application.Commands.Handlers;
+using SalesService.Application.Commands.Customers.Delete;
 
+using SalesService.Application.Commands.Handlers.Interfaces;
+using SalesService.Application.Validators.Customer;
+using FluentValidation;
+using SalesService.Application.DTOs.Customer;
+using Microsoft.OpenApi.Models;
+using SalesService.Application.Queries.Customers.GetCustomerByEmail;
+using Microsoft.Extensions.DependencyInjection;
+using SalesService.Application.Commands.Customers.Update;
+using SalesService.Application.Commands.Customers.Register;
+using SalesService.Application.Queries.Customers.GetAllCustomers;
+using SalesService.Application.Queries.Customers.GetCustomer;
+using SalesService.API.Middleware;
+using SalesService.Application.Validators.Order;
+using SalesService.Application.DTOs.Order.Request;
+using SalesService.Application.Commands.Orders.Register;
+using SalesService.Application.Commands.Orders.Update;
+using SalesService.Application.Commands.Orders.Cancel;
+using SalesService.Application.Commands.Orders.Delete;
+using SalesService.Application.Queries.Orders.GetById;
+using SalesService.Application.Queries.Orders.GetByStatus;
+using SalesService.Application.Queries.Orders.GetByIdCustomer;
+using SalesService.Application.Queries.Orders.GetAll;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using SalesService.Application.Commands.Orders.UpdateStatus;
+using SalesService.Application.Queries.Orders.GetPagedOrders;
+using SalesService.Application.Queries.Customers.GetPagedCustomers;
+using SalesService.Infraestructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    options.IncludeXmlComments(xmlPath);
+    options.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
+
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Sales Service API",    
+        Version = "v1",
+        Description = "The microservice is responsible for capturing sales and issuing orders.",
+        Contact = new OpenApiContact
+        {
+            Name = "Milton Argüello, Bustos Santiago, Diego Aguirre"
+        }
+    });
 });
 
-// Add services Command Handlers
+// Add Service CustomerStatusUpdater
+/*        builder.Services.AddHostedService<CustomerStatusUpdaterService>();      */
+
+// Add FluentValidation
+builder.Services.AddScoped<IValidator<RegisterCustomerRequest>, RegisterCustomerValidator>();
+builder.Services.AddScoped<IValidator<UpdateCustomerRequest>, UpdateCustomerValidator>();
+builder.Services.AddScoped<IValidator<UpdateOrderRequest>, UpdateOrderValidator>();
+builder.Services.AddScoped<IValidator<RegisterOrderItemRequest>, RegisterOrderItemValidator>();
+builder.Services.AddScoped<IValidator<RegisterOrderRequest>, RegisterOrderValidator>();
+builder.Services.AddScoped<IValidator<UpdateOrderStatusRequest>, UpdateOrderStatusValidator>();
+    
+
+// Add services Command Handlers / Customer
+builder.Services.AddScoped<ICustomerDeleteCommandHandler, CustomerDeleteCommandHandler>();
+builder.Services.AddScoped<ICustomerUpdateCommandHandler, CustomerUpdateCommandHandler>();
+builder.Services.AddScoped<ICustomerRegisterCommandHandler, CustomerRegisterCommandHandler>();
+builder.Services.AddScoped<IGetAllCustomersQueryHandler, GetAllCustomersQueryHandler>();
+builder.Services.AddScoped<IGetCustomerByIdQueryHandler, GetCustomerByIdQueryHandler>();
+builder.Services.AddScoped<IGetCustomerByEmailQueryHandler, GetCustomerByEmailQueryHandler>();
+
+// Add services Command Handlers / Order 
+builder.Services.AddScoped<IGetPagedCustomersQueryHandler,  GetPagedCustomersQueryHandler>();
+builder.Services.AddScoped<IGetPagedOrdersQueryHandler,  GetPagedOrdersQueryHandler>();
+builder.Services.AddScoped<IRegisterOrderCommandHandler, RegisterOrderCommandHandler>();
+builder.Services.AddScoped<IUpdateOrderCommandHandler, UpdateOrderCommandHandler>();
+builder.Services.AddScoped<ICancelOrderCommandHandler, CancelOrderCommandHandler>();
+builder.Services.AddScoped<IDeleteOrderCommandHandler, DeleteOrderCommandHandler>();
+builder.Services.AddScoped<IUpdateOrderStatusCommandHandler, UpdateOrderStatusCommandHandler>();
+builder.Services.AddScoped<IGetOrderByIdQueryHandler, GetOrderByIdQueryHandler>();
+builder.Services.AddScoped<IGetOrderByStatusQueryHandler, GetOrderByStatusQueryHandler>();
+builder.Services.AddScoped<IGetOrderByIdCustomerQueryHandler, GetOrderByIdCustomerQueryHandler>();
+builder.Services.AddScoped<IGetAllOrdersQueryHandler, GetAllOrdersQueryHandler>();
+
+
+
 builder.Services.AddScoped<ICreateDummyCommandHandler, CreateDummyCommandHandler>();
 
 // Add services Repository and DbContext
 builder.Services.AddScoped<IDummyRepository, DummyRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 // Add RabbitMQ
 builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
@@ -35,7 +115,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 // Registrar el DbContext
 builder.Services.AddDbContext<SalesDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+        b => b.MigrationsAssembly("SalesService.API")));
 
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
@@ -48,8 +129,8 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
-builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("SalesOnly", policy => policy.RequireRole("SalesStaff"));
+//builder.Services.AddAuthorizationBuilder()
+ //   .AddPolicy("SalesOnly", policy => policy.RequireRole("SalesStaff"));
 
 var app = builder.Build();
 
@@ -70,17 +151,14 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     });
 }
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// Middleware global de excepciones
+app.UseMiddleware<ExceptionMiddleware>();
 
-app.UseAuthentication();
+// Seguridad
+//app.UseAuthentication();
+//app.UseAuthorization();
 
-app.UseAuthorization();
-
+// Ruteo
 app.MapControllers();
 
 app.Run();

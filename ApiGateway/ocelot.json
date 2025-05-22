@@ -6,7 +6,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "identityservice",
-          "Port": 5006
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/api/auth/{everything}",
@@ -18,7 +18,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "adminservice",
-          "Port": 5001
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/admin/{everything}",
@@ -34,7 +34,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "deliveryservice",
-          "Port": 5002
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/delivery/{everything}",
@@ -50,7 +50,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "depotservice",
-          "Port": 5003
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/depot/{everything}",
@@ -66,15 +66,15 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "salesservice",
-          "Port": 5004
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/sales/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      "AuthenticationOptions": {
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      /*"AuthenticationOptions": {
         "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []
-      }
+      }*/
     },
     {
       "DownstreamPathTemplate": "/api/{everything}",
@@ -82,7 +82,7 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "verificationservice",
-          "Port": 5005
+          "Port": 8080
         }
       ],
       "UpstreamPathTemplate": "/verification/{everything}",

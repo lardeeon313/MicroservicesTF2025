@@ -1,5 +1,0 @@
-#Border:hover{
-    border: 2px solid #007bff; /* cambia el color y grosor del borde */
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* efecto de resplandor */
-    transition: 1s;
-}
