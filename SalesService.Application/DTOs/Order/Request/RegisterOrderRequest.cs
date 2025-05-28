@@ -21,5 +21,8 @@ namespace SalesService.Application.DTOs.Order.Request
 
         [MaxLength(220)]
         public string? DeliveryDetail { get; set; }
+        [Required]
+        public string CreatedByUserId { get; set; } = string.Empty;
+
     }
 }

@@ -45,6 +45,7 @@ export interface RegisterOrderRequest {
   items: RegisterOrderItemRequest[];
   deliveryDate?: string; // ISO date string
   deliveryDetail?: string;
+  createdByUserId?: string;  
 }
 
 export interface DeleteOrderRequest {
@@ -136,4 +137,11 @@ export interface OrderDetailResponse {
     productBrand: string;
     quantity: number;
   }[];
+}
+
+export interface SalesPerfomanceDto {
+  salespersonName: string;
+  totalOrders: number;
+  totalUnitsSold: number;
+  lastOrderDate: string;
 }

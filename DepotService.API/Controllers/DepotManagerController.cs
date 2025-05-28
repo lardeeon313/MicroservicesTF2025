@@ -1,4 +1,5 @@
 ﻿using DepotService.Application.Commands.DepotManager.AssignOrder;
+using DepotService.Application.Commands.DepotManager.CreateTeam;
 using DepotService.Application.DTOs.DepotManager.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,9 +10,11 @@ namespace DepotService.API.Controllers
     [ApiController]
     [Route("api/depotmanager")]
     public class DepotManagerController(
-        IAssignOrderCommandHandler AssignOrderCommandHandler
+        IAssignOrderCommandHandler AssignOrderCommandHandler,
+        ICreateTeamCommandHandler CreateTeamCommandHandler
         ) : ControllerBase
     {
+        private readonly ICreateTeamCommandHandler _CreateTeamCommandHandler = CreateTeamCommandHandler;
         private readonly IAssignOrderCommandHandler _AssignOrderCommandHandler = AssignOrderCommandHandler;
 
         /// <summary>
@@ -27,11 +30,30 @@ namespace DepotService.API.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> AssignOrder(int orderId, [FromBody] AssignOperatorRequest request)
+        public async Task<IActionResult> AssignOperator(int orderId, [FromBody] AssignOperatorRequest request)
         {
-            var command = new AssignOrderCommand(orderId, request.OperatorId, request.OperatorName);
+            var command = new AssignOrderCommand(orderId, request.OperatorUserId);
             await _AssignOrderCommandHandler.HandleAsync(command);
             return Ok();
+        }
+
+        /// <summary>
+        /// Crea un equipo de operarios
+        /// </summary>
+        /// <param name="request">Datos del Equipo</param>
+        /// <returns>200 OK</returns>
+        /// <response code="200">Se creo correctamente el equipo</response>
+        /// <response code="400">Datos inválidos</response>
+        /// <response code="404"></response>
+        [HttpPost("create-team")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> CreateTeam([FromBody] CreateTeamRequest request)
+        {
+            var command = new CreateTeamCommand(request.TeamName);
+            var result = await _CreateTeamCommandHandler.HandleAsync(command);
+            return Ok(result);
         }
 
     }

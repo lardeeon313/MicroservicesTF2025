@@ -13,8 +13,8 @@
 
   <ItemGroup>
     <Folder Include="DTOs\BillingManager\" />
-    <Folder Include="DTOs\DepotManager\Response\" />
-    <Folder Include="DTOs\DepotOperator\" />
+    <Folder Include="DTOs\DepotOperator\Request\" />
+    <Folder Include="DTOs\DepotOperator\Response\" />
     <Folder Include="Queries\" />
     <Folder Include="Validators\BillingManager\" />
     <Folder Include="Validators\DepotOperator\" />

@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import logoVerona from "../../../assets/logo-verona.png";
-import { getRoleFromToken, getTokenPayload } from "../../../utils/jwtUtils";
+import { getRoleFromToken } from "../../../utils/jwtUtils";
 
 
 const LoginForm = () => {
@@ -20,17 +20,12 @@ const LoginForm = () => {
     loginContext(result.token);
 
     const role = getRoleFromToken(result.token); // << ya devuelve string | null
-
-    const payload = getTokenPayload(result.token); // en lugar de getRoleFromToken
-    console.log("Payload decodificado:", payload);
-
     if (!role) {
       toast.error("Rol no encontrado en el token");
       return navigate("/");
     }
 
     toast.success("Inicio de sesión exitoso!");
-    console.log("ROL:", role);
 
     switch (role) {
       case "Admin":

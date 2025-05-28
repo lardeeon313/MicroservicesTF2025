@@ -30,7 +30,7 @@ const cards = [
     title: "Reportes",
     description: "Visualizá reportes e informes detallados.",
     icon: <BarChart2 className="h-10 w-10 text-red-600" />,
-    link: "/sales/reports",
+    link: "/sales/reports/dashboard",
   },
 ];
 

@@ -31,6 +31,13 @@ namespace SalesService.Infraestructure
                     .HasConversion<string>();
             });
 
+            modelBuilder.Entity<Order>(entity =>
+            {
+                entity.Property(o => o.CreatedByUserId)
+                    .IsRequired()
+                    .HasMaxLength(450); // Como el guid del user.
+            });
+
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.Customer)
                 .WithMany() 

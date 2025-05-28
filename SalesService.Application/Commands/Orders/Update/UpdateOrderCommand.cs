@@ -11,6 +11,7 @@ namespace SalesService.Application.Commands.Orders.Update
     {
         public int OrderId { get; }
         public UpdateOrderRequest Request { get; }
+         
 
         public UpdateOrderCommand(int orderId, UpdateOrderRequest request)
         {

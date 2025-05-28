@@ -34,6 +34,7 @@ export interface authContextType {
 }
 
 export interface JwtPayload {
+    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier": string;
     name: string;
     email: string;
     role: string | string[];
@@ -44,4 +45,10 @@ export interface JwtPayload {
 export interface ProtectedRouteProps {
   children: JSX.Element;
   requiredRole?: string;
+}
+
+export interface SalesStaffDto {
+  id: string;
+  firstName: string;
+  lastName: string;
 }

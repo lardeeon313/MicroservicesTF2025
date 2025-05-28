@@ -1,6 +1,7 @@
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,14 +14,23 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // JWT Auth (Para validar los tokens que provengan de IdentityService)
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer("Bearer", options =>
+builder.Services.AddAuthentication("JwtBearer")
+    .AddJwtBearer("JwtBearer", options =>
     {
-        options.Authority = "http://identityservice:8080"; // dentro del docker
+        // options.Authority = "http://identityservice:8080"; // dentro del docker
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateAudience = false
+            //ValidateAudience = false,
+            //ValidateIssuer = true,
+            // = "IdentityService", // ← Este debe coincidir con el "iss" del token
+            ValidateIssuer = true,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
         };
     });
 
@@ -47,6 +57,16 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowFrontend");
+
+app.Use(async (context, next) =>
+{
+    var token = context.Request.Headers["Authorization"].FirstOrDefault();
+    if (!string.IsNullOrEmpty(token))
+        Console.WriteLine($"[Gateway] Token recibido: {token}");
+    else
+        Console.WriteLine("[Gateway] No se recibió token.");
+    await next();
+});
 
 app.UseAuthentication();
 

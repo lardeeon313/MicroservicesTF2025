@@ -7,6 +7,8 @@ import { CustomerResponse } from "../../types/CustomerTypes";
 import { registerOrder } from "../../services/OrderService";
 import { getAllCustomers } from "../../services/CustomerService";
 import { handleFormikError } from "../../../../components/ErrorHandler";
+import { useAuth } from "../../../auth/context/useAuth";
+import { getUserIdFromToken } from "../../../../utils/jwtUtils";
 
 const initialValues: RegisterOrderRequest = {
   customerId: "",
@@ -19,6 +21,9 @@ export default function RegisterOrderPage() {
   const [customers, setCustomers] = useState<CustomerResponse[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const { token } = useAuth();
+  const userId = token ? getUserIdFromToken(token) : null;
+
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -37,7 +42,11 @@ export default function RegisterOrderPage() {
   const handleRegisterOrder = async (values: RegisterOrderRequest) => {
     setIsSubmitting(true);
     try {
-      await registerOrder(values);
+      const orderToSend: RegisterOrderRequest = {
+        ...values,
+        createdByUserId: userId!, // pasamos el ID del usuario autenticado
+      }
+      await registerOrder(orderToSend);
       toast.success("Orden registrada con éxito!");
       navigate("/sales/orders");
     } catch (error) {

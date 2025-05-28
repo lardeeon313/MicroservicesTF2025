@@ -13,6 +13,7 @@ using SalesService.Application.Queries.Orders.GetById;
 using SalesService.Application.Queries.Orders.GetByIdCustomer;
 using SalesService.Application.Queries.Orders.GetByStatus;
 using SalesService.Application.Queries.Orders.GetPagedOrders;
+using SalesService.Application.Queries.Orders.GetSalesPerfomanceReport;
 using SalesService.Application.Validators.Order;
 
 namespace SalesService.API.Controllers
@@ -32,6 +33,7 @@ namespace SalesService.API.Controllers
         IGetAllOrdersQueryHandler getAllOrdersQueryHandler,
         IGetOrderByIdCustomerQueryHandler getOrderByIdCustomerQueryHandler,
         IGetPagedOrdersQueryHandler getPagedOrdersQueryHandler,
+        IGetSalesPerfomanceReportQueryHandler getSalesPerfomanceReportQueryHandler,
         IValidator<UpdateOrderStatusRequest> updateOrderStatusValidator,
         IValidator<RegisterOrderRequest> registerOrderValidator,
         IValidator<RegisterOrderItemRequest> registerOrderItemValidator,
@@ -47,6 +49,7 @@ namespace SalesService.API.Controllers
         private readonly IGetOrderByIdQueryHandler _getOrderByIdQueryHandler = getOrderByIdQueryHandler;
         private readonly IGetOrderByStatusQueryHandler _getOrderByStatusQueryHandler = getOrderByStatusQueryHandler;
         private readonly IGetAllOrdersQueryHandler _getAllOrdersQueryHandler = getAllOrdersQueryHandler;
+        private readonly IGetSalesPerfomanceReportQueryHandler _getSalesPerfomanceReportQueryHandler = getSalesPerfomanceReportQueryHandler;
         private readonly IGetOrderByIdCustomerQueryHandler _getOrderByIdCustomerQueryHandler = getOrderByIdCustomerQueryHandler;
         private readonly IValidator<UpdateOrderStatusRequest> _updateOrderStatusValidator = updateOrderStatusValidator;
         private readonly IValidator<RegisterOrderRequest> _registerOrderValidator = registerOrderValidator;
@@ -69,7 +72,7 @@ namespace SalesService.API.Controllers
                 return BadRequest(errors);
             }
 
-            var command = new RegisterOrderCommand(request.CustomerId, request.Items, request.DeliveryDate, request.DeliveryDetail);
+            var command = new RegisterOrderCommand(request.CustomerId, request.Items, request.DeliveryDate, request.DeliveryDetail, request.CreatedByUserId);
             var result = await _registerOrderCommandHandler.HandleAsync(command);
             return Ok(result);
 
@@ -104,7 +107,7 @@ namespace SalesService.API.Controllers
         [HttpPut("updateStatus/{id:int}")]
         [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateStatus (int id, UpdateOrderStatusRequest request)
+        public async Task<IActionResult> UpdateStatus(int id, UpdateOrderStatusRequest request)
         {
             var validation = await _updateOrderStatusValidator.ValidateAsync(request);
             if (!validation.IsValid)
@@ -116,9 +119,9 @@ namespace SalesService.API.Controllers
             if (id != request.OrderId)
                 return BadRequest(new { error = "Order ID in the URL does not match the Order ID in the request body." });
 
-            var command = new UpdateOrderStatusCommand(id,request);
+            var command = new UpdateOrderStatusCommand(id, request);
             var result = await _updateOrderStatusCommandHandler.HandleAsync(command);
-            return Ok(new {message = $"Order Status change successfully.{result}"} );
+            return Ok(new { message = $"Order Status change successfully.{result}" });
 
         }
 
@@ -160,7 +163,7 @@ namespace SalesService.API.Controllers
         /// </summary>
         [HttpGet("{id:int}")]
         [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetById (int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var query = new GetOrderByIdQuery(id);
             var result = await _getOrderByIdQueryHandler.Handle(query);
@@ -185,7 +188,7 @@ namespace SalesService.API.Controllers
         /// </summary>
         [HttpGet("status/{status}")]
         [ProducesResponseType(typeof(IEnumerable<OrderDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetByStatus (string status)
+        public async Task<IActionResult> GetByStatus(string status)
         {
             var result = await _getOrderByStatusQueryHandler.HandleAsync(status);
             return Ok(result);
@@ -212,6 +215,13 @@ namespace SalesService.API.Controllers
             return Ok(result);
         }
 
-
+        /// <summary> Obtenemos los pedidos ordenados por creador (usuario) - perfomance</summary>
+        [HttpGet("report/performance")]
+        [ProducesResponseType(typeof(IEnumerable<SalesPerfomanceDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetSalesPerformanceReport()
+        {
+            var result = await _getSalesPerfomanceReportQueryHandler.Handle();
+            return Ok(result);
+        }
     }
 }

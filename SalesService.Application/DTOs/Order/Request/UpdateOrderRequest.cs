@@ -20,5 +20,6 @@ namespace SalesService.Application.DTOs.Order.Request
         public string? PaymentReceipt { get; set; }
         public PaymentType? PaymentType { get; set; }
         public OrderStatus Status { get; set; }
+        public string? ModifiedByUserId { get; set; }
     }
 }

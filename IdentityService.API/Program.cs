@@ -16,6 +16,7 @@ using IdentityService.Application.Commands.Register;
 using IdentityService.Application.DTOs;
 using IdentityService.Application.Commands.Login;
 using IdentityService.Application.Queries.GetAllOperators;
+using IdentityService.Application.Queries.GetAllSalesStaffs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,6 +89,7 @@ builder.Services.AddDbContext<IdentityDbContext>(options =>
 builder.Services.AddScoped<IRegisterCommandHandler, RegisterCommandHandler>();
 builder.Services.AddScoped<ILoginCommandHandler, LoginCommandHandler>();
 builder.Services.AddScoped<IGetAllOperatorsQueryHandler,  GetAllOperatorsQueryHandler>();
+builder.Services.AddScoped<IGetAllSalesStaffsQueryHandler, GetAllSalesStaffsQueryHandler>();
 
 
 var app = builder.Build();

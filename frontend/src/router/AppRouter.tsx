@@ -20,6 +20,11 @@ import EditCustomerPage from "../features/sales/pages/customers/EditCustomerPage
 import CustomersPage from "../features/sales/pages/customers/CustomersPage";
 import { DashboardPage } from "../features/sales/pages/DashboardPage";
 import { DashboardReportsPage } from "../features/sales/pages/DashboardReportsPage";
+import CustomerReportPage from "../features/sales/pages/reports/CustomerReportPage";
+import CustomerSatisfactionPage from "../features/sales/pages/reports/CustomerSatisfactionReportPage";
+import CustomerInactiveReportPage from "../features/sales/pages/reports/CustomerInactiveReportPage";
+import ModifiedCanceledOrdersPage from "../features/sales/pages/reports/ModifiedCanceledOrdersPage";
+import { SalesPerfomanceReportPage } from "../features/sales/pages/reports/SalesPerfomanceReportPage";
 
 const AppRouter = () => {
   return (
@@ -49,6 +54,11 @@ const AppRouter = () => {
         <Route path="customers" element={<CustomersPage />} />
         <Route path="customer/update/:id" element={<EditCustomerPage />} />
         <Route path="reports/dashboard" element={<DashboardReportsPage />} />
+        <Route path="reports/customersReport" element={<CustomerReportPage/>}/>
+        <Route path="reports/customerSatisfactionReport" element={<CustomerSatisfactionPage/>}/>
+        <Route path="reports/customerStatusReport" element={<CustomerInactiveReportPage />}/>
+        <Route path="reports/modifiedCanceledReport" element={<ModifiedCanceledOrdersPage/>}/>
+        <Route path="reports/salesPerfomance" element={<SalesPerfomanceReportPage/>}/>
         </Route>
         
 

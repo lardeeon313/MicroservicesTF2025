@@ -21,10 +21,10 @@ namespace DepotService.Application.Commands.DepotManager.AssignOrder
             if (order == null)
                 throw new KeyNotFoundException($"Order with ID {command.DepotOrderId} not found.");
 
-            order.AssignToOperator(command.OperatorId, command.OperatorName);
+            order.AssignToOperator(command.OperatorUserId);
 
             await _context.SaveChangesAsync();
-            _logger.LogInformation("✅ Orden {Id} asignada al operador {Operator}", order.DepotOrderId, command.OperatorName);
+            _logger.LogInformation("✅ Orden {Id} asignada al operador {Operator}", order.DepotOrderId, order.AssignedOperatorId);
 
         }
     }

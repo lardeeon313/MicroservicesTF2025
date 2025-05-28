@@ -14,7 +14,7 @@ using SalesService.Application.Queries.Customers.GetPagedCustomers;
 
 namespace SalesService.API.Controllers
 {
-    [Authorize(Policy = "SalesOnly")]
+    [Authorize(Roles = "SalesStaff")]
     [ApiController]
     [Route("api/[controller]")]
     public class CustomerController(

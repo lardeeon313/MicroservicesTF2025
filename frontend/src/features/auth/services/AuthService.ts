@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from "../types/AuthTypes";
+import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, SalesStaffDto } from "../types/AuthTypes";
 import API from "../../../api/axios";
 
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
@@ -25,6 +25,18 @@ export const register = async (userData: RegisterRequest): Promise<RegisterRespo
         throw new Error("An unexpected error occurred");
     }
 };
+
+export const fetchSalesStaffs = async (): Promise<SalesStaffDto[]> => {
+    try {
+        const response = await API.get<SalesStaffDto[]>("/api/auth/salesstaffs");
+        return response.data;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error(error.response?.data?.message || "No se pudieron obtener los encargados de ventas.");
+        }
+            throw new Error("Error inesperado al obtener los encargados de ventas.");
+    }
+}
 
 
 

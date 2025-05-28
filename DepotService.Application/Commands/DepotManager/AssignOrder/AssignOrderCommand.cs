@@ -9,15 +9,11 @@ namespace DepotService.Application.Commands.DepotManager.AssignOrder
     public class AssignOrderCommand
     {
         public int DepotOrderId { get; set; }
-        public Guid OperatorId { get; set; }
-        public string OperatorName { get; set; } = null!;
-
-        public AssignOrderCommand(int depotOrderId, Guid operatorId, string operatorName)
+        public Guid OperatorUserId { get; set; }
+        public AssignOrderCommand(int depotOrderId, Guid operatorId)
         {
             DepotOrderId = depotOrderId;
-            OperatorId = operatorId;
-            OperatorName = operatorName;
-
+            OperatorUserId = operatorId;
         }
     }
 }

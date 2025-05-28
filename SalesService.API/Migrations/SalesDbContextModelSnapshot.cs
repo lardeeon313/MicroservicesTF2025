@@ -68,6 +68,11 @@ namespace SalesService.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("varchar(450)");
+
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("char(36)");
 

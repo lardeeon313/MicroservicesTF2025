@@ -26,6 +26,7 @@ namespace SalesService.Application.Commands.Orders.Update
             existingOrder.DeliveryDetail = command.Request.DeliveryDetail;
             existingOrder.ModifiedStatusDate = DateTime.UtcNow;
             existingOrder.Status = command.Request.Status;
+            existingOrder.CreatedByUserId = command.Request.ModifiedByUserId ?? existingOrder.CreatedByUserId;
 
             // Actualizar Items
             foreach (var itemDto in command.Request.Items)

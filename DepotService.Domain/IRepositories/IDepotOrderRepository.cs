@@ -12,7 +12,7 @@ namespace DepotService.Domain.IRepositories
     /// </summary>
     public interface IDepotOrderRepository
     {
-        Task AddAsync(DepotOrder order);
-        Task<DepotOrder?> GetByIdAsync(int depotOrderId);
+        Task AddAsync(DepotOrderEntity order);
+        Task<DepotOrderEntity?> GetByIdAsync(int depotOrderId);
     }
 }

@@ -23,6 +23,7 @@ namespace SalesService.Domain.IRepositories
         Task AttachReceiptAsync(int orderId, string receiptBase64);
         Task<(List<Order> Orders, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
         Task<DateTime?> GetLastOrderDateByCustomerId(Guid customerId);
+        Task<IEnumerable<Order>> GetAllWithItemsAsync();
 
 
     }

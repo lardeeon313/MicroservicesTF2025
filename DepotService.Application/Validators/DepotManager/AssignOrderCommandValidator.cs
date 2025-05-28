@@ -14,10 +14,7 @@ namespace DepotService.Application.Validators.DepotManager
         public AssignOrderCommandValidator()
         {
             RuleFor(x => x.DepotOrderId).NotEmpty().WithMessage("La orden de depósito es obligatoria.");
-            RuleFor(x => x.OperatorId).NotEmpty().WithMessage("El operador es obligatorio.");
-            RuleFor(x => x.OperatorName)
-                .NotEmpty().WithMessage("El nombre del operador es obligatorio.")
-                .MaximumLength(100).WithMessage("El nombre no puede superar los 100 caracteres.");
+            RuleFor(x => x.OperatorUserId).NotEmpty().WithMessage("El operador es obligatorio.");
         }
     }
 }

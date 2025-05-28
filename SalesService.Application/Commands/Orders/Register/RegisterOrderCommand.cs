@@ -17,13 +17,15 @@ namespace SalesService.Application.Commands.Orders.Register
         public List<RegisterOrderItemRequest> Items { get; set; } = new();
         public string? DeliveryDetail { get; set; }
         public DateTime? DeliveryDate { get; set; }
+        public string CreatedByUserId { get; set; } = string.Empty;
 
-        public RegisterOrderCommand(Guid customerId, List<RegisterOrderItemRequest> items,DateTime? deliverDate, string? deliveryDetail)
+        public RegisterOrderCommand(Guid customerId, List<RegisterOrderItemRequest> items,DateTime? deliverDate, string? deliveryDetail, string createdByUserId)
         {
             CustomerId = customerId;
             DeliveryDetail = deliveryDetail;
             DeliveryDate = deliverDate;
             Items = items;
+            CreatedByUserId = createdByUserId;
         }
             
     }

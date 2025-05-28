@@ -5,8 +5,6 @@ import { JwtPayload } from "../features/auth/types/AuthTypes";
 export const getRoleFromToken = (token: string): string | null => {
   try {
     const decoded = jwtDecode<Record<string, unknown>>(token);
-
-    // Intentar primero la claim que viste en el payload real
     const roleKeys = [
       "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
       "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role",
@@ -40,3 +38,17 @@ export const getTokenPayload = (token: string): JwtPayload | null => {
     return null;
   }
 };
+
+
+export const getUserIdFromToken = (token: string): string | null => {
+  if (!token) return null;
+  try {
+    const decoded = jwtDecode<JwtPayload>(token);
+    return decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] || null;
+  } catch (error) {
+    console.error("Token inválido:", error);
+    return null;
+  }
+};
+
+

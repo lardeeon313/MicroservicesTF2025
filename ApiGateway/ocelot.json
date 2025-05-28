@@ -24,8 +24,9 @@
       "UpstreamPathTemplate": "/admin/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
-        "AllowedScopes": []
+        "AuthenticationProviderKey": "JwtBearer",
+        "AllowedScopes": [],
+        "Authority": "http://identityservice:8080"
       }
     },
     {
@@ -40,8 +41,9 @@
       "UpstreamPathTemplate": "/delivery/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
-        "AllowedScopes": []
+        "AuthenticationProviderKey": "JwtBearer",
+        "AllowedScopes": [],
+        "Authority": "http://identityservice:8080"
       }
     },
     {
@@ -56,8 +58,9 @@
       "UpstreamPathTemplate": "/depot/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
-        "AllowedScopes": []
+        "AuthenticationProviderKey": "JwtBearer",
+        "AllowedScopes": [],
+        "Authority": "http://identityservice:8080"
       }
     },
     {
@@ -70,10 +73,11 @@
         }
       ],
       "UpstreamPathTemplate": "/sales/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
-        "AllowedScopes": []
+        "AuthenticationProviderKey": "JwtBearer",
+        "AllowedScopes": [],
+        "Authority": "http://identityservice:8080"
       }
     },
     {
@@ -88,12 +92,13 @@
       "UpstreamPathTemplate": "/verification/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
-        "AllowedScopes": []
+        "AuthenticationProviderKey": "JwtBearer",
+        "AllowedScopes": [],
+        "Authority": "http://identityservice:8080"
       }
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "http://localhost:8080"
+    "BaseUrl": "http://localhost:5000"
   }
 }

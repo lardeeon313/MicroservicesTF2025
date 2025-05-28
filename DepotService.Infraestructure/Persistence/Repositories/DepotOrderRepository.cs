@@ -13,14 +13,21 @@ namespace DepotService.Infraestructure.Persistence.Repositories
     {
         private readonly DepotDbContext _context = context;
 
-        public async Task AddAsync(DepotOrder order)
+        public async Task AddAsync(DepotOrderEntity order)
         {
             await _context.DepotOrders.AddAsync(order);
         }
 
-        public async Task<DepotOrder?> GetByIdAsync(int depotOrderId)
+        public async Task<DepotOrderEntity?> GetByIdAsync(int depotOrderId)
         {
             return await _context.DepotOrders.FindAsync(depotOrderId);
+        }
+
+        public async Task<IEnumerable<DepotOrderEntity?>> GetAllAsync()
+        {
+            return await _context.DepotOrders
+                .Include(x => x.Items)
+                .ToListAsync();
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DepotService.Domain.Entities
 {
-    public class DepotOrderItem
+    public class DepotOrderItemEntity
     {
         public int Id { get; set; }
         public int DepotOrderId { get; set; }

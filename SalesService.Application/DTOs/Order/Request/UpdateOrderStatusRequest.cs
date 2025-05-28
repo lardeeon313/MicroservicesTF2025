@@ -14,6 +14,7 @@ namespace SalesService.Application.DTOs.Order.Request
         public int OrderId { get; set; }
         [Required]
         public OrderStatus Status { get; set; }
+        public string? ModifiedByUserId { get; set; }
 
     }
 }

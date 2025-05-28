@@ -1,5 +1,5 @@
 import API from "../../../api/axios";
-import { Order } from "../types/OrderTypes";
+import { Order, SalesPerfomanceDto } from "../types/OrderTypes";
 import {
    UpdateOrderRequest, 
    UpdateOrderStatusRequest, 
@@ -81,3 +81,9 @@ export const getPagedOrders = async (pageNumber = 1, pageSize = 20): Promise<{
   const response = await API.get(`/sales/Order/paged?pageNumber=${pageNumber}&pageSize=${pageSize}`);
   return response.data;
 };
+
+// Obtener los pedidos ordenados por userId para el reporte PerfomanceSales
+export const getSalesPerfomance = async (): Promise<SalesPerfomanceDto[]> => {
+  const response = await API.get("/sales/Order/report/performance");
+  return response.data;
+}

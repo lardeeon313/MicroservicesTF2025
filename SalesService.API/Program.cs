@@ -36,6 +36,10 @@ using SalesService.Application.Commands.Orders.UpdateStatus;
 using SalesService.Application.Queries.Orders.GetPagedOrders;
 using SalesService.Application.Queries.Customers.GetPagedCustomers;
 using SalesService.Infraestructure.Services;
+using System.Security.Claims;
+using System.Text;
+using SalesService.Application.Queries.Orders.GetSalesPerfomanceReport;
+using SalesService.Application.Services.IdentityServiceClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -97,9 +101,13 @@ builder.Services.AddScoped<IGetOrderByIdQueryHandler, GetOrderByIdQueryHandler>(
 builder.Services.AddScoped<IGetOrderByStatusQueryHandler, GetOrderByStatusQueryHandler>();
 builder.Services.AddScoped<IGetOrderByIdCustomerQueryHandler, GetOrderByIdCustomerQueryHandler>();
 builder.Services.AddScoped<IGetAllOrdersQueryHandler, GetAllOrdersQueryHandler>();
+builder.Services.AddScoped<IGetSalesPerfomanceReportQueryHandler,  GetSalesPerfomanceReportQueryHandler>();
 
+// Registramos el servicio encargado para consultar el endpoint en identityService
+builder.Services.AddScoped<IIdentityServiceClient, IdentityServiceClient>();
+builder.Services.AddHttpContextAccessor(); // Necesario para acceder al contexto HTTP
 
-
+// Add services Command Handlers / Dummy
 builder.Services.AddScoped<ICreateDummyCommandHandler, CreateDummyCommandHandler>();
 
 // Add services Repository and DbContext
@@ -118,26 +126,38 @@ builder.Services.AddDbContext<SalesDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
         b => b.MigrationsAssembly("SalesService.API")));
 
-builder.Services.AddAuthentication("Bearer") // Registra el esquema "Bearer"
+var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+
+// Configuración de autenticación JWT
+builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
-        // Dirección del servicio que emite los tokens
-        options.Authority = "http://identityservice:8080";
-
-        // En desarrollo, desactivamos la exigencia de HTTPS
         options.RequireHttpsMetadata = false;
-
-        // No validamos "audience" porque no la usamos en nuestros tokens
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateAudience = false
+            ValidateIssuer = true,
+            ValidIssuer = jwtIssuer,
+            ValidateAudience = false,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey!)),
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
         };
     });
 
+// Configuración de autorización
 builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("SalesOnly", policy => policy.RequireRole("SalesStaff"));
+    .AddPolicy("SalesOnly", policy =>
+        policy.RequireClaim("role", "SalesStaff"));
 
-var app = builder.Build();
+// Creamos un Http Client IdentityService para consultar los usuarios con role SalesStaff
+builder.Services.AddHttpClient("IdentityService", client =>
+{
+    client.BaseAddress = new Uri("http://identityservice:8080/api/auth/"); // Ajustá al puerto y path correcto
+});
+
+var app = builder.Build();  
 
 // Migrar automaticamente, cada vez que levante el servicio.
 using (var scope = app.Services.CreateScope())

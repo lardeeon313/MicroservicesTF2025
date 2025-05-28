@@ -4,6 +4,7 @@ using IdentityService.Application.Commands.Register;
 using IdentityService.Application.DTOs;
 using IdentityService.Application.Interfaces;
 using IdentityService.Application.Queries.GetAllOperators;
+using IdentityService.Application.Queries.GetAllSalesStaffs;
 using IdentityService.Application.Services.Interfaces;
 using IdentityService.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -19,6 +20,7 @@ namespace IdentityService.API.Controllers
         ILoginCommandHandler loginCommandHandler,
         IRegisterCommandHandler registerCommandHandler,
         IGetAllOperatorsQueryHandler getAllOperatorsQueryHandler,
+        IGetAllSalesStaffsQueryHandler getAllSalesStaffsQueryHandler,
         IValidator<RegisterRequest> registerValidator,
         IValidator<LoginRequest> loginValidator) : Controller
     {
@@ -27,6 +29,7 @@ namespace IdentityService.API.Controllers
         private readonly IValidator<RegisterRequest> _registerValidator = registerValidator;
         private readonly IRegisterCommandHandler _registerCommandHandler = registerCommandHandler;
         private readonly ILoginCommandHandler _loginCommandHandler = loginCommandHandler;
+        private readonly IGetAllSalesStaffsQueryHandler _getAllSalesStaffsQueryHandler = getAllSalesStaffsQueryHandler;
 
 
         /// <summary>
@@ -110,6 +113,22 @@ namespace IdentityService.API.Controllers
         {
             var operators = await _getAllOperatorsQueryHandler.HandleAsync();
             return Ok(operators);
+        }
+
+        /// <summary>
+        /// Devuelve todos los usuarios con rol "SalesStaff"
+        /// </summary>
+        /// <returns>Lista de Encargados de Ventas</returns>
+        /// <response code="200">Lista obtenida exitosamente</response>
+        /// <response code="401">No autorizado</response>
+        [HttpGet("salesstaffs")]
+        [Authorize(Roles = "SalesStaff, Admin")]
+        [ProducesResponseType(typeof(List<OperatorDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetAllSalesStaffs()
+        {
+            var SalesStaffs = await _getAllSalesStaffsQueryHandler.HandleAsync();
+            return Ok(SalesStaffs);
         }
     }
 }

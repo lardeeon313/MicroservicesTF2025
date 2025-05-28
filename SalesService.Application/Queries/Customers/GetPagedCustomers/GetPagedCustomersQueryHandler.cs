@@ -30,6 +30,7 @@ namespace SalesService.Application.Queries.Customers.GetPagedCustomers
                     Email = c.Email,
                     PhoneNumber = c.PhoneNumber,
                     Address = c.Address,
+                    Status = c.Status.ToString()
                 }).ToList()
             };
         }

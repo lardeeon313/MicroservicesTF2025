@@ -9,13 +9,15 @@ namespace DepotService.Application.DTOs.DepotManager.Request
 {
     public class AssignOperatorRequest
     {
-        /// <summary>ID del operador asignado</summary>
-        [Required]
-        public Guid OperatorId { get; set; }
+        /// <summary>
+        /// ID del equipo al que se asigna el operador.
+        /// </summary>
+        public int TeamId { get; set; }
 
-        /// <summary>Nombre completo del operador</summary>
-        [Required]
-        [StringLength(100)]
-        public string OperatorName { get; set; } = string.Empty;
+        /// <summary>
+        /// ID del operador.
+        /// </summary>
+        public Guid OperatorUserId { get; set; }
+
     }
 }

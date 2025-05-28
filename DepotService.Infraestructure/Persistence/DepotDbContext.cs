@@ -11,6 +11,17 @@ namespace DepotService.Infraestructure
 {
     public class DepotDbContext(DbContextOptions<DepotDbContext> options) : DbContext(options)
     {
-        public DbSet<DepotOrder> DepotOrders { get; set; }
+        public DbSet<DepotOrderEntity> DepotOrders { get; set; }
+        public DbSet<DepotTeamEntity> DepotTeams { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<DepotTeamEntity>(team =>
+            {
+                team.HasKey(t => t.Id);
+                team.Property(t => t.TeamName).IsRequired().HasMaxLength(100);
+
+            });
+        }
     }
 }

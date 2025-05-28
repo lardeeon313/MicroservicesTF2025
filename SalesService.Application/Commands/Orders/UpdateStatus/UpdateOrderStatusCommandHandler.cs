@@ -36,10 +36,12 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
             // Actualizamos el Status de la orden
             existingOrder.Status = command.Request.Status;
             existingOrder.ModifiedStatusDate = DateTime.UtcNow;
+            existingOrder.CreatedByUserId = command.Request.ModifiedByUserId ?? existingOrder.CreatedByUserId;
+
 
             await _repository.UpdateAsync(existingOrder);
 
-
+            
             if (command.Request.Status == OrderStatus.Issued)
             {
                 // Creamos el evento

@@ -14,7 +14,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace DepotService.Infraestructure.Messaging
+namespace DepotService.Infraestructure
 {
     public class OrderIssuedConsumer : BackgroundService
     {
@@ -68,9 +68,9 @@ namespace DepotService.Infraestructure.Messaging
                         using var scope = _scopeFactory.CreateScope();
                         var context = scope.ServiceProvider.GetRequiredService<DepotDbContext>();
 
-                        var order = new DepotOrder
-                        {
-                            DepotOrderId = evento.Id,   
+                        var order = new DepotOrderEntity
+                        {   
+                            SalesOrderId = evento.Id,
                             CustomerId = evento.CustomerId,
                             CustomerName = evento.CustomerName,
                             CustomerEmail = evento.CustomerEmail,
@@ -78,7 +78,7 @@ namespace DepotService.Infraestructure.Messaging
                             DeliveryDetail = evento.DeliveryDetail,
                             OrderDate = evento.OrderDate,
                             Status = OrderStatus.Received,
-                            Items = evento.Items.Select(item => new DepotOrderItem
+                            Items = evento.Items.Select(item => new DepotOrderItemEntity
                             {
                                 Id = item.Id,
                                 ProductName = item.ProductName,
@@ -88,7 +88,7 @@ namespace DepotService.Infraestructure.Messaging
 
                         };
 
-                        context.DepotOrders.AddAsync(order);
+                        await context.DepotOrders.AddAsync(order);
                         await context.SaveChangesAsync(stoppingToken);
 
                         _logger.LogInformation("📦 Orden recibida y guardada en DepotService: {OrderId}", order.DepotOrderId);

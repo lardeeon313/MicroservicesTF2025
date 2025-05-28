@@ -38,6 +38,14 @@ namespace SalesService.Infraestructure.Persistence.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Order>> GetAllWithItemsAsync()
+        {
+            return await _context.Orders
+                .Include(o => o.Items)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<Order>> GetByCustomerIdAsync(Guid customerId)
         {
             return await _context.Orders
