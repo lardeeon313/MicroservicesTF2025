@@ -9,11 +9,18 @@ namespace DepotService.Application.Commands.DepotManager.CreateTeam
     /// <summary>
     /// Comando para crear un equipo en el depósito.
     /// </summary>
-    public class CreateTeamCommand(string teamName)
+    public class CreateTeamCommand
     {
         /// <summary>
         /// Nombre del equipo a crear.
         /// </summary>
-        public string TeamName { get; set; } = teamName ?? throw new ArgumentNullException(nameof(teamName));
+        public string TeamName { get; set; } 
+        public string? TeamDescription { get; set; }
+
+        public CreateTeamCommand(string teamName, string? teamDescription)
+        {
+            this.TeamName = teamName;
+            this.TeamDescription = teamDescription;
+        }
     }
 }

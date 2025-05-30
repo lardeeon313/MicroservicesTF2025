@@ -37,7 +37,7 @@ namespace DepotService.Application.Commands.DepotManager.CreateTeam
                 throw new InvalidOperationException($"El equipo {command.TeamName} ya existe.");
             }
 
-            var newTeam = new DepotTeamEntity(command.TeamName);
+            var newTeam = new DepotTeamEntity(command.TeamName, command.TeamDescription);
             await _repository.AddAsync(newTeam);
 
             await _context.SaveChangesAsync();
@@ -46,8 +46,9 @@ namespace DepotService.Application.Commands.DepotManager.CreateTeam
 
             return new CreateTeamResponse
             {
-                TeamName = newTeam.TeamName,
                 TeamId = newTeam.Id,
+                TeamName = newTeam.TeamName,
+                TeamDescription = newTeam.TeamDescription,
                 CreatedAt = DateTime.UtcNow,
 
             };

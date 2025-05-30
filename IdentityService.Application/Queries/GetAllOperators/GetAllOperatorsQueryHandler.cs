@@ -20,7 +20,7 @@ namespace IdentityService.Application.Queries.GetAllOperators
             {
                 Id = o.Id,
                 FullName = $"{o.Name} {o.LastName}",
-                PhoneNumber = o.PhoneNumber
+                Email = o.Email
             }).ToList();
         }
     }

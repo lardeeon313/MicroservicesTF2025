@@ -1,4 +1,5 @@
 ﻿using DepotService.Application.Commands.DepotManager.AssignOrder;
+using DepotService.Application.DTOs.DepotManager.Request;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Validators.DepotManager
 {
-    public class AssignOrderCommandValidator : AbstractValidator<AssignOrderCommand>
+    public class AssignOrderCommandValidator : AbstractValidator<AssignOrderRequest>
     {
         public AssignOrderCommandValidator()
         {

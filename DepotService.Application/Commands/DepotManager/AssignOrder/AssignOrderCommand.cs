@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Commands.DepotManager.AssignOrder
 {
+    /// <summary>
+    /// Commando para asignar un pedido a un operador.
+    /// </summary>
     public class AssignOrderCommand
     {
         public int DepotOrderId { get; set; }

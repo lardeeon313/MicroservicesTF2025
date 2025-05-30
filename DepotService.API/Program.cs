@@ -1,6 +1,20 @@
+using DepotService.Application.Commands.DepotManager.AssignOperator;
+using DepotService.Application.Commands.DepotManager.AssignOrder;
+using DepotService.Application.Commands.DepotManager.CreateTeam;
+using DepotService.Application.Commands.DepotManager.DeleteTeam;
+using DepotService.Application.Commands.DepotManager.RemoveOperatorToTeam;
+using DepotService.Application.Commands.DepotManager.UpdateTeam;
+using DepotService.Application.DTOs.DepotManager.Request;
+using DepotService.Application.Queries.DepotManager.GetAllTeams;
+using DepotService.Application.Queries.DepotManager.GetTeamById;
+using DepotService.Application.Queries.DepotManager.GetTeamByName;
+using DepotService.Application.Validators.DepotManager;
+using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
 using DepotService.Infraestructure.Messaging;
 using DepotService.Infraestructure.Messaging.Consumers;
+using DepotService.Infraestructure.Persistence.Repositories;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -30,6 +44,26 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+// Add Commands and Queries
+builder.Services.AddScoped<IGetAllTeamsQueryHandler,  GetAllTeamsQueryHandler>();
+builder.Services.AddScoped<IGetTeamByNameQueryHandler, GetTeamByNameQueryHandler>();
+builder.Services.AddScoped<IGetTeamByIdQueryHandler,  GetTeamByIdQueryHandler>();
+
+builder.Services.AddScoped<IAssignOperatorCommandHandler, AssignOperatorCommandHandler>();
+builder.Services.AddScoped<IAssignOrderCommandHandler,  AssignOrderCommandHandler>();
+builder.Services.AddScoped<ICreateTeamCommandHandler,  CreateTeamCommandHandler>();
+builder.Services.AddScoped<IDeleteTeamCommandHandler,  DeleteTeamCommandHandler>();
+builder.Services.AddScoped<IUpdateTeamCommandHandler,  UpdateTeamCommandHandler>();
+builder.Services.AddScoped<IRemoveOperatorCommandHandler, RemoveOperatorCommandHandler>();
+
+// Add FluentValidation
+builder.Services.AddScoped<IValidator<AssignOperatorRequest>, AssignOperatorCommandValidator>();
+builder.Services.AddScoped<IValidator<CreateTeamRequest>, CreateTeamCommandValidator>();
+builder.Services.AddScoped<IValidator<UpdateTeamRequest>, UpdateTeamCommandValidator>();
+builder.Services.AddScoped<IValidator<AssignOrderRequest>, AssignOrderCommandValidator>();
+
+
+
 // Add HostedService RabbitConsumer
 builder.Services.AddHostedService<DummyCreatedConsumer>();
 builder.Services.AddHostedService<OrderIssuedConsumer>();
@@ -37,9 +71,15 @@ builder.Services.AddHostedService<OrderIssuedConsumer>();
 // Obtener la cadena de conexión del appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+// Registrar los repositorios
+builder.Services.AddScoped<ITeamRepository, TeamRepository>();
+builder.Services.AddScoped<IDepotOrderRepository, DepotOrderRepository>();
+
+
 // Registrar el DbContext
 builder.Services.AddDbContext<DepotDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+    b => b.MigrationsAssembly("DepotService.API")));
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];

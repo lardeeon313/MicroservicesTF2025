@@ -9,10 +9,13 @@ namespace DepotService.Domain.IRepositories
 {
     public interface ITeamRepository
     {
-        Task<DepotTeamEntity?> GetByIdAsync (int id);
-        Task<DepotTeamEntity?> GetByNameAsync(string name);
+        Task<DepotTeamEntity?> GetByIdAsync (int teamId);
+        Task<DepotTeamEntity?> GetByNameAsync(string teamName);
+        Task<IEnumerable<DepotTeamEntity>> GetAllAsync();
         Task AddAsync(DepotTeamEntity team);
         Task UpdateAsync(DepotTeamEntity team);
+        Task DeleteAsync(int teamId);
+
 
     }
 }

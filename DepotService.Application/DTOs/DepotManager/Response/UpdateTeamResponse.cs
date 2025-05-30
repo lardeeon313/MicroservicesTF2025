@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.DTOs.DepotManager.Response
 {
-    public class CreateTeamResponse
+    public class UpdateTeamResponse
     {
         public int TeamId { get; set; }
         public string TeamName { get; set; } = string.Empty;
         public string? TeamDescription { get; set; }
-        public DateTime CreatedAt { get; set; }
     }
 }

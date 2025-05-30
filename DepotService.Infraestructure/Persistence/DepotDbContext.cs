@@ -13,6 +13,7 @@ namespace DepotService.Infraestructure
     {
         public DbSet<DepotOrderEntity> DepotOrders { get; set; }
         public DbSet<DepotTeamEntity> DepotTeams { get; set; }
+        public DbSet<DepotTeamAssignment> TeamAssignments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,6 +22,20 @@ namespace DepotService.Infraestructure
                 team.HasKey(t => t.Id);
                 team.Property(t => t.TeamName).IsRequired().HasMaxLength(100);
 
+            });
+
+            modelBuilder.Entity<DepotTeamAssignment>()
+                .HasKey(a => a.Id);
+
+            modelBuilder.Entity<DepotTeamAssignment>()
+                .HasOne(a => a.depotTeamEntity)
+                .WithMany(t => t.Assignments)
+                .HasForeignKey(a => a.DepotTeamId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DepotOrderEntity>(order =>
+            {
+                order.HasKey(o => o.DepotOrderId);
             });
         }
     }
