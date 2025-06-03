@@ -4,7 +4,6 @@ import LoginPage from "../features/auth/pages/LoginPage";
 import ProtectedRoute from "../features/auth/components/ProtectedRoute";
 import Unauthorized from "../features/auth/components/Unauthorized";
 import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
-import DepotManagerDashboard from "../features/depot/depotmanager/pages/DepotManagerDashboard";
 import OperatorDashboard from "../features/depot/operator/pages/OperatorDashboard";
 import BillingManagerDashboard from "../features/depot/billingmanager/pages/BillingManagerDashboard";
 import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
@@ -82,14 +81,7 @@ const AppRouter = () => {
         </Route>
 
 
-        <Route
-            path="/depot/warehousemanager"
-            element = {
-                <ProtectedRoute requiredRole="WarehouseManager">
-                    <DepotManagerDashboard/>
-                </ProtectedRoute>
-            }>
-        </Route>
+    
 
         <Route
             path="/depot/operator"
