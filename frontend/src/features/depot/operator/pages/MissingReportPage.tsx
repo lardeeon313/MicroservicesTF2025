@@ -1,0 +1,1 @@
+//logica de negocio para gestionar en caso de que se produzca faltante 
