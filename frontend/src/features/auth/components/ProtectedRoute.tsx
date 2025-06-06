@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { decodeToken } from "../../../utils/jwtUtils";
+import { getRoleFromToken } from "../../../utils/jwtUtils";
 import { useAuth } from "../context/useAuth";
 import { ProtectedRouteProps } from "../types/AuthTypes";
 
@@ -13,8 +13,8 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
     }
 
     if (requiredRole) {
-        const decoded = decodeToken(token);
-        if(!decoded || decoded.role !== requiredRole) {
+        const role = getRoleFromToken(token);
+        if(!role || role !== requiredRole) {
             return <Navigate to="/unauthorized" replace />
         } 
     }

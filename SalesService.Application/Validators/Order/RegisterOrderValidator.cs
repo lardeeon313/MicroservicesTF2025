@@ -21,6 +21,8 @@ namespace SalesService.Application.Validators.Order
                 .GreaterThan(DateTime.UtcNow)
                 .WithMessage("La fecha de entrega debe ser mayor a la fecha actual.")
                 .When(x => x.DeliveryDate.HasValue);
+            RuleFor(x => x.CreatedByUserId)
+                .NotEmpty().WithMessage("El usuario creador es obligatorio.");
         }
     }
     

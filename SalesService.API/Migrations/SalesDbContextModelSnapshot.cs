@@ -48,6 +48,15 @@ namespace SalesService.API.Migrations
                     b.Property<DateTime>("RegistrationDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("SatisfactionDescription")
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("SatisfactionScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Customers");
@@ -58,6 +67,11 @@ namespace SalesService.API.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("varchar(450)");
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("char(36)");

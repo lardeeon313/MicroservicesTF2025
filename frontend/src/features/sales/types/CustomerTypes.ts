@@ -27,6 +27,13 @@ export interface CustomerResponse {
   email: string;
   phoneNumber: string;
   address: string;
+  status: CustomerStatus;
+}
+
+export enum CustomerStatus {
+  Active = "Active",
+  Inactive = "Inactive",
+  Lost = "Lost"
 }
 
 // Para el formulario de registro de cliente
@@ -61,6 +68,19 @@ export type GetCustomersPaginatedResponse = {
 };
 
 
+// --------------TypesReports----------------------
+
+export interface CustomerWithCount extends CustomerResponse {
+  fullName: string;
+  orderCount: number;
+  satisfaction?: CustomerSatisfaction
+}
+
+export enum CustomerSatisfaction {
+  Positiva = "Positiva",
+  Negativa = "Negativa",
+  Neutra = "Neutra"
+}
 
 
 

@@ -19,7 +19,7 @@ export interface RegisterRequest {
     lastName: string;
     email: string;
     password: string;
-    confirmPassword: string;
+    role: string; // Temporal!
 }
 
 export interface RegisterResponse {
@@ -34,13 +34,21 @@ export interface authContextType {
 }
 
 export interface JwtPayload {
+    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier": string;
     name: string;
     email: string;
-    role: string;
+    role: string | string[];
     exp: number;
+    key: string
 }
 
 export interface ProtectedRouteProps {
   children: JSX.Element;
   requiredRole?: string;
+}
+
+export interface SalesStaffDto {
+  id: string;
+  firstName: string;
+  lastName: string;
 }

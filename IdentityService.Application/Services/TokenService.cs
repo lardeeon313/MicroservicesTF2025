@@ -26,13 +26,15 @@ namespace IdentityService.Application.Services
             var authClaims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.UserName ?? "")
+                new Claim(ClaimTypes.Name, user.UserName ?? ""),
             };
 
             var userRoles = await _userManager.GetRolesAsync(user);
+            Console.WriteLine("Roles del usuario: " + string.Join(", ", userRoles));
             foreach (var role in userRoles)
             {
                 authClaims.Add(new Claim(ClaimTypes.Role, role));
+                authClaims.Add(new Claim("role", role));
             }
 
             var token = new JwtSecurityToken(

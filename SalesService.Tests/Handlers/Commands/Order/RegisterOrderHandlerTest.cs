@@ -41,7 +41,8 @@ namespace SalesService.Tests.Handlers
                     new() { ProductName = "Agua", ProductBrand = "Eco", Quantity = 2 }
                 },
                 null,
-                "Entrega mañana"
+                "Entrega mañana",
+                "User123"
             );
 
             // Act
@@ -65,7 +66,7 @@ namespace SalesService.Tests.Handlers
         public async Task HandleAsync_ShouldThrow_WhenCustomerNotFound()
         {
             // Arrange
-            var command = new RegisterOrderCommand(Guid.NewGuid(), [], null, "Sin dirección");
+            var command = new RegisterOrderCommand(Guid.NewGuid(), [], null, "Sin dirección", "user123");
 
             // Act
             _customerRepo.Setup(c => c.GetByIdAsync(command.CustomerId)).ReturnsAsync((Customer)null!);

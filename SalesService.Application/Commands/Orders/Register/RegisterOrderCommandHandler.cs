@@ -35,7 +35,8 @@ namespace SalesService.Application.Commands.Orders.Register
                 DeliveryDate = command.DeliveryDate,
                 DeliveryDetail = command.DeliveryDetail,
                 OrderDate = DateTime.UtcNow,
-                Status = OrderStatus.Pending
+                Status = OrderStatus.Pending,
+                CreatedByUserId = command.CreatedByUserId,
             };
 
             // Asignar los items a la orden
@@ -82,6 +83,7 @@ namespace SalesService.Application.Commands.Orders.Register
                 OrderDate = order.OrderDate,
                 Status = order.Status,
                 DeliveryDate = order.DeliveryDate,
+                CreatedByUserId = order.CreatedByUserId,
             };
         }
     }

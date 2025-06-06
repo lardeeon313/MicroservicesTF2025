@@ -35,6 +35,16 @@ namespace IdentityService.Application.Validators
                 .Matches(@"[a-z]").WithMessage("Password must contain at least one lowercase letter")
                 .Matches(@"[0-9]").WithMessage("Password must contain at least one digit")
                 .Matches(@"[\@\!\?\*\.\$]").WithMessage("Password must contain a special character");
+
+            // Validamos que el rol seleccionado sea correcto.
+            RuleFor(x => x.Role)
+                .NotEmpty().WithMessage("El rol es obligatorio.")
+                .Must(role => new[]
+                {
+                "DepotManager", "DepotOperator", "BillingManager", "Admin",
+                "Delivery", "SalesStaff", "VerificationStaff"
+                }.Contains(role))
+                .WithMessage("El rol seleccionado no es válido.");
         }
     }
 }

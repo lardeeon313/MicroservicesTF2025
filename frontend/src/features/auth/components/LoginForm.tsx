@@ -3,29 +3,63 @@ import { login } from "../services/AuthService";
 import { loginValidationSchema } from "../validations/loginValidation";
 import { LoginRequest } from "../types/AuthTypes";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import logoVerona from "../../../assets/logo-verona.png";
+import { getRoleFromToken } from "../../../utils/jwtUtils";
 
 
 const LoginForm = () => {
-
+  const navigate = useNavigate();
   const { login: loginContext } = useAuth();
+
   const handleSubmit = async (values: LoginRequest) => {
-    try {
-      const result = await login(values);
-      localStorage.setItem("token", result.token);
-      loginContext(result.token);
-      toast.success("Inicio de sesión exitoso!")
-      // redireccionar
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(error.message); 
-      } else {
-        toast.error("Ocurrió un error inesperado"); 
-      }
+  try {
+    const result = await login(values);
+    localStorage.setItem("token", result.token);
+    loginContext(result.token);
+
+    const role = getRoleFromToken(result.token); // << ya devuelve string | null
+    if (!role) {
+      toast.error("Rol no encontrado en el token");
+      return navigate("/");
     }
-  };
+
+    toast.success("Inicio de sesión exitoso!");
+
+    switch (role) {
+      case "Admin":
+        navigate("/admin/dashboard");
+        break;
+      case "SalesStaff":
+        navigate("/sales/home");
+        break;
+      case "DepotManager":
+        navigate("/depot");
+        break;
+      case "DepotOperator":
+        navigate("/operator");
+        break;
+      case "Delivery":
+        navigate("/delivery");
+        break;
+      case "VerificationStaff":
+        navigate("/verification");
+        break;
+      default:
+        navigate("/");
+        break;
+    }
+
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      toast.error(error.message); 
+    } else {
+      toast.error("Ocurrió un error inesperado"); 
+    }
+  }
+};
+
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">

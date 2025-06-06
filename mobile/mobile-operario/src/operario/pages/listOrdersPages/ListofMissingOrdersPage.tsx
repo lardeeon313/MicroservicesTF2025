@@ -30,8 +30,11 @@ const ListofMissingOrdersPage = () => {
         onMarcarArmado = () => {},
     } = params ?? {};
 
+    //NUEVO: PARA CAMBIAR EL ESTADO DEL PEDIDO SI PRECIONA EL BOTON:
+    const [orderStatus, setOrderStatus] = useState<OrderStatus>(status as OrderStatus)
+
     //en caso de que el estado no sea InPreparation, no se renderiza nada
-    if(status !== OrderStatus.InPreparation) return null;
+    if(orderStatus !== OrderStatus.InPreparation) return null;
 
     const HandleIssueMissing = () => {
         const newMissing: Missing = {
@@ -71,6 +74,11 @@ const ListofMissingOrdersPage = () => {
         navigation.navigate("NotificationPage", {order: createMockOrder(id)});
     }
 
+    //NUEVO: 
+    const UpdateOrderArmed = () => {
+        setOrderStatus(OrderStatus.Prepared);
+    }
+
     //render 
     return(
         <View style={{flex:1}}>
@@ -82,7 +90,7 @@ const ListofMissingOrdersPage = () => {
                 missingCount={missingItems}
                 onVerDetalle={() => onSeeDetail()}
                 onEmitirFaltante={HandleIssueMissing}
-                onMarcarArmado={() => onMarcarArmado( )}
+                onMarcarArmado={UpdateOrderArmed}
                 onSeccionNotificaciones={onNotifySection}
                 />
         </View>

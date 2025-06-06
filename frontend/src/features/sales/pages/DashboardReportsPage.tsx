@@ -6,37 +6,42 @@ const cards = [
     title: "Ventas por Cliente",
     description: "Visualizá todos los pedidos creados por cliente.",
     icon: <FileText className="h-10 w-10 text-red-600" />,
-    link: "/sales/report/orders",
+    link: "/sales/reports/customersReport",
   },
   {
     title: "Estados de los clientes inactivos",
     description: "Analiza los clientes que hayan dejado de realizar pedidos en un lapso de tiempo.",
     icon: <PieChart className="h-10 w-10 text-red-600" />,
-    link: "/sales/report/customers",
+    link: "/sales/reports/customerStatusReport",
   },
   {
     title: "Satisfacción del cliente",
     description: "Mide la satisfacción según las opiniones del cliente.",
     icon: <FilePlus2 className="h-10 w-10 text-red-600" />,
-    link: "/sales/report/customerSatisfaction",
+    link: "/sales/reports/customerSatisfactionReport",
   },
   {
     title: "Pedidos cancelados y modificados",
     description: "Consulta los pedidos que han tenido alteraciones.",
     icon: <User className="h-10 w-10 text-red-600" />,
-    link: "/sales/report/orderStatus",
+    link: "/sales/reports/modifiedCanceledReport",
   },
   {
     title: "Desempeño por ventas",
     description: "Revisá cómo ha rendido el equipo de ventas.",
     icon: <BarChart2 className="h-10 w-10 text-red-600" />,
-    link: "/sales/reports/salesTeam",
+    link: "/sales/reports/salesPerfomance",
   },
 ];
 
 export const DashboardReportsPage = () => {
   return (
-    <div className="min-h-screen bg-gray-50 py-20">
+    <div className="container m-0 pt-10 min-w-full min-h-full">
+      <div className="flex items-center justify-between mb-6">
+            <Link to="/sales/home" className="text-red-600 hover:underline pl-10">
+            ← Volver atras 
+            </Link>
+      </div>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Panel de reportes de Ventas</h1>
         <p className="text-center text-lg text-gray-700 mb-12">

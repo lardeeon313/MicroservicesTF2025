@@ -25,6 +25,9 @@ namespace SalesService.Domain.Entities.OrderEntity
         public Guid CustomerId { get; set; }
         public Customer? Customer { get; set; }
 
+        // Relacion con el Usuario que creó el pedido
+        public string CreatedByUserId { get; set; } = string.Empty;
+
         // Relacion con los productos del pedido
         public List<OrderItem> Items { get; set; } = new List<OrderItem>();
     }

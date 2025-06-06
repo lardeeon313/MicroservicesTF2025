@@ -1,11 +1,15 @@
-import {  Routes, Route } from "react-router-dom";
+import {  Routes, Route, Outlet } from "react-router-dom";
 import RegisterPage from "../features/auth/pages/RegisterPage";
 import LoginPage from "../features/auth/pages/LoginPage";
 import ProtectedRoute from "../features/auth/components/ProtectedRoute";
 import Unauthorized from "../features/auth/components/Unauthorized";
 import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
+<<<<<<< HEAD
 import DepotManagerDashboard from "../features/depot/depotmanager/pages/DepotManagerDashboard";
 import OperatorDashboard from "../features/depot/operator/navigation/OperatorDashboard";
+=======
+import OperatorDashboard from "../features/depot/operator/pages/OperatorDashboard";
+>>>>>>> origin/feature/santiago-microservicestf2025
 import BillingManagerDashboard from "../features/depot/billingmanager/pages/BillingManagerDashboard";
 import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
 import NotFoundPage from "../features/common/pages/NotFoundPage";
@@ -20,6 +24,7 @@ import EditCustomerPage from "../features/sales/pages/customers/EditCustomerPage
 import CustomersPage from "../features/sales/pages/customers/CustomersPage";
 import { DashboardPage } from "../features/sales/pages/DashboardPage";
 import { DashboardReportsPage } from "../features/sales/pages/DashboardReportsPage";
+<<<<<<< HEAD
 
 //REPORTES DE VENTAS: 
 //import CustomerSatisfactionReportPage from "../features/sales/pages/reports/CustomerSatisfactionReportPage";
@@ -29,6 +34,13 @@ import InactiveCustomerPage from "../features/sales/pages/reports/SalesPages/Ina
 import ModifiedCanceledOrdersPage from "../features/sales/pages/reports/SalesPages/ModifiedCanceledOrdersPage";
 import SalesPerfomancePage from "../features/sales/pages/reports/SalesPages/SalesPerfomancePage";
 
+=======
+import CustomerReportPage from "../features/sales/pages/reports/CustomerReportPage";
+import CustomerSatisfactionPage from "../features/sales/pages/reports/CustomerSatisfactionReportPage";
+import CustomerInactiveReportPage from "../features/sales/pages/reports/CustomerInactiveReportPage";
+import ModifiedCanceledOrdersPage from "../features/sales/pages/reports/ModifiedCanceledOrdersPage";
+import { SalesPerfomanceReportPage } from "../features/sales/pages/reports/SalesPerfomanceReportPage";
+>>>>>>> origin/feature/santiago-microservicestf2025
 
 const AppRouter = () => {
   return (
@@ -40,6 +52,7 @@ const AppRouter = () => {
         <Route path="/" element={<HomePage/>}></Route>
 
 
+<<<<<<< HEAD
         <Route path="/sales" element={<DashboardPage/>}/>
         <Route path="/sales/orders" element={<OrdersPage/>}/>
         <Route path="/sales/orders/view/:id" element={<ViewOrderPage/>} />
@@ -58,6 +71,34 @@ const AppRouter = () => {
         <Route path="/sales/report/customerSatisfaction" element={<CustomerSatisfacionPage/>}/>
         <Route path="/sales/report/orderStatus" element={<ModifiedCanceledOrdersPage/>}/>
         <Route path="/sales/reports/salesTeam" element={<SalesPerfomancePage/>}/>
+=======
+        <Route
+        path="/sales"
+        element={
+            <ProtectedRoute requiredRole="SalesStaff">
+            <Outlet />
+            </ProtectedRoute>
+        }
+        >
+        <Route path="home" element={<DashboardPage/>}/>
+        <Route path="orders" element={<OrdersPage />} />
+        <Route path="orders/view/:id" element={<ViewOrderPage />} />
+        <Route path="orders/registerOrder" element={<RegisterOrderPage />} />
+        <Route path="orders/update/:id" element={<EditOrderPage />} />
+        <Route path="customer/registerCustomer" element={<RegisterCustomerPage />} />
+        <Route path="customer/viewCustomer/:id" element={<ViewCustomerPage />} />
+        <Route path="customers" element={<CustomersPage />} />
+        <Route path="customer/update/:id" element={<EditCustomerPage />} />
+        <Route path="reports/dashboard" element={<DashboardReportsPage />} />
+        <Route path="reports/customersReport" element={<CustomerReportPage/>}/>
+        <Route path="reports/customerSatisfactionReport" element={<CustomerSatisfactionPage/>}/>
+        <Route path="reports/customerStatusReport" element={<CustomerInactiveReportPage />}/>
+        <Route path="reports/modifiedCanceledReport" element={<ModifiedCanceledOrdersPage/>}/>
+        <Route path="reports/salesPerfomance" element={<SalesPerfomanceReportPage/>}/>
+        </Route>
+        
+
+>>>>>>> origin/feature/santiago-microservicestf2025
 
         <Route 
             path="/admin" 
@@ -77,23 +118,8 @@ const AppRouter = () => {
             }>
         </Route>
 
-        <Route
-            path="/sales"
-            element = {
-                <ProtectedRoute requiredRole="SalesStaff">
-                    <DashboardPage/>
-                </ProtectedRoute>
-            }>
-        </Route>
 
-        <Route
-            path="/depot/warehousemanager"
-            element = {
-                <ProtectedRoute requiredRole="WarehouseManager">
-                    <DepotManagerDashboard/>
-                </ProtectedRoute>
-            }>
-        </Route>
+    
 
         <Route
             path="/depot/operator"

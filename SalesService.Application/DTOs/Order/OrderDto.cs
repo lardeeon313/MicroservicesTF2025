@@ -21,5 +21,6 @@ namespace SalesService.Application.DTOs.Order
         public PaymentType? PaymentType { get; set; }
         public List<OrderItemDto> Items { get; set; } = new();
         public DateTime? ModifiedStatusDate { get; internal set; }
+        public string CreatedByUserId { get; set; } = string.Empty;
     }
 }

@@ -3,8 +3,11 @@ using IdentityService.Application.Commands.Login;
 using IdentityService.Application.Commands.Register;
 using IdentityService.Application.DTOs;
 using IdentityService.Application.Interfaces;
+using IdentityService.Application.Queries.GetAllOperators;
+using IdentityService.Application.Queries.GetAllSalesStaffs;
 using IdentityService.Application.Services.Interfaces;
 using IdentityService.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,13 +19,17 @@ namespace IdentityService.API.Controllers
     public class AuthController(
         ILoginCommandHandler loginCommandHandler,
         IRegisterCommandHandler registerCommandHandler,
+        IGetAllOperatorsQueryHandler getAllOperatorsQueryHandler,
+        IGetAllSalesStaffsQueryHandler getAllSalesStaffsQueryHandler,
         IValidator<RegisterRequest> registerValidator,
         IValidator<LoginRequest> loginValidator) : Controller
     {
+        private readonly IGetAllOperatorsQueryHandler _getAllOperatorsQueryHandler = getAllOperatorsQueryHandler;
         private readonly IValidator<LoginRequest> _loginValidator = loginValidator;
         private readonly IValidator<RegisterRequest> _registerValidator = registerValidator;
         private readonly IRegisterCommandHandler _registerCommandHandler = registerCommandHandler;
         private readonly ILoginCommandHandler _loginCommandHandler = loginCommandHandler;
+        private readonly IGetAllSalesStaffsQueryHandler _getAllSalesStaffsQueryHandler = getAllSalesStaffsQueryHandler;
 
 
         /// <summary>
@@ -48,7 +55,8 @@ namespace IdentityService.API.Controllers
                 Name = request.Name,
                 LastName = request.LastName,
                 Email = request.Email,
-                Password = request.Password
+                Password = request.Password,
+                Role = request.Role
             };
 
             var result = await _registerCommandHandler.Handle(command);
@@ -88,6 +96,39 @@ namespace IdentityService.API.Controllers
 
             return Ok(response);
 
+        }
+
+
+        /// <summary>
+        /// Devuelve todos los usuarios con rol "Operator"
+        /// </summary>
+        /// <returns>Lista de operadores</returns>
+        /// <response code="200">Lista obtenida exitosamente</response>
+        /// <response code="401">No autorizado</response>
+        [HttpGet("operators")]
+        [Authorize(Roles = "DepotManager, Admin")]
+        [ProducesResponseType(typeof(List<OperatorDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetAllOperators()
+        {
+            var operators = await _getAllOperatorsQueryHandler.HandleAsync();
+            return Ok(operators);
+        }
+
+        /// <summary>
+        /// Devuelve todos los usuarios con rol "SalesStaff"
+        /// </summary>
+        /// <returns>Lista de Encargados de Ventas</returns>
+        /// <response code="200">Lista obtenida exitosamente</response>
+        /// <response code="401">No autorizado</response>
+        [HttpGet("salesstaffs")]
+        [Authorize(Roles = "SalesStaff, Admin")]
+        [ProducesResponseType(typeof(List<OperatorDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetAllSalesStaffs()
+        {
+            var SalesStaffs = await _getAllSalesStaffsQueryHandler.HandleAsync();
+            return Ok(SalesStaffs);
         }
     }
 }
