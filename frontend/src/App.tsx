@@ -1,9 +1,6 @@
 import { AuthProvider } from "./features/auth/context/AuthProvider.tsx"
 import { Toaster } from "react-hot-toast";
-<<<<<<< Updated upstream
-=======
 import Navbar from "./components/Navbar/Navbar.tsx";
->>>>>>> Stashed changes
 import AppRouter from "./router/AppRouter";
 import { BrowserRouter } from "react-router-dom";
 import Footer from "./features/sales/components/Footer.tsx";

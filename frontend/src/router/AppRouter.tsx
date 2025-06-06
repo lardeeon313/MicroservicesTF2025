@@ -5,7 +5,7 @@ import ProtectedRoute from "../features/auth/components/ProtectedRoute";
 import Unauthorized from "../features/auth/components/Unauthorized";
 import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
 import DepotManagerDashboard from "../features/depot/depotmanager/pages/DepotManagerDashboard";
-import OperatorDashboard from "../features/depot/operator/pages/OperatorDashboard";
+import OperatorDashboard from "../features/depot/operator/navigation/OperatorDashboard";
 import BillingManagerDashboard from "../features/depot/billingmanager/pages/BillingManagerDashboard";
 import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
 import NotFoundPage from "../features/common/pages/NotFoundPage";
@@ -22,7 +22,8 @@ import { DashboardPage } from "../features/sales/pages/DashboardPage";
 import { DashboardReportsPage } from "../features/sales/pages/DashboardReportsPage";
 
 //REPORTES DE VENTAS: 
-import CustomerReportPage from "../features/sales/pages/reports/SalesPages/CustomerReportPage";
+//import CustomerSatisfactionReportPage from "../features/sales/pages/reports/CustomerSatisfactionReportPage";
+
 import CustomerSatisfacionPage from "../features/sales/pages/reports/SalesPages/CustomerSatisfactionPage";
 import InactiveCustomerPage from "../features/sales/pages/reports/SalesPages/InactiveCustomerPage";
 import ModifiedCanceledOrdersPage from "../features/sales/pages/reports/SalesPages/ModifiedCanceledOrdersPage";
@@ -52,7 +53,7 @@ const AppRouter = () => {
 
 
         {/**reportes de ventas*/}
-        <Route path="/sales/report/orders" element={<CustomerReportPage/>} />
+        {/**<Route path="/sales/report/orders" element={<CustomerSatisfactionReportPage/>} />*/}
         <Route path="/sales/report/customers" element={<InactiveCustomerPage/>}/> 
         <Route path="/sales/report/customerSatisfaction" element={<CustomerSatisfacionPage/>}/>
         <Route path="/sales/report/orderStatus" element={<ModifiedCanceledOrdersPage/>}/>
