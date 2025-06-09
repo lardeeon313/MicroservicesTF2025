@@ -1,27 +1,32 @@
+import { OperatorInTeam } from './OperatorTypes';
+
 export interface DepotTeam {
-  id: number;
-  teamName: string;
-  teamDescription?: string | null;
-  assignments: DepotTeamAssignment[];
-  createdAt: string;
+    id: number;
+    teamName: string;
+    teamDescription: string;
+    operators: OperatorInTeam[];
 }
 
-export interface DepotTeamAssignment {
-  operatorUserId: string; // Guid string
-  roleInTeam: string;
-  assignedAt: string;
-}
-
-export interface DepotTeamCreateDTO {
+export interface CreateTeamResponse {
+  teamId: number;
   teamName: string;
   teamDescription?: string;
+  createdAt: Date;
 }
 
-export interface DepotTeamUpdateDTO {
+export interface UpdateTeamResponse {
+  teamId: number;
   teamName: string;
   teamDescription?: string;
+} 
+
+export interface CreateTeamRequest {
+  teamName: string;
+  teamDescription: string;
 }
 
-export interface AssignOperatorDTO {
-  operatorUserId: string;
+export interface UpdateTeamRequest {
+  teamId: number;
+  teamName: string;
+  teamDescription: string;
 }
