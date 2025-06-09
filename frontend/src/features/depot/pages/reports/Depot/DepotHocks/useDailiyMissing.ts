@@ -1,32 +1,37 @@
 import { useEffect,useState } from "react";
 import type { DailyMissing } from "../DepotComponents/DailyMissingTable";
+import API from "../../../../../../api/axios";
 
-export const useDailyMissing = ( ) => {
+
+export const useDailyMissing = (page:number,pageSize:number) => {
     const [data,setData] = useState<DailyMissing[]>([]);
-    const [loading,setloading] = useState<boolean>(true);
+    const [loading,setLoading] = useState<boolean>(true);
+    const [error,setError] = useState<string | null>(null);
+    const [totalPages,setTotalPages] = useState<number>(1);
 
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true);
             try{
-                const response = await new Promise<DailyMissing[]>((resolve) => 
-                setTimeout(() => {
-                    resolve([
-                    { orderID:2 , ItemID: 101,MissingHour: "08:15" },
-                    { orderID:3 , ItemID: 102,MissingHour: "12:15" },
-                    ]);
-                }, 1000)
-                );
-                setData(response);
+                const response = await API.get<DailyMissing[]>("/missings");
+
+                const allData = response.data;
+                const start = (page - 1) * pageSize;
+                const end = start + pageSize;
+                const paginatedData = allData.slice(start, end);
+
+                setData(paginatedData);
+                setTotalPages(Math.ceil(allData.length / pageSize));
             }catch(error){
-                console.error("Error para obtener los datos" , error);
+                console.error("Error al obtener los datos: " , error);
+                setError("No se pudieron obtener los datos ");
             }finally{
-                setloading(false);
+                setLoading(false);
             }
-        };
+        }
 
         fetchData();
-    }, []);
+    }, [page,pageSize]);
 
-    return {data,loading};
-
-}
+    return {data,loading,error,totalPages};
+};

@@ -1,58 +1,45 @@
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
+import type { DepotTeam } from "../../../../depotmanager/types/DepotTeamTypes";
+import API from "../../../../../../api/axios";
 
-type ProductivityItem = {
-  teamId: string;
-  completedOrders: number;
-};
 
-type Order = {
-  id: number;
-  finishDate: string;
-  teamId: string;
-};
+type ProdictivityProps = {
+    teamId: DepotTeam['id'];
+    completedOrders: number; 
+}
 
-export const useTeamProdictivity = () => {
-    const [data, setData] = useState<ProductivityItem[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
+export const useTeamProdictivity = (page: number, pageSize: number) => {
+    const [data,setData] = useState<ProdictivityProps[]>([]);
+    const [loading,setLoading] = useState(true);
+    const [error,setError] = useState<string | null>(null);
+    const [totalpages,setTotalPages] = useState<number>(1);
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchTeamProdictivity = async () => {
+            setLoading(true);
+            setError(null);
             try{
-                const orders: Order[] = await new Promise((resolve) => 
-                    setTimeout(() => {
-                        resolve([
-                            { id: 1, finishDate: "2025-06-03", teamId: "Equipo A" },
-                            { id: 2, finishDate: "2025-06-03", teamId: "Equipo A" },
-                            { id: 3, finishDate: "2025-06-03", teamId: "Equipo B" },
-                            { id: 4, finishDate: "2025-06-04", teamId: "Equipo C" },
-                            { id: 5, finishDate: "2025-06-04", teamId: "Equipo B" },
-                            { id: 6, finishDate: "2025-06-04", teamId: "Equipo A" },
-                        ]);
-                    },1000)
+                const response = await API.get<ProdictivityProps[]>(
+                    "/teams",
+                    {
+                        params: {page, pageSize},
+                    }
                 );
 
-                const result : { [team: string]: number } = {};
-
-                orders.forEach((order) => {
-                    result[order.teamId] = (result[order.teamId] || 0) + 1;
-                });
-
-                const formatted: ProductivityItem[] = Object.entries(result).map(
-                    ([teamId, completedOrders]) => ({ teamId, completedOrders })
-                );
-
-                setData(formatted);
+                
+                const totalCount = Number(response.headers["x-total-count"]);
+                setTotalPages(Math.ceil(totalCount / pageSize));
+                setData(response.data);
             }catch(error){
-                setError("Error al obtener los datos: ");
+                console.error("Error al obtener la productividad de los equipos:", error);
+                setError("Error al obtener los datos.");
             }finally{
                 setLoading(false);
             }
         };
 
-        fetchData();
-    }, []) ;
+        fetchTeamProdictivity();
+    }, [page,pageSize]); 
 
-    return {data,loading,error};
+    return {data,loading,error,totalpages}
 };

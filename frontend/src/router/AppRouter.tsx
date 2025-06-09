@@ -4,12 +4,10 @@ import LoginPage from "../features/auth/pages/LoginPage";
 import ProtectedRoute from "../features/auth/components/ProtectedRoute";
 import Unauthorized from "../features/auth/components/Unauthorized";
 import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
-<<<<<<< HEAD
+
 import DepotManagerDashboard from "../features/depot/depotmanager/pages/DepotManagerDashboard";
 import OperatorDashboard from "../features/depot/operator/navigation/OperatorDashboard";
-=======
-import OperatorDashboard from "../features/depot/operator/pages/OperatorDashboard";
->>>>>>> origin/feature/santiago-microservicestf2025
+
 import BillingManagerDashboard from "../features/depot/billingmanager/pages/BillingManagerDashboard";
 import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
 import NotFoundPage from "../features/common/pages/NotFoundPage";
@@ -24,23 +22,24 @@ import EditCustomerPage from "../features/sales/pages/customers/EditCustomerPage
 import CustomersPage from "../features/sales/pages/customers/CustomersPage";
 import { DashboardPage } from "../features/sales/pages/DashboardPage";
 import { DashboardReportsPage } from "../features/sales/pages/DashboardReportsPage";
-<<<<<<< HEAD
 
-//REPORTES DE VENTAS: 
-//import CustomerSatisfactionReportPage from "../features/sales/pages/reports/CustomerSatisfactionReportPage";
 
-import CustomerSatisfacionPage from "../features/sales/pages/reports/SalesPages/CustomerSatisfactionPage";
-import InactiveCustomerPage from "../features/sales/pages/reports/SalesPages/InactiveCustomerPage";
-import ModifiedCanceledOrdersPage from "../features/sales/pages/reports/SalesPages/ModifiedCanceledOrdersPage";
-import SalesPerfomancePage from "../features/sales/pages/reports/SalesPages/SalesPerfomancePage";
-
-=======
-import CustomerReportPage from "../features/sales/pages/reports/CustomerReportPage";
-import CustomerSatisfactionPage from "../features/sales/pages/reports/CustomerSatisfactionReportPage";
 import CustomerInactiveReportPage from "../features/sales/pages/reports/CustomerInactiveReportPage";
+import CustomerReportPage from "../features/sales/pages/reports/CustomerReportPage";
+import CustomerSatisfactionReportPage from "../features/sales/pages/reports/CustomerSatisfactionReportPage";
 import ModifiedCanceledOrdersPage from "../features/sales/pages/reports/ModifiedCanceledOrdersPage";
-import { SalesPerfomanceReportPage } from "../features/sales/pages/reports/SalesPerfomanceReportPage";
->>>>>>> origin/feature/santiago-microservicestf2025
+import {SalesPerfomanceReportPage}  from "../features/sales/pages/reports/SalesPerfomanceReportPage";
+
+//REPORTES DE DEPOSITO : 
+import AverageTimeOrderPage from "../features/depot/pages/reports/Depot/DepotPages/AverageTimeOrderPage";
+import DailyMissingPage from "../features/depot/pages/reports/Depot/DepotPages/DailyMissingPage";
+import OrderCompletedDayPage from "../features/depot/pages/reports/Depot/DepotPages/OrderCompletedDayPage";
+import TeamProdictivityPage from "../features/depot/pages/reports/Depot/DepotPages/TeamProdictiviyPage";
+
+//REPORTES DE FACTURACION
+import BillingTimeProcessPage from "../features/depot/pages/reports/Billing/BillingPages/BillingTimeProcessPage";
+import CustomerIncomePage from "../features/depot/pages/reports/Billing/BillingPages/CustomerIncomePage";
+import OrderBilledPage from "../features/depot/pages/reports/Billing/BillingPages/OrderBilledPage";
 
 const AppRouter = () => {
   return (
@@ -52,7 +51,6 @@ const AppRouter = () => {
         <Route path="/" element={<HomePage/>}></Route>
 
 
-<<<<<<< HEAD
         <Route path="/sales" element={<DashboardPage/>}/>
         <Route path="/sales/orders" element={<OrdersPage/>}/>
         <Route path="/sales/orders/view/:id" element={<ViewOrderPage/>} />
@@ -66,39 +64,23 @@ const AppRouter = () => {
 
 
         {/**reportes de ventas*/}
-        {/**<Route path="/sales/report/orders" element={<CustomerSatisfactionReportPage/>} />*/}
-        <Route path="/sales/report/customers" element={<InactiveCustomerPage/>}/> 
-        <Route path="/sales/report/customerSatisfaction" element={<CustomerSatisfacionPage/>}/>
-        <Route path="/sales/report/orderStatus" element={<ModifiedCanceledOrdersPage/>}/>
-        <Route path="/sales/reports/salesTeam" element={<SalesPerfomancePage/>}/>
-=======
-        <Route
-        path="/sales"
-        element={
-            <ProtectedRoute requiredRole="SalesStaff">
-            <Outlet />
-            </ProtectedRoute>
-        }
-        >
-        <Route path="home" element={<DashboardPage/>}/>
-        <Route path="orders" element={<OrdersPage />} />
-        <Route path="orders/view/:id" element={<ViewOrderPage />} />
-        <Route path="orders/registerOrder" element={<RegisterOrderPage />} />
-        <Route path="orders/update/:id" element={<EditOrderPage />} />
-        <Route path="customer/registerCustomer" element={<RegisterCustomerPage />} />
-        <Route path="customer/viewCustomer/:id" element={<ViewCustomerPage />} />
-        <Route path="customers" element={<CustomersPage />} />
-        <Route path="customer/update/:id" element={<EditCustomerPage />} />
-        <Route path="reports/dashboard" element={<DashboardReportsPage />} />
-        <Route path="reports/customersReport" element={<CustomerReportPage/>}/>
-        <Route path="reports/customerSatisfactionReport" element={<CustomerSatisfactionPage/>}/>
-        <Route path="reports/customerStatusReport" element={<CustomerInactiveReportPage />}/>
-        <Route path="reports/modifiedCanceledReport" element={<ModifiedCanceledOrdersPage/>}/>
-        <Route path="reports/salesPerfomance" element={<SalesPerfomanceReportPage/>}/>
-        </Route>
-        
+        <Route path="/sales/reports/customerStatusReport" element={<CustomerInactiveReportPage/>} />
+        <Route path="/sales/reports/customersReport" element={<CustomerReportPage/>}/> 
+        <Route path="/sales/reports/customerSatisfactionReport" element={<CustomerSatisfactionReportPage/>}/>
+        <Route path="/sales/reports/modifiedCanceledReport" element={<ModifiedCanceledOrdersPage/>}/>
+        <Route path="/sales/reports/salesPerfomance" element={<SalesPerfomanceReportPage/>}/>
 
->>>>>>> origin/feature/santiago-microservicestf2025
+        {/**Reportes de deposito  */}
+        <Route path="/depot/depotmanager/report/AverageTimeOrder" element={<AverageTimeOrderPage/>}/>
+        <Route path="/depot/depotmanager/report/DailyMissing" element={<DailyMissingPage/>}/>
+        <Route path="/depot/depotmanager/report/OrderCompletedDay" element={<OrderCompletedDayPage/>}/>
+        <Route path="/depot/depotmanager/report/TeamProdictivity" element={<TeamProdictivityPage/>}/>
+
+
+        {/**Reportes de facturacion */}
+        <Route path="/depot/billingmanager/report/BillingTimeProcess" element={<BillingTimeProcessPage/>}/>
+        <Route path="/depot/billingmanager/report/CustomerIncome" element={<CustomerIncomePage/>}/>
+        <Route path="/depot/billingmanager/report/OrderBilled" element={<OrderBilledPage/>}/>
 
         <Route 
             path="/admin" 

@@ -1,49 +1,35 @@
 import { useState,useEffect } from "react";
-import { OrderStatus, type Order } from "../../../../../sales/types/OrderTypes";
+import type { Order } from "../../../../../sales/types/OrderTypes";
+import API from "../../../../../../api/axios";
 
-export const useAverageTimeOrder = () => {
-    const [armtime,setArtTime] = useState<Order[]>([]);
+export const useAverageTimeOrder = (page:number,pageSize: number) => {
+    const [data,setData] = useState<Order[]>([]);
     const [loading,setLoading] = useState(true);
-    const [error,setError] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true);
             try{
-                const response : Order[] = await new Promise((resolve) => 
-                setTimeout(() => {
-                    resolve([
-                    {
-                        id: 101,
-                        status: OrderStatus.Prepared,
-                        customerId: "Supermercado Alfa",
-                        items: [],
-                        orderDate: "2025-06-01",
-                        startedDate: "2025-06-02 08:00",
-                        finishDate: "2025-06-02 09:30",
-                    },
-                    {
-                        id: 102,
-                        status: OrderStatus.Prepared,
-                        customerId: "Despensa Zeta",
-                        items: [],
-                        orderDate: "2025-06-03",
-                        startedDate: "2025-06-04 10:15",
-                        finishDate: "2025-06-04 11:45",
-                    },
-                    ])
-                },1000)
-            );
+                const response = await API.get<Order[]>("/orders") //Modificar ruta
 
-            setArtTime(response);
+                const start = (page - 1) * pageSize;
+                const end = start + pageSize;
+                const paginatedData = response.data.slice(start, end);
+
+                setData(paginatedData);
+                setTotalPages(Math.ceil(response.data.length / pageSize));
             }catch(error){
-                setError("Hubo un error al cargar los datos.");
+                console.error(error);
+                setError("Hubo un error al cargar los datos");
             }finally{
                 setLoading(false);
             }
         };
 
         fetchData();
-    }, []);
+    },[page,pageSize]);
 
-    return {armtime,loading,error};
-};
+    return {data,loading,error,totalPages}
+}

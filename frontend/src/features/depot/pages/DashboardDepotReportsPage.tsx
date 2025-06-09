@@ -7,44 +7,44 @@ const cards = [
     title: "Tiempos promedio de armado",
     description: "Visualizá el tiempo promedio que le toma a cada equipo armar el pedido para su pronta facturacion.",
     icon: <FileText className="h-10 w-10 text-red-600" />,
-    link: "/depot/report/AverageOrders",
+    link: "/depot/depotmanager/report/AverageTimeOrder",
   },
   {
     title: "Faltantes diarios",
     description: "Muestra aquellos pedidos los cuales se producieron faltantes de tales productos",
     icon: <PieChart className="h-10 w-10 text-red-600" />,
-    link: "/depot/report/Missings",
+    link: "/depot/depotmanager/report/DailyMissing",
   },
   {
     title: "Pedidos completados por dia",
     description: "Analiza la cantidad de pedidos que son completados al dia por los diferentes equipos.",
     icon: <FilePlus2 className="h-10 w-10 text-red-600" />,
-    link: "/depot/report/ordersCompleted",
+    link: "/depot/depotmanager/report/OrderCompletedDay",
   },
   {
     title: "Productividad del equipo",
     description: "Visualiza la productividad de los diferentes equipos al momento de armar el pedido",
     icon: <User className="h-10 w-10 text-red-600" />,
-    link: "/depot/report/Teams",
+    link: "/depot/depotmanager/report/TeamProdictivity",
   },
   //Reportes de facturacion
   {
     title: "Ingresos por cliente",
     description: "Visualiza los ingresos generados por cada unos de los clientes",
     icon: <User className="h-10 w-10 text-red-600" />,
-    link: "/depot/reports/IncomeCustomers"
+    link: "/depot/billingmanager/report/CustomerIncome"
   },
   {
     title: "Pedidos facturados",
     description: "Analiza los pedidos que ya se encuentran facturados para su pronta verificacion",
     icon: <User className="h-10 w-10 text-red-600" />,
-    link: "/depot/reports/OrdersBilled"
+    link: "/depot/billingmanager/report/OrderBilled"
   },
   {
     title: "Tiempos de proceso de facturacion",
     description: "Mide y visaluiza el tiempo necesario que le toma al empleado de facturacion facturar el pedido",
     icon: <User className="h-10 w-10 text-red-600" />,
-    link: "/depot/reports/BillingTimeProcess",
+    link: "/depot/billingmanager/report/BillingTimeProcess",
   },
 ];
 

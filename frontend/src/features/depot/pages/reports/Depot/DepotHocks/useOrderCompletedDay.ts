@@ -1,55 +1,43 @@
+
 import { useEffect,useState } from "react";
-import { OrderStatus, type Order } from "../../../../../sales/types/OrderTypes";
+import API from "../../../../../../api/axios";
+import type { Order } from "../../../../../sales/types/OrderTypes";
 
-type OrderForDay = {
-    date:string;
-    total:number;
-};
+type OrderCompleted = {
+    OrderId: Order['id'];
+    finishdate: Order['finishDate']
+}
 
-export const useOrderCompletedDay = () => {
-    const [data,setData] = useState<OrderForDay[]>([]);
-    const [loading,setLoading] = useState(true);
+export const useOrderCompletedDay = (page: number, pageSize: number) => {
+    const [data,setData] = useState<OrderCompleted[]>([]);
+    const [loading,setLoading] = useState<boolean>(true);
     const [error,setError] = useState<string | null>(null);
+    const [totalpages,setTotalPages] = useState<number>(1);
 
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true);
+            setError(null);
             try{
-                const orders: Order[] = await new Promise((resolve) => 
-                    setTimeout(() => {
-                        //se utiilzo mock datos: 
-                        resolve([
-                            { id: 1, finishDate: "2025-06-03 10:00", startedDate: "", orderDate: "", customerId: "", status: OrderStatus.Prepared, items: [] },
-                            { id: 2, finishDate: "2025-06-03 12:00", startedDate: "", orderDate: "", customerId: "", status: OrderStatus.Prepared, items: [] },
-                            { id: 3, finishDate: "2025-06-04 09:30", startedDate: "", orderDate: "", customerId: "", status: OrderStatus.Prepared, items: [] },
-                            { id: 4, finishDate: "2025-06-04 16:00", startedDate: "", orderDate: "", customerId: "", status: OrderStatus.Prepared, items: [] },
-                            { id: 5, finishDate: "2025-06-05 08:45", startedDate: "", orderDate: "", customerId: "", status: OrderStatus.Prepared, items: [] },
-                        ])
-                    },1000)
-                );
-
-                const countByDate : {[date: string] : number} = {};
-
-                orders.forEach((order) => {
-                    const date = order.finishDate.split("")[0];
-                    countByDate[date] = (countByDate[date] || 0 ) + 1;
+                //Cambiar la ruta de la api:
+                const response = await API.get<OrderCompleted[]>("/orders", {
+                    params: { page, pageSize },
                 });
 
-                const result: OrderForDay[] = Object.entries(countByDate).map(([date, total]) => ({
-                date,
-                total,
-                }));
-
-                setData(result);
+                const totalCount = Number(response.headers["x-total-count"]);
+                    setTotalPages(Math.ceil(totalCount / pageSize));
+                    setData(response.data);
+                
             }catch(error){
-                setError("Error al cargar los pedidos");
-            } finally{
+                console.error("Error al obtener los pedidos completos. " , error);
+                setError("No se pudieron obtener los datos.");
+            }finally{
                 setLoading(false);
             }
-        }; 
+        }
 
         fetchData();
+    },[page,pageSize] );
 
-    }, []);
-
-    return {data,loading,error};
+    return {data,loading,error,totalpages}
 }

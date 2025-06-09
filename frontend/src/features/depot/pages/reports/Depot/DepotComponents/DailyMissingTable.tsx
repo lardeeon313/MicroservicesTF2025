@@ -2,10 +2,10 @@ import React from "react";
 import type { Order } from "../../../../../sales/types/OrderTypes";
 import type { OrderItem } from "../../../../../sales/types/OrderTypes";
 
-export interface DailyMissing{
+export type DailyMissing = {
     orderID: Order['id']
     ItemID: OrderItem['id']
-    MissingHour: Order['orderDate']
+    MissingHour: number;
 }
 
 type Props = {
@@ -20,32 +20,23 @@ const DailyMissingTable : React.FC<Props> = ({data}) => {
           <tr>
             <th className="px-4 py-2 text-left">Pedido ID</th>
             <th className="px-4 py-2 text-left">Producto ID</th>
-            <th className="px-4 py-2 text-left">Hora</th>
+            <th className="px-4 py-2 text-left">Hora del Faltante</th>
           </tr>
         </thead>
         <tbody>
-          {data.length > 0 ? (
-            data.map((item, index) => (
-              <tr
-                key={index}
-                className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
-              >
+          {data.map((item,index) => (
+              <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                 <td className="px-4 py-2">{item.orderID}</td>
                 <td className="px-4 py-2">{item.ItemID}</td>
                 <td className="px-4 py-2">{item.MissingHour}</td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={3} className="text-center px-4 py-4">
-                No hay productos faltantes.
-              </td>
-            </tr>
-          )}
+          ))}
         </tbody>
       </table>
     </div>
-    )
+  )
 }
 
 export default DailyMissingTable;
+
+

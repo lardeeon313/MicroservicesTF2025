@@ -1,4 +1,4 @@
-import { Operator } from "../types/DepotTeamTypes";
+import type { Operator } from "../types/DepotTeamTypes";
 import OperatorCard from "./OperatorCard";
 
 interface Props {

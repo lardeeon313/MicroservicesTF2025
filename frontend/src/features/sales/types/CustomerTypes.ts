@@ -82,5 +82,13 @@ export enum CustomerSatisfaction {
   Neutra = "Neutra"
 }
 
+//----------Reports Billing 
+
+export interface CustomerIncome{
+  id: Customer['id']
+  FirstName : Customer['firstName']
+  LastName : Customer['lastName']
+  TotalIncome : number
+}
 
 
