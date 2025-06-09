@@ -10,7 +10,7 @@ import type { Order } from "../../../otherTypes/OrderType";
 import createMockOrder from "../../mock/Mock";
 import NotificationSectionPage from "../NotificationPages/NotificationSectionPage"; 
 import NavbarOperator from "../../components/Navbar/NavbarOperator";
-import { View } from "react-native";
+import { View , Text} from "react-native";
 
 const user = { name: 'Juan Pérez', role: 'Operario' };
 const isAuthenticated = true;
@@ -31,10 +31,7 @@ const ListofMissingOrdersPage = () => {
     } = params ?? {};
 
     //NUEVO: PARA CAMBIAR EL ESTADO DEL PEDIDO SI PRECIONA EL BOTON:
-    const [orderStatus, setOrderStatus] = useState<OrderStatus>(status as OrderStatus)
-
-    //en caso de que el estado no sea InPreparation, no se renderiza nada
-    if(orderStatus !== OrderStatus.InPreparation) return null;
+    const [orderStatus, setOrderStatus] = useState<OrderStatus>(OrderStatus.InPreparation)
 
     const HandleIssueMissing = () => {
         const newMissing: Missing = {
@@ -76,8 +73,11 @@ const ListofMissingOrdersPage = () => {
 
     //NUEVO: 
     const UpdateOrderArmed = () => {
-        setOrderStatus(OrderStatus.Prepared);
+        if(orderStatus !== OrderStatus.InPreparation){
+            setOrderStatus(OrderStatus.Prepared);
+        }
     }
+
 
     //render 
     return(

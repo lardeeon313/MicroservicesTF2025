@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { OrderStatus, type Order } from '../../../otherTypes/OrderType'; // Asegúrate de que la ruta sea correcta
 import NavbarOperator from '../Navbar/NavbarOperator';
 import { ScrollView } from 'react-native';
+import { OrderStatusLabels } from '../../constants/UseStatusOrderOperator';
 
 type Props = {
   order: Order;
@@ -19,7 +20,7 @@ const ListofConfirmedOrders = ({order, onSeeDetail, onAceeptOrder}: Props) => {
           Cliente: {order.customerFirstName} {order.customerLastName}
         </Text>
         <Text style={{ marginTop: 4,fontSize: 20 }}>
-          Estado: {order.status}
+          Estado: {OrderStatusLabels[order.status]}
         </Text>
 
         <View style={{ flexDirection: 'row', marginTop: 12, gap: 10 }}>

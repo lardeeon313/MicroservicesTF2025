@@ -28,10 +28,13 @@ const NavbarOperator = ({ user, isAuthenticated, logout }: NavbarProps) => {
         </TouchableOpacity>
 
         {isAuthenticated && user && (
-            <View style={{position: 'relative'}}>
+            <View style={{alignItems:'center',gap:10}}>
                 <TouchableOpacity onPress={() => setIsOpen(!isOpen)}>
-                    <Text style={{color: '#ffffff', fontSize: 16, fontWeight: 'bold'}}>{user.name}</Text>
-                    <Text style={{color: '#9ca3af', fontSize: 14}}>{user.role}</Text>
+                    <Image source={require('../../../assetsImages/icon-person.png')} style={{width: 40,height: 40,marginRight: 8,resizeMode: 'contain'}} />
+                    <View>
+                      <Text style={{color: '#ffffff', fontSize: 14, fontWeight: 'bold'}}>{user.name}</Text>
+                      <Text style={{color: '#9ca3af', fontSize: 12, fontWeight:'bold'}}>{user.role}</Text>
+                    </View>
                 </TouchableOpacity>
             </View>
         )}

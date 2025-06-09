@@ -4,6 +4,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { OrderStatusLabels } from "../../constants/UseStatusOrderOperator";
 import MissingCount from "./MissingCount";
 import type { Missing } from "../../types/Missing";
+import { OrderStatus } from "../../../otherTypes/OrderType";
 
 type Props = {
   id: number;
@@ -31,7 +32,7 @@ const ListOfMissingOrders = ({id,customer,status,missingCount,onVerDetalle,onEmi
         </TouchableOpacity>
       </View>
 
-      {onMarcarArmado && (
+      {onMarcarArmado && OrderStatus.InPreparation && (
         <TouchableOpacity style={{marginTop: 10,padding: 8,backgroundColor: '#10B981',borderRadius: 10,}}onPress={onMarcarArmado}>
           <Text style={{ color: '#fff', textAlign: 'center',fontWeight:'bold' }}>Marcar como Armado</Text>
         </TouchableOpacity>

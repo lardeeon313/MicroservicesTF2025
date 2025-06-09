@@ -4,7 +4,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { DepotStackParamList } from '../../types/DepotStackType';
 import type { Order } from '../../../otherTypes/OrderType';
 import NavbarOperator from '../Navbar/NavbarOperator';
-
+import { OrderStatusLabels } from '../../constants/UseStatusOrderOperator';
 
 type Props = {
   order: Order;
@@ -29,7 +29,7 @@ const ListofArmOrders = ({ order }: Props) => {
             <Text style={{ color: '#fff', fontWeight: 'bold' }}>Ver Detalle</Text>
           </TouchableOpacity>
         </View>
-        <Text style={{ fontSize: 20, color: '#6B7280', marginTop: 12 }}>Estado: {order.status}</Text>
+        <Text style={{ fontSize: 20, color: '#6B7280', marginTop: 12 }}>Estado: {OrderStatusLabels[order.status]}</Text>
       </View>
   );
 

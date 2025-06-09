@@ -1,7 +1,7 @@
 import { View, Text, ScrollView } from 'react-native';
 import { Order } from '../../../otherTypes/OrderType';
 import CheckList from '../additional/checkList/CheckList';
-
+import { OrderStatusLabels } from '../../constants/UseStatusOrderOperator';
 
 type Props = {
   order: Order;
@@ -28,7 +28,7 @@ const DetailOrderCard = ({order}: Props) => {
         </Text>
 
         <Text style={{ fontSize: 20, marginBottom: 12 }}>
-          Estado: {order.status}
+          Estado: {OrderStatusLabels[order.status]}
         </Text>
 
         <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>

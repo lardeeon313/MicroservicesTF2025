@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, Button, StyleSheet, ScrollView } from 'react-native';
 import type { Order } from "../../../otherTypes/OrderType";
+import { OrderStatusLabels } from "../../constants/UseStatusOrderOperator";
 
 type Props = {
   order:Order;
@@ -28,7 +29,7 @@ const AcceptOrder: React.FC<Props> = ({order, onAccept, onReject}) => {
       ))}
 
       <Text style={{ fontSize: 20, marginBottom: 12 }}>
-        Estado: {order.status}
+        Estado: {OrderStatusLabels[order.status]}
       </Text>
 
       <View style={{ marginTop: 30, gap: 15 }}>
