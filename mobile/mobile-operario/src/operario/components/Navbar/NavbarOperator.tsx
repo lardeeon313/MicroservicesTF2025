@@ -2,7 +2,7 @@
 // This component renders a navigation bar for the operator with a logo and user icon*/
 
 import React from 'react';
-import { View, Image, StyleSheet,Text, TouchableOpacity } from 'react-native';
+import { View, Image,Text, TouchableOpacity } from 'react-native';
 import { useState } from "react";
 import { useNavigation } from '@react-navigation/native';
 //import NavbarDropdownMenuComponent from "./NavbarDropdownMenu";

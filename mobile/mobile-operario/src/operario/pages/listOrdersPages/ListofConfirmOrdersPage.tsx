@@ -53,6 +53,8 @@ const ListOfConfirmedOrdersPage = () => {
                 <ListofConfirmedOrders
                 key={order.id}
                 order={order}
+                customer={`${order.customer?.firstName} ${order.customer?.lastName}`}
+                status={order.status}
                 onSeeDetail={() => handleSeeDetail(order)}
                 onAceeptOrder={() => handleAcceptOrder(order)}
                 />

@@ -16,7 +16,7 @@ const AcceptOrder: React.FC<Props> = ({order, onAccept, onReject}) => {
         Pedido: {order.id}
       </Text>
       <Text style={{ fontSize: 18, marginBottom: 20 }}>
-        Cliente: {order.customerFirstName} {order.customerLastName}
+        Cliente: {`${order.customer?.firstName} ${order.customer?.lastName}`}
       </Text>
 
       <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 10 }}>

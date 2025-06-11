@@ -6,18 +6,20 @@ import { OrderStatusLabels } from '../../constants/UseStatusOrderOperator';
 
 type Props = {
   order: Order;
+  customer:string;
+  status: string;
   onSeeDetail: () => void;
   onAceeptOrder: () => void;
 }
 
-const ListofConfirmedOrders = ({order, onSeeDetail, onAceeptOrder}: Props) => {
+const ListofConfirmedOrders = ({order,customer,status, onSeeDetail, onAceeptOrder}: Props) => {
   return(
       <View style={{backgroundColor: '#ffffff',padding: 16,borderRadius: 8,shadowColor: '#000',shadowOffset: { width: 0, height: 2 },shadowOpacity: 0.1,shadowRadius: 4,elevation: 3,marginBottom: 16,}}>
         <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-          Pedido #{order.id}
+          Pedido# : {order.id}
         </Text>
         <Text style={{ marginTop: 4 }}>
-          Cliente: {order.customerFirstName} {order.customerLastName}
+          Cliente: {customer}
         </Text>
         <Text style={{ marginTop: 4,fontSize: 20 }}>
           Estado: {OrderStatusLabels[order.status]}

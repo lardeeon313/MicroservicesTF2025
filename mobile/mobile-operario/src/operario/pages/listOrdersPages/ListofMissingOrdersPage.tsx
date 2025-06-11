@@ -11,7 +11,9 @@ import createMockOrder from "../../mock/Mock";
 import NotificationSectionPage from "../NotificationPages/NotificationSectionPage"; 
 import NavbarOperator from "../../components/Navbar/NavbarOperator";
 import { View , Text} from "react-native";
+import { mockOrders } from "../../mock/MockOrders";
 
+//
 const user = { name: 'Juan Pérez', role: 'Operario' };
 const isAuthenticated = true;
 
@@ -21,10 +23,13 @@ const ListofMissingOrdersPage = () => {
 
     const [missingItems,setMissingItems] = useState<Missing[]>([]);
 
+    const mockOrderInPrep = mockOrders.find((order) => order.status === OrderStatus.InPreparation );
+    if (!mockOrderInPrep) throw new Error("No se encontró el pedido en preparación");
+
     const {
-        id = 1,
-        customer = "Sin cliente",
-        status = "inPreparation",
+        id = mockOrderInPrep.id,
+        customer = `${mockOrderInPrep.customer?.firstName} ${mockOrderInPrep.customer?.lastName}`,
+        status = mockOrderInPrep.status,
         onVerDetalle = () => {},
         onEmitirFaltante = () => {},
         onMarcarArmado = () => {},
@@ -36,16 +41,7 @@ const ListofMissingOrdersPage = () => {
     const HandleIssueMissing = () => {
         const newMissing: Missing = {
             id: missingItems.length + 1,
-            product: {
-                id: 101,
-                orderId: id,
-                productName: "Aceite de Girasol",
-                productBrand: "Natura",
-                quantity: 4,
-                packaging: "Caja x12",
-                unitPrice: 1300,
-                total: 5200,
-            },
+            product: mockOrderInPrep.items[0],
             notifyMissing: (description: string) => ({
                 missingDate: new Date(),
                 missingTimeUtc: new Date(),
@@ -63,12 +59,12 @@ const ListofMissingOrdersPage = () => {
 
 
     const onSeeDetail = () => {
-        navigation.navigate("DetailOrder", {order: createMockOrder(id)});
+        navigation.navigate("DetailOrder", {order: mockOrderInPrep});
     }
 
     //para ir a la sección de notificaciones
     const onNotifySection = () => {
-        navigation.navigate("NotificationPage", {order: createMockOrder(id)});
+        navigation.navigate("NotificationPage", {order: mockOrderInPrep});
     }
 
     //NUEVO: 
@@ -85,7 +81,7 @@ const ListofMissingOrdersPage = () => {
             <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log("Cerrar sesión")}/>
                 <ListOfMissingOrders 
                 id={id}
-                customer={customer}
+                customer={`${mockOrderInPrep.customer?.firstName} ${mockOrderInPrep.customer?.lastName}`}
                 status={status}
                 missingCount={missingItems}
                 onVerDetalle={() => onSeeDetail()}

@@ -1,5 +1,5 @@
 import { View, Text, ScrollView } from 'react-native';
-import { Order } from '../../../otherTypes/OrderType';
+import { Order, OrderStatus } from '../../../otherTypes/OrderType';
 import CheckList from '../additional/checkList/CheckList';
 import { OrderStatusLabels } from '../../constants/UseStatusOrderOperator';
 
@@ -20,11 +20,11 @@ const DetailOrderCard = ({order}: Props) => {
 
       <View style={{backgroundColor: '#fff', borderRadius: 8, padding: 16, elevation: 2 }}>
         <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
-          Pedido: {order.id}
+          Pedido#: {order.id}
         </Text>
 
         <Text style={{fontSize: 16, marginBottom: 4 }}>
-          Cliente: {order.customerFirstName} {order.customerLastName}
+          Cliente: {`${order.customer?.firstName} ${order.customer?.lastName}`}
         </Text>
 
         <Text style={{ fontSize: 20, marginBottom: 12 }}>
@@ -40,6 +40,7 @@ const DetailOrderCard = ({order}: Props) => {
             key={index}
             productName={item.productName}
             quantity={item.quantity}
+            disblead={order.status === OrderStatus.Pending}
           />
         ))}
       </View>

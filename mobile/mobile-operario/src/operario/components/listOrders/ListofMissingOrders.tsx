@@ -20,8 +20,12 @@ type Props = {
 const ListOfMissingOrders = ({id,customer,status,missingCount,onVerDetalle,onEmitirFaltante,onMarcarArmado,onSeccionNotificaciones}: Props) => {
   return(
     <View style={{backgroundColor: '#fff',padding: 16,borderRadius: 12,shadowColor: '#000',shadowOffset: { width: 0, height: 2 },shadowOpacity: 0.1,elevation: 2,marginBottom: 16,}}>
-      <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>Pedido# {id.toString()}</Text>
-      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Cliente :  {customer}</Text>
+      <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
+        Pedido# : {id.toString()}
+      </Text>
+      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+        Cliente : {customer}
+      </Text>
 
       <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 16}} >
         <TouchableOpacity style={{ backgroundColor: '#3B82F6', padding: 8, borderRadius: 10 }} onPress={onVerDetalle}>
