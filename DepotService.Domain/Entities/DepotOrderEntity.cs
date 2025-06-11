@@ -15,28 +15,33 @@ namespace DepotService.Domain.Entities
         public string CustomerName { get; set; } = null!;
         public string CustomerEmail { get; set; } = null!;
         public string PhoneNumber { get; set; } = null!;
-        public string DeliveryDetail { get; set; } = null!;
+        public string? DeliveryDetail { get; set; }
         public DateTime OrderDate { get; set; }
         public OrderStatus Status { get; set; }
-        public ICollection<DepotOrderItemEntity> Items { get; set; } = new List<DepotOrderItemEntity>();
 
+        // Relacion con Items
+        public ICollection<DepotOrderItemEntity> Items { get; set; } = [];
+
+        // Relacion con Faltantes
+        public ICollection<DepotOrderMissing> Missings { get; set; } = [];
         public Guid? AssignedOperatorId { get; private set; }
+        public DepotTeamEntity AssignedDepotTeam { get; set; } = null!;
         public int? AssignedDepotTeamId { get; private set; }
         public void AssignToOperator(Guid operatorId)
         {
-            if (Status != OrderStatus.ConfirmedToSales)
+            if (Status != OrderStatus.Received && Status != OrderStatus.ReReceived)
                 throw new InvalidOperationException("Cannot assign employee to an order that is not confirmed to sales.");
 
             AssignedOperatorId = operatorId;
             Status = OrderStatus.Assigned;
-
-            // Evento para notificar que se ha asignado un operador a la orden
         }
 
-        // public void AssignToDepotTeam() 
-        // Añadir evento al momento de asignar DepotTeam a pedido.
-        //  
+        public void ConfirmAssigment()
+        {
+            if(Status != OrderStatus.Assigned)
+                throw new InvalidOperationException("Cannot confirm assignment of an order that is not assigned to a ID Operator.");
 
-
+            Status = OrderStatus.InProgress;
+        }
     }
 }

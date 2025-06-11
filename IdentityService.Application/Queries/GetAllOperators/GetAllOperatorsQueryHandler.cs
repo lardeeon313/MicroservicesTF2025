@@ -14,7 +14,7 @@ namespace IdentityService.Application.Queries.GetAllOperators
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         public async Task<IEnumerable<OperatorDto>> HandleAsync()
         {
-            var operators = await _userManager.GetUsersInRoleAsync("Operator");
+            var operators = await _userManager.GetUsersInRoleAsync("DepotOperator");
 
             return operators.Select(o => new OperatorDto
             {

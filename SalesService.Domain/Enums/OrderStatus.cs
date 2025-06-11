@@ -17,6 +17,8 @@ namespace SalesService.Domain.Enums
         Verify,   // Verificado
         OnTheWay,   // En camino
         Delivered,  // Entregado
-        Canceled    // Cancelado por ventas
+        Canceled,    // Cancelado por ventas
+        PendingResolution, // Pendiente de resolución
+        ReIssued, // Reemitido
     }
 }   

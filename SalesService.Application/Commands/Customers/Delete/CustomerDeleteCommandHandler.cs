@@ -1,7 +1,7 @@
 ﻿using RabbitMQ.Client;
-using SalesService.Application.IntegrationEvents.Customer;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Messaging.Publisher;
+using SharedKernel.IntegrationEvents.SalesEvents.Customer;
 using System;
 using System.Collections.Generic;
 using System.Linq;

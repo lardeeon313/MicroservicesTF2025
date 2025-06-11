@@ -1,12 +1,13 @@
-﻿using SalesService.Application.DTOs.Order;
-using SalesService.Domain.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SalesService.Domain.Entities.OrderEntity;
+using SalesService.Domain.Enums;
+using SharedKernel.IntegrationEvents.SalesEvents.DTOs;
 
-namespace SalesService.Application.IntegrationEvents.Order
+namespace SharedKernel.IntegrationEvents.SalesEvents.Order
 {
     public class OrderIssuedIntegrationEvent
     {
@@ -19,7 +20,7 @@ namespace SalesService.Application.IntegrationEvents.Order
         public OrderStatus Status { get; set; }
         public DateTime OrderDate { get; set; }
         public string? DeliveryDetail { get; set; }
-
-        public List<OrderItemDto> Items { get; set; } = new();
+        public List<OrderItemsDto> Items { get; set; } = [];
     }
+
 }

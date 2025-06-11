@@ -27,8 +27,13 @@ namespace DepotService.Application.Queries.DepotManager.GetAllTeams
                 TeamName = t.TeamName,
                 TeamDescription = t.TeamDescription,
                 CreatedAt = t.CreatedAt,
+                Operators = t.Assignments.Select(o => new OperatorInTeamDto
+                {
+                    OperatorByUserId = o.OperatorUserId,
+                    AssignAt = o.AssignedAt,
+                    RoleInTeam = o.RoleInTeam,
+                }).ToList()
             }).ToList();
-
         }
     }
 }

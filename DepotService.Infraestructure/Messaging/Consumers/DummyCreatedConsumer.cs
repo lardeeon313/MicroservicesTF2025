@@ -35,7 +35,7 @@ namespace DepotService.Infraestructure.Messaging.Consumers
                 Password = _config["RabbitMQ:Password"] ?? "guest"
             };
 
-            var connection = await factory.CreateConnectionAsync();
+            var connection = await factory.CreateConnectionAsync(stoppingToken);
             var channel = await connection.CreateChannelAsync();
 
             await channel.QueueDeclareAsync(

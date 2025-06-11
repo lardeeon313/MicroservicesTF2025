@@ -33,8 +33,10 @@ namespace SalesService.Infraestructure.Messaging.Publisher
 
 
             var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
+            //var props = await channel.CreateBasicPropertiesAsync();
+            //props.Persistent = true; // Make the message persistent
 
-            await channel.BasicPublishAsync(exchange: "", routingKey: queueName, body: body);
+            await channel.BasicPublishAsync(exchange: "", routingKey: queueName, body: body/*basicProperties: props*/);
 
             Console.WriteLine($"✅ [x] Evento publicado en la cola '{queueName}': {JsonSerializer.Serialize(message)}");
         }

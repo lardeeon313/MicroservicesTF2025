@@ -1,9 +1,9 @@
 ﻿using SalesService.Application.DTOs.Order;
-using SalesService.Application.IntegrationEvents.Order;
 using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Messaging.Publisher;
+using SharedKernel.IntegrationEvents.SalesEvents.Order;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,7 +62,7 @@ namespace SalesService.Application.Commands.Orders.Register
                 OrderId = order.Id,
                 CustomerId = order.CustomerId,
                 OrderDate = order.OrderDate,
-                Items = order.Items.Select(i => new OrderItemDto
+                Items = order.Items.Select(i => new OrderItem
                 {
                     ProductName = i.ProductName,
                     ProductBrand = i.ProductBrand,

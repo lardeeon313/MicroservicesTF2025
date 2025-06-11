@@ -1,8 +1,9 @@
-﻿using SalesService.Application.DTOs.Order;
-using SalesService.Application.IntegrationEvents.Order;
+﻿using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Messaging.Publisher;
+using SharedKernel.IntegrationEvents.SalesEvents.Order;
+using SharedKernel.IntegrationEvents.SalesEvents.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +45,7 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
             
             if (command.Request.Status == OrderStatus.Issued)
             {
-                // Creamos el evento
+                // Creamos el evento de integración para la orden emitida
                 var integrationEvent = new OrderIssuedIntegrationEvent
                 {
                     OrderId = existingOrder.Id,
@@ -55,11 +56,12 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
                     DeliveryDetail = existingOrder.DeliveryDetail,
                     OrderDate = existingOrder.OrderDate,
                     Status = existingOrder.Status,
-                    Items = existingOrder.Items.Select(i => new OrderItemDto
+                    Items = existingOrder.Items.Select(i => new OrderItemsDto
                     {
                         Id = i.Id,
-                        ProductName = i.ProductName,
+                        OrderId = existingOrder.Id,
                         ProductBrand = i.ProductBrand,
+                        ProductName = i.ProductName,
                         Quantity = i.Quantity
                     }).ToList()
                 };
@@ -67,6 +69,7 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
                 // Publicamos el evento en RabbitMQ
                 await _publisher.PublishAsync(integrationEvent, "order_issued_queue");
             }
+
             return true;
         }
     }

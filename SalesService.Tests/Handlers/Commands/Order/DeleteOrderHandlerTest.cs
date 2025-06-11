@@ -1,10 +1,10 @@
 ﻿using FluentAssertions;
 using Moq;
 using SalesService.Application.Commands.Orders.Delete;
-using SalesService.Application.IntegrationEvents.Order;
 using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Messaging.Publisher;
+using SharedKernel.IntegrationEvents.SalesEvents.Order;
 using System;
 using System.Collections.Generic;
 using System.Linq;

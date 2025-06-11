@@ -2,12 +2,21 @@ using DepotService.Application.Commands.DepotManager.AssignOperator;
 using DepotService.Application.Commands.DepotManager.AssignOrder;
 using DepotService.Application.Commands.DepotManager.CreateTeam;
 using DepotService.Application.Commands.DepotManager.DeleteTeam;
+using DepotService.Application.Commands.DepotManager.OrderMissingReported;
 using DepotService.Application.Commands.DepotManager.RemoveOperatorToTeam;
 using DepotService.Application.Commands.DepotManager.UpdateTeam;
+using DepotService.Application.Commands.DepotOperator.ConfirmAssignedOrder;
 using DepotService.Application.DTOs.DepotManager.Request;
+using DepotService.Application.Queries.DepotManager.GetAllMissingOrders;
+using DepotService.Application.Queries.DepotManager.GetAllOrders;
 using DepotService.Application.Queries.DepotManager.GetAllTeams;
+using DepotService.Application.Queries.DepotManager.GetByIdOrder;
+using DepotService.Application.Queries.DepotManager.GetMissingOrderById;
+using DepotService.Application.Queries.DepotManager.GetOrdersByStatus;
 using DepotService.Application.Queries.DepotManager.GetTeamById;
 using DepotService.Application.Queries.DepotManager.GetTeamByName;
+using DepotService.Application.Queries.Operator.GetOrderById;
+using DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery;
 using DepotService.Application.Validators.DepotManager;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
@@ -44,24 +53,34 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// Add Commands and Queries
+// Add Queries
 builder.Services.AddScoped<IGetAllTeamsQueryHandler,  GetAllTeamsQueryHandler>();
 builder.Services.AddScoped<IGetTeamByNameQueryHandler, GetTeamByNameQueryHandler>();
 builder.Services.AddScoped<IGetTeamByIdQueryHandler,  GetTeamByIdQueryHandler>();
+builder.Services.AddScoped<IGetMissingOrderByIdQueryHandler, GetMissingOrderByIdQueryHandler>();
+builder.Services.AddScoped<IGetAllMissingOrdersQueryHandler, GetAllMissingOrdersQueryHandler>();
+builder.Services.AddScoped<IGetAllOrdersQueryHandler, GetAllOrdersQueryHandler>();
+builder.Services.AddScoped<IGetOrdersByStatusQueryHandler, GetOrdersByStatusQueryHandler>();
+builder.Services.AddScoped<IGetByIdOrderQueryHandler, GetByIdOrderQueryHandler>();
+builder.Services.AddScoped<IGetOrdersByOperatorQueryHandler, GetOrdersByOperatorQueryHandler>();
+builder.Services.AddScoped<IGetOrderByIdQueryHandler, GetOrderByIdQueryHandler>();
 
+// Add Commands
 builder.Services.AddScoped<IAssignOperatorCommandHandler, AssignOperatorCommandHandler>();
 builder.Services.AddScoped<IAssignOrderCommandHandler,  AssignOrderCommandHandler>();
 builder.Services.AddScoped<ICreateTeamCommandHandler,  CreateTeamCommandHandler>();
 builder.Services.AddScoped<IDeleteTeamCommandHandler,  DeleteTeamCommandHandler>();
 builder.Services.AddScoped<IUpdateTeamCommandHandler,  UpdateTeamCommandHandler>();
 builder.Services.AddScoped<IRemoveOperatorCommandHandler, RemoveOperatorCommandHandler>();
+builder.Services.AddScoped<IOrderMissingReportedCommandHandler, OrderMissingReportedCommandHandler>();
+builder.Services.AddScoped<IConfirmAssignedOrderCommandHandler, ConfirmAssignedOrderCommandHandler>();
 
 // Add FluentValidation
 builder.Services.AddScoped<IValidator<AssignOperatorRequest>, AssignOperatorCommandValidator>();
 builder.Services.AddScoped<IValidator<CreateTeamRequest>, CreateTeamCommandValidator>();
 builder.Services.AddScoped<IValidator<UpdateTeamRequest>, UpdateTeamCommandValidator>();
 builder.Services.AddScoped<IValidator<AssignOrderRequest>, AssignOrderCommandValidator>();
-
+builder.Services.AddScoped<IValidator<OrderMissingReportedRequest>, OrderMissingReportedCommandValidator>();
 
 
 // Add HostedService RabbitConsumer

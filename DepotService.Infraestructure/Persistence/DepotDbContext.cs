@@ -12,8 +12,10 @@ namespace DepotService.Infraestructure
     public class DepotDbContext(DbContextOptions<DepotDbContext> options) : DbContext(options)
     {
         public DbSet<DepotOrderEntity> DepotOrders { get; set; }
+        public DbSet<DepotOrderItemEntity> DepotOrderItems { get; set; }
         public DbSet<DepotTeamEntity> DepotTeams { get; set; }
         public DbSet<DepotTeamAssignment> TeamAssignments { get; set; }
+        public DbSet<DepotOrderMissing> DepotOrderMissings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -37,6 +39,32 @@ namespace DepotService.Infraestructure
             {
                 order.HasKey(o => o.DepotOrderId);
             });
+
+            modelBuilder.Entity<DepotOrderEntity>()
+                .HasOne(o => o.AssignedDepotTeam)
+                .WithMany()
+                .HasForeignKey(o => o.AssignedDepotTeamId);
+
+            modelBuilder.Entity<DepotOrderEntity>()
+                .HasMany(o => o.Items)
+                .WithOne(i => i.DepotOrderEntity)
+                .HasForeignKey(i => i.DepotOrderEntityId);
+
+            modelBuilder.Entity<DepotOrderEntity>()
+                .HasMany(o => o.Missings)
+                .WithOne(m => m.DepotOrder)
+                .HasForeignKey(m => m.DepotOrderId);
+
+            modelBuilder.Entity<DepotOrderMissing>()
+                .HasKey(m => m.MissingId);
+
+            modelBuilder.Entity<DepotOrderMissing>()
+                .HasMany(m => m.MissingItems)
+                .WithOne(i => i.DepotOrderMissing)
+                .HasForeignKey(i => i.OrderMissingId);
+
+            modelBuilder.Entity<DepotOrderItemEntity>()
+                .HasKey(i => i.Id);
         }
     }
 }
