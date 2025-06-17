@@ -19,9 +19,10 @@ namespace DepotService.Domain.Entities
         // Propiedades del producto
         public string ProductName { get; set; } = null!;
         public string ProductBrand { get; set; } = null!;
-        public string? Packaging { get; set; }
+        public string? PackagingType { get; set; }
         public decimal? UnitPrice { get; set; }
         public int Quantity { get; set; }
+        public bool IsReady { get; set; } = false; // Indica si el item está listo para ser entregado
         public decimal? Total => (Quantity * UnitPrice ?? 0);
 
         // Si es item reportado como missing

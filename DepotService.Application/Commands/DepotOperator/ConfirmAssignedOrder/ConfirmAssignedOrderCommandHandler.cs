@@ -1,6 +1,8 @@
 ﻿using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
+using DepotService.Infraestructure.Messaging.Publisher;
 using Microsoft.Extensions.Logging;
+using SharedKernel.IntegrationEvents.DepotEvents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +11,9 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Commands.DepotOperator.ConfirmAssignedOrder
 {
-    public class ConfirmAssignedOrderCommandHandler(DepotDbContext context, IDepotOrderRepository repository, ILogger<ConfirmAssignedOrderCommandHandler> logger) : IConfirmAssignedOrderCommandHandler
+    public class ConfirmAssignedOrderCommandHandler(IRabbitMQPublisher publisher, DepotDbContext context, IDepotOrderRepository repository, ILogger<ConfirmAssignedOrderCommandHandler> logger) : IConfirmAssignedOrderCommandHandler
     {
+        private readonly IRabbitMQPublisher _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
         private readonly DepotDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
         private readonly IDepotOrderRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         private readonly ILogger<ConfirmAssignedOrderCommandHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -41,6 +44,17 @@ namespace DepotService.Application.Commands.DepotOperator.ConfirmAssignedOrder
             await _repository.UpdateOrderAsync(order);
             await _context.SaveChangesAsync();
             _logger.LogInformation($"Order with ID {command.DepotOrderId} has been confirmed by operator {command.OperatorUserId}.");
+
+            // Publicamos evento para SalesService
+            var integrationEvent = new OrderInPreparationIntegrationEvent
+            {
+                SalesOrderId = order.SalesOrderId,
+                InPreparationTime = DateTime.UtcNow,
+            };
+
+            await _publisher.PublishAsync(integrationEvent, "order_in_preparation_queue");
+            _logger.LogInformation($"OrderInPreparationIntegrationEvent published for SalesOrderId {order.SalesOrderId}.");
+
         }
     }
 }

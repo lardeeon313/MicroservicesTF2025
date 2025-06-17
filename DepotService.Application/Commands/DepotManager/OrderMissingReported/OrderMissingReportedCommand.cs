@@ -1,4 +1,4 @@
-﻿using DepotService.Application.DTOs.DepotManager;
+﻿using DepotService.Application.DTOs;
 using DepotService.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -15,16 +15,12 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
     public class OrderMissingReportedCommand
     {
         public int DepotOrderId { get; set; }
-        public int SalesOrderId { get; set; }
         public string MissingReason { get; set; } = string.Empty;
         public string MissingDescription { get; set; } = string.Empty;
         public List<DepotOrderItemsReportedDto> MissingItems { get; set; } = [];
-
-
-        public OrderMissingReportedCommand(int depotOrderId,List<DepotOrderItemsReportedDto> missingItems, int salesOrderId, string missingReason, string missingDescription)
+        public OrderMissingReportedCommand(int depotOrderId,List<DepotOrderItemsReportedDto> missingItems, string missingReason, string missingDescription)
         {
             DepotOrderId = depotOrderId;
-            SalesOrderId = salesOrderId;
             MissingReason = missingReason;
             MissingDescription = missingDescription;
             MissingItems = missingItems;

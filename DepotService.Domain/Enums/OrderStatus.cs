@@ -11,9 +11,10 @@ namespace DepotService.Domain.Enums
         Received,         // Recibido desde ventas
         ReReceived,      // Re recibido desde ventas
         Assigned,         // Asignado a operario
-        InProgress,       // En proceso
+        InPreparation,       // En preparacion
         MissingProduct,   // Notificado falta
         SentToBilling,     // Enviado a facturar
         PendingResolution, // Pendiente de resolución
+        Prepared,        // Preparado
     }
 }

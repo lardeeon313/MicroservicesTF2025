@@ -117,7 +117,7 @@ namespace SalesService.API.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Packaging")
+                    b.Property<string>("PackagingType")
                         .HasColumnType("longtext");
 
                     b.Property<string>("ProductBrand")
@@ -139,6 +139,58 @@ namespace SalesService.API.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderMissing", b =>
+                {
+                    b.Property<int>("MissingId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("DescriptionResolution")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("MissingDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("MissingDescription")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("MissingReason")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MissingId");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderMissings");
+                });
+
+            modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderMissingItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("MissingQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderMissingId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderItemId");
+
+                    b.HasIndex("OrderMissingId");
+
+                    b.ToTable("OrderMissingItems");
                 });
 
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.Order", b =>
@@ -163,9 +215,46 @@ namespace SalesService.API.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderMissing", b =>
+                {
+                    b.HasOne("SalesService.Domain.Entities.OrderEntity.Order", "Order")
+                        .WithMany("MissingReports")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderMissingItem", b =>
+                {
+                    b.HasOne("SalesService.Domain.Entities.OrderEntity.OrderItem", "OrderItem")
+                        .WithMany()
+                        .HasForeignKey("OrderItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SalesService.Domain.Entities.OrderEntity.OrderMissing", "OrderMissing")
+                        .WithMany("MissingItems")
+                        .HasForeignKey("OrderMissingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OrderItem");
+
+                    b.Navigation("OrderMissing");
+                });
+
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.Order", b =>
                 {
                     b.Navigation("Items");
+
+                    b.Navigation("MissingReports");
+                });
+
+            modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderMissing", b =>
+                {
+                    b.Navigation("MissingItems");
                 });
 #pragma warning restore 612, 618
         }

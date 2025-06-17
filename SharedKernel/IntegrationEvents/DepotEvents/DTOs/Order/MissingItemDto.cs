@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SharedKernel.IntegrationEvents.DTOs.Order
+namespace SharedKernel.IntegrationEvents.DepotEvents.DTOs.Order
 {
     public class MissingItemDto
     {

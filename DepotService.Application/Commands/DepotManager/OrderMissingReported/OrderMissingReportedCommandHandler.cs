@@ -1,5 +1,6 @@
 ﻿using DepotService.Domain.Entities;
 using DepotService.Domain.Enums;
+using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
 using DepotService.Infraestructure.Messaging.Publisher;
 using DepotService.Infraestructure.Persistence.Repositories;
@@ -16,13 +17,13 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
 {
     public class OrderMissingReportedCommandHandler(
         IRabbitMQPublisher rabbitMQ,
-        DepotOrderRepository repository,
+        IDepotOrderRepository repository,
         DepotDbContext context, 
         ILogger<OrderMissingReportedCommand> logger
         ) : IOrderMissingReportedCommandHandler
     {
         private readonly IRabbitMQPublisher _rabbitMQ = rabbitMQ;
-        private readonly DepotOrderRepository _repository = repository;
+        private readonly IDepotOrderRepository _repository = repository;
         private readonly DepotDbContext _context = context;
         private readonly ILogger<OrderMissingReportedCommand> _logger = logger;
 
@@ -47,15 +48,17 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
             var orderMissing = new DepotOrderMissing
             {
                 DepotOrderId = command.DepotOrderId,
-                SalesOrderId = command.SalesOrderId,
                 MissingReason = command.MissingReason,
                 MissingDescription = command.MissingDescription,
                 MissingItems = command.MissingItems.Select(item => new DepotOrderMissingItem
                 {
-                    DepotOrderId = command.DepotOrderId,
                     MissingQuantity = item.Quantity,
+                    ProductBrand = item.ProductBrand,
+                    ProductName = item.ProductName,
+                    Packaging = item.Packaging,
+                    DepotOrderItemId = item.OrderItemId,
                 }).ToList(),
-            };
+            };  
             await _repository.AddMissingOrderAsync(orderMissing);
             await _context.SaveChangesAsync();
 
@@ -63,7 +66,7 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
 
             var integrationEvent = new OrderMissingReportedIntegrationEvent
             {
-                SalesOrderId = command.SalesOrderId,
+                SalesOrderId = depotOrder.SalesOrderId,
                 MissingReason = command.MissingReason,
                 MissingDescription = command.MissingDescription,
                 ReportedAt = DateTime.UtcNow,
@@ -82,7 +85,7 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
             _logger.LogInformation($"Order missing reported successfully for DepotOrderId: {command.DepotOrderId}.");
 
             // Retornar un mensaje de éxito
-            return false;
+            return true;
         }
 
     }

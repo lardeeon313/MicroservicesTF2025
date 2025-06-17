@@ -1,4 +1,5 @@
-﻿using DepotService.Application.DTOs.DepotManager;
+﻿using DepotService.Application.DTOs;
+using DepotService.Application.DTOs.DepotManager;
 using DepotService.Domain.Entities;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
@@ -43,7 +44,7 @@ namespace DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery
                     Id = i.Id,
                     ProductBrand = i.ProductBrand,
                     ProductName = i.ProductName,
-                    Packaging = i.Packaging,
+                    Packaging = i.PackagingType,
                     Quantity = i.Quantity,
                 }).ToList(),
 

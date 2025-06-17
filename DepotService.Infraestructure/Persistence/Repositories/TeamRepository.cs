@@ -9,9 +9,14 @@ using System.Threading.Tasks;
 
 namespace DepotService.Infraestructure.Persistence.Repositories
 {
-    public class TeamRepository(DepotDbContext context) : ITeamRepository
+    public class TeamRepository : ITeamRepository
     {
-        private readonly DepotDbContext _context = context;
+        private readonly DepotDbContext _context;
+
+        public TeamRepository(DepotDbContext context)
+        {
+            _context = context;
+        }
         public async Task AddAsync(DepotTeamEntity team)
         {
             await _context.DepotTeams.AddAsync(team);

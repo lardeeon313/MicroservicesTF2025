@@ -5,6 +5,7 @@ using DepotService.Application.Commands.DepotManager.DeleteTeam;
 using DepotService.Application.Commands.DepotManager.OrderMissingReported;
 using DepotService.Application.Commands.DepotManager.RemoveOperatorToTeam;
 using DepotService.Application.Commands.DepotManager.UpdateTeam;
+using DepotService.Application.DTOs;
 using DepotService.Application.DTOs.DepotManager;
 using DepotService.Application.DTOs.DepotManager.Request;
 using DepotService.Application.Queries.DepotManager.GetAllMissingOrders;
@@ -244,14 +245,7 @@ namespace DepotService.API.Controllers
 
             var command = new OrderMissingReportedCommand(
                 request.DepotOrderId,
-                request.MissingItems.Select(item => new DepotOrderItemsReportedDto
-                {
-                    OrderItemId = item.OrderItemId,
-                    Quantity = item.Quantity,
-                    ProductBrand = item.ProductBrand,
-                    ProductName = item.ProductName
-                }).ToList(),
-                request.SalesOrderId,
+                request.MissingItems,
                 request.MissingReason,
                 request.MissingDescription
             );

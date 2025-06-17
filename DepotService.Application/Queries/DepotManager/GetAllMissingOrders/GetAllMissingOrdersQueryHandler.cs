@@ -1,4 +1,4 @@
-﻿using DepotService.Application.DTOs.DepotManager;
+﻿using DepotService.Application.DTOs;
 using DepotService.Application.Queries.DepotManager.GetMissingOrderById;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;

@@ -1,17 +1,10 @@
 ﻿using FluentAssertions;
 using Moq;
 using SalesService.Application.Commands.Customers.Register;
-using SalesService.Application.IntegrationEvents.Customer;
-using SalesService.Domain.Entities;
 using SalesService.Domain.Entities.CustomerEntity;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Messaging.Publisher;
 using SharedKernel.IntegrationEvents.SalesEvents.Customer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SalesService.Tests.Handlers
 {

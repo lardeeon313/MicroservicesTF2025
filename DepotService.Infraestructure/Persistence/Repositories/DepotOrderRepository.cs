@@ -10,9 +10,14 @@ using System.Threading.Tasks;
 
 namespace DepotService.Infraestructure.Persistence.Repositories
 {
-    public class DepotOrderRepository(DepotDbContext context) : IDepotOrderRepository
+    public class DepotOrderRepository : IDepotOrderRepository
     {
-        private readonly DepotDbContext _context = context;
+        private readonly DepotDbContext _context;
+
+        public DepotOrderRepository(DepotDbContext context)
+        {
+            _context = context;
+        }
 
         public async Task AddAsync(DepotOrderEntity order)
         {
@@ -79,7 +84,40 @@ namespace DepotService.Infraestructure.Persistence.Repositories
             return await _context.DepotOrders
                 .Include(o => o.Items)
                 .Include(o => o.Missings)
-                .Where(o => o.AssignedOperatorId == operatorId)
+                .Where(o => o.AssignedOperatorId == operatorId &&
+                        (o.Status == OrderStatus.Assigned || o.Status == OrderStatus.ReReceived))
+                .ToListAsync();
+        }
+
+        public async Task AddMissing(DepotOrderMissing missingOrder)
+        {
+            await _context.DepotOrderMissings.AddAsync(missingOrder);
+            await _context.SaveChangesAsync();
+
+        }
+
+        public async Task<List<DepotOrderItemEntity>> GetOrderItemsByIdsAsync(List<int> ids)
+        {
+            return await _context.DepotOrderItems
+                .Where(item => ids.Contains(item.Id))
+                .ToListAsync();
+        }
+
+        public async Task UpdateDepotOrderItemsAsync(List<DepotOrderItemEntity> items)
+        {
+            foreach (var item in items)
+            {
+                _context.DepotOrderItems.Update(item);
+            }
+            await _context.SaveChangesAsync();
+        }
+
+        public Task<List<DepotOrderEntity>> GetAssignedPendingOrdersByOperatorIdAsync()
+        {
+            return _context.DepotOrders
+                .Include(o => o.Items)
+                .Where(o => o.AssignedOperatorId != null &&
+                            (o.Status == OrderStatus.Assigned || o.Status == OrderStatus.ReReceived))
                 .ToListAsync();
         }
     }

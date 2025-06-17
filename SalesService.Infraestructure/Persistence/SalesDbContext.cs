@@ -46,9 +46,15 @@ namespace SalesService.Infraestructure
                 .HasForeignKey(o => o.CustomerId);
 
             modelBuilder.Entity<OrderMissing>()
+                .HasKey(om => om.MissingId);
+
+            modelBuilder.Entity<OrderMissing>()
                 .HasOne(om => om.Order)
                 .WithMany(o => o.MissingReports)
                 .HasForeignKey(om => om.OrderId);
+
+            modelBuilder.Entity<OrderMissingItem>()
+                .HasKey(mi => mi.Id);
 
             modelBuilder.Entity<OrderMissingItem>()
                 .HasOne(mi => mi.OrderMissing)

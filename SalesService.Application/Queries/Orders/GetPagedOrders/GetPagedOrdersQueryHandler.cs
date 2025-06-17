@@ -41,6 +41,7 @@ namespace SalesService.Application.Queries.Orders.GetPagedOrders
                     ModifiedStatusDate = o.ModifiedStatusDate,
                 }).ToList()
             };
+            // Devolver tambien la fecha de creación - 
         }
     }
 }

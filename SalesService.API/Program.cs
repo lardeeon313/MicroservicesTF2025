@@ -5,10 +5,8 @@ using SalesService.Infraestructure.Messaging.Publisher;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Persistence.Repositories;
 using System.Reflection;
-using SalesService.Application.Commands.Handlers;
 using SalesService.Application.Commands.Customers.Delete;
 
-using SalesService.Application.Commands.Handlers.Interfaces;
 using SalesService.Application.Validators.Customer;
 using FluentValidation;
 using SalesService.Application.DTOs.Customer;
@@ -107,11 +105,7 @@ builder.Services.AddScoped<IGetSalesPerfomanceReportQueryHandler,  GetSalesPerfo
 builder.Services.AddScoped<IIdentityServiceClient, IdentityServiceClient>();
 builder.Services.AddHttpContextAccessor(); // Necesario para acceder al contexto HTTP
 
-// Add services Command Handlers / Dummy
-builder.Services.AddScoped<ICreateDummyCommandHandler, CreateDummyCommandHandler>();
-
 // Add services Repository and DbContext
-builder.Services.AddScoped<IDummyRepository, DummyRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 

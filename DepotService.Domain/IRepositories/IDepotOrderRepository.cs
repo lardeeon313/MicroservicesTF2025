@@ -23,6 +23,11 @@ namespace DepotService.Domain.IRepositories
         Task AddMissingOrderAsync(DepotOrderMissing missingOrder);
         Task UpdateMissingOrderAsync(DepotOrderMissing missingOrder);
         Task <IEnumerable<DepotOrderEntity>> GetAllByOperatorIdAsync(Guid operatorId);
+        Task AddMissing(DepotOrderMissing missingOrder);
+        Task<List<DepotOrderItemEntity>> GetOrderItemsByIdsAsync(List<int> ids);
+        Task UpdateDepotOrderItemsAsync(List<DepotOrderItemEntity> items);
+        Task<List<DepotOrderEntity>> GetAssignedPendingOrdersByOperatorIdAsync();
+
 
 
     }

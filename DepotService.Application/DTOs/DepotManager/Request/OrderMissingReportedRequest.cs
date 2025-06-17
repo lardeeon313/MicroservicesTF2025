@@ -14,9 +14,6 @@ namespace DepotService.Application.DTOs.DepotManager.Request
         [Required]
         public int DepotOrderId { get; set; }
 
-        [Required]
-        public int SalesOrderId { get; set; }
-
         [Required, StringLength(500, ErrorMessage = "The reason must be at most 500 characters long.")]
         public string MissingReason { get; set; } = string.Empty;
 

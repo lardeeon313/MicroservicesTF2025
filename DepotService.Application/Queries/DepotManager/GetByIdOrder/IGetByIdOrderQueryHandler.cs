@@ -1,4 +1,4 @@
-﻿using DepotService.Application.DTOs.DepotManager;
+﻿using DepotService.Application.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;

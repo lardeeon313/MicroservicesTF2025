@@ -25,8 +25,9 @@ namespace DepotService.Domain.Entities
         // Relacion con Faltantes
         public ICollection<DepotOrderMissing> Missings { get; set; } = [];
         public Guid? AssignedOperatorId { get; private set; }
-        public DepotTeamEntity AssignedDepotTeam { get; set; } = null!;
+        public DepotTeamEntity? AssignedDepotTeam { get; set; }
         public int? AssignedDepotTeamId { get; private set; }
+        public string? RejectionReason { get; private set; }
         public void AssignToOperator(Guid operatorId)
         {
             if (Status != OrderStatus.Received && Status != OrderStatus.ReReceived)
@@ -41,7 +42,18 @@ namespace DepotService.Domain.Entities
             if(Status != OrderStatus.Assigned)
                 throw new InvalidOperationException("Cannot confirm assignment of an order that is not assigned to a ID Operator.");
 
-            Status = OrderStatus.InProgress;
+            Status = OrderStatus.InPreparation;
+        }
+
+        public void RejectOrder(string rejectionReason)
+        {
+            if (Status != OrderStatus.Assigned)
+                throw new InvalidOperationException("Cannot reject an order that is not assigned.");
+
+            RejectionReason = rejectionReason;
+            AssignedOperatorId = null;
+            AssignedDepotTeam = null;
+            Status = OrderStatus.Received;
         }
     }
 }

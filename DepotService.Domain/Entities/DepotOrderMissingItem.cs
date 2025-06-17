@@ -13,8 +13,12 @@ namespace DepotService.Domain.Entities
         public int OrderMissingId { get; set; }
         public DepotOrderMissing DepotOrderMissing{ get; set; } = null!;
 
-        public int DepotOrderId { get; set; }
-        public DepotOrderEntity DepotOrder { get; set; } = null!;
+        public int DepotOrderItemId { get; set; }
+        public DepotOrderItemEntity DepotOrderItem { get; set; } = null!;
+
+        public string ProductName { get; set; } = null!;
+        public string ProductBrand { get; set; } = null!;
+        public string? Packaging { get; set; }
         public int MissingQuantity { get; set; }
     }
 }

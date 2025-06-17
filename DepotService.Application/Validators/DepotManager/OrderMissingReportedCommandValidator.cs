@@ -1,4 +1,5 @@
 ﻿using DepotService.Application.DTOs.DepotManager.Request;
+using DepotService.Application.DTOs.DepotOperator.Request;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -20,8 +21,6 @@ namespace DepotService.Application.Validators.DepotManager
                 .MaximumLength(500).WithMessage("The description must be at most 1000 characters long.");
             RuleFor(x => x.DepotOrderId)
                 .NotEmpty().WithMessage("DepotOrderId is required.");
-            RuleFor(x => x.SalesOrderId)
-                .NotEmpty().WithMessage("SalesOrderId is required.");
             RuleFor(x => x.MissingItems)
                 .NotEmpty().WithMessage("MissingItems is required.")
                 .Must(items => items.Count > 0).WithMessage("At least one missing item must be reported.")

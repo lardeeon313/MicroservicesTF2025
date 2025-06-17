@@ -9,13 +9,19 @@ using System.Threading.Tasks;
 
 namespace DepotService.Infraestructure
 {
-    public class DepotDbContext(DbContextOptions<DepotDbContext> options) : DbContext(options)
+    public class DepotDbContext : DbContext
     {
+        public DepotDbContext(DbContextOptions<DepotDbContext> options)
+        : base(options)
+        {
+        }
+
         public DbSet<DepotOrderEntity> DepotOrders { get; set; }
         public DbSet<DepotOrderItemEntity> DepotOrderItems { get; set; }
         public DbSet<DepotTeamEntity> DepotTeams { get; set; }
         public DbSet<DepotTeamAssignment> TeamAssignments { get; set; }
         public DbSet<DepotOrderMissing> DepotOrderMissings { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
