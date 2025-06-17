@@ -2,17 +2,12 @@
 using Moq;
 using SalesService.Application.Commands.Orders.UpdateStatus;
 using SalesService.Application.DTOs.Order.Request;
-using SalesService.Application.IntegrationEvents.Order;
 using SalesService.Domain.Entities.CustomerEntity;
 using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Messaging.Publisher;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SharedKernel.IntegrationEvents.SalesEvents.Order;
 
 namespace SalesService.Tests.Handlers
 {

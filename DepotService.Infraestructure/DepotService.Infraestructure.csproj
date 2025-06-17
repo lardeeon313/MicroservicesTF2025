@@ -12,10 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Messaging\Publisher\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>

@@ -1,6 +1,6 @@
-﻿using SalesService.Application.IntegrationEvents.Order;
-using SalesService.Domain.IRepositories;
+﻿using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Messaging.Publisher;
+using SharedKernel.IntegrationEvents.SalesEvents.Order;
 using System;
 using System.Collections.Generic;
 using System.Linq;

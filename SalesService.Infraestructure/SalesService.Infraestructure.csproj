@@ -7,11 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DepotService.Domain\DepotService.Domain.csproj" />
     <ProjectReference Include="..\SalesService.Domain\SalesService.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Messaging\Consumer\" />
+    <ProjectReference Include="..\SharedKernel\SharedKernel.csproj" />
   </ItemGroup>
 
   <ItemGroup>

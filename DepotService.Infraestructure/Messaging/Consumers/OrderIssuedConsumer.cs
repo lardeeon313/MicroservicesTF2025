@@ -1,12 +1,13 @@
 ﻿using DepotService.Domain.Entities;
 using DepotService.Domain.Enums;
+using DepotService.Domain.IRepositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using SharedKernel.IntegrationEvents;
+using SharedKernel.IntegrationEvents.SalesEvents.Order;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,9 @@ using System.Threading.Tasks;
 
 namespace DepotService.Infraestructure
 {
+    /// <summary>
+    /// Consumer para recibir eventos de órdenes emitidas desde RabbitMQ.
+    /// </summary>
     public class OrderIssuedConsumer : BackgroundService
     {
         private readonly ILogger<OrderIssuedConsumer> _logger;
@@ -47,7 +51,7 @@ namespace DepotService.Infraestructure
 
             await channel.QueueDeclareAsync(
                 queue: "order_issued_queue",
-                durable: false,
+                durable: true,
                 exclusive: false,
                 autoDelete: false
             );
@@ -67,10 +71,11 @@ namespace DepotService.Infraestructure
                     {
                         using var scope = _scopeFactory.CreateScope();
                         var context = scope.ServiceProvider.GetRequiredService<DepotDbContext>();
+                        var repository = scope.ServiceProvider.GetRequiredService<IDepotOrderRepository>();
 
                         var order = new DepotOrderEntity
                         {   
-                            SalesOrderId = evento.Id,
+                            SalesOrderId = evento.OrderId,
                             CustomerId = evento.CustomerId,
                             CustomerName = evento.CustomerName,
                             CustomerEmail = evento.CustomerEmail,
@@ -88,7 +93,7 @@ namespace DepotService.Infraestructure
 
                         };
 
-                        await context.DepotOrders.AddAsync(order);
+                        await repository.AddAsync(order);
                         await context.SaveChangesAsync(stoppingToken);
 
                         _logger.LogInformation("📦 Orden recibida y guardada en DepotService: {OrderId}", order.DepotOrderId);
@@ -107,7 +112,7 @@ namespace DepotService.Infraestructure
                 await Task.Yield(); // mantener async
             };
 
-            await channel.BasicConsumeAsync(queue: "order_issued_queue", autoAck: true, consumer: consumer);
+            await channel.BasicConsumeAsync(queue: "order_issued_queue", autoAck: true, consumer: consumer, stoppingToken);
             await Task.CompletedTask;
         }
     }

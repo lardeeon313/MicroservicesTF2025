@@ -62,6 +62,7 @@ const AppRouter = () => {
         <Route path="/sales/customer/update/:id" element={<EditCustomerPage/>}/>
         <Route path="/sales/reports" element={<DashboardReportsPage/>}/>
 
+<<<<<<< HEAD
 
         {/**reportes de ventas*/}
         <Route path="/sales/reports/customerStatusReport" element={<CustomerInactiveReportPage/>} />
@@ -82,6 +83,9 @@ const AppRouter = () => {
         <Route path="/depot/billingmanager/report/CustomerIncome" element={<CustomerIncomePage/>}/>
         <Route path="/depot/billingmanager/report/OrderBilled" element={<OrderBilledPage/>}/>
 
+=======
+        
+>>>>>>> origin/feature/milton-microservicestf2025
         <Route 
             path="/admin" 
             element = {

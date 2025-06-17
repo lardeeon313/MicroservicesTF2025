@@ -1,8 +1,8 @@
-﻿using SalesService.Application.IntegrationEvents.Customer;
-using SalesService.Domain.Entities;
+﻿using SalesService.Domain.Entities;
 using SalesService.Domain.Entities.CustomerEntity;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Messaging.Publisher;
+using SharedKernel.IntegrationEvents.SalesEvents.Customer;
 using System;
 using System.Collections.Generic;
 using System.Linq;

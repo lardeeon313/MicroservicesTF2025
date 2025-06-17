@@ -17,16 +17,16 @@ namespace DepotService.Application.Commands.DepotManager.DeleteTeam
     {
         private readonly ITeamRepository _repository = repository;
         private readonly DepotDbContext _context = context;
-        public Task<bool> DeleteTeamHandler(DeleteTeamCommand command)
+        public async Task<bool> DeleteTeamHandler(DeleteTeamCommand command)
         {
-            var teamId = _repository.GetByIdAsync(command.TeamId)
+            var teamId = await _repository.GetByIdAsync(command.TeamId)
               ?? throw new ArgumentNullException(nameof(command.TeamId), "Team not found");
 
-            _repository.DeleteAsync(teamId.Id);
+            await _repository.DeleteAsync(teamId.Id);
 
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
-            return Task.FromResult(true);
+            return true;
         }
     }
 }

@@ -13,10 +13,14 @@ namespace SalesService.Domain.Enums
         Confirmed,  // Confirmado por depósito
         InPreparation, // En preparacion
         Prepared,  // Preparado
+        SentToBilling, // Enviado a facturar
         Invoiced,   // Facturado
         Verify,   // Verificado
         OnTheWay,   // En camino
         Delivered,  // Entregado
-        Canceled    // Cancelado por ventas
+        Canceled,    // Cancelado por ventas
+        PendingResolution, // Pendiente de resolución
+        ReIssued, // Reemitido
+        
     }
 }   

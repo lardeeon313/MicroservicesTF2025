@@ -43,7 +43,6 @@ namespace DepotService.API.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("DeliveryDetail")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("OrderDate")
@@ -51,6 +50,9 @@ namespace DepotService.API.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("RejectionReason")
                         .HasColumnType("longtext");
 
                     b.Property<int>("SalesOrderId")
@@ -61,6 +63,8 @@ namespace DepotService.API.Migrations
 
                     b.HasKey("DepotOrderId");
 
+                    b.HasIndex("AssignedDepotTeamId");
+
                     b.ToTable("DepotOrders");
                 });
 
@@ -70,11 +74,17 @@ namespace DepotService.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int?>("DepotOrderEntityDepotOrderId")
+                    b.Property<int>("DepotOrderEntityId")
                         .HasColumnType("int");
 
-                    b.Property<int>("DepotOrderId")
+                    b.Property<int?>("DepotOrderMissingId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsReady")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("PackagingType")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("ProductBrand")
                         .IsRequired()
@@ -87,11 +97,85 @@ namespace DepotService.API.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<int>("SalesOrderItemId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("UnitPrice")
+                        .HasColumnType("decimal(65,30)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("DepotOrderEntityDepotOrderId");
+                    b.HasIndex("DepotOrderEntityId");
 
-                    b.ToTable("DepotOrderItemEntity");
+                    b.HasIndex("DepotOrderMissingId");
+
+                    b.ToTable("DepotOrderItems");
+                });
+
+            modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderMissing", b =>
+                {
+                    b.Property<int>("MissingId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("DepotOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DescriptionResolution")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("MissingDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("MissingDescription")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("MissingReason")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("SalesOrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MissingId");
+
+                    b.HasIndex("DepotOrderId");
+
+                    b.ToTable("DepotOrderMissings");
+                });
+
+            modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderMissingItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("DepotOrderItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MissingQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderMissingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Packaging")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ProductBrand")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepotOrderItemId");
+
+                    b.HasIndex("OrderMissingId");
+
+                    b.ToTable("DepotOrderMissingItem");
                 });
 
             modelBuilder.Entity("DepotService.Domain.Entities.DepotTeamAssignment", b =>
@@ -142,11 +226,60 @@ namespace DepotService.API.Migrations
                     b.ToTable("DepotTeams");
                 });
 
+            modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderEntity", b =>
+                {
+                    b.HasOne("DepotService.Domain.Entities.DepotTeamEntity", "AssignedDepotTeam")
+                        .WithMany()
+                        .HasForeignKey("AssignedDepotTeamId");
+
+                    b.Navigation("AssignedDepotTeam");
+                });
+
             modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderItemEntity", b =>
                 {
-                    b.HasOne("DepotService.Domain.Entities.DepotOrderEntity", null)
+                    b.HasOne("DepotService.Domain.Entities.DepotOrderEntity", "DepotOrderEntity")
                         .WithMany("Items")
-                        .HasForeignKey("DepotOrderEntityDepotOrderId");
+                        .HasForeignKey("DepotOrderEntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DepotService.Domain.Entities.DepotOrderMissing", "DepotOrderMissing")
+                        .WithMany()
+                        .HasForeignKey("DepotOrderMissingId");
+
+                    b.Navigation("DepotOrderEntity");
+
+                    b.Navigation("DepotOrderMissing");
+                });
+
+            modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderMissing", b =>
+                {
+                    b.HasOne("DepotService.Domain.Entities.DepotOrderEntity", "DepotOrder")
+                        .WithMany("Missings")
+                        .HasForeignKey("DepotOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DepotOrder");
+                });
+
+            modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderMissingItem", b =>
+                {
+                    b.HasOne("DepotService.Domain.Entities.DepotOrderItemEntity", "DepotOrderItem")
+                        .WithMany()
+                        .HasForeignKey("DepotOrderItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DepotService.Domain.Entities.DepotOrderMissing", "DepotOrderMissing")
+                        .WithMany("MissingItems")
+                        .HasForeignKey("OrderMissingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DepotOrderItem");
+
+                    b.Navigation("DepotOrderMissing");
                 });
 
             modelBuilder.Entity("DepotService.Domain.Entities.DepotTeamAssignment", b =>
@@ -163,6 +296,13 @@ namespace DepotService.API.Migrations
             modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderEntity", b =>
                 {
                     b.Navigation("Items");
+
+                    b.Navigation("Missings");
+                });
+
+            modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderMissing", b =>
+                {
+                    b.Navigation("MissingItems");
                 });
 
             modelBuilder.Entity("DepotService.Domain.Entities.DepotTeamEntity", b =>
