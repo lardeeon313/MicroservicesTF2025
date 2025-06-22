@@ -120,5 +120,38 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                             (o.Status == OrderStatus.Assigned || o.Status == OrderStatus.ReReceived))
                 .ToListAsync();
         }
+
+        public Task<List<DepotOrderEntity>> GetOrdersPendingBillingAsync()
+        {
+            return _context.DepotOrders
+                .Include(o => o.Items)
+                .Where(o => o.Status == OrderStatus.SentToBilling)
+                .ToListAsync();
+        }
+
+        public Task<List<DepotOrderEntity>> GetAllInvoicedOrdersAsync()
+        {
+            return _context.DepotOrders
+                .Include(o => o.Items)
+                .Where(o => o.Status == OrderStatus.Invoiced)
+                .ToListAsync();
+        }
+
+        public Task<List<DepotOrderEntity>> GetInvoicedOrdersByDateRangeAsync(DateTime StartTime, DateTime EndTime)
+        {
+            return _context.DepotOrders
+                .Include(o => o.Items)
+                .Where(o => o.Status == OrderStatus.Invoiced &&
+                            o.OrderDate >= StartTime && o.OrderDate <= EndTime)
+                .ToListAsync();
+        }
+
+        public Task<List<DepotOrderEntity>> GetInvoicedOrdersByCustomerAsync(Guid customerId)
+        {
+            return _context.DepotOrders
+                .Include(o => o.Items)
+                .Where(o => o.Status == OrderStatus.Invoiced && o.CustomerId == customerId)
+                .ToListAsync();
+        }
     }
 }

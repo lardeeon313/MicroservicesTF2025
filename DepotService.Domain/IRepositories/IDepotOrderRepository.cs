@@ -27,6 +27,10 @@ namespace DepotService.Domain.IRepositories
         Task<List<DepotOrderItemEntity>> GetOrderItemsByIdsAsync(List<int> ids);
         Task UpdateDepotOrderItemsAsync(List<DepotOrderItemEntity> items);
         Task<List<DepotOrderEntity>> GetAssignedPendingOrdersByOperatorIdAsync();
+        Task<List<DepotOrderEntity>> GetOrdersPendingBillingAsync();
+        Task<List<DepotOrderEntity>> GetAllInvoicedOrdersAsync();
+        Task<List<DepotOrderEntity>> GetInvoicedOrdersByDateRangeAsync(DateTime startDate, DateTime endDate);
+        Task<List<DepotOrderEntity>> GetInvoicedOrdersByCustomerAsync(Guid customerId);
 
 
 

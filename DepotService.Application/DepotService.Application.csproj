@@ -12,9 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\BillingManager\" />
     <Folder Include="DTOs\DepotOperator\Response\" />
-    <Folder Include="Validators\BillingManager\" />
   </ItemGroup>
 
   <ItemGroup>

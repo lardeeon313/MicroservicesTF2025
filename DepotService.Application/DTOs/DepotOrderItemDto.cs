@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DepotService.Application.DTOs.DepotManager
+namespace DepotService.Application.DTOs
 {
     public class DepotOrderItemDto
     {
@@ -15,6 +15,6 @@ namespace DepotService.Application.DTOs.DepotManager
         public string? Packaging { get; set; }
         public decimal? UnitPrice { get; set; }
         public int Quantity { get; set; }
-        public decimal? Total => (Quantity * UnitPrice ?? 0);
+        public decimal? Total => Quantity * UnitPrice ?? 0;
     }
 }
