@@ -1,5 +1,4 @@
-﻿using DepotService.Application.Commands.DepotManager.DeleteTeam;
-using DepotService.Domain.IRepositories;
+﻿using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
 using System;
 using System.Collections.Generic;
@@ -18,16 +17,13 @@ namespace DepotService.Application.Commands.DepotManager.DeleteTeam
     {
         private readonly ITeamRepository _repository = repository;
         private readonly DepotDbContext _context = context;
-
         public async Task<bool> DeleteTeamHandler(DeleteTeamCommand command)
         {
-            var team = await _repository.GetByIdAsync(command.TeamId);
-            if (team == null)
-            {
-                throw new ArgumentNullException(nameof(command.TeamId), "Team not found");
-            }
+            var teamId = await _repository.GetByIdAsync(command.TeamId)
+              ?? throw new ArgumentNullException(nameof(command.TeamId), "Team not found");
 
-            await _repository.DeleteAsync(team.Id);
+            await _repository.DeleteAsync(teamId.Id);
+
             await _context.SaveChangesAsync();
 
             return true;

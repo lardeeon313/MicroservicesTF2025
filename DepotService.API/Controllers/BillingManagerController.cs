@@ -1,0 +1,270 @@
+﻿using DepotService.Application.Commands.BillingManager.InvoicedOrder;
+using DepotService.Application.Commands.BillingManager.SetItemUnitPrices;
+using DepotService.Application.Commands.BillingManager.UpdateInvoicedItemPrice;
+using DepotService.Application.DTOs;
+using DepotService.Application.Queries.BillingManager.GetAllInvoicedOrders;
+using DepotService.Application.Queries.BillingManager.GetBillingDetailsByOrder;
+using DepotService.Application.Queries.BillingManager.GetInvoicedOrderById;
+using DepotService.Application.Queries.BillingManager.GetInvoicedOrdersByCustomer;
+using DepotService.Application.Queries.BillingManager.GetInvoicedOrdersByDateRange;
+using DepotService.Application.Queries.BillingManager.GetOrdersPendingBilling;
+using DepotService.Application.Validators.BillingManager;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace DepotService.API.Controllers
+{
+
+    [Authorize(Roles = "BillingManager")]
+    [ApiController]
+    [Route("api/billingmanager")]
+    public class BillingManagerController(
+        IGetOrdersPendingBillingQueryHandler getOrdersPendingBillingQueryHandler,
+        IGetBillingDetailsByOrderIdQueryHandler getBillingDetailsByOrderIdQueryHandler,
+        ISetItemUnitPricesCommandHandler setItemUnitPricesCommandHandler,
+        SetItemUnitPricesCommandValidator setItemUnitPricesCommandValidator,
+        IInvoiceOrderCommandHandler invoiceOrderCommandHandler,
+        IGetAllInvoicedOrdersQueryHandler getAllInvoicedOrdersQueryHandler,
+        IGetInvoicedOrderByIdQueryHandler getInvoicedOrderByIdQueryHandler,
+        IGetInvoicedOrdersByDateRangeQueryHandler getInvoicedOrdersByDateRangeQueryHandler,
+        GetInvoicedOrdersByDateRangeQueryValidator getInvoicedOrdersByDateRangeQueryValidator,
+        GetInvoicedOrdersByCustomerQueryValidator getInvoicedOrdersByCustomerQueryValidator,
+        IGetInvoicedOrdersByCustomerQueryHandler getInvoicedOrdersByCustomerQueryHandler,
+        IUpdateInvoicedItemPriceCommandHandler updateInvoicedItemPriceCommandHandler,
+        UpdateInvoicedItemPriceCommandValidator updateInvoicedItemPriceCommandValidator
+        ) : ControllerBase
+    {
+        private readonly UpdateInvoicedItemPriceCommandValidator _updateInvoicedItemPriceCommandValidator = updateInvoicedItemPriceCommandValidator;
+        private readonly IUpdateInvoicedItemPriceCommandHandler _updateInvoicedItemPriceCommandHandler = updateInvoicedItemPriceCommandHandler;
+        private readonly GetInvoicedOrdersByCustomerQueryValidator _getInvoicedOrdersByCustomerQueryValidator = getInvoicedOrdersByCustomerQueryValidator;
+        private readonly IGetInvoicedOrdersByCustomerQueryHandler _getInvoicedOrdersByCustomerQueryHandler = getInvoicedOrdersByCustomerQueryHandler;
+        private readonly GetInvoicedOrdersByDateRangeQueryValidator _getInvoicedOrdersByDateRangeQueryValidator = getInvoicedOrdersByDateRangeQueryValidator;
+        private readonly IGetInvoicedOrdersByDateRangeQueryHandler _getInvoicedOrdersByDateRangeQueryHandler = getInvoicedOrdersByDateRangeQueryHandler;
+        private readonly IGetInvoicedOrderByIdQueryHandler _getInvoicedOrderByIdQueryHandler = getInvoicedOrderByIdQueryHandler;
+        private readonly IGetAllInvoicedOrdersQueryHandler _getAllInvoicedOrdersQueryHandler = getAllInvoicedOrdersQueryHandler;
+        private readonly IInvoiceOrderCommandHandler _invoiceOrderCommandHandler = invoiceOrderCommandHandler;
+        private readonly SetItemUnitPricesCommandValidator _setItemUnitPricesCommandValidator = setItemUnitPricesCommandValidator;
+        private readonly ISetItemUnitPricesCommandHandler _setItemUnitPricesCommandHandler = setItemUnitPricesCommandHandler;
+        private readonly IGetOrdersPendingBillingQueryHandler _getOrdersPendingBillingQueryHandler = getOrdersPendingBillingQueryHandler;
+        private readonly IGetBillingDetailsByOrderIdQueryHandler _getBillingDetailsByOrderIdQueryHandler = getBillingDetailsByOrderIdQueryHandler;
+
+
+        /// <summary>
+        /// Endpoint to get all orders pending billing.
+        /// </summary>
+        /// <param name="DepotOrderId"></param>
+        /// <returns></returns>
+        [HttpGet("orders-pending-billing")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> OrderDetails([FromBody] int DepotOrderId)
+        {
+            var query = new GetBillingDetailsByOrderIdQuery(DepotOrderId);
+
+            var orderDetails = _getBillingDetailsByOrderIdQueryHandler.GetBillingDetailsByOrderIdAsync(query);
+            if (orderDetails == null)
+            {
+                return NotFound($"Order with ID {DepotOrderId} not found.");
+            }
+            return Ok(await orderDetails);
+        }
+
+
+        /// <summary>
+        /// Endpoint to get all orders pending billing.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("pending-billing-orders")]
+        [ProducesResponseType(typeof(List<DepotOrderDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> PendingBillingOrders()
+        {
+            var orders = await _getOrdersPendingBillingQueryHandler.HandleAsync();
+            if (orders == null || !orders.Any())
+            {
+                return NotFound("No pending billing orders found.");
+            }
+            return Ok(orders);
+        }
+
+        /// <summary>
+        /// Endpoint for set item unit prices for a depot order.
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [HttpPost("set-item-unit-prices")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> SetItemUnitPrices([FromBody] SetItemUnitPricesCommand command)
+        {
+            var validationResult = new SetItemUnitPricesCommandValidator().Validate(command);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(new ValidationProblemDetails(validationResult.ToDictionary()));
+            }
+
+            var result = await _setItemUnitPricesCommandHandler.SetItemUnitPriceHandlerAsync(command);
+            if (!result)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Failed to set item unit prices.");
+            }
+            return Ok("Item unit prices set successfully.");
+        }
+
+        /// <summary>
+        /// Endpoint to invoice a depot order by its ID.
+        /// </summary>
+        /// <param name="depotOrderId"></param>
+        /// <returns></returns>
+        [HttpPost("invoice-order")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> InvoiceOrder([FromBody] int depotOrderId)
+        {
+            if (depotOrderId <= 0)
+            {
+                return BadRequest("Invalid depot order ID.");
+            }
+
+            var command = new InvoiceOrderCommand(depotOrderId);
+
+            var result = await _invoiceOrderCommandHandler.HandleAsync(command);
+            if (!result)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Failed to invoice order.");
+            }
+
+            return Ok("Order invoiced successfully.");
+        }
+
+        /// <summary>
+        /// Endpoint to get all invoiced orders.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("all-invoiced-orders")]
+        [ProducesResponseType(typeof(List<DepotOrderDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> AllInvoicedOrders()
+        {
+            var orders = await _getAllInvoicedOrdersQueryHandler.GetAllInvoicedOrdersAsync();
+            if (orders == null || !orders.Any())
+            {
+                return NotFound("No invoiced orders found.");
+            }
+            return Ok(orders);
+        }
+
+        /// <summary>
+        /// Endpoint to get an invoiced order by its ID.
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpGet("invoiced-order-by-id")]
+        [ProducesResponseType(typeof(DepotOrderDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> InvoicedOrderById([FromBody] GetInvoicedOrderByIdQuery query)
+        {
+            if (query.BillingOrderId <= 0)
+            {
+                return BadRequest("Invalid billing order ID.");
+            }
+
+            var order = await _getInvoicedOrderByIdQueryHandler.GetInvoicedOrderByIdAsync(query);
+            if (order == null)
+            {
+                return NotFound($"Invoiced order with ID {query.BillingOrderId} not found.");
+            }
+            return Ok(order);
+        }
+
+
+        /// <summary>
+        /// Endpoint para obtener órdenes facturadas por rango de fechas.
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpGet("invoiced-orders-by-date-range")]
+        [ProducesResponseType(typeof(List<DepotOrderDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> InvoicedOrdersByDateRange([FromBody] GetInvoicedOrdersByDateRangeQuery query)
+        {
+            var validationResult = _getInvoicedOrdersByDateRangeQueryValidator.Validate(query);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(new ValidationProblemDetails(validationResult.ToDictionary()));
+            }
+
+            var orders = await _getInvoicedOrdersByDateRangeQueryHandler.GetInvoicedOrdersByDateRangeAsync(query);
+            if (orders == null || !orders.Any())
+            {
+                return NotFound("No invoiced orders found for the specified date range.");
+            }
+            return Ok(orders);
+        }
+
+        /// <summary>
+        /// Endpoint para obtener órdenes facturadas por cliente.
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        [HttpGet("invoiced-orders-by-customer")]
+        [ProducesResponseType(typeof(List<DepotOrderDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> InvoicedOrdersByCustomer([FromBody] GetInvoicedOrdersByCustomerQuery query)
+        {
+            var validationResult = _getInvoicedOrdersByCustomerQueryValidator.Validate(query);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(new ValidationProblemDetails(validationResult.ToDictionary()));
+            }
+
+            var orders = await _getInvoicedOrdersByCustomerQueryHandler.GetInvoicedOrdersByCustomerAsync(query);
+            if (orders == null || !orders.Any())
+            {
+                return NotFound($"No invoiced orders found for customer with ID {query.CustomerId}.");
+            }
+            return Ok(orders);
+        }
+
+
+        /// <summary>
+        /// Endpoint para actualizar el precio de un ítem facturado en una orden de facturación.
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [HttpPut("update-invoiced-item-price")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> InvoicedItemPrice([FromBody] UpdateInvoicedItemPriceCommand command)
+        {
+            var validationResult = _updateInvoicedItemPriceCommandValidator.Validate(command);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(new ValidationProblemDetails(validationResult.ToDictionary()));
+            }
+
+            var result = await _updateInvoicedItemPriceCommandHandler.UpdateInvoicedItemPrice(command);
+            if (!result)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Failed to update item price.");
+            }
+            return Ok("Item price updated successfully.");
+        }
+    }
+}

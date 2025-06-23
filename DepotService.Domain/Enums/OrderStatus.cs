@@ -9,9 +9,13 @@ namespace DepotService.Domain.Enums
     public enum OrderStatus
     {
         Received,         // Recibido desde ventas
+        ReReceived,      // Re recibido desde ventas
         Assigned,         // Asignado a operario
+        InPreparation,       // En preparacion
         MissingProduct,   // Notificado falta
-        ConfirmedToSales, // Confirmado a ventas
-        SentToBilling     // Enviado a facturar
+        SentToBilling,     // Enviado a facturar
+        PendingResolution, // Pendiente de resolución
+        Prepared,        // Preparado
+        Invoiced,        // Facturado
     }
 }

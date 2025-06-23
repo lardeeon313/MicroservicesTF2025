@@ -4,6 +4,7 @@ import LoginPage from "../features/auth/pages/LoginPage";
 import ProtectedRoute from "../features/auth/components/ProtectedRoute";
 import Unauthorized from "../features/auth/components/Unauthorized";
 import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
+import DepotManagerDashboard from "../features/depot/depotmanager/pages/DepotManagerDashboard";
 import OperatorDashboard from "../features/depot/operator/pages/OperatorDashboard";
 import BillingManagerDashboard from "../features/depot/billingmanager/pages/BillingManagerDashboard";
 import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
@@ -24,8 +25,6 @@ import CustomerSatisfactionPage from "../features/sales/pages/reports/CustomerSa
 import CustomerInactiveReportPage from "../features/sales/pages/reports/CustomerInactiveReportPage";
 import ModifiedCanceledOrdersPage from "../features/sales/pages/reports/ModifiedCanceledOrdersPage";
 import { SalesPerfomanceReportPage } from "../features/sales/pages/reports/SalesPerfomanceReportPage";
-import TeamsPage from "../features/depot/depotmanager/pages/TeamsPage";
-import DepotManagerDashboard from "../features/depot/depotmanager/pages/DepotManagerDashboard";
 
 const AppRouter = () => {
   return (
@@ -35,7 +34,7 @@ const AppRouter = () => {
         <Route path="/unauthorized" element={<Unauthorized/>} />
         <Route path="/404notfound" element={<NotFoundPage/>}/>
         <Route path="/" element={<HomePage/>}></Route>
-        
+
 
         <Route
         path="/sales"
@@ -62,7 +61,9 @@ const AppRouter = () => {
         <Route path="reports/salesPerfomance" element={<SalesPerfomanceReportPage/>}/>
         </Route>
         
-        <Route
+
+        
+        <Route 
             path="/admin" 
             element = {
                 <ProtectedRoute requiredRole="Admin">
@@ -80,19 +81,14 @@ const AppRouter = () => {
             }>
         </Route>
 
+
         <Route
-            path="/depot"
+            path="/depot/warehousemanager"
             element = {
-                <ProtectedRoute requiredRole="DepotManager">
-                    <Outlet />
+                <ProtectedRoute requiredRole="WarehouseManager">
+                    <DepotManagerDashboard/>
                 </ProtectedRoute>
             }>
-            <Route index element={<DepotManagerDashboard />} />
-            <Route path="team" element={<TeamsPage />} />
-            <Route path="pending-orders" element={<div>Pedidos Pendientes</div>} />
-            <Route path="assembled-orders" element={<div>Pedidos Armados</div>} />
-            <Route path="missing-items" element={<div>Pedidos con Faltantes</div>} />
-            <Route path="reports" element={<div>Reportes</div>} />
         </Route>
 
         <Route

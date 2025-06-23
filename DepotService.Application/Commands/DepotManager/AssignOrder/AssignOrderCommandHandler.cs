@@ -1,6 +1,8 @@
 ﻿using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
+using DepotService.Infraestructure.Messaging.Publisher;
 using Microsoft.Extensions.Logging;
+using SharedKernel.IntegrationEvents.DepotEvents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +11,12 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Commands.DepotManager.AssignOrder
 {
-    public class AssignOrderCommandHandler(IDepotOrderRepository repository, DepotDbContext context, ILogger<AssignOrderCommandHandler> logger) : IAssignOrderCommandHandler
+    public class AssignOrderCommandHandler(IRabbitMQPublisher publisher,IDepotOrderRepository repository, DepotDbContext context, ILogger<AssignOrderCommandHandler> logger) : IAssignOrderCommandHandler
     {
         private readonly IDepotOrderRepository _repository = repository;
         private readonly DepotDbContext _context = context;
         private readonly ILogger<AssignOrderCommandHandler> _logger = logger;
+        private readonly IRabbitMQPublisher _publisher = publisher;
 
         public async Task HandleAsync(AssignOrderCommand command)
         {
@@ -26,6 +29,17 @@ namespace DepotService.Application.Commands.DepotManager.AssignOrder
             await _context.SaveChangesAsync();
             _logger.LogInformation("✅ Orden {Id} asignada al operador {Operator}", order.DepotOrderId, order.AssignedOperatorId);
 
+            var integrationEvent = new OrderConfirmedIntegrationEvent
+            {
+                DepotOrderId = command.DepotOrderId,
+                SalesOrderId = order.SalesOrderId,
+                ConfirmedAt = DateTime.UtcNow,
+            };
+
+            // Publicar el evento de orden confirmada
+            await _publisher.PublishAsync(integrationEvent, "order_confirmed_queue");
+
+            _logger.LogInformation("✅ Evento OrderConfirmedIntegrationEvent publicado para la orden {DepotOrderId}", command.DepotOrderId);
         }
     }
 }

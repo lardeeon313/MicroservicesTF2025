@@ -1,4 +1,5 @@
 ﻿using DepotService.Domain.Entities;
+using DepotService.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,24 @@ namespace DepotService.Domain.IRepositories
     {
         Task AddAsync(DepotOrderEntity order);
         Task<DepotOrderEntity?> GetByIdAsync(int depotOrderId);
+        Task UpdateOrderAsync (DepotOrderEntity order);
+        Task<IEnumerable<DepotOrderEntity?>> GetAllAsync();
+        Task<IEnumerable<DepotOrderEntity>> GetOrderByStatusAsync(string status);
+        Task<IEnumerable<DepotOrderMissing>> GetMissingOrdersAsync();
+        Task<DepotOrderMissing?> GetMissingOrderByIdAsync(int missingId);
+        Task AddMissingOrderAsync(DepotOrderMissing missingOrder);
+        Task UpdateMissingOrderAsync(DepotOrderMissing missingOrder);
+        Task <IEnumerable<DepotOrderEntity>> GetAllByOperatorIdAsync(Guid operatorId);
+        Task AddMissing(DepotOrderMissing missingOrder);
+        Task<List<DepotOrderItemEntity>> GetOrderItemsByIdsAsync(List<int> ids);
+        Task UpdateDepotOrderItemsAsync(List<DepotOrderItemEntity> items);
+        Task<List<DepotOrderEntity>> GetAssignedPendingOrdersByOperatorIdAsync();
+        Task<List<DepotOrderEntity>> GetOrdersPendingBillingAsync();
+        Task<List<DepotOrderEntity>> GetAllInvoicedOrdersAsync();
+        Task<List<DepotOrderEntity>> GetInvoicedOrdersByDateRangeAsync(DateTime startDate, DateTime endDate);
+        Task<List<DepotOrderEntity>> GetInvoicedOrdersByCustomerAsync(Guid customerId);
+
+
+
     }
 }

@@ -19,16 +19,19 @@ namespace SalesService.Domain.Entities.OrderEntity
         public decimal? TotalAmount { get; set; }
         public string? PaymentReceipt { get; set; }
         public string? DeliveryDetail { get; set; }
-        public PaymentType? PaymentType { get; set; } 
+        public PaymentType? PaymentType { get; set; }
+
+        // Relacion con los reportes de pedidos faltantes
+        public ICollection<OrderMissing> MissingReports { get; set; } = [];
 
         // Relacion con el cliente
         public Guid CustomerId { get; set; }
-        public Customer? Customer { get; set; }
+        public Customer Customer { get; set; } = new Customer();
 
         // Relacion con el Usuario que creó el pedido
         public string CreatedByUserId { get; set; } = string.Empty;
 
         // Relacion con los productos del pedido
-        public List<OrderItem> Items { get; set; } = new List<OrderItem>();
+        public List<OrderItem> Items { get; set; } = [];
     }
 }
