@@ -1,5 +1,6 @@
 import { Order,OrderStatus } from "../../otherTypes/OrderType";
 import { Missing } from "./Missing";
+import { DepotOrderDTO } from "./OrderDTO";
 
 export type DepotStackParamList = {
   ArmOrders?: {
@@ -8,6 +9,7 @@ export type DepotStackParamList = {
     onVerDetalle: () => void;
     onEmitirFaltante: () => void;
     onMarcarArmado: () => void;
+    onEnviarAFacturar: () => void;
     status?: OrderStatus.Prepared;
   };
   ConfirmedOrders?: {
@@ -31,12 +33,18 @@ export type DepotStackParamList = {
     onNotifySecction: () => void;
   };
   OperatorDashboard: undefined;
-  AcceptOrder: { order: Order }; 
-  DetailOrder: { order: Order };
+  AcceptOrder: { order: DepotOrderDTO }; 
+  DetailOrder: {
+    orderId: DepotOrderDTO['depotOrderId'] ;
+    operatorUserId: DepotOrderDTO['assignedOperatorId']
+    //orderId:number;
+    //operatorUserId: string;
+  };
   MissingReport: {
     missing: Missing;
   };
   NotificationPage: {
     order: Order;
   }
+  LoginPage : undefined;
 };

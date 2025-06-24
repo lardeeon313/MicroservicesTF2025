@@ -6,7 +6,7 @@ import { useState } from 'react';
 type Props = {
     productName:string; 
     quantity:number;
-    disblead?: boolean; //EN CASO DE QUE EL PEDIDO ESTE EN PENDIENTE , EL USUARIO NO PUEDE MARCAR 
+    disblead?: boolean; //EN CASO DE QUE EL PEDIDO ESTE EN ASSIGNED o en RERECIVED, EL USUARIO NO PUEDE MARCAR 
 }
 
 const CheckList = ({ productName, quantity , disblead}: Props) => {

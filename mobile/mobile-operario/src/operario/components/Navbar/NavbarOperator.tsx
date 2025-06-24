@@ -6,6 +6,8 @@ import { View, Image,Text, TouchableOpacity } from 'react-native';
 import { useState } from "react";
 import { useNavigation } from '@react-navigation/native';
 //import NavbarDropdownMenuComponent from "./NavbarDropdownMenu";
+import { useAuth } from '../login/AuthContext';
+
 
 interface NavbarProps {
   user: { name: string; role: string } | null;
@@ -18,11 +20,12 @@ interface NavbarProps {
 const NavbarOperator = ({ user, isAuthenticated, logout }: NavbarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigation = useNavigation();
+  //const {user, isAuthenticated, logout} = useAuth();
 
   return (
     <View style={{backgroundColor: '#1f2937',paddingVertical: 12,paddingHorizontal: 16,flexDirection: 'row',justifyContent: 'space-between',alignItems: 'center'}}>
         <TouchableOpacity style={{flexDirection: 'row',alignItems: 'center',gap: 10}}
-        onPress={() => navigation}>
+        onPress={() => navigation.navigate('Home' as never)}>
             <Image source={require('../../../assetsImages/LogoVerona.png')} style={{width: 40,height: 40,marginRight: 8,resizeMode: 'contain'}}/>
             <Text style={{color: '#ffffff', fontSize: 16, fontWeight: 'bold'}}>Distribuidora verona</Text>
         </TouchableOpacity>

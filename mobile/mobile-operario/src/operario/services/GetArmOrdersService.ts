@@ -5,7 +5,8 @@ import { OrderStatus, type Order } from "../../otherTypes/OrderType";
 
 export const GetArmOrdersService = async() : Promise<Order[]> => {
     try{
-        const response = await api.get('/orders');
+        //trae todos los pedidos ya asignados:
+        const response = await api.get('/depotoperator/get-orders-to-operator');
         const AllOrders : Order[] = response.data; 
 
         //filtra 

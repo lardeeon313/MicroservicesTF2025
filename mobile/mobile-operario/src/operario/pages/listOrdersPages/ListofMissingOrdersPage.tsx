@@ -14,7 +14,10 @@ import { View , Text} from "react-native";
 import { mockOrders } from "../../mock/MockOrders";
 
 //
-const user = { name: 'Juan Pérez', role: 'Operario' };
+import { DepotOrderDTO } from "../../types/OrderDTO"; 
+
+
+const user = { name: 'Juan Pérez', role: 'Operario' , id: 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa'};
 const isAuthenticated = true;
 
 const ListofMissingOrdersPage = () => {
@@ -58,8 +61,12 @@ const ListofMissingOrdersPage = () => {
     //MOck Order para ver el detalle
 
 
-    const onSeeDetail = () => {
-        navigation.navigate("DetailOrder", {order: mockOrderInPrep});
+    const onSeeDetail = (order: DepotOrderDTO) => {
+        console.log("Actualizacion del pedido: ", order )
+        navigation.navigate("DetailOrder",{
+            orderId: order.depotOrderId,
+            operatorUserId: user.id
+        });
     }
 
     //para ir a la sección de notificaciones
@@ -84,7 +91,7 @@ const ListofMissingOrdersPage = () => {
                 customer={`${mockOrderInPrep.customer?.firstName} ${mockOrderInPrep.customer?.lastName}`}
                 status={status}
                 missingCount={missingItems}
-                onVerDetalle={() => onSeeDetail()}
+                onVerDetalle={() => onSeeDetail(order)}
                 onEmitirFaltante={HandleIssueMissing}
                 onMarcarArmado={UpdateOrderArmed}
                 onSeccionNotificaciones={onNotifySection}

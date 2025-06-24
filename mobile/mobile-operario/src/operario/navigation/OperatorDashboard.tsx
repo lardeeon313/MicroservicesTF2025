@@ -25,13 +25,13 @@ const cards: CardItem[] = [
   },
   {
     title: 'Pedidos confirmados',
-    description: 'Consulta los pedidos que confirmaste y confirma otros pedidos nuevos',
+    description: 'Consulta los pedidos asignados para confirmar o rechazar dichos pedidos',
     icon: PackageCheck,
     path: 'ConfirmedOrders',
   },
   {
     title: 'Pedidos con faltantes',
-    description: 'Revisa y alertá los pedidos con faltantes',
+    description: 'Visualiza los pedidos que tienes y emite los faltantes necesarios',
     icon: AlertTriangle,
     path: 'MissingOrders',
   },

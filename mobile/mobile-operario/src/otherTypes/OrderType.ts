@@ -14,6 +14,9 @@ export enum OrderStatus {
     Canceled = "canceled"
 }
 
+//NUEVO ORDER STATUS para lo que es deposito: 
+
+
 export enum PaymentType {
   Transfer = "Transferencia",
   Credit_Card = "Tarjeta de Credito",

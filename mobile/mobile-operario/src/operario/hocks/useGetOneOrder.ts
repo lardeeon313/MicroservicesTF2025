@@ -1,34 +1,35 @@
 import { useEffect,useState } from "react";
 //services 
 import { GetOrderById } from "../services/GetOneOrderService";
-import type { Order } from "../../otherTypes/OrderType";
+import type { DepotOrderDTO } from "../types/OrderDTO";
 
-export const useGetOneOrder = (orderId: number) => {
-    const [order,setOrder] = useState<Order | null>(null);
+
+export const useGetOneOrder = (orderId: number | null,userId: string | null) => {
+    const [order,setOrder] = useState<DepotOrderDTO | null>(null);
     const [loading,setLoading] = useState(true);
-    const [error,setError] = useState<Error | null>(null);
+    const [error,setError] = useState<string | null>(null);
 
     useEffect(() => {
+        if (!orderId || !userId) return;
+
         const fetchOrder = async() => {
             setLoading(true);
+            setError(null);
             try{
-                const fetchOrder = await GetOrderById(orderId);
-                setOrder(fetchOrder);
-                setError(null);
-            }catch(error:any)
+                const result = await GetOrderById(orderId,userId);
+                setOrder(result);
+            }catch(err:any)
             {
-                setError(error);
-                setOrder(null);
+                setError(err.message || "Error al obtener el pedido");
+                setOrder(null); //NO RETORNA NINGUN PEDIDO 
             }finally
             {
                 setLoading(false);
             }
         }; 
 
-        if(orderId){
-            fetchOrder();
-        }
-    }, [orderId]);
+        fetchOrder();
+    }, [orderId,userId]);
 
     return {order,loading,error};
 }

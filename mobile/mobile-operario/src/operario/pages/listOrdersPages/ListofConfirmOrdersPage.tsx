@@ -5,64 +5,75 @@ import type { DepotStackParamList } from '../../types/DepotStackType';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import ListofConfirmedOrders from '../../components/listOrders/ListofConfirmedOrders';
 import { actualizarEstadoPedido } from '../../hocks/actions/updateStatusOrder';
-import type { Order} from '../../../otherTypes/OrderType';
-import { OrderStatus } from '../../../otherTypes/OrderType';
 import NavbarOperator from '../../components/Navbar/NavbarOperator';
-import { mockOrders } from '../../mock/MockOrders';
 //IMPORANTE , SE DEBE IMPORTAR EL VIEW De REACT NATIVE , no el del lucide 
-import { View } from 'react-native';
+import { View , Text} from 'react-native';
+//SE utiliza el hock para la vinculacion con el back: 
+import { useConfirmedOrders } from '../../hocks/useConfirmedOrders';
+import type { DepotOrderDTO } from '../../types/OrderDTO';
+import { OrderStatusMap } from '../../types/OrderDTO';
+import { DepotOrderStatus } from '../../types/OrderDTO';
+import { DepotTeamAssigment } from '../../types/OrderDTO';
+import { useAuth } from '../../components/login/AuthContext';
 
 
 //EJEMPLO DE USO DEL NAVBAR: 
 // Simulamos autenticación y usuario:
-const user = { name: 'Juan Pérez', role: 'Operario' };
+const user = { name: 'Juan Pérez', role: 'Operario' , id: 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa' };
 const isAuthenticated = true;
 
 
 const ListOfConfirmedOrdersPage = () => {
-    const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
+  //const {user,isAuthenticated} = useAuth();
+  const { confirmedOrders: orders, loading, error } = useConfirmedOrders();
 
-    //MockDatos por las dudas : 
-    const [orders,setOrders] = useState<Order[]>(mockOrders);
+  // Cambiar tipo de Order a BackendOrder
+  const handleSeeDetail = (order: DepotOrderDTO) => {
+    //filtra que tenga el rol de operator 
+     
+    navigation.navigate('DetailOrder', {
+       orderId: order.depotOrderId,
+       operatorUserId: user.id,
+    });
+  };
 
-    const handleSeeDetail = (order: Order) => {
-        console.log('Detalle del pedido:', order);
-        navigation.navigate('DetailOrder', { order });
-    }
+  const handleAcceptOrder = (order: DepotOrderDTO) => {
+    navigation.navigate('AcceptOrder', {
+      order: {
+        ...order,
+        // No hay customerFirstName ni customerLastName, si necesitás dividirlo hacelo acá
+        //customerEmail: order.customerName.split(' ')[0] ?? '',
+        customerName: order.customerName.split(' ')[1] ?? '',
+      },
+    });
+  };
 
-    const handleAcceptOrder = (order: Order) => {
+  if (loading) {
+    return <Text style={{ padding: 16 }}>Cargando pedidos...</Text>;
+  }
 
-       navigation.navigate("AcceptOrder",{
-        order: {
-            ...order,
-            customerFirstName: order.customerFirstName,
-            customerLastName: order.customerLastName,
-        }
-       })
-    };
+  if (error) {
+    return <Text style={{ padding: 16, color: 'red' }}>Error: {error.message}</Text>;
+  }
 
-    const filterOrders = orders.filter(
-      order => (order.status === OrderStatus.Confirmed || order.status === OrderStatus.Pending) 
-    )
-
-    return(
-      <View style={{flex:1}}>
-        <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log("Cerrar sesión")}/>
-          <ScrollView style={{padding:16}}>
-            {filterOrders.map(order => (
-                <ListofConfirmedOrders
-                key={order.id}
-                order={order}
-                customer={`${order.customer?.firstName} ${order.customer?.lastName}`}
-                status={order.status}
-                onSeeDetail={() => handleSeeDetail(order)}
-                onAceeptOrder={() => handleAcceptOrder(order)}
-                />
-            ))}
-        </ScrollView>
-      </View>
-    )
-}
+  return (
+    <View style={{ flex: 1 }}>
+      <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log("Cerrar sesión")} />
+      <ScrollView style={{ padding: 16 }}>
+        {orders.map((order) => (
+          <ListofConfirmedOrders
+            key={order.depotOrderId}
+            order={order}
+            customer={order.customerName} // Usar directamente el nombre completo
+            status={OrderStatusMap[order.status] ?? DepotOrderStatus.Assigned} // En BackendOrder es número, ListofConfirmedOrders espera string
+            onSeeDetail={() => handleSeeDetail(order)}
+            onAceeptOrder={() => handleAcceptOrder(order)}
+          />
+        ))}
+      </ScrollView>
+    </View>
+  );
+};
 
 export default ListOfConfirmedOrdersPage;
-// Este componente muestra una lista de pedidos confirmados y permite ver detalles y aceptar pedidos.

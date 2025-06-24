@@ -14,8 +14,6 @@ import { DepotStackParamList } from "../../types/DepotStackType";
 const user = { name: 'Juan Pérez', role: 'Operario' };
 const isAuthenticated = true;
 
-
-
 const ListofOrdersArmPage = () => {
     const [orders,setOrders] = useState<Order[]>(mockOrders);
     //prepared = armado 

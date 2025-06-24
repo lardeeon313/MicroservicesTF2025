@@ -1,19 +1,21 @@
-//trar todos los pedidos si tienen el estado de pending o confirmed 
 import { api } from "../../services/api";
 import { OrderStatus, type Order } from "../../otherTypes/OrderType";
+import type { DepotOrderDTO } from "../types/OrderDTO";
 
-export const GetConfirmedOrdersService = async () : Promise<Order[]> => {
-    try{
-        const response = await api.get('/orders');
-        //trae a todos los pedidos en base a la respuesta de la api: 
-        const allOrders : Order[] = response.data;
+export const GetConfirmedOrdersService = async (): Promise<DepotOrderDTO[]> => {
+  try {
+    const response = await api.get('/depotoperator/assigned-pending-orders');
+    const allOrders: DepotOrderDTO[] = response.data;
 
-        //Filtra 
-        return allOrders.filter(order => {
-            order.status === OrderStatus.Pending || order.status === OrderStatus.Confirmed
-        })
-    }catch(error){
-        console.error("Momentanamente, no se pudo obtener los pedidos ",error);
-        return[];
-    }
+    // Filtrar pedidos con estado Pending o Confirmed
+    /*return allOrders.filter(order =>
+      order.status === OrderStatus.Pending || order.status === OrderStatus.Confirmed
+    );*/
+    return allOrders;
+
+  } catch (error) {
+    console.error("Lo sentimos. No se pudo obtener los pedidos:", error);
+    return [];
+  }
 }
+

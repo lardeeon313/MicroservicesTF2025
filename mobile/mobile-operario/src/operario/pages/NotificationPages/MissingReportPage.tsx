@@ -41,7 +41,7 @@ const MissingPage = () => {
 
   return (
     <View style={{flex:1}}>
-      <NavbarOperator  user={user} isAuthenticated={isAuthenticated} logout={() => console.log("Cerrar sesión")}/>
+      <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log("Cerrar sesión")}/>
       <MissingReport
         description={description}
         onNotifyMissing={onNotifyMissing}

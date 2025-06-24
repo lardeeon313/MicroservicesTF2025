@@ -1,25 +1,26 @@
 import { useEffect,useState } from "react";
 import { GetConfirmedOrdersService } from "../services/GetConfimedOrdersService";
-import type { Order } from "../../otherTypes/OrderType";
+//import type { Order } from "../../otherTypes/OrderType";
+import type { DepotOrderDTO } from "../types/OrderDTO";
 
 export const useConfirmedOrders = () => {
-    const [confirmedOrders,setConfirmedOrders] = useState<Order[]>([]);
+    const [confirmedOrders,setConfirmedOrders] = useState<DepotOrderDTO[]>([]);
     const [loading,setLoading] = useState(true);
     const [error,setError] = useState<Error | null>(null);
 
     useEffect(() => {
         const fetchConfirmedOrders = async() => {
             setLoading(true);
+            setError(null);
             try
             {
-                const data = await GetConfirmedOrdersService();
-                setConfirmedOrders(data);
-                setError(null);
+                const orders = await GetConfirmedOrdersService();
+                setConfirmedOrders(orders);
             }
-            catch(error: any)
+            catch(error:any)
             {
                 setError(error);
-                setConfirmedOrders([]);
+                //setConfirmedOrders([]);
 
             }finally{
                 setLoading(false);

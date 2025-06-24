@@ -1,52 +1,42 @@
-import { useEffect,useState } from "react";
+import React from "react";
+import type { RouteProp} from "@react-navigation/native";
+import type { DepotStackParamList } from "../../types/DepotStackType";
 import DetailOrderCard from "../../components/detail/DetailOrderCard";
-import type { RouteProp } from "@react-navigation/native";
-import type { DepotStackParamList} from "../../types/DepotStackType";
-import  type { Order } from "../../../otherTypes/OrderType";
-import { OrderStatus } from "../../../otherTypes/OrderType";
-//------
 import NavbarOperator from "../../components/Navbar/NavbarOperator";
-import { View } from "react-native";
+import { View, ActivityIndicator, Text } from "react-native";
+import { useGetOneOrder } from "../../hocks/useGetOneOrder";
+import { useAuth } from "../../components/login/AuthContext";
 
-//EJEMPLO DE USO DEL NAVBAR: 
-// Simulamos autenticación y usuario:
-const user = { name: 'Juan Pérez', role: 'Operario' };
+const user = { name: "Juan Pérez", role: "Operario", id: "aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa" };
 const isAuthenticated = true;
 
-
 type DetailOrderPageProps = RouteProp<DepotStackParamList, "DetailOrder">;
-
 type Props = {
-    route: DetailOrderPageProps;
-}
-
-const ListOfConfirmedOrdes: number[] = [101, 102, 103];
+  route: DetailOrderPageProps;
+};
 
 const DetailOrderPage = ({ route }: Props) => {
-    const [order,setOrder] = useState<Order>(route.params.order);
+  const { orderId,operatorUserId} = route.params;
+  //const {user} = useAuth();
+  //const {orderId} = route.params;
 
-    useEffect(() => {
-        const isConfirmed = ListOfConfirmedOrdes.includes(order.id)
+  //if (!user) return <Text style={{ padding: 16 }}>Cargando usuario...</Text>;
 
-        //Verifica si el pedido es confirmado para cambiar el estado 
-        if(isConfirmed && order.status === OrderStatus.InPreparation){
-            const updateOrder: Order = {
-                ...order,
-                status: OrderStatus.Prepared,
+  //const operatorUserId = user.id;
 
-            }
-            setOrder(updateOrder);
-        }
-    }, [order]);
+  console.log("orderId:", orderId);
+  console.log("operatorUserId:", user?.id);
 
-    return (
-        <View style={{flex:1}}>
-            <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log("Cerrar sesión")} />
-            <DetailOrderCard 
-                order={order}
-            />
-        </View>
-    );
-}
+  const { order, loading, error } = useGetOneOrder(orderId,operatorUserId);
+
+  return (
+    <View style={{ flex: 1 }}>
+      <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log("Cerrar sesión")} />
+      {loading && <ActivityIndicator size="large" color="#0000ff" />}
+      {error && <Text style={{ color: "red", padding: 16 }}>{error}</Text>}
+      {order && <DetailOrderCard order={order} />}
+    </View>
+  );
+};
 
 export default DetailOrderPage;

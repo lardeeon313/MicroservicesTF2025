@@ -3,11 +3,14 @@ import { OrderStatus, type Order } from '../../../otherTypes/OrderType'; // Aseg
 import NavbarOperator from '../Navbar/NavbarOperator';
 import { ScrollView } from 'react-native';
 import { OrderStatusLabels } from '../../constants/UseStatusOrderOperator';
+import { DepotOrderDTO } from '../../types/OrderDTO';
+import { DepotOrderStatus } from '../../types/OrderDTO';
+
 
 type Props = {
-  order: Order;
+  order: DepotOrderDTO;
   customer:string;
-  status: string;
+  status: DepotOrderStatus;
   onSeeDetail: () => void;
   onAceeptOrder: () => void;
 }
@@ -16,13 +19,13 @@ const ListofConfirmedOrders = ({order,customer,status, onSeeDetail, onAceeptOrde
   return(
       <View style={{backgroundColor: '#ffffff',padding: 16,borderRadius: 8,shadowColor: '#000',shadowOffset: { width: 0, height: 2 },shadowOpacity: 0.1,shadowRadius: 4,elevation: 3,marginBottom: 16,}}>
         <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-          Pedido# : {order.id}
+          Pedido# : {order.depotOrderId}
         </Text>
         <Text style={{ marginTop: 4 }}>
           Cliente: {customer}
         </Text>
         <Text style={{ marginTop: 4,fontSize: 20 }}>
-          Estado: {OrderStatusLabels[order.status]}
+          Estado: {OrderStatusLabels[status as DepotOrderStatus]}
         </Text>
 
         <View style={{ flexDirection: 'row', marginTop: 12, gap: 10 }}>
@@ -32,7 +35,7 @@ const ListofConfirmedOrders = ({order,customer,status, onSeeDetail, onAceeptOrde
             <Text style={{color: '#fff', fontWeight: 'bold' }}>Ver Detalle</Text>
           </TouchableOpacity>
 
-          {order.status === OrderStatus.Pending && (
+          {status === DepotOrderStatus.Assigned && (
             <TouchableOpacity
               onPress={onAceeptOrder}
               style={{ backgroundColor: '#F59E0B', padding: 8, borderRadius: 8 }}>

@@ -5,6 +5,7 @@ import { OrderStatusLabels } from "../../constants/UseStatusOrderOperator";
 import MissingCount from "./MissingCount";
 import type { Missing } from "../../types/Missing";
 import { OrderStatus } from "../../../otherTypes/OrderType";
+import { DepotOrderStatus } from "../../types/OrderDTO";
 
 type Props = {
   id: number;
@@ -49,7 +50,7 @@ const ListOfMissingOrders = ({id,customer,status,missingCount,onVerDetalle,onEmi
       )}
 
       <Text style={{ fontSize: 20, color: '#6B7280', marginTop: 8 }}>
-        Estado: {OrderStatusLabels[status as keyof typeof OrderStatusLabels] ?? status}
+        Estado: {DepotOrderStatus.InPreparation}
       </Text>
 
       <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 16, marginBottom: 8 }}>

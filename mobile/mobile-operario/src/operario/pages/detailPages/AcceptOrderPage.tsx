@@ -1,52 +1,55 @@
-import React,{useState} from "react";
-import { RouteProp,useRoute } from "@react-navigation/native";
+import React from "react";
+import { RouteProp, useRoute } from "@react-navigation/native";
 import type { DepotStackParamList } from "../../types/DepotStackType";
 import AcceptOrder from "../../components/detail/AcceptOrder";
-import { actualizarEstadoPedido } from "../../hocks/actions/updateStatusOrder";
-import { showmeAcceptOrderAlert } from "../../components/additional/AlertWindows/AlertManager";
-import { showmeRejectOrderAlert } from "../../components/additional/AlertWindows/AlertManager";
-import type { Order } from "../../../otherTypes/OrderType";
-import { OrderStatus } from "../../../otherTypes/OrderType";
-import { View } from "react-native";
 import NavbarOperator from "../../components/Navbar/NavbarOperator";
+import { View, ActivityIndicator, Text } from "react-native";
+import { useGetOneOrder } from "../../hocks/useGetOneOrder";
+import { useOrderManagment } from "./OrderManagmentPage";
+import { RejectOrderWithReasonModal } from "../../components/additional/AlertWindows/AlertManager";
 
-//EJEMPLO DE USO DEL NAVBAR: 
-// Simulamos autenticación y usuario:
-const user = { name: 'Juan Pérez', role: 'Operario' };
+const user = { name: "Juan Pérez", role: "Operario", id: "aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa" };
 const isAuthenticated = true;
 
-
-
-type AcceptOrderPageProp = RouteProp<DepotStackParamList,'AcceptOrder'>;
+type AcceptOrderPageProp = RouteProp<DepotStackParamList, "AcceptOrder">;
 
 const AcceptOrderPage = () => {
-    const {params} = useRoute<AcceptOrderPageProp>();
-    const [order,setOrder] = useState<Order>(params.order);
+  const { params } = useRoute<AcceptOrderPageProp>();
+  const { order: fetchedOrder, loading, error } = useGetOneOrder(params.order.depotOrderId, user.id);
 
-    const handleAcceptOrder = () => {
-        showmeAcceptOrderAlert(() => {
-            const updatedOrder = {...order, status: OrderStatus.Confirmed};
-            setOrder(updatedOrder);
-            actualizarEstadoPedido(updatedOrder, 'aceptado');
-        })
-    };
+  const {
+    order,
+    acceptOrder,
+    rejectOrder,
+    showMeRejectModal,
+    setShowMeRejectModal,
+    ConfirmRejectWithReason,
+  } = useOrderManagment(fetchedOrder ?? params.order, user.id);
 
-    const handleRejectOrder = () => {
-        showmeRejectOrderAlert(() => {
-            actualizarEstadoPedido(order,'rechazado' );
-        });
-    };
+  if (loading) return <ActivityIndicator size="large" color="#000" />;
+  if (error) return <Text>ERROR: {error}</Text>;
 
-    return(
-        <View style={{flex:1}}>
-            <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log("Cerrar sesión")}/>
-            <AcceptOrder
-                order={order}
-                onAccept={handleAcceptOrder}
-                onReject={handleRejectOrder}
-            />
-        </View>
-    )
-}
+  return (
+    <View style={{ flex: 1 }}>
+      <NavbarOperator
+        user={user}
+        isAuthenticated={isAuthenticated}
+        logout={() => console.log("Cerrar sesión")}
+      />
+
+      <AcceptOrder
+        order={order}
+        onAccept={acceptOrder}
+        onReject={rejectOrder} // usa la del hook, que setea showMeRejectModal en true
+      />
+
+      <RejectOrderWithReasonModal
+        visible={showMeRejectModal}
+        onCancel={() => setShowMeRejectModal(false)}
+        onConfirm={ConfirmRejectWithReason}
+      />
+    </View>
+  );
+};
 
 export default AcceptOrderPage;

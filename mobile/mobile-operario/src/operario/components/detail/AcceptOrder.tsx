@@ -1,22 +1,23 @@
 import React from "react";
 import { View, Text, Button, StyleSheet, ScrollView } from 'react-native';
-import type { Order } from "../../../otherTypes/OrderType";
+import type { DepotOrderDTO, DepotOrderStatus } from "../../types/OrderDTO";
 import { OrderStatusLabels } from "../../constants/UseStatusOrderOperator";
 
 type Props = {
-  order:Order;
+  order:DepotOrderDTO;
   onAccept: () => void;
   onReject: () => void;
 }
 
-const AcceptOrder: React.FC<Props> = ({order, onAccept, onReject}) => {
+const AcceptOrder = ({order, onAccept, onReject}: Props) => {
+  console.log("LOG de los productos:", order);
   return(
     <ScrollView style={{ padding: 20, backgroundColor: '#fff', flexGrow: 1 }}>
       <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 10 }}>
-        Pedido: {order.id}
+        Pedido: {order.depotOrderId}
       </Text>
       <Text style={{ fontSize: 18, marginBottom: 20 }}>
-        Cliente: {`${order.customer?.firstName} ${order.customer?.lastName}`}
+        Cliente: {`${order.customerName}`}
       </Text>
 
       <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 10 }}>
@@ -29,7 +30,7 @@ const AcceptOrder: React.FC<Props> = ({order, onAccept, onReject}) => {
       ))}
 
       <Text style={{ fontSize: 20, marginBottom: 12 }}>
-        Estado: {OrderStatusLabels[order.status]}
+        Estado: {OrderStatusLabels[order.status as DepotOrderStatus]}
       </Text>
 
       <View style={{ marginTop: 30, gap: 15 }}>

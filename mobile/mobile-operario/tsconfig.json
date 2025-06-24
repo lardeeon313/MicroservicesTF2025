@@ -3,8 +3,7 @@
   "compilerOptions": {
     "skipLibCheck": true,
     "strict": true,
-    "jsx": "react-jsx",
-    "types": ["nativewind/types"]
+    "jsx": "react-jsx"
   },
-  "include": ["env.d.ts", "src", "**/*.tsx"]
+  "include": ["env.d.ts", "src", "**/*.tsx", "src/types/global.d.ts"]
 }

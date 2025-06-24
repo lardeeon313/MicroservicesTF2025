@@ -1,14 +1,13 @@
-import { OrderStatus } from "../../otherTypes/OrderType"
+//import { OrderStatus } from "../../otherTypes/OrderType"
+import { DepotOrderStatus } from "../types/OrderDTO";
 
-export const OrderStatusLabels: Record<OrderStatus, string> = {
-  [OrderStatus.Pending]: "Pendiente",
-  [OrderStatus.Issued]: "Emitido",
-  [OrderStatus.Confirmed]: "Confirmado",
-  [OrderStatus.InPreparation]: "En preparación",
-  [OrderStatus.Prepared]: "Preparado", //Preparado es lo mismo que decir armado
-  [OrderStatus.Invoiced]: "Facturado",
-  [OrderStatus.Verify]: "Por verificar",
-  [OrderStatus.OnTheWay]: "En camino",
-  [OrderStatus.Delivered]: "Entregado",
-  [OrderStatus.Canceled]: "Cancelado",
+export const OrderStatusLabels: Record<DepotOrderStatus, string> = {
+  [DepotOrderStatus.Received]: "Recibido",
+  [DepotOrderStatus.ReReceived]: "Modificado por faltantes",
+  [DepotOrderStatus.Assigned]: "Asignado",
+  [DepotOrderStatus.InPreparation]: "En preparación",
+  [DepotOrderStatus.MissingProduct]: "Falta producto",
+  [DepotOrderStatus.SentToBilling]: "Enviado a facturar",
+  [DepotOrderStatus.PendingResolution]: "Pendiente de resolución",
+  [DepotOrderStatus.Prepared]: "Preparado",
 };

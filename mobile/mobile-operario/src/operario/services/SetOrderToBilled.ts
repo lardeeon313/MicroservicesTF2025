@@ -1,0 +1,38 @@
+import { api } from "../../services/api";
+
+export const SetOrderToBilled = async(orderID: number) => {
+    //se comunica con el endpoint para enviar el pedido a facturar 
+    const response = await api.post('/depotoperator/sent-to-billing',{
+        depotorderId:orderID,
+    });
+    return response.data;
+}
+
+//demas services que hacen falta: tiene que recibir tanto el opeator como el order
+export const ConfirmedOrder = async (DepotOrderId: number, OperatorUserId: string) => {
+    try {
+        const response = await api.post('/depotoperator/confirm-assign', {
+            DepotOrderId,
+            OperatorUserId
+        });
+        //DEPURACION: 
+        
+        return response.data;
+    } catch (error) {
+        
+        throw error;
+    }
+};
+
+export const RejectOrder = async (DepotOrderId: number, OperatorUserId: string,RejectReason: string) => {
+    try{
+        const response = await api.post('/depotoperator/reject-order', {
+            DepotOrderId,
+            OperatorUserId,
+            RejectReason,
+        });
+        return response.data;
+    }catch(error){
+        throw error;
+    }
+}
