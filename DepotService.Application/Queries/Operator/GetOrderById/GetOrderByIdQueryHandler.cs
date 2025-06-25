@@ -49,6 +49,11 @@ namespace DepotService.Application.Queries.Operator.GetOrderById
                 AssignedDepotTeam = order.AssignedDepotTeam,
                 Missings = order.Missings,
                 Items = order.Items,
+                //
+                AssignedOperatorId = order.AssignedOperatorId,
+                DeliveryDetail = order.DeliveryDetail,
+                OrderDate = order.OrderDate,
+                
             };
         }
     }

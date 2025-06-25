@@ -41,6 +41,8 @@ using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+//para acceder desde el celular
+builder.WebHost.UseUrls("http://0.0.0.0:5003");
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -103,6 +105,13 @@ builder.Services.AddScoped<IValidator<AddPackagingCommand>, AddPackaingCommandVa
 builder.Services.AddScoped<IValidator<RejectOrderCommand>, RejectOrderCommandValidator>();
 builder.Services.AddScoped<IValidator<MarkItemCommand>, MarkItemIsReadyCommandValidator>();
 builder.Services.AddScoped<IValidator<UnmarkItemReadyCommand>, UnmarkItemReadyValidator>();
+
+//Nuevo: AGREGÁ ESTA LÍNEA QUE FALTA
+builder.Services.AddScoped<OrderMissingReportedCommandValidator>();
+builder.Services.AddScoped<AddPackaingCommandValidator>();
+builder.Services.AddScoped<RejectOrderCommandValidator>();
+builder.Services.AddScoped<MarkItemIsReadyCommandValidator>();
+builder.Services.AddScoped<UnmarkItemReadyValidator>();
 
 // Add HostedService RabbitConsumer
 builder.Services.AddHostedService<OrderIssuedConsumer>();
@@ -174,6 +183,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+//se la tuvo que comentar para acceder a la aplicacion movil momentaneamente 
 app.UseAuthentication();
 
 app.UseAuthorization();

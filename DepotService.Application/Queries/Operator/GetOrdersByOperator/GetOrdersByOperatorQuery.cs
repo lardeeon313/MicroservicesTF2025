@@ -13,5 +13,11 @@ namespace DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery
         {
             OperatorUserId = operatorUserId;
         }
+
+        //NUEVO : Constructor vacio obligatorio: 
+        public GetOrdersByOperatorQuery()
+        {
+             
+        }
     }
 }

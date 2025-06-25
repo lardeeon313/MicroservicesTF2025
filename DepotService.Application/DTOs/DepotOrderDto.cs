@@ -24,8 +24,9 @@ namespace DepotService.Application.DTOs
 
         // Relacion con Faltantes
         public ICollection<DepotOrderMissing> Missings { get; set; } = [];
-        public Guid? AssignedOperatorId { get; private set; }
+        public Guid? AssignedOperatorId { get; set; }
         public DepotTeamEntity? AssignedDepotTeam { get; set; }
         public int? AssignedDepotTeamId { get; private set; }
+
     }
 }

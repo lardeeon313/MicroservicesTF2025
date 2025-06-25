@@ -35,7 +35,7 @@ namespace DepotService.Application.Commands.DepotOperator.RejectOrder
                  _logger.LogError($"Order with ID {command.DepotOrderId} is not in the Assigned status.");
                 throw new InvalidOperationException($"Order with ID {command.DepotOrderId} is not in the Assigned status.");
             }
-
+            
             order.RejectOrder(command.RejectionReason);
             await _repository.UpdateOrderAsync(order);
             await _context.SaveChangesAsync();

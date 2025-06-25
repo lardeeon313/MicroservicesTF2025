@@ -26,7 +26,9 @@ namespace DepotService.Infraestructure.Persistence.Repositories
 
         public async Task<DepotOrderEntity?> GetByIdAsync(int depotOrderId)
         {
-            return await _context.DepotOrders.FindAsync(depotOrderId);
+            //MODIFICADO PARA TRAER LOS PRODUCTOS DENTRO DEL DETAILORDER 
+            return await _context.DepotOrders
+                .FirstOrDefaultAsync(o => o.DepotOrderId == depotOrderId);
         }
 
         public async Task<IEnumerable<DepotOrderEntity?>> GetAllAsync()
