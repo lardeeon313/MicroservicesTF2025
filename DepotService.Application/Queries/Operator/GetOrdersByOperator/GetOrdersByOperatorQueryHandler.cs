@@ -39,7 +39,7 @@ namespace DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery
                 PhoneNumber = o.PhoneNumber,
                 DeliveryDetail = o.DeliveryDetail,
                 OrderDate = o.OrderDate,
-                Items = (ICollection<DepotOrderItemEntity>)o.Items.Select(i => new DepotOrderItemDto
+                Items = o.Items.Select(i => new DepotOrderItemDto
                 {
                     Id = i.Id,
                     ProductBrand = i.ProductBrand,

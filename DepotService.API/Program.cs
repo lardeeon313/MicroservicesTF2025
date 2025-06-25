@@ -1,3 +1,4 @@
+using DepotService.Application.Commands.BillingManager.ExportInvoiceOrderPdf;
 using DepotService.Application.Commands.BillingManager.InvoicedOrder;
 using DepotService.Application.Commands.BillingManager.SetItemUnitPrices;
 using DepotService.Application.Commands.BillingManager.UpdateInvoicedItemPrice;
@@ -39,6 +40,8 @@ using DepotService.Application.Validators.DepotManager;
 using DepotService.Application.Validators.DepotOperator;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
+using DepotService.Infraestructure.Documents;
+using DepotService.Infraestructure.Documents.Pdf;
 using DepotService.Infraestructure.Messaging;
 using DepotService.Infraestructure.Messaging.Consumers;
 using DepotService.Infraestructure.Messaging.Publisher;
@@ -93,6 +96,7 @@ builder.Services.AddScoped<IGetAllInvoicedOrdersQueryHandler, GetAllInvoicedOrde
 builder.Services.AddScoped<IGetInvoicedOrderByIdQueryHandler, GetInvoicedOrderByIdQueryHandler>();
 builder.Services.AddScoped<IGetInvoicedOrdersByDateRangeQueryHandler, GetInvoicedOrdersByDateRangeQueryHandler>();
 builder.Services.AddScoped<IGetInvoicedOrdersByCustomerQueryHandler, GetInvoicedOrdersByCustomerQueryHandler>();
+builder.Services.AddScoped<IExportInvoiceDocumentCommandHandler, ExportInvoiceDocumentCommandHandler>();
 
 // Add Commands
 builder.Services.AddScoped<IAssignOperatorCommandHandler, AssignOperatorCommandHandler>();
@@ -112,6 +116,8 @@ builder.Services.AddScoped<IUnmarkItemReadyCommandHandler , UnmarkItemReadyComma
 builder.Services.AddScoped<IInvoiceOrderCommandHandler , InvoiceOrderCommandHandler>();
 builder.Services.AddScoped<ISetItemUnitPricesCommandHandler, SetItemUnitPricesCommandHandler>();
 builder.Services.AddScoped<IUpdateInvoicedItemPriceCommandHandler, UpdateInvoicedItemPriceCommandHandler>();
+builder.Services.AddScoped<IExportInvoiceDocumentCommandHandler, ExportInvoiceDocumentCommandHandler>();
+
 
 // Add FluentValidation
 builder.Services.AddScoped<IValidator<AssignOperatorRequest>, AssignOperatorCommandValidator>();
@@ -131,6 +137,9 @@ builder.Services.AddScoped<IValidator<UpdateInvoicedItemPriceCommand>, UpdateInv
 // Add HostedService RabbitConsumer
 builder.Services.AddHostedService<OrderIssuedConsumer>();
 builder.Services.AddHostedService<OrderReissuedConsumer>();
+
+// Add Export Document Service 
+builder.Services.AddScoped<IInvoiceDocumentGenerator, InvoicePdfGenerator>();
 
 // Obtener la cadena de conexión del appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

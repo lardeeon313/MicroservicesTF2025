@@ -15,6 +15,6 @@ namespace DepotService.Application.DTOs
         public string? Packaging { get; set; }
         public decimal? UnitPrice { get; set; }
         public int Quantity { get; set; }
-        public decimal? Total => Quantity * UnitPrice ?? 0;
+        public decimal? Total { get; set; }
     }
 }

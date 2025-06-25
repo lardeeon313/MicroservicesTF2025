@@ -43,12 +43,12 @@ namespace DepotService.Application.Queries.Operator.GetAssignedPendingOrders
                 PhoneNumber = o.PhoneNumber,
                 DeliveryDetail = o.DeliveryDetail,
                 OrderDate = o.OrderDate,
-                Items = (ICollection<DepotOrderItemEntity>)o.Items.Select(i => new DepotOrderItemEntity
+                Items = o.Items.Select(i => new DepotOrderItemDto
                 {
                     Id = i.Id,
                     ProductBrand = i.ProductBrand,
                     ProductName = i.ProductName,
-                    PackagingType = i.PackagingType,
+                    Packaging = i.PackagingType,
                     Quantity = i.Quantity,
                 }).ToList(),
                 AssignedDepotTeam = o.AssignedDepotTeam,

@@ -35,7 +35,16 @@ namespace DepotService.Application.Queries.DepotManager.GetByIdOrder
                 DeliveryDetail = orderExist.DeliveryDetail,
                 OrderDate = orderExist.OrderDate,
                 Status = orderExist.Status,
-                Items = orderExist.Items,
+                Items = orderExist.Items.Select(i => new DepotOrderItemDto
+                {
+                    Id = i.Id,
+                    ProductBrand = i.ProductBrand,
+                    ProductName = i.ProductName,
+                    Packaging = i.PackagingType,
+                    Quantity = i.Quantity,
+                    UnitPrice = i.UnitPrice,
+                    Total = i.UnitPrice.HasValue ? i.UnitPrice.Value * i.Quantity : 0
+                }).ToList(),
                 Missings = orderExist.Missings,
                 AssignedDepotTeam = orderExist.AssignedDepotTeam
             };
