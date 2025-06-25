@@ -14,7 +14,6 @@ const ListOfConfirmedOrders: number[] = [101, 102, 103];
 
 export function useOrderManagment(initialOrder: DepotOrderDTO, operatorID:string) {
     const [order,setOrder] = useState<DepotOrderDTO>(initialOrder);
-    //--------//
     const [showMeRejectModal,setShowMeRejectModal] = useState(false);
 
     useEffect(() => {

@@ -45,6 +45,10 @@ export type DepotStackParamList = {
   };
   NotificationPage: {
     order: Order;
+  };
+  SendOrder: {
+    orderId: DepotOrderDTO['depotOrderId'];
   }
   LoginPage : undefined;
+  RegisterPage: undefined;
 };

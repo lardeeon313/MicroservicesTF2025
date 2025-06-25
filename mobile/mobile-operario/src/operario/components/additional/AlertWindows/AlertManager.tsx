@@ -50,7 +50,11 @@ export const RejectOrderWithReasonModal = ({
   const [reason, setReason] = useState("");
 
   const handleConfirm = () => {
-    onConfirm(reason);
+    if(!reason.trim()){
+      Alert.alert("Motivo requerido", "Por favor ingresá una razón válida.");
+      return;
+    }
+    onConfirm(reason.trim());
     setReason("");
   };
 

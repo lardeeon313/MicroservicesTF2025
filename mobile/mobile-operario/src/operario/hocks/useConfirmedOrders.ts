@@ -1,6 +1,5 @@
 import { useEffect,useState } from "react";
 import { GetConfirmedOrdersService } from "../services/GetConfimedOrdersService";
-//import type { Order } from "../../otherTypes/OrderType";
 import type { DepotOrderDTO } from "../types/OrderDTO";
 
 export const useConfirmedOrders = () => {

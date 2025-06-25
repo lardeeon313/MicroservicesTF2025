@@ -11,27 +11,31 @@ export const handleRejectOrderWithReason = async (
     setShowRejectModal : (value: boolean) => void, 
 ) => {
     try {
-    if (!reason.trim()) {
-      Alert.alert("Motivo requerido", "Por favor ingresá una razón válida.");
-      return;
-    }
+      if (!reason.trim()) {
+        Alert.alert("Motivo requerido", "Por favor ingresá una razón válida.");
+        return;
+      }
+      //depuracion:
+      console.log("Enviando rechazo con motivo:", {
+        reason
+      });
 
-    await RejectOrder(order.depotOrderId, operatorId, reason);
-    const updatedOrder = { ...order, status: DepotOrderStatus.Assigned };
-    setOrder(updatedOrder);
-    await actualizarEstadoPedido(updatedOrder, "rechazado");
+      await RejectOrder(order.depotOrderId, operatorId, reason);
+      const updatedOrder = { ...order, status: DepotOrderStatus.Assigned };
+      setOrder(updatedOrder);
+      await actualizarEstadoPedido(updatedOrder, "rechazado");
 
     
-    // ACA mostras el mensaje luego de un rechazo exitoso:
-    Alert.alert(
-    "Pedido rechazado",
-    "Se rechazó el pedido para ser asignado a otra persona",
-        [{ text: "OK" }]
-    );
-  } catch (error) {
-    console.error("Error al rechazar el pedido:", error);
-    Alert.alert("Error", "No se pudo rechazar el pedido.");
-  } finally {
-    setShowRejectModal(false);
+      // ACA mostras el mensaje luego de un rechazo exitoso:
+      Alert.alert(
+      "Pedido rechazado",
+      "Se rechazó el pedido para ser asignado a otra persona",
+          [{ text: "OK" }]
+      );
+    } catch (error) {
+      console.error("Error al rechazar el pedido:", error);
+      Alert.alert("Error", "No se pudo rechazar el pedido.");
+    } finally {
+      setShowRejectModal(false);
   }
 }

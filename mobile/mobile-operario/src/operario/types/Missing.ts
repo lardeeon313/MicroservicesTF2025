@@ -7,13 +7,13 @@ export interface Missing{
     notifyMissing : (description:string) => Notification;
 }
 
+
+
 export interface Notification {
     missingDate: Date;
     missingTimeUtc : Date; 
     description: string; 
 }
-
-
 
 //Nueva interfaz ,es para el endpoint en el cual el operario de deposito le notifica el 
 //faltante al encargado

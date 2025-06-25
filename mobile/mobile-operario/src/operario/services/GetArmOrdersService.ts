@@ -1,17 +1,18 @@
 //trae a todos los pedidos con el estado de Prepared =preparado que es lo mismo que 
 //decir armado
 import { api } from "../../services/api";
-import { OrderStatus, type Order } from "../../otherTypes/OrderType";
+import type { DepotOrderDTO } from "../types/OrderDTO";
+import { DepotOrderStatus } from "../types/OrderDTO";
 
-export const GetArmOrdersService = async() : Promise<Order[]> => {
+export const GetArmOrdersService = async() : Promise<DepotOrderDTO[]> => {
     try{
         //trae todos los pedidos ya asignados:
         const response = await api.get('/depotoperator/get-orders-to-operator');
-        const AllOrders : Order[] = response.data; 
+        const AllOrders : DepotOrderDTO[] = response.data; 
 
         //filtra 
         return AllOrders.filter(order => {
-            order.status === OrderStatus.Prepared
+            order.status === DepotOrderStatus.InPreparation
         })
 
     }catch(error){

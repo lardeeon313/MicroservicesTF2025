@@ -9,19 +9,44 @@ import { mockOrders } from "../../mock/MockOrders";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { DepotStackParamList } from "../../types/DepotStackType";
+import { DepotOrderDTO, DepotOrderStatus } from "../../types/OrderDTO";
+import { useArmOrders } from "../../hocks/useArmOrders";
 //EJEMPLO DE USO DEL NAVBAR: 
 // Simulamos autenticación y usuario:
-const user = { name: 'Juan Pérez', role: 'Operario' };
+const user = { name: 'Juan Pérez', role: 'Operario',id: 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa'  };
 const isAuthenticated = true;
 
 const ListofOrdersArmPage = () => {
-    const [orders,setOrders] = useState<Order[]>(mockOrders);
     //prepared = armado 
     const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
-
+    const {armOrders: orders, loading,error} = useArmOrders();
+    //por las dudas se aplica filtro por el tema de la conversion de int a string; 
     const ArmOrders = orders.filter(
-        order => order.status === OrderStatus.Prepared
+        order => order.status === DepotOrderStatus.InPreparation 
     );
+
+    const handleSeeDetail = (order: DepotOrderDTO) => {
+        navigation.navigate('DetailOrder', {
+           orderId: order.depotOrderId,
+           operatorUserId: user.id,
+        });
+    };
+
+    const handleSendOrderToBill = (order: DepotOrderDTO) => {
+        navigation.navigate('SendOrder', {
+            orderId: order.depotOrderId
+        })
+    }
+    
+
+    if (loading) {
+        return <Text style={{ padding: 16 }}>Cargando pedidos...</Text>;
+    }
+    
+    if (error) {
+        return <Text style={{ padding: 16, color: 'red' }}>Error: {error.message}</Text>;
+    }
+    
     
     return(
         <View style={{flex:1}}>
@@ -32,11 +57,12 @@ const ListofOrdersArmPage = () => {
                     ) : (
                 ArmOrders.map((order) => (
                     <ListofArmOrders 
-                        id={order.id}
-                        customer={`${order.customer?.firstName} ${order.customer?.lastName}`}
-                        key={order.id}
+                        id={order.depotOrderId}
+                        customer= {order.customerEmail}
+                        key={order.depotOrderId}
                         order={order}
-                        onSeeDetail={() => navigation.navigate('DetailOrder',{order})}
+                        onSeeDetail={() => handleSeeDetail(order)}
+                        onSendToBill={() => handleSendOrderToBill(order)}
                         />
                     ))
                 )}

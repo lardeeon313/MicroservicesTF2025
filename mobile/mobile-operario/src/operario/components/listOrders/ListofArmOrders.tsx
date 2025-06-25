@@ -2,13 +2,13 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { DepotStackParamList } from '../../types/DepotStackType';
-import type { Order } from '../../../otherTypes/OrderType';
+import type { DepotOrderDTO } from '../../types/OrderDTO';
 import NavbarOperator from '../Navbar/NavbarOperator';
 import { OrderStatusLabels } from '../../constants/UseStatusOrderOperator';
 import { DepotOrderStatus } from '../../types/OrderDTO';
 
 type Props = {
-  order: Order;
+  order: DepotOrderDTO;
   id: number;
   customer: string; 
   onSeeDetail: () => void;
@@ -19,7 +19,7 @@ const ListofArmOrders = ({ order ,id,customer,onSeeDetail,onSendToBill}: Props) 
   return (
       <View style={{ backgroundColor: "#ffffff", padding: 20, borderRadius: 12, marginBottom: 16, shadowColor: "#000", elevation: 4 }}>
         <Text style={{ fontSize: 20, fontWeight: '700', marginBottom: 6 }}>
-          Pedido#: {order.id.toString()}
+          Pedido#: {order.depotOrderId.toString()}
         </Text>
         <Text style={{ fontSize: 18, fontWeight: '700', marginBottom: 6 }}>
           Cliente: {customer}
