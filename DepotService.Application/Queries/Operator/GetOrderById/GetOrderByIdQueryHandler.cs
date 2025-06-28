@@ -48,12 +48,18 @@ namespace DepotService.Application.Queries.Operator.GetOrderById
                 Status = order.Status,
                 AssignedDepotTeam = order.AssignedDepotTeam,
                 Missings = order.Missings,
-                Items = order.Items,
                 //
                 AssignedOperatorId = order.AssignedOperatorId,
                 DeliveryDetail = order.DeliveryDetail,
                 OrderDate = order.OrderDate,
-                
+                Items = order.Items.Select(i => new DepotOrderItemDto
+                {
+                    Id = i.Id,
+                    ProductBrand = i.ProductBrand,
+                    ProductName = i.ProductName,
+                    Packaging = i.PackagingType,
+                    Quantity = i.Quantity,
+                }).ToList(),
             };
         }
     }

@@ -10,7 +10,6 @@ import MissingPage from "../pages/NotificationPages/MissingReportPage";
 import ListofOrdersArmPage from "../pages/listOrdersPages/ListofOrdersArmPage";
 import ListOfConfirmedOrdersPage from "../pages/listOrdersPages/ListofConfirmOrdersPage";
 import OperatorDashboardPage from "../pages/navigationPages/OperatorDashboardPage";
-import SendToOrderBilledPage from "../pages/send/SendToOrderBilledPage";
 import { LoginPage } from "../pages/login/LoginPage";
 import { RegisterPage } from "../pages/login/RegisterPage";
 
@@ -60,6 +59,7 @@ export default function DepotNavigator() {
                 component={NotificationSectionPage}
                 options={{ headerShown: false }}
             />
+            {/**LOGIN del OPERARIO */}
             <Stack.Screen
                 name="LoginPage"
                 component={LoginPage}

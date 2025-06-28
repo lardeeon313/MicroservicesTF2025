@@ -7,9 +7,13 @@ import { UnMarkItemReadyCommand } from "../types/AddPackings";
 
 export const AddPackanings = async (data: AddPackingCommand) => {
     try{
+        console.log("Payload enviado al backend:",data);
         const response = await api.post('/depotoperator/add-packagings',data)
+        console.log("Respuesta del backend:");
+        console.log(response.data);
         return response.data;
-    }catch(error){
+    }catch(error:any){
+        console.log("Error de Axios:", error.response?.data || error.message);
         throw error;
     }
 }

@@ -34,7 +34,7 @@ const DetailOrderPage = ({ route }: Props) => {
       <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log("Cerrar sesión")} />
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
       {error && <Text style={{ color: "red", padding: 16 }}>{error}</Text>}
-      {order && <DetailOrderCard order={order} />}
+      {order && <DetailOrderCard order={order} operatorUserId={user.id} />}
     </View>
   );
 };

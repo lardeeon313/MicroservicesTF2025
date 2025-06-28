@@ -16,6 +16,7 @@ export function useAddPackagings() {
       setSuccess(true);
     } catch (err) {
       setError(err as Error);
+      
     } finally {
       setLoading(false);
     }

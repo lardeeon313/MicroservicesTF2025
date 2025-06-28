@@ -1,11 +1,11 @@
 //Represta cada uno de los items para agregar: 
 export interface AddPackingRequest {
-    DepotOrderItemId: number; 
-    PackaingType: string;  
+    depotOrderItemId: number; 
+    packagingType: string;  
 }
 
 export interface AddPackingCommand {
-    PackaingItems : AddPackingRequest[];
+    packagingItems : AddPackingRequest[];
 }
 
 //Para marcar un producto del pedido como check

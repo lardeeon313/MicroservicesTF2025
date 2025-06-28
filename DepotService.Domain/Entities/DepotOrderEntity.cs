@@ -18,6 +18,7 @@ namespace DepotService.Domain.Entities
         public string? DeliveryDetail { get; set; }
         public DateTime OrderDate { get; set; }
         public OrderStatus Status { get; set; }
+        public decimal TotalAmount { get; set; } = 0;
 
         // Relacion con Items
         public ICollection<DepotOrderItemEntity> Items { get; set; } = [];

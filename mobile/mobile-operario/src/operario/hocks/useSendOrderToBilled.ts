@@ -6,7 +6,7 @@ export const useSendOrderToBilled = () => {
     const [error ,setError] = useState<string | null>(null);
     const [success,setSucess] = useState(false);
 
-    const SendOrder = async (orderId: number) => {
+    const SendOrder = async (orderId: number): Promise<{ ok: boolean; error?: string }> => {
         setloading(true);
         setError(null);
         setSucess(false);
@@ -15,13 +15,15 @@ export const useSendOrderToBilled = () => {
         {
             await SetOrderToBilled(orderId);
             setSucess(true);
+            return {ok:true}
         }catch(err: any)
         {
-            if (typeof err === "object" && err !== null && "response" in err) {
-                setError((err as any).response?.data?.message || 'Se obtuvo un error al enviar el pedido a facturacion.');
-            } else {
-                setError('Unicamente error.');
-            }
+            const errorMsg =
+                typeof err === "object" && err !== null && "response" in err
+                ? (err as any).response?.data?.message || 'Se obtuvo un error al enviar el pedido a facturación.'
+                : 'Unicamente error.';
+            setError(errorMsg);
+            return { ok: false, error: errorMsg };
         }finally
         {
             setloading(false);

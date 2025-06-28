@@ -2,12 +2,13 @@
 // This component serves as the main dashboard for the operator, providing quick access to different sections of the app.
 
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { ShoppingCart, PackageCheck, AlertTriangle } from "lucide-react-native";
 import { DepotStackParamList } from "../types/DepotStackType";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
-
+import { useMissingOrders } from "../hocks/useMissingOrders";
+import { number } from "yup";
 
 type CardItem = {
   title: string;
@@ -38,6 +39,8 @@ const cards: CardItem[] = [
 ];
 
 const OperatorDashboardComponent = () => {
+  const user = { id: "aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa" }; // tu operador real
+  const { missingOrders, loading } = useMissingOrders(user.id);
   const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
 
   return(
@@ -50,8 +53,22 @@ const OperatorDashboardComponent = () => {
               navigation.navigate('ConfirmedOrders');
               break;
             case 'MissingOrders':
-              navigation.navigate('MissingOrders');
-              break;
+              if (missingOrders.length > 0) {
+                const order = missingOrders[0]; // el primer pedido con faltantes
+                navigation.navigate('MissingOrders', {
+                  id: order.depotOrderId,
+                  customer: order.customerName,
+                  status: order.status,
+                  missingCount: order.missings,
+                  onVerDetalle: () => {}, 
+                  onEmitirFaltante: () => {}, 
+                  onMarcarArmado: () => {}, 
+                  onNotifySecction: () => {}, 
+                  });
+                } else {
+                  Alert.alert("No hay pedidos con faltantes");
+                }
+            break;
             case 'ArmOrders':
               navigation.navigate('ArmOrders');
             break;

@@ -3,32 +3,34 @@ import React from "react";
 import { View, Text, TouchableOpacity } from 'react-native';
 import { OrderStatusLabels } from "../../constants/UseStatusOrderOperator";
 import MissingCount from "./MissingCount";
-import type { Missing } from "../../types/Missing";
+import type { DepotOrderItemsReportedDto, DepotOrderMissingDTO } from "../../types/Missing";
 import { OrderStatus } from "../../../otherTypes/OrderType";
-import { DepotOrderStatus } from "../../types/OrderDTO";
+import { DepotOrderDTO, DepotOrderStatus } from "../../types/OrderDTO";
 
 type Props = {
-  id: number;
+  /*id: number;
   customer: string;
-  status: string;
-  missingCount: Missing[];
+  status: DepotOrderStatus;
+  missingCount: DepotOrderDTO[];*/
+  order: DepotOrderDTO;
   onVerDetalle: () => void;
   onEmitirFaltante: () => void;
   onMarcarArmado?: () => void;
   onSeccionNotificaciones: () => void;
 };
 
-const ListOfMissingOrders = ({id,customer,status,missingCount,onVerDetalle,onEmitirFaltante,onMarcarArmado,onSeccionNotificaciones}: Props) => {
+const ListOfMissingOrders = ({order,onVerDetalle,onEmitirFaltante,onMarcarArmado,onSeccionNotificaciones}: Props) => {
+    const { depotOrderId, customerName, status, missings } = order;
   return(
-    <View style={{backgroundColor: '#fff',padding: 16,borderRadius: 12,shadowColor: '#000',shadowOffset: { width: 0, height: 2 },shadowOpacity: 0.1,elevation: 2,marginBottom: 16,}}>
-      <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
-        Pedido# : {id.toString()}
-      </Text>
+    <View style={{backgroundColor: '#fff',padding: 16,borderRadius: 12,shadowColor: '#000',shadowOffset: { width: 0, height: 2 },shadowOpacity: 0.1,elevation: 2,marginBottom: 16}}>
       <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-        Cliente : {customer}
+        Pedido# : {depotOrderId.toString()}
+      </Text>
+      <Text style={{ fontSize: 20, fontWeight: '300', marginTop: 4 }}>
+        Cliente : {customerName}
       </Text>
 
-      <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 16}} >
+      <View style={{flexDirection: 'row', gap: 10, marginTop: 16}} >
         <TouchableOpacity style={{ backgroundColor: '#3B82F6', padding: 8, borderRadius: 10 }} onPress={onVerDetalle}>
           <Text style={{color: '#fff', fontWeight: 'bold'}}>Ver detalle </Text>
         </TouchableOpacity>
@@ -37,27 +39,30 @@ const ListOfMissingOrders = ({id,customer,status,missingCount,onVerDetalle,onEmi
         </TouchableOpacity>
       </View>
 
-      {onMarcarArmado && OrderStatus.InPreparation && (
+      {/**SEGUNDA FILA DE BOTONES */}
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10 }}>
+        {onMarcarArmado && DepotOrderStatus.InPreparation && (
         <TouchableOpacity style={{marginTop: 10,padding: 8,backgroundColor: '#10B981',borderRadius: 10,}}onPress={onMarcarArmado}>
-          <Text style={{ color: '#fff', textAlign: 'center',fontWeight:'bold' }}>Marcar como Armado</Text>
+          <Text style={{ color: '#fff', textAlign: 'center',fontWeight:'bold' }}>Pasar A PREPARACION</Text>
         </TouchableOpacity>
       )}
 
-      {onSeccionNotificaciones && (
-        <TouchableOpacity style={{marginTop: 10,padding: 8,backgroundColor: '#F59E0B',borderRadius: 10,}}onPress={onSeccionNotificaciones}>
-          <Text style={{ color: '#fff', textAlign: 'center',fontWeight:'bold' }}>Revisar todas las notifaciones del pedido</Text>
-        </TouchableOpacity>
-      )}
+        {onSeccionNotificaciones && (
+          <TouchableOpacity style={{marginTop: 10,padding: 8,backgroundColor: '#ff8000',borderRadius: 10,}}onPress={onSeccionNotificaciones}>
+            <Text style={{ color: '#fff', textAlign: 'center',fontWeight:'bold' }}>ATENCION: Revisar faltantes del Pedido</Text>
+          </TouchableOpacity>
+        )}
+      </View>
 
       <Text style={{ fontSize: 20, color: '#6B7280', marginTop: 8 }}>
-        Estado: {DepotOrderStatus.InPreparation}
+        Estado: {OrderStatusLabels[status as DepotOrderStatus]}
       </Text>
 
       <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 16, marginBottom: 8 }}>
-        Total de faltantes: {missingCount.length}
+        Total de faltantes: {missings.length}
       </Text>
 
-      <MissingCount items={missingCount} />
+      <MissingCount count={missings.length} />
     </View> 
   )
 }; 

@@ -1,5 +1,7 @@
 //Nueva interfaz que se asemeja a la esctructura que devuelve la api: 
 
+import { DepotOrderMissingDTO } from "./Missing";
+
 export interface DepotOrderDTO{
     depotOrderId: number;
     salesOrderId: number; 
@@ -15,7 +17,7 @@ export interface DepotOrderDTO{
     assignedDepotTeamId: number | null; //NUEVO CAMPO
     rejectionReason?:string | null; 
     items : any[];
-    missings: any[];
+    missings: DepotOrderMissingDTO[];
 }
 
 //NUEVO STATUS SIMILAR AL ESTADO DE LOS PEDIDOS DENTRO DEL BACK 

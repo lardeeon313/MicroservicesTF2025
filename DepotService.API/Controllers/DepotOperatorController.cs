@@ -37,6 +37,7 @@ namespace DepotService.API.Controllers
         UnmarkItemReadyValidator unmarkItemReadyValidator,
         IUnmarkItemReadyCommandHandler unmarkItemReadyCommandHandler,
         IGetAssignedPendingOrdersQueryHandler getAssignedPendingOrdersQueryHandler
+        
         ) : ControllerBase
     {
         private readonly IGetAssignedPendingOrdersQueryHandler _getAssignedPendingOrdersQueryHandler = getAssignedPendingOrdersQueryHandler;

@@ -2,7 +2,7 @@ import { useEffect,useState } from "react";
 import { GetMissingOrdersService } from "../services/GetMissingOrdersService";
 import type { DepotOrderDTO } from "../types/OrderDTO";
 
-export const useMissingOrders = () => {
+export const useMissingOrders = (operatorUserId:string) => {
     const [missingOrders,setMissingOrders] = useState<DepotOrderDTO[]>([]);
     const [loading,setLoading] = useState(true);
     const [error,setError] = useState<Error | null>(null);
@@ -13,7 +13,8 @@ export const useMissingOrders = () => {
             setError(null);
             try
             {
-                const data = await GetMissingOrdersService();
+                const data = await GetMissingOrdersService(operatorUserId);
+                console.log('Pedidos con faltantes recibidos:', data);
                 setMissingOrders(data);
             }
             catch(error:any)
@@ -27,7 +28,7 @@ export const useMissingOrders = () => {
             }
         };
         fetchArmOrders();
-    }, []); 
+    }, [operatorUserId]); 
 
     return {missingOrders,loading,error}
 }

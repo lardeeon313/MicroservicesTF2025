@@ -18,9 +18,10 @@ namespace DepotService.Application.DTOs
         public string? DeliveryDetail { get; set; }
         public DateTime OrderDate { get; set; }
         public OrderStatus Status { get; set; }
+        public decimal TotalAmount { get; set; } = 0;
 
         // Relacion con Items
-        public ICollection<DepotOrderItemEntity> Items { get; set; } = [];
+        public ICollection<DepotOrderItemDto> Items { get; set; } = [];
 
         // Relacion con Faltantes
         public ICollection<DepotOrderMissing> Missings { get; set; } = [];

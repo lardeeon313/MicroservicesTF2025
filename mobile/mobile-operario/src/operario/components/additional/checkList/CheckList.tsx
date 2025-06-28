@@ -2,7 +2,7 @@ import { View, Text,TouchableOpacity } from 'react-native';
 import { Check } from 'lucide-react-native';
 import { useState } from 'react';
 
-
+//ELIMINAR COMPONENTE POR QUE YA NO SE VA A UTILIZAR !
 type Props = {
     productName:string; 
     quantity:number;

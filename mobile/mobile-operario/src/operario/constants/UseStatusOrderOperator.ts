@@ -6,8 +6,8 @@ export const OrderStatusLabels: Record<DepotOrderStatus, string> = {
   [DepotOrderStatus.ReReceived]: "Modificado por faltantes",
   [DepotOrderStatus.Assigned]: "Asignado",
   [DepotOrderStatus.InPreparation]: "En preparación",
-  [DepotOrderStatus.MissingProduct]: "Falta producto",
-  [DepotOrderStatus.SentToBilling]: "Enviado a facturar",
+  [DepotOrderStatus.MissingProduct]: "Pedido con faltante/s",
+  [DepotOrderStatus.SentToBilling]: "Listo para Facturar",
   [DepotOrderStatus.PendingResolution]: "Pendiente de resolución",
   [DepotOrderStatus.Prepared]: "Preparado",
 };

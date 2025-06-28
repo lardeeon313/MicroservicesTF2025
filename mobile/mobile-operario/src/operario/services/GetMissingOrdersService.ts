@@ -4,17 +4,22 @@
 import { api } from "../../services/api";
 import type { DepotOrderDTO } from "../types/OrderDTO";
 import { DepotOrderStatus } from "../types/OrderDTO";
-import { DepotOrderMissingDto } from "../types/Missing";
-//service para traer los pedidos asignados por parte de un operario para lo que es faltantes 
-export const GetMissingOrdersService = async() : Promise<DepotOrderDTO[]> => {
-    try{
-        const response = await api.get('/depotoperator/get-orders-to-operator');
-        const AllOrders : DepotOrderDTO[] = response.data;
+import type { ReportOrderMissingRequest } from "../types/Missing";
 
-        //filtra los pedidos en base a su estado: 
-        return AllOrders.filter(order => {
-            order.status === DepotOrderStatus.InPreparation 
-        })
+
+
+//service para traer los pedidos asignados por parte de un operario para lo que es faltantes 
+export const GetMissingOrdersService = async(operatorUserId:string) : Promise<DepotOrderDTO[]> => {
+    try{
+        const response = await api.get('/depotoperator/get-missing-orders-to-operator',
+            {
+                params:{
+                    operatorUserId: operatorUserId,
+                }
+            }
+        );
+        const AllOrders : DepotOrderDTO[] = response.data;
+        return AllOrders;
 
     }catch(error){
         console.error("Momentanamente, no se pudo obtener los pedidos ",error);
@@ -24,12 +29,13 @@ export const GetMissingOrdersService = async() : Promise<DepotOrderDTO[]> => {
 
 
 //service para comunicarse con el endpoint de report-Order-Missing
-export const reportOrderMissing = async (data: DepotOrderMissingDto) => {
+export const reportOrderMissing = async (data: ReportOrderMissingRequest) => {
     try{
         const response = await api.post('/depotoperator/report-order-missing', data);
         return response.data;
     }
     catch(error){
+        console.log("❌❌ Error real del backend:", error);
         throw error;
     }
 }

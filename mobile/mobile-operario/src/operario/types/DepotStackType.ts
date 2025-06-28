@@ -1,35 +1,35 @@
-import { Order,OrderStatus } from "../../otherTypes/OrderType";
-import { Missing } from "./Missing";
-import { DepotOrderDTO } from "./OrderDTO";
+//import { Order,OrderStatus } from "../../otherTypes/OrderType";
+import { DepotOrderItemsReportedDto, DepotOrderMissingDTO, ReportOrderMissingRequest } from "./Missing";
+import { DepotOrderDTO, DepotOrderStatus } from "./OrderDTO";
 
 export type DepotStackParamList = {
   ArmOrders?: {
-    id: Order['id'];
-    customer: Order['customerFirstName'] & Order['customerLastName'] | string;
+    id: DepotOrderDTO['depotOrderId'];
+    customer: (DepotOrderDTO['customerName'] | string);
     onVerDetalle: () => void;
     onEmitirFaltante: () => void;
     onMarcarArmado: () => void;
     onEnviarAFacturar: () => void;
-    status?: OrderStatus.Prepared;
+    status?: DepotOrderStatus.InPreparation;
   };
   ConfirmedOrders?: {
-    id:Order['id'];
-    customer:(Order['customerFirstName'] & Order['customerLastName']) | string;
+    id:DepotOrderDTO['depotOrderId'];
+    customer:(DepotOrderDTO['customerName'] | string);
     onVerDetalle: () => void;
     onEmitirFaltante:() => void;
     onMarcarArmado:()=> void;
     onAcceptOrder: () => void;
-    status?: OrderStatus.Confirmed;
-    order?: Order; // Optional order object for additional details
+    status?: (DepotOrderStatus.Assigned | DepotOrderStatus.ReReceived);
+    order?: DepotOrderDTO; // Optional order object for additional details
   };
   MissingOrders?: {
-    id: Order['id'];
-    customer: (Order['customerFirstName'] & Order['customerLastName']) | string;
+    id: number;
+    customer: (DepotOrderDTO['customerName'] | string);
     onVerDetalle: () => void;
     onEmitirFaltante: () => void;
     onMarcarArmado: () => void;
-    status?: OrderStatus.InPreparation; // Assuming this is the status for missing orders
-    missingCount: Missing[];
+    status?: (DepotOrderStatus.InPreparation | DepotOrderStatus.MissingProduct); // Assuming this is the status for missing orders
+    missingCount: DepotOrderItemsReportedDto[];
     onNotifySecction: () => void;
   };
   OperatorDashboard: undefined;
@@ -37,18 +37,13 @@ export type DepotStackParamList = {
   DetailOrder: {
     orderId: DepotOrderDTO['depotOrderId'] ;
     operatorUserId: DepotOrderDTO['assignedOperatorId']
-    //orderId:number;
-    //operatorUserId: string;
   };
   MissingReport: {
-    missing: Missing;
+    order:DepotOrderDTO;
   };
   NotificationPage: {
-    order: Order;
+    order: DepotOrderDTO;
   };
-  SendOrder: {
-    orderId: DepotOrderDTO['depotOrderId'];
-  }
   LoginPage : undefined;
   RegisterPage: undefined;
 };

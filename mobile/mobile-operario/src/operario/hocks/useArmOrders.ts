@@ -1,9 +1,8 @@
 import { useEffect,useState } from "react";
 import { GetArmOrdersService } from "../services/GetArmOrdersService";
-//import type { Order } from "../../otherTypes/OrderType";
 import type { DepotOrderDTO } from "../types/OrderDTO";
 
-export const useArmOrders = () => {
+export const useArmOrders = (operatorUserId: string) => {
     const [armOrders,setArmOrders] = useState<DepotOrderDTO[]>([]);
     const [loading,setLoading] = useState(true);
     const [error,setError] = useState<Error | null>(null);
@@ -14,7 +13,7 @@ export const useArmOrders = () => {
             setError(null);
             try
             {
-                const data = await GetArmOrdersService();
+                const data = await GetArmOrdersService(operatorUserId);
                 setArmOrders(data);
             }
             catch (error: any)
@@ -28,7 +27,7 @@ export const useArmOrders = () => {
             }
         }; 
         fetchArmOrders();
-    }, []);
+    }, [operatorUserId]);
 
     return {armOrders,loading,error};
 }

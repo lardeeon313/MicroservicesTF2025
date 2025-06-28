@@ -1,10 +1,14 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import type { ReportOrderMissingRequest } from '../../types/Missing';
+import { DepotOrderDTO } from '../../types/OrderDTO';
+
 
 type Props = {
   description: string;
   onNotifyMissing: (text: string) => void;
   onSubmit: () => void;
+  missing: DepotOrderDTO; 
 };
 
 const MissingReport = ({ description, onNotifyMissing, onSubmit }: Props) => {

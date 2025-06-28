@@ -1,3 +1,7 @@
+using DepotService.Application.Commands.BillingManager.ExportInvoiceOrderPdf;
+using DepotService.Application.Commands.BillingManager.InvoicedOrder;
+using DepotService.Application.Commands.BillingManager.SetItemUnitPrices;
+using DepotService.Application.Commands.BillingManager.UpdateInvoicedItemPrice;
 using DepotService.Application.Commands.DepotManager.AssignOperator;
 using DepotService.Application.Commands.DepotManager.AssignOrder;
 using DepotService.Application.Commands.DepotManager.CreateTeam;
@@ -14,6 +18,12 @@ using DepotService.Application.Commands.DepotOperator.SentOrderToBilling;
 using DepotService.Application.Commands.DepotOperator.UnMarkItemReady;
 using DepotService.Application.DTOs.DepotManager.Request;
 using DepotService.Application.DTOs.DepotOperator.Request;
+using DepotService.Application.Queries.BillingManager.GetAllInvoicedOrders;
+using DepotService.Application.Queries.BillingManager.GetBillingDetailsByOrder;
+using DepotService.Application.Queries.BillingManager.GetInvoicedOrderById;
+using DepotService.Application.Queries.BillingManager.GetInvoicedOrdersByCustomer;
+using DepotService.Application.Queries.BillingManager.GetInvoicedOrdersByDateRange;
+using DepotService.Application.Queries.BillingManager.GetOrdersPendingBilling;
 using DepotService.Application.Queries.DepotManager.GetAllMissingOrders;
 using DepotService.Application.Queries.DepotManager.GetAllOrders;
 using DepotService.Application.Queries.DepotManager.GetAllTeams;
@@ -25,10 +35,13 @@ using DepotService.Application.Queries.DepotManager.GetTeamByName;
 using DepotService.Application.Queries.Operator.GetAssignedPendingOrders;
 using DepotService.Application.Queries.Operator.GetOrderById;
 using DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery;
+using DepotService.Application.Validators.BillingManager;
 using DepotService.Application.Validators.DepotManager;
 using DepotService.Application.Validators.DepotOperator;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
+using DepotService.Infraestructure.Documents;
+using DepotService.Infraestructure.Documents.Pdf;
 using DepotService.Infraestructure.Messaging;
 using DepotService.Infraestructure.Messaging.Consumers;
 using DepotService.Infraestructure.Messaging.Publisher;
@@ -77,6 +90,15 @@ builder.Services.AddScoped<IGetByIdOrderQueryHandler, GetByIdOrderQueryHandler>(
 builder.Services.AddScoped<IGetOrdersByOperatorQueryHandler, GetOrdersByOperatorQueryHandler>();
 builder.Services.AddScoped<IGetOrderByIdQueryHandler, GetOrderByIdQueryHandler>();
 builder.Services.AddScoped<IGetAssignedPendingOrdersQueryHandler, GetAssignedPendingOrdersQueryHandler>();
+builder.Services.AddScoped<IGetOrdersPendingBillingQueryHandler , GetOrdersPendingBillingQueryHandler>();
+builder.Services.AddScoped<IGetBillingDetailsByOrderIdQueryHandler , GetBillingDetailsByOrderIdQueryHandler>();
+builder.Services.AddScoped<IGetOrdersPendingBillingQueryHandler, GetOrdersPendingBillingQueryHandler>();
+builder.Services.AddScoped<ISetItemUnitPricesCommandHandler, SetItemUnitPricesCommandHandler>();
+builder.Services.AddScoped<IGetAllInvoicedOrdersQueryHandler, GetAllInvoicedOrdersQueryHandler>();
+builder.Services.AddScoped<IGetInvoicedOrderByIdQueryHandler, GetInvoicedOrderByIdQueryHandler>();
+builder.Services.AddScoped<IGetInvoicedOrdersByDateRangeQueryHandler, GetInvoicedOrdersByDateRangeQueryHandler>();
+builder.Services.AddScoped<IGetInvoicedOrdersByCustomerQueryHandler, GetInvoicedOrdersByCustomerQueryHandler>();
+builder.Services.AddScoped<IExportInvoiceDocumentCommandHandler, ExportInvoiceDocumentCommandHandler>();
 
 // Add Commands
 builder.Services.AddScoped<IAssignOperatorCommandHandler, AssignOperatorCommandHandler>();
@@ -93,6 +115,10 @@ builder.Services.AddScoped<ISentToBillingCommandHandler , SentToBillingCommandHa
 builder.Services.AddScoped<IRejectOrderCommandHandler, RejectOrderCommandHandler>();
 builder.Services.AddScoped<IMarkItemCommandHandler , MarkItemCommandHandler>();
 builder.Services.AddScoped<IUnmarkItemReadyCommandHandler , UnmarkItemReadyCommandHandler>();
+builder.Services.AddScoped<IInvoiceOrderCommandHandler , InvoiceOrderCommandHandler>();
+builder.Services.AddScoped<ISetItemUnitPricesCommandHandler, SetItemUnitPricesCommandHandler>();
+builder.Services.AddScoped<IUpdateInvoicedItemPriceCommandHandler, UpdateInvoicedItemPriceCommandHandler>();
+builder.Services.AddScoped<IExportInvoiceDocumentCommandHandler, ExportInvoiceDocumentCommandHandler>();
 
 
 // Add FluentValidation
@@ -105,6 +131,10 @@ builder.Services.AddScoped<IValidator<AddPackagingCommand>, AddPackaingCommandVa
 builder.Services.AddScoped<IValidator<RejectOrderCommand>, RejectOrderCommandValidator>();
 builder.Services.AddScoped<IValidator<MarkItemCommand>, MarkItemIsReadyCommandValidator>();
 builder.Services.AddScoped<IValidator<UnmarkItemReadyCommand>, UnmarkItemReadyValidator>();
+builder.Services.AddScoped<IValidator<SetItemUnitPricesCommand>, SetItemUnitPricesCommandValidator>();
+builder.Services.AddScoped<IValidator<GetInvoicedOrdersByDateRangeQuery>, GetInvoicedOrdersByDateRangeQueryValidator>();
+builder.Services.AddScoped<IValidator<GetInvoicedOrdersByCustomerQuery>,  GetInvoicedOrdersByCustomerQueryValidator>();
+builder.Services.AddScoped<IValidator<UpdateInvoicedItemPriceCommand>, UpdateInvoicedItemPriceCommandValidator>();
 
 //Nuevo: AGREGÁ ESTA LÍNEA QUE FALTA
 builder.Services.AddScoped<OrderMissingReportedCommandValidator>();
@@ -116,6 +146,9 @@ builder.Services.AddScoped<UnmarkItemReadyValidator>();
 // Add HostedService RabbitConsumer
 builder.Services.AddHostedService<OrderIssuedConsumer>();
 builder.Services.AddHostedService<OrderReissuedConsumer>();
+
+// Add Export Document Service 
+builder.Services.AddScoped<IInvoiceDocumentGenerator, InvoicePdfGenerator>();
 
 // Obtener la cadena de conexión del appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

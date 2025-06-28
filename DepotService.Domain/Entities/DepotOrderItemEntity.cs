@@ -23,7 +23,7 @@ namespace DepotService.Domain.Entities
         public decimal? UnitPrice { get; set; }
         public int Quantity { get; set; }
         public bool IsReady { get; set; } = false; // Indica si el item está listo para ser entregado
-        public decimal? Total => (Quantity * UnitPrice ?? 0);
+        public decimal? Total { get; set; }
 
         // Si es item reportado como missing
         public int? DepotOrderMissingId { get; set; }

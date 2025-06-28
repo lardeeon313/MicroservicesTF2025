@@ -21,7 +21,7 @@ const ListofConfirmedOrders = ({order,customer,status, onSeeDetail, onAceeptOrde
         <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
           Pedido# : {order.depotOrderId}
         </Text>
-        <Text style={{ marginTop: 4 }}>
+        <Text style={{ fontSize: 20, fontWeight: '300', marginTop: 4  }}>
           Cliente: {customer}
         </Text>
         <Text style={{ marginTop: 4,fontSize: 20 }}>
