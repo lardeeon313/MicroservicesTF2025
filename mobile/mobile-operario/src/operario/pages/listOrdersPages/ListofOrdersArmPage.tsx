@@ -70,7 +70,10 @@ const ListofOrdersArmPage = () => {
     return(
         <View style={{flex:1}}>
             <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log("Cerrar sesión")}/>
-            <ScrollView style={{padding:20}}>
+            <Text style={{ fontSize: 22,fontWeight: '600',marginTop: 20,marginBottom: 20,color: '#333', letterSpacing: 0.5, textAlign: 'center'}}>
+                Pedidos armados y facturados  
+            </Text>
+            <ScrollView contentContainerStyle={{padding:16}}>
                 {ArmOrders.length === 0 ? (
                     <Text style={{ fontSize: 18 }}>No hay pedidos armados todavía.</Text>
                     ) : (

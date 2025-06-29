@@ -60,7 +60,10 @@ const ListOfConfirmedOrdersPage = () => {
   return (
     <View style={{ flex: 1 }}>
       <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log("Cerrar sesión")} />
-      <ScrollView style={{ padding: 16 }}>
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <Text style={{ fontSize: 22,fontWeight: '600',marginBottom: 20,color: '#333', letterSpacing: 0.5, textAlign: 'center'}}>
+          Pedidos confirmados o prontos a confirmar 
+        </Text>
         {orders.map((order) => (
           <ListofConfirmedOrders
             key={order.depotOrderId}

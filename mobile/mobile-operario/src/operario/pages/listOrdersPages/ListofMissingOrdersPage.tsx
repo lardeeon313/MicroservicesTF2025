@@ -1,16 +1,13 @@
-import React, { useState, useMemo } from "react";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import type { RouteProp } from "@react-navigation/native";
+// pages/MissingAndPreparationOrdersPage.tsx
+import React from "react";
+import { View, Text, ActivityIndicator, Alert, ScrollView } from "react-native";
+import NavbarOperator from "../../components/Navbar/NavbarOperator";
+import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { DepotStackParamList } from "../../types/DepotStackType";
-import ListOfMissingOrders from "../../components/listOrders/ListofMissingOrders";
-import { DepotOrderStatus, OrderStatusMap } from "../../types/OrderDTO";
-import NavbarOperator from "../../components/Navbar/NavbarOperator";
-import { View, Text, ActivityIndicator, Alert } from "react-native";
-import { useReportOrderMissing } from "../../hocks/useReportOneMissing";
-import type { ReportOrderMissingRequest } from "../../types/Missing";
 import { useMissingOrders } from "../../hocks/useMissingOrders";
-import { OrderStatusLabels } from "../../constants/UseStatusOrderOperator";
+import type { DepotOrderDTO, DepotOrderStatus } from "../../types/OrderDTO";
+import ListOfMissingOrders from "../../components/listOrders/ListofMissingOrders";
 
 const user = {
   name: "Juan Pérez",
@@ -20,63 +17,47 @@ const user = {
 
 const isAuthenticated = true;
 
-const ListofMissingOrdersPage = () => {
+const MissingAndPreparationOrdersPage = () => {
   const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
-  const { params } = useRoute<RouteProp<DepotStackParamList, "MissingOrders">>();
-  const orderId = params?.id;
-  
+  const { missingOrders: orders, loading, error } = useMissingOrders(user.id);
 
-  const { missingOrders: orders, loading: loadingOrders, error } = useMissingOrders(user.id);
-
-  const [orderStatus, setOrderStatus] = useState<DepotOrderStatus>(DepotOrderStatus.InPreparation);
-
-  const selectedOrder = useMemo(() => {
-    return orders.find(o => o.depotOrderId === orderId);
-  }, [orders, orderId]);
-
-  if (loadingOrders) {
-    return <ActivityIndicator size="large" color="#3B82F6" style={{ marginTop: 40 }} />;
-  }
-
-  if (!selectedOrder) {
-    return (
-      <View style={{ padding: 20 }}>
-        <Text style={{ color: "red", fontWeight: "bold" }}>
-          No se encontró el pedido en preparación.
-        </Text>
-      </View>
-    );
-  }
-
-  const onSeeDetail = () => {
+  const goToDetalle = (order: DepotOrderDTO) => {
     navigation.navigate("DetailOrder", {
-      orderId: selectedOrder.depotOrderId,
+      orderId: order.depotOrderId,
       operatorUserId: user.id,
     });
   };
 
-  const onNotifySection = () => {
-    console.log(`NOTIFICACIONES faltantes del pedido ${selectedOrder.salesOrderId} seleccionado: ` ,selectedOrder.missings)
-    navigation.navigate("NotificationPage", { order: selectedOrder });
+  const goToNotificaciones = (order: DepotOrderDTO) => {
+    navigation.navigate("NotificationPage", { order });
   };
 
-  const onEmitirFaltante = () => {
+  const goToEmitirFaltante = (order: DepotOrderDTO) => {
     try {
-      console.log("Emitiendo faltante con order:", selectedOrder);
       navigation.navigate("MissingReport", {
-        order: selectedOrder,
+        order,
       });
     } catch (error) {
-      console.error("Error al emitir faltante:", error);
       Alert.alert("Error", "Hubo un problema al generar el reporte de faltante.");
     }
   };
 
-  const UpdateOrderArmed = () => {
-    if (orderStatus !== DepotOrderStatus.Prepared) {
-      setOrderStatus(DepotOrderStatus.Prepared);
-    }
+  const marcarComoPreparado = (order: DepotOrderDTO) => {
+    // Aquí podrías integrar lógica real para actualizar el estado
+    console.log(`Pedido ${order.depotOrderId} marcado como preparado`);
   };
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#3B82F6" style={{ marginTop: 40 }} />;
+  }
+
+  if (!orders.length) {
+    return (
+      <View style={{ padding: 20 }}>
+        <Text>No se encontraron pedidos con faltantes o en preparación.</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -86,19 +67,27 @@ const ListofMissingOrdersPage = () => {
         logout={() => console.log("Cerrar sesión")}
       />
 
-      <ListOfMissingOrders
-        order={selectedOrder}
-        onVerDetalle={onSeeDetail}
-        onEmitirFaltante={onEmitirFaltante}
-        onMarcarArmado={UpdateOrderArmed}
-        onSeccionNotificaciones={onNotifySection}
-      />
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <Text style={{ fontSize: 22,fontWeight: '600',marginBottom: 20,color: '#333', letterSpacing: 0.5, textAlign: 'center'}}>
+          Pedidos con faltantes
+        </Text>
+
+        {orders.map((order) => (
+          <ListOfMissingOrders
+            key={order.depotOrderId}
+            order={order}
+            onVerDetalle={() => goToDetalle(order)}
+            onEmitirFaltante={() => goToEmitirFaltante(order)}
+            onMarcarArmado={() => marcarComoPreparado(order)}
+            onSeccionNotificaciones={() => goToNotificaciones(order)}
+          />
+        ))}
+      </ScrollView>
     </View>
   );
 };
 
-export default ListofMissingOrdersPage;
-
+export default MissingAndPreparationOrdersPage;
 
         {/**id={selectedOrder.depotOrderId}
         customer={selectedOrder.customerName}
