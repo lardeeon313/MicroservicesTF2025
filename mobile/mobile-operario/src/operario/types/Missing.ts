@@ -22,21 +22,21 @@ export interface ReportOrderMissingRequest {
 }
 
 export interface DepotOrderMissingItem {
-    OrderItemId: number;
-    ProductName: string;
-    ProductBrand: string;
-    Packaging?: string | null;
-    Quantity: number;
+    orderItemId: number;
+    productName: string;
+    productBrand: string;
+    packaging?: string | null;
+    quantity: number;
 }
 
 export interface DepotOrderMissingDTO {
-    MissingId: number;
+    missingId: number;
     SalesOrderId: number;
-    MissingReason?: string | null;
-    MissingDescription?: string | null;
-    DescriptionResolution?: string | null;
-    MissingItems: DepotOrderMissingItem[];
-    MissingDate: string; // o Date
+    missingReason?: string | null;
+    missingDescription?: string | null;
+    descriptionResolution?: string | null;
+    missingItems: DepotOrderMissingItem[];
+    missingDate: string; // o Date
     DepotOrderId: number;
     DepotOrder: DepotOrderDTO;
 }
