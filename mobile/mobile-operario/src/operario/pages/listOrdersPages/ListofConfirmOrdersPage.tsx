@@ -62,9 +62,12 @@ const ListOfConfirmedOrdersPage = () => {
       <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log("Cerrar sesión")} />
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         <Text style={{ fontSize: 22,fontWeight: '600',marginBottom: 20,color: '#333', letterSpacing: 0.5, textAlign: 'center'}}>
-          Pedidos confirmados o prontos a confirmar 
+          Pedidos para poder confirmar  
         </Text>
-        {orders.map((order) => (
+        { orders.length === 0? (
+          <Text style={{ fontSize: 18 ,textAlign:'center'}}>No hay pedidos para confirmar aun.</Text>
+        ) : (
+        orders.map((order) => (
           <ListofConfirmedOrders
             key={order.depotOrderId}
             order={order}
@@ -73,7 +76,7 @@ const ListOfConfirmedOrdersPage = () => {
             onSeeDetail={() => handleSeeDetail(order)}
             onAceeptOrder={() => handleAcceptOrder(order)}
           />
-        ))}
+        )))}
       </ScrollView>
     </View>
   );

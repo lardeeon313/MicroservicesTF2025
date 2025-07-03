@@ -3,7 +3,7 @@
 
 import React from "react";
 import { View, Text, TouchableOpacity, Alert } from "react-native";
-import { ShoppingCart, PackageCheck, AlertTriangle } from "lucide-react-native";
+import { ShoppingCart, PackageCheck, AlertTriangle,Check  } from "lucide-react-native";
 import { DepotStackParamList } from "../types/DepotStackType";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
@@ -19,22 +19,28 @@ type CardItem = {
 
 const cards: CardItem[] = [
   {
-    title: 'Pedidos armados',
-    description: 'Visualiza los pedidos ya preparados para facturar',
-    icon: ShoppingCart,
-    path: 'ArmOrders',
-  },
-  {
     title: 'Pedidos confirmados',
-    description: 'Consulta los pedidos asignados para confirmar o rechazar dichos pedidos',
+    description: 'Consulta los pedidos asignados para confirmar o rechazar dichos pedidos.',
     icon: PackageCheck,
     path: 'ConfirmedOrders',
   },
   {
     title: 'Pedidos con faltantes',
-    description: 'Visualiza los pedidos que tienes y emite los faltantes necesarios',
+    description: 'Visualiza los pedidos que tienes y emite los faltantes necesarios.',
     icon: AlertTriangle,
     path: 'MissingOrders',
+  },
+  {
+    title: 'Pedidos para preparar',
+    description: 'Aquí encontrarás los pedidos que ya han sido confirmados y que tienen todos sus productos. Selecciónalos para prepararlos.',
+    icon: ShoppingCart,
+    path: 'ArmOrders',
+  },
+  {
+    title: 'Pedidos armados',
+    description: 'Manda los pedidos preparados para facturarlos.',
+    icon: Check,
+    path:'PreparedOrders'
   },
 ];
 
@@ -71,6 +77,9 @@ const OperatorDashboardComponent = () => {
             break;
             case 'ArmOrders':
               navigation.navigate('ArmOrders');
+            break;
+            case 'PreparedOrders':
+              navigation.navigate('PreparedOrders')
             break;
           }
         }}>

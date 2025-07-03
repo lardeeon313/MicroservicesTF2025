@@ -32,6 +32,12 @@ export type DepotStackParamList = {
     missingCount: DepotOrderItemsReportedDto[];
     onNotifySecction: () => void;
   };
+  PreparedOrders?:{
+    id:number;
+    customer: (DepotOrderDTO['customerName'] | string);
+    onVerDetalle: () => void;
+    status? : (DepotOrderStatus.Prepared | DepotOrderStatus.SentToBilling);
+  }
   OperatorDashboard: undefined;
   AcceptOrder: { order: DepotOrderDTO }; 
   DetailOrder: {

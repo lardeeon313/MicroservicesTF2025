@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView ,Image} from 'react-native';
 import CheckList from '../additional/checkList/CheckList';
 import { OrderStatusLabels } from '../../constants/UseStatusOrderOperator';
 //NUEVO: 
@@ -17,11 +17,22 @@ type Props = {
 
 
 const DetailOrderCard = ({order}: Props) => {
-  
+  const allItemsReady = order.items.every(item => item.isReady === true);
   //const {TotalProducts} = order.items.reduce((acc,item) => acc + item.quantity, 0);
   console.log("Detalle del pedido:", order);
   return(
     <View style={{ flex: 1, backgroundColor: '#f9f9f9', padding: 16 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+        <Image
+          source={require('../../../assetsImages/LogoVerona.png')}
+          style={{
+            width: 42,
+            height: 42,
+            resizeMode: 'contain',
+            marginRight: 10,
+          }}
+        />
+      </View>
       <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 12 }}>
         Detalle del Pedido #{order.depotOrderId}
       </Text>
@@ -54,7 +65,10 @@ const DetailOrderCard = ({order}: Props) => {
           cantidad: item.quantity,
         }))}
         operatorUserId={user.id}
+        pedidoStatus={order.status}
       />
+
+      
     </View>
   )
 }

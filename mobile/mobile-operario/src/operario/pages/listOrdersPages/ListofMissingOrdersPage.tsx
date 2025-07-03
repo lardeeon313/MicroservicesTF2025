@@ -8,6 +8,7 @@ import { DepotStackParamList } from "../../types/DepotStackType";
 import { useMissingOrders } from "../../hocks/useMissingOrders";
 import type { DepotOrderDTO, DepotOrderStatus } from "../../types/OrderDTO";
 import ListOfMissingOrders from "../../components/listOrders/ListofMissingOrders";
+import { ValidationToMissingToPreparation } from "../../validations/ValidationToMissingToPreparation";
 
 const user = {
   name: "Juan Pérez",
@@ -44,7 +45,15 @@ const MissingAndPreparationOrdersPage = () => {
 
   const marcarComoPreparado = (order: DepotOrderDTO) => {
     // Aquí podrías integrar lógica real para actualizar el estado
-    console.log(`Pedido ${order.depotOrderId} marcado como preparado`);
+    //console.log(`Pedido ${order.depotOrderId} marcado como preparado`);
+    const { canChange, reason } = ValidationToMissingToPreparation(order);
+    if (!canChange) {
+      Alert.alert("Acción no permitida", reason || "No se puede actualizar el estado.");
+      return;
+    }
+    // Continuar con la lógica de marcado
+    console.log(`✅ Pedido ${order.depotOrderId} marcado como preparado`);
+    // Lógica real de cambio de estado acá
   };
 
   if (loading) {
@@ -71,11 +80,11 @@ const MissingAndPreparationOrdersPage = () => {
         <Text style={{ fontSize: 22,fontWeight: '600',marginBottom: 20,color: '#333', letterSpacing: 0.5, textAlign: 'center'}}>
           Pedidos con faltantes
         </Text>
-
         {orders.map((order) => (
           <ListOfMissingOrders
             key={order.depotOrderId}
             order={order}
+            missings={order.missings}
             onVerDetalle={() => goToDetalle(order)}
             onEmitirFaltante={() => goToEmitirFaltante(order)}
             onMarcarArmado={() => marcarComoPreparado(order)}
@@ -88,14 +97,3 @@ const MissingAndPreparationOrdersPage = () => {
 };
 
 export default MissingAndPreparationOrdersPage;
-
-        {/**id={selectedOrder.depotOrderId}
-        customer={selectedOrder.customerName}
-        status={selectedOrder.status}
-        missingCount={selectedOrder.items.map(item => ({
-          orderItemId: item.id,
-          productName: item.productName,
-          productBrand: item.productBrand,
-          packaging: item.packagingType,
-          quantity: item.quantity,
-        }))}**/}

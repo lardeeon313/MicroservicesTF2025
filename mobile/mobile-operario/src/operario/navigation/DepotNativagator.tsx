@@ -9,6 +9,8 @@ import AcceptOrderPage from "../pages/detailPages/AcceptOrderPage";
 import MissingPage from "../pages/NotificationPages/MissingReportPage";
 import ListofOrdersArmPage from "../pages/listOrdersPages/ListofOrdersArmPage";
 import ListOfConfirmedOrdersPage from "../pages/listOrdersPages/ListofConfirmOrdersPage";
+//NUEVA PAGE ; Para ir a los pedidos con statusd Prepared y SentToBilling: 
+import ListOfPreparedOrdersPage from "../pages/listOrdersPages/ListOfPreparedOrdersPage";
 import OperatorDashboardPage from "../pages/navigationPages/OperatorDashboardPage";
 import { LoginPage } from "../pages/login/LoginPage";
 import { RegisterPage } from "../pages/login/RegisterPage";
@@ -38,6 +40,11 @@ export default function DepotNavigator() {
                 name="MissingOrders" 
                 component={ListofMissingOrdersPage}
                 options={{ headerShown: false }}
+            />
+            <Stack.Screen 
+                name="PreparedOrders"
+                component={ListOfPreparedOrdersPage}
+                options={{headerShown: false}}
             />
             <Stack.Screen
                 name="AcceptOrder" 

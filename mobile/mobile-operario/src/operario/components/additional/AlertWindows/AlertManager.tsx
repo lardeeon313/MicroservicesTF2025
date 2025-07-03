@@ -28,7 +28,7 @@ export const showmeAcceptOrderAlert = (onConfirm:ActionCallback) => {
     onConfirm();
     Alert.alert(
       '¡Pedido confirmado!',
-      "El pedido ha sido confirmado. Ahora se encuentra en el listado de 'Pedidos con faltantes'"
+      "El pedido ha sido confirmado. Ahora se encuentra en el listado de 'Pedidos para preparar' o tambien en 'pedidos con faltantes'"
     )
   })
 }

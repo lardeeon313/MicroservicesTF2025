@@ -9,7 +9,7 @@ import { DepotStackParamList } from "../../types/DepotStackType";
 import { DepotOrderDTO, DepotOrderStatus } from "../../types/OrderDTO";
 import { useArmOrders } from "../../hocks/useArmOrders";
 import { useSendOrderToBilled } from "../../hocks/useSendOrderToBilled";
-
+import { CanInvoceOrder } from "../../validations/ValidationDetailOrder";
 
 //EJEMPLO DE USO DEL NAVBAR: 
 // Simulamos autenticación y usuario:
@@ -24,13 +24,13 @@ const ListofOrdersArmPage = () => {
     const [localOrders,setlocalOrders] = useState<DepotOrderDTO[]>([]);
     
     useEffect(() => {
+        console.log("Pedidos armados traídos del hook:", orders);
         setlocalOrders(orders);
     }, [orders]);
     //por las dudas se aplica filtro por el tema de la conversion de int a string; 
     const ArmOrders = localOrders.filter(
         order =>
-            order.status === DepotOrderStatus.InPreparation || 
-            order.status === DepotOrderStatus.SentToBilling
+            order.status === DepotOrderStatus.InPreparation 
     );
     //VER DETALLE
     const handleSeeDetail = (order: DepotOrderDTO) => {
@@ -71,11 +71,11 @@ const ListofOrdersArmPage = () => {
         <View style={{flex:1}}>
             <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log("Cerrar sesión")}/>
             <Text style={{ fontSize: 22,fontWeight: '600',marginTop: 20,marginBottom: 20,color: '#333', letterSpacing: 0.5, textAlign: 'center'}}>
-                Pedidos armados y facturados  
+                Pedidos para preparar
             </Text>
             <ScrollView contentContainerStyle={{padding:16}}>
                 {ArmOrders.length === 0 ? (
-                    <Text style={{ fontSize: 18 }}>No hay pedidos armados todavía.</Text>
+                    <Text style={{ fontSize: 18 ,textAlign:'center' }}>No hay pedidos armados todavía.</Text>
                     ) : (
                 ArmOrders.map((order) => (
                     <ListofArmOrders 
@@ -84,7 +84,6 @@ const ListofOrdersArmPage = () => {
                         key={order.depotOrderId}
                         order={order}
                         onSeeDetail={() => handleSeeDetail(order)}
-                        onSendToBill={() => handleSendOrderToBill(order)}
                         />
                     ))
                 )}

@@ -41,7 +41,7 @@ const NotificacionSection: React.FC<Props> = ({ missingItems }) => {
             <AlertTriangle size={20} color="#dc2626" /> Faltante #{missing.missingId}
           </Text>
           <Text style={{ fontSize: 14, marginBottom: 2 }}>
-            📅 Fecha: {new Date(missing.missingDate).toLocaleDateString()}
+            📅 Fecha: {new Date(missing.missingDate).toString()}
           </Text>
           {missing.missingReason && (
             <Text style={{ fontSize: 14, marginBottom: 2 }}>
@@ -49,7 +49,7 @@ const NotificacionSection: React.FC<Props> = ({ missingItems }) => {
             </Text>
           )}
           {missing.missingDescription && (
-            <Text style={{ fontSize: 14, marginBottom: 2 }}>
+            <Text style={{ fontSize: 14, marginBottom: 2 , fontWeight: "bold",textDecorationLine: 'underline'}}>
               📄 Descripción: {missing.missingDescription}
             </Text>
           )}
