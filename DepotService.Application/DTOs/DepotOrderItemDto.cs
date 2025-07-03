@@ -16,5 +16,8 @@ namespace DepotService.Application.DTOs
         public decimal? UnitPrice { get; set; }
         public int Quantity { get; set; }
         public decimal? Total { get; set; }
+
+        //Se lo tuvo que agregar para que quede marcado el color verde en el background:
+        public bool IsReady { get; set; }
     }
 }

@@ -80,6 +80,8 @@ namespace DepotService.Application.Queries.Operator.GetOrderById
                     ProductName = i.ProductName,
                     Packaging = i.PackagingType,
                     Quantity = i.Quantity,
+                    //
+                    IsReady = i.IsReady,
                 }).ToList(),
             };
 
