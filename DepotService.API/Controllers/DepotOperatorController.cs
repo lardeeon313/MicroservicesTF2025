@@ -9,6 +9,7 @@ using DepotService.Application.DTOs.DepotManager.Request;
 using DepotService.Application.DTOs.DepotOperator.Request;
 using DepotService.Application.Queries.Operator.GetAssignedPendingOrders;
 using DepotService.Application.Queries.Operator.GetOrderById;
+using DepotService.Application.Queries.Operator.GetOrdersByOperator;
 using DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery;
 using DepotService.Application.Validators.DepotManager;
 using DepotService.Application.Validators.DepotOperator;
@@ -23,6 +24,10 @@ namespace DepotService.API.Controllers
     [Route("api/depotoperator")]
     public class DepotOperatorController(
         IGetOrdersByOperatorQueryHandler getOrdersByOperatorQueryHandler,
+        //
+        IGetOrdersMissingOrPreparingHandler getMissingOrdersByOperatorQueryHandler,
+        //
+        IGetOrdersPreparedOrSentToBillingHandler getOrdersPreparedOrSentToBillingHandler,
         IGetOrderByIdQueryHandler getOrderByIdQueryHandler,
         IConfirmAssignedOrderCommandHandler confirmAssignedOrderCommandHandler,
         IReportOrderMissingCommandHandler reportOrderMissingCommandHandler,
@@ -53,6 +58,11 @@ namespace DepotService.API.Controllers
         private readonly OrderMissingReportedCommandValidator _orderMissingReportedCommandValidator = orderMissingReportedCommandValidator;
         private readonly IConfirmAssignedOrderCommandHandler _confirmAssignedOrderCommandHandler = confirmAssignedOrderCommandHandler;
         private readonly IGetOrdersByOperatorQueryHandler _getOrdersByOperatorQueryHandler = getOrdersByOperatorQueryHandler;
+        //
+        private readonly IGetOrdersMissingOrPreparingHandler _getMissingOrdersByOperatorQueryHandler = getMissingOrdersByOperatorQueryHandler;
+        //
+        private readonly IGetOrdersPreparedOrSentToBillingHandler _getOrdersPreparedOrSentToBillingHandler = getOrdersPreparedOrSentToBillingHandler;
+        //
         private readonly IGetOrderByIdQueryHandler _getOrderByIdQueryHandler = getOrderByIdQueryHandler;
         private readonly IReportOrderMissingCommandHandler _reportOrderMissingCommandHandler = reportOrderMissingCommandHandler;
 
@@ -81,6 +91,61 @@ namespace DepotService.API.Controllers
             }
             return Ok(orders);
         }
+
+        //
+        /// <summary>
+        /// Endpoint para obtener los pedidos con estado de InPreparation o MisssingProduct.
+        /// 
+        /// </summary>
+        [HttpGet("get-missing-orders-to-operator")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetMissingOrdersByOperator([FromQuery] GetOrdersByOperatorQuery query)
+        {
+            if (query == null || query.OperatorUserId == Guid.Empty)
+            {
+                return BadRequest("Invalid query parameters.");
+            }
+
+            var missingorders = await _getMissingOrdersByOperatorQueryHandler.GetOrdersMissingByOperatorAsync(query);
+
+            if(missingorders == null || !missingorders.Any())
+            {
+                return NotFound("No missing orders found for the specified operator.");
+            }
+
+            return Ok(missingorders);
+        }
+
+
+        //
+        /// <summary>
+        /// Endpoint para obtener los pedidos con estado de Prepared o SentToBilling.
+        /// 
+        /// </summary>
+        [HttpGet("get-prepared-sentToBilling-orders-to-operator")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetPreparedOrSentBilling([FromQuery] GetOrdersByOperatorQuery query)
+        {
+            if(query == null || query.OperatorUserId == Guid.Empty)
+            {
+                return BadRequest("Invalid query parameters.");
+            }
+
+            var PreparedOrSentOrders = await _getOrdersPreparedOrSentToBillingHandler.GetOrdersPreparedBillingByOperatorAsync(query);
+
+            if(PreparedOrSentOrders == null || !PreparedOrSentOrders.Any())
+            {
+                return NotFound("No prepared or sentToBilling orders found for the specified operator.");
+            }
+            return Ok(PreparedOrSentOrders);
+        }
+
 
 
         /// <summary>
@@ -151,7 +216,8 @@ namespace DepotService.API.Controllers
                 DepotOrderId = request.DepotOrderId,
                 MissingReason = request.MissingReason,
                 MissingDescription = request.MissingDescription,
-                MissingItems = request.MissingItems
+                MissingItems = request.MissingItems,
+                OperatorUserId = request.OperatorUserId,
             };
 
             await _reportOrderMissingCommandHandler.HandleAsync(command);
@@ -305,5 +371,7 @@ namespace DepotService.API.Controllers
             }
             return Ok(orders);
         }
+
+
     }
 }

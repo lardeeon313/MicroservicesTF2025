@@ -1,10 +1,12 @@
 ﻿using DepotService.Application.DTOs;
+using DepotService.Domain.Entities;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -37,6 +39,7 @@ namespace DepotService.Application.Queries.Operator.GetOrderById
                 _logger.LogError($"Order with ID {query.DepotOrderId} is not assigned to operator {query.OperatorUserId}.");
                 throw new InvalidOperationException($"Order with ID {query.DepotOrderId} is not assigned to operator {query.OperatorUserId}.");
             }
+            //
 
             return new DepotOrderDto
             {
@@ -47,7 +50,25 @@ namespace DepotService.Application.Queries.Operator.GetOrderById
                 PhoneNumber = order.PhoneNumber,
                 Status = order.Status,
                 AssignedDepotTeam = order.AssignedDepotTeam,
-                Missings = order.Missings,
+                Missings = order.Missings.Select(m => new DepotOrderMissing
+                {
+
+                    MissingId = m.MissingId,
+                    SalesOrderId= m.SalesOrderId,
+                    MissingReason = m.MissingReason,
+                    MissingDescription = m.MissingDescription,
+                    DescriptionResolution = m.DescriptionResolution,
+                    MissingItems = m.MissingItems.Select(mi => new DepotOrderMissingItem
+                    {
+                        Id= mi.Id,
+                        ProductName = mi.ProductName,
+                        ProductBrand = mi.ProductBrand,
+                        Packaging = mi.Packaging,
+                        MissingQuantity = mi.MissingQuantity,
+                    }).ToList(),
+                    MissingDate = m.MissingDate,
+                    DepotOrderId = m.DepotOrderId,
+                }).ToList(),
                 //
                 AssignedOperatorId = order.AssignedOperatorId,
                 DeliveryDetail = order.DeliveryDetail,
@@ -61,6 +82,7 @@ namespace DepotService.Application.Queries.Operator.GetOrderById
                     Quantity = i.Quantity,
                 }).ToList(),
             };
+
         }
     }
 }

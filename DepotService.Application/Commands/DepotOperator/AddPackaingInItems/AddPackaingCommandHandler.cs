@@ -24,7 +24,7 @@ namespace DepotService.Application.Commands.DepotOperator.AddPackaing
         /// <exception cref="NotImplementedException"></exception>
         public async Task<bool> AddPackaingAsync(AddPackagingCommand command)
         {
-            var itemIds = command.PackaingItems.Select(item => item.DepotOrderItemId).ToList();
+            var itemIds = command.PackagingItems.Select(item => item.DepotOrderItemId).ToList();
 
             var items = await _repository.GetOrderItemsByIdsAsync(itemIds);
 
@@ -34,7 +34,7 @@ namespace DepotService.Application.Commands.DepotOperator.AddPackaing
                 throw new KeyNotFoundException("No items found for the provided IDs.");
             }
 
-            foreach (var dto in command.PackaingItems)
+            foreach (var dto in command.PackagingItems)
             {
                 var item = items.FirstOrDefault(i => i.Id == dto.DepotOrderItemId);
                 if (item is null)
@@ -46,7 +46,7 @@ namespace DepotService.Application.Commands.DepotOperator.AddPackaing
                     _logger.LogError($"Item with ID {item.Id} cannot be updated because its status is {item.DepotOrderEntity.Status}.");
                     throw new InvalidOperationException($"Item with ID {item.Id} cannot be updated because its status is {item.DepotOrderEntity.Status}.");
                 }
-                item.PackagingType = dto.PackaingType;
+                item.PackagingType = dto.PackagingType;
             }
 
             await _repository.UpdateDepotOrderItemsAsync(items);

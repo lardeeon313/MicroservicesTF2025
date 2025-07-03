@@ -1,3 +1,4 @@
+//
 using DepotService.Application.Commands.BillingManager.ExportInvoiceOrderPdf;
 using DepotService.Application.Commands.BillingManager.InvoicedOrder;
 using DepotService.Application.Commands.BillingManager.SetItemUnitPrices;
@@ -34,6 +35,7 @@ using DepotService.Application.Queries.DepotManager.GetTeamById;
 using DepotService.Application.Queries.DepotManager.GetTeamByName;
 using DepotService.Application.Queries.Operator.GetAssignedPendingOrders;
 using DepotService.Application.Queries.Operator.GetOrderById;
+using DepotService.Application.Queries.Operator.GetOrdersByOperator;
 using DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery;
 using DepotService.Application.Validators.BillingManager;
 using DepotService.Application.Validators.DepotManager;
@@ -41,7 +43,9 @@ using DepotService.Application.Validators.DepotOperator;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
 using DepotService.Infraestructure.Documents;
+using DepotService.Infraestructure.Documents.Excel;
 using DepotService.Infraestructure.Documents.Pdf;
+using DepotService.Infraestructure.Documents.Word;
 using DepotService.Infraestructure.Messaging;
 using DepotService.Infraestructure.Messaging.Consumers;
 using DepotService.Infraestructure.Messaging.Publisher;
@@ -59,6 +63,7 @@ builder.WebHost.UseUrls("http://0.0.0.0:5003");
 
 // Add services to the container.
 builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -88,6 +93,11 @@ builder.Services.AddScoped<IGetAllOrdersQueryHandler, GetAllOrdersQueryHandler>(
 builder.Services.AddScoped<IGetOrdersByStatusQueryHandler, GetOrdersByStatusQueryHandler>();
 builder.Services.AddScoped<IGetByIdOrderQueryHandler, GetByIdOrderQueryHandler>();
 builder.Services.AddScoped<IGetOrdersByOperatorQueryHandler, GetOrdersByOperatorQueryHandler>();
+//
+builder.Services.AddScoped<IGetOrdersMissingOrPreparingHandler, GetOrdersMissingOrPendingHandler>();
+//
+builder.Services.AddScoped<IGetOrdersPreparedOrSentToBillingHandler, GetOrdersPreparedOrSentToBillingHandler>();
+//
 builder.Services.AddScoped<IGetOrderByIdQueryHandler, GetOrderByIdQueryHandler>();
 builder.Services.AddScoped<IGetAssignedPendingOrdersQueryHandler, GetAssignedPendingOrdersQueryHandler>();
 builder.Services.AddScoped<IGetOrdersPendingBillingQueryHandler , GetOrdersPendingBillingQueryHandler>();
@@ -119,7 +129,10 @@ builder.Services.AddScoped<IInvoiceOrderCommandHandler , InvoiceOrderCommandHand
 builder.Services.AddScoped<ISetItemUnitPricesCommandHandler, SetItemUnitPricesCommandHandler>();
 builder.Services.AddScoped<IUpdateInvoicedItemPriceCommandHandler, UpdateInvoicedItemPriceCommandHandler>();
 builder.Services.AddScoped<IExportInvoiceDocumentCommandHandler, ExportInvoiceDocumentCommandHandler>();
-
+// Registro de clases concretas necesarias (porque se usan directamente)
+builder.Services.AddScoped<DepotOrderRepository>();
+builder.Services.AddScoped<InvoiceOrderCommandHandler>();
+builder.Services.AddScoped<ExportInvoiceDocumentCommandHandler>();
 
 // Add FluentValidation
 builder.Services.AddScoped<IValidator<AssignOperatorRequest>, AssignOperatorCommandValidator>();
@@ -149,6 +162,10 @@ builder.Services.AddHostedService<OrderReissuedConsumer>();
 
 // Add Export Document Service 
 builder.Services.AddScoped<IInvoiceDocumentGenerator, InvoicePdfGenerator>();
+builder.Services.AddScoped<InvoicePdfGenerator>();
+builder.Services.AddScoped<InvoiceWordGenerator>();
+builder.Services.AddScoped<InvoiceExcelGenerator>();
+
 
 // Obtener la cadena de conexión del appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

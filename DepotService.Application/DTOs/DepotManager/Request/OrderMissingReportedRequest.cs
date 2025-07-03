@@ -11,6 +11,8 @@ namespace DepotService.Application.DTOs.DepotManager.Request
 {
     public class OrderMissingReportedRequest
     {
+        [Required] //modificado para la implementacion del request del front: 
+        public Guid OperatorUserId { get; set; } // <-- agregado
         [Required]
         public int DepotOrderId { get; set; }
 

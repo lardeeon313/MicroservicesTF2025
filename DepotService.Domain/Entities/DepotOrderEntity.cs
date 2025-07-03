@@ -51,7 +51,7 @@ namespace DepotService.Domain.Entities
             if (Status != OrderStatus.Assigned)
                 throw new InvalidOperationException("Cannot reject an order that is not assigned.");
 
-            RejectionReason = rejectionReason;
+            RejectionReason = "El mensaje recibido fue : "+rejectionReason;
             AssignedOperatorId = null;
             AssignedDepotTeam = null;
             Status = OrderStatus.Received;

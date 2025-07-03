@@ -3,6 +3,7 @@ using System;
 using DepotService.Infraestructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DepotService.API.Migrations
 {
     [DbContext(typeof(DepotDbContext))]
-    partial class DepotDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250625044635_AddTotalAmountToDepotOrders")]
+    partial class AddTotalAmountToDepotOrders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -27,7 +27,12 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         public async Task<DepotOrderEntity?> GetByIdAsync(int depotOrderId)
         {
             //MODIFICADO PARA TRAER LOS PRODUCTOS DENTRO DEL DETAILORDER 
+            /*return await _context.DepotOrders
+                .FirstOrDefaultAsync(o => o.DepotOrderId == depotOrderId);*/
             return await _context.DepotOrders
+                .Include(o => o.Items)
+                .Include(o => o.Missings)
+                    .ThenInclude(m => m.MissingItems)
                 .FirstOrDefaultAsync(o => o.DepotOrderId == depotOrderId);
         }
 
@@ -81,13 +86,36 @@ namespace DepotService.Infraestructure.Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
+        //METODO PARA TRAER TODOS LOS PEDIDOS EN PREPARACION PARA 'PEDIDOS ARMADOS'
         public async Task<IEnumerable<DepotOrderEntity>> GetAllByOperatorIdAsync(Guid operatorId)
         {
             return await _context.DepotOrders
                 .Include(o => o.Items)
                 .Include(o => o.Missings)
                 .Where(o => o.AssignedOperatorId == operatorId &&
-                        (o.Status == OrderStatus.Assigned || o.Status == OrderStatus.ReReceived))
+                        //(o.Status == OrderStatus.Assigned || o.Status == OrderStatus.ReReceived))
+                        (o.Status == OrderStatus.InPreparation))
+                .ToListAsync();
+        }
+        //METODO PARA TRAER TODOS LOS PEDIDOS TANTO EN PREPARACION O FALTANTE PARA 'PEDIDOS CON FALTANTES'
+        public async Task<IEnumerable<DepotOrderEntity>> GetWithInPreparationOrMissingAsync(Guid operatorId)
+        {
+            return await _context.DepotOrders
+                .Include(o => o.Items)
+                .Include(o => o.Missings)
+                .Where(o => o.AssignedOperatorId == operatorId &&
+                       (o.Status == OrderStatus.InPreparation || o.Status == OrderStatus.MissingProduct))
+                .ToListAsync();
+        }
+
+        //METODO PARA TRAER TODOS LOS PEDIDOS TANTO PREPARADOS COMO AQUELLOS QUE YA SEAN 'SENT TO BILLING'
+        public async Task<IEnumerable<DepotOrderEntity>> GetPreparedOrSentToBillingAsync(Guid operatorId)
+        {
+            return await _context.DepotOrders
+                .Include(o => o.Items)
+                .Include (o => o.Missings)
+                .Where(o => o.AssignedOperatorId == operatorId &&
+                        (o.Status == OrderStatus.Prepared || o.Status == OrderStatus.SentToBilling))
                 .ToListAsync();
         }
 
@@ -100,7 +128,9 @@ namespace DepotService.Infraestructure.Persistence.Repositories
 
         public async Task<List<DepotOrderItemEntity>> GetOrderItemsByIdsAsync(List<int> ids)
         {
+            //
             return await _context.DepotOrderItems
+                .Include(item => item.DepotOrderEntity) //
                 .Where(item => ids.Contains(item.Id))
                 .ToListAsync();
         }
