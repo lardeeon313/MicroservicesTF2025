@@ -16,6 +16,7 @@ using DepotService.Application.Commands.DepotOperator.RejectOrder;
 using DepotService.Application.Commands.DepotOperator.ReportOrderMissing;
 using DepotService.Application.Commands.DepotOperator.SentOrderToBilling;
 using DepotService.Application.Commands.DepotOperator.UnMarkItemReady;
+using DepotService.Application.Common.Interfaces;
 using DepotService.Application.DTOs.DepotManager.Request;
 using DepotService.Application.DTOs.DepotOperator.Request;
 using DepotService.Application.Queries.BillingManager.GetAllInvoicedOrders;
@@ -42,6 +43,7 @@ using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
 using DepotService.Infraestructure.Documents;
 using DepotService.Infraestructure.Documents.Pdf;
+using DepotService.Infraestructure.Email;
 using DepotService.Infraestructure.Messaging;
 using DepotService.Infraestructure.Messaging.Consumers;
 using DepotService.Infraestructure.Messaging.Publisher;
@@ -118,7 +120,6 @@ builder.Services.AddScoped<ISetItemUnitPricesCommandHandler, SetItemUnitPricesCo
 builder.Services.AddScoped<IUpdateInvoicedItemPriceCommandHandler, UpdateInvoicedItemPriceCommandHandler>();
 builder.Services.AddScoped<IExportInvoiceDocumentCommandHandler, ExportInvoiceDocumentCommandHandler>();
 
-
 // Add FluentValidation
 builder.Services.AddScoped<IValidator<AssignOperatorRequest>, AssignOperatorCommandValidator>();
 builder.Services.AddScoped<IValidator<CreateTeamRequest>, CreateTeamCommandValidator>();
@@ -137,6 +138,9 @@ builder.Services.AddScoped<IValidator<UpdateInvoicedItemPriceCommand>, UpdateInv
 // Add HostedService RabbitConsumer
 builder.Services.AddHostedService<OrderIssuedConsumer>();
 builder.Services.AddHostedService<OrderReissuedConsumer>();
+
+// Add Email Service
+builder.Services.AddSingleton<IEmailService, MailgunEmailService>();
 
 // Add Export Document Service 
 builder.Services.AddScoped<IInvoiceDocumentGenerator, InvoicePdfGenerator>();

@@ -1,7 +1,9 @@
-﻿using SalesService.Application.DTOs.Order;
+﻿using DepotService.Application.Common.Interfaces;
+using SalesService.Application.DTOs.Order;
 using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
+using SalesService.Infraestructure.Email.EmailTemplates;
 using SalesService.Infraestructure.Messaging.Publisher;
 using SharedKernel.IntegrationEvents.SalesEvents.Order;
 using System;
@@ -16,8 +18,9 @@ namespace SalesService.Application.Commands.Orders.Register
     /// Manejador para registrar nota de pedido
     /// </summary>
 
-    public class RegisterOrderCommandHandler(IOrderRepository orderRepository,IRabbitMQPublisher publisher, ICustomerRepository customerRepository ) : IRegisterOrderCommandHandler
+    public class RegisterOrderCommandHandler(IEmailService emailService ,IOrderRepository orderRepository,IRabbitMQPublisher publisher, ICustomerRepository customerRepository ) : IRegisterOrderCommandHandler
     {
+        private readonly IEmailService _emailService = emailService;
         private readonly IOrderRepository _orderRepository = orderRepository;
         private readonly IRabbitMQPublisher _publisher = publisher;
         private readonly ICustomerRepository _customerRepository = customerRepository;
@@ -72,6 +75,22 @@ namespace SalesService.Application.Commands.Orders.Register
 
             // Publicar el evento en RabbitMQ
             await _publisher.PublishAsync(integrationEvent, "order_registered_queue");
+
+            // Enviar un correo electrónico al cliente
+            var htmlBody = EmailTemplateGenerator.BuildOrderRegisteredTemplate(
+                customerName: customer.FirstName + " " + customer.LastName,
+                orderId: order.Id,
+                orderDate: order.OrderDate,
+                deliveryDate: order.DeliveryDate,
+                deliveryDetail: order.DeliveryDetail ?? " ",
+                items: order.Items
+            );
+
+            await _emailService.SendEmailAsync(
+                customer.Email,
+                "Tu pedido fue registrado correctamente! - Verona",
+                htmlBody
+            );
 
 
             // Devolver el DTO de la orden creada

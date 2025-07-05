@@ -38,6 +38,9 @@ using System.Security.Claims;
 using System.Text;
 using SalesService.Application.Queries.Orders.GetSalesPerfomanceReport;
 using SalesService.Application.Services.IdentityServiceClient;
+using SalesService.Domain.Common.Interfaces;
+using SalesService.Infraestructure.Email;
+using SalesService.Application.Commands.Orders.OrderReissued;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,6 +80,7 @@ builder.Services.AddScoped<IValidator<UpdateOrderRequest>, UpdateOrderValidator>
 builder.Services.AddScoped<IValidator<RegisterOrderItemRequest>, RegisterOrderItemValidator>();
 builder.Services.AddScoped<IValidator<RegisterOrderRequest>, RegisterOrderValidator>();
 builder.Services.AddScoped<IValidator<UpdateOrderStatusRequest>, UpdateOrderStatusValidator>();
+builder.Services.AddScoped<IValidator<OrderReissuedRequest>, OrderReissuedValidator>();
     
 
 // Add services Command Handlers / Customer
@@ -100,6 +104,10 @@ builder.Services.AddScoped<IGetOrderByStatusQueryHandler, GetOrderByStatusQueryH
 builder.Services.AddScoped<IGetOrderByIdCustomerQueryHandler, GetOrderByIdCustomerQueryHandler>();
 builder.Services.AddScoped<IGetAllOrdersQueryHandler, GetAllOrdersQueryHandler>();
 builder.Services.AddScoped<IGetSalesPerfomanceReportQueryHandler,  GetSalesPerfomanceReportQueryHandler>();
+builder.Services.AddScoped<IOrderReissuedCommandHandler, OrderReissuedCommandHandler>();
+
+// Add EmailService
+builder.Services.AddScoped<IEmailService, MailgunEmailService>();
 
 // Registramos el servicio encargado para consultar el endpoint en identityService
 builder.Services.AddScoped<IIdentityServiceClient, IdentityServiceClient>();

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SalesService.Application.Commands.Orders.Cancel;
 using SalesService.Application.Commands.Orders.Delete;
+using SalesService.Application.Commands.Orders.OrderReissued;
 using SalesService.Application.Commands.Orders.Register;
 using SalesService.Application.Commands.Orders.Update;
 using SalesService.Application.Commands.Orders.UpdateStatus;
@@ -37,9 +38,13 @@ namespace SalesService.API.Controllers
         IValidator<UpdateOrderStatusRequest> updateOrderStatusValidator,
         IValidator<RegisterOrderRequest> registerOrderValidator,
         IValidator<RegisterOrderItemRequest> registerOrderItemValidator,
-        IValidator<UpdateOrderRequest> updateOrderValidator
+        IValidator<UpdateOrderRequest> updateOrderValidator,
+        IValidator<OrderReissuedRequest> orderReissuedValidator,
+        IOrderReissuedCommandHandler orderReissuedCommandHandler
         ) : ControllerBase
     {
+        private readonly IValidator<OrderReissuedRequest> _orderReissuedValidator = orderReissuedValidator;
+        private readonly IOrderReissuedCommandHandler _orderReissuedCommandHandler = orderReissuedCommandHandler;
         private readonly IRegisterOrderCommandHandler _registerOrderCommandHandler = registerOrderCommandHandler;
         private readonly IUpdateOrderCommandHandler _updateOrderCommandHandler = updateOrderCommandHandler;
         private readonly IUpdateOrderStatusCommandHandler _updateOrderStatusCommandHandler = updateOrderStatusCommandHandler;
@@ -222,6 +227,38 @@ namespace SalesService.API.Controllers
         {
             var result = await _getSalesPerfomanceReportQueryHandler.Handle();
             return Ok(result);
+        }
+
+        /// <summary> Reemite una orden de pedido</summary>
+        [HttpGet("reissued")]
+        [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ReissuedOrder(OrderReissuedRequest request)
+        {
+            var validationResult = await _orderReissuedValidator.ValidateAsync(request);
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => new { field = e.PropertyName, error = e.ErrorMessage });
+                return BadRequest(errors);
+            }
+
+            var command = new OrderReissuedCommand(
+                request.SalesOrderId,
+                request.UpdateItems,
+                request.DescriptionResolution
+            );
+
+            var result = await _orderReissuedCommandHandler.HandleOrderReissuedAsync(command);
+
+            if (result)
+            {
+                return Ok(new { message = "Order reissued successfully." });
+            }
+            else
+            {
+                return BadRequest(new { error = "Failed to reissue order." });
+            }
         }
     }
 }

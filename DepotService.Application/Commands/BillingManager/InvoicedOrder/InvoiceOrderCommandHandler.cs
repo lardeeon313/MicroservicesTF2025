@@ -1,4 +1,5 @@
 ﻿using DepotService.Domain.Enums;
+using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
 using DepotService.Infraestructure.Messaging.Publisher;
 using DepotService.Infraestructure.Persistence.Repositories;
@@ -16,11 +17,11 @@ namespace DepotService.Application.Commands.BillingManager.InvoicedOrder
     /// <summary>
     /// Handler for processing invoice orders.
     /// </summary>
-    public class InvoiceOrderCommandHandler(IRabbitMQPublisher publisher, DepotDbContext context, DepotOrderRepository repository, ILogger<InvoiceOrderCommandHandler> logger) : IInvoiceOrderCommandHandler
+    public class InvoiceOrderCommandHandler(IRabbitMQPublisher publisher, DepotDbContext context, IDepotOrderRepository repository, ILogger<InvoiceOrderCommandHandler> logger) : IInvoiceOrderCommandHandler
     {
         private readonly IRabbitMQPublisher _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
         private readonly DepotDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
-        private readonly DepotOrderRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        private readonly IDepotOrderRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         private readonly ILogger<InvoiceOrderCommandHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         /// <summary>

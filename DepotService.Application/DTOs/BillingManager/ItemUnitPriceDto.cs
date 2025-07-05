@@ -10,5 +10,11 @@ namespace DepotService.Application.DTOs.BillingManager
     {
         public int ItemId { get; set; }
         public decimal UnitPrice { get; set; }
+
+        public ItemUnitPriceDto(int itemId, decimal unitPrice)
+        {
+            ItemId = itemId;
+            UnitPrice = unitPrice;
+        }
     }
 }

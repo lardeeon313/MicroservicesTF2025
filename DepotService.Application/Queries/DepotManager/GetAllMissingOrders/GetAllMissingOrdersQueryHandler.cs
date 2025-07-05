@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.DepotManager.GetAllMissingOrders
 {
-    public class GetAllMissingOrdersQueryHandler(IDepotOrderRepository repository, ILogger<GetMissingOrderByIdQueryHandler> logger, DepotDbContext context) : IGetAllMissingOrdersQueryHandler
+    public class GetAllMissingOrdersQueryHandler(IDepotOrderRepository repository, ILogger<GetAllMissingOrdersQueryHandler> logger, DepotDbContext context) : IGetAllMissingOrdersQueryHandler
     {
         private readonly IDepotOrderRepository _repository = repository;
-        private readonly ILogger<GetMissingOrderByIdQueryHandler> _logger = logger;
+        private readonly ILogger<GetAllMissingOrdersQueryHandler> _logger = logger;
         private readonly DepotDbContext _context = context;
 
         /// <summary>
