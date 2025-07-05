@@ -14,7 +14,7 @@ import type { DepotOrderDTO } from '../../types/OrderDTO';
 import { OrderStatusMap } from '../../types/OrderDTO';
 import { DepotOrderStatus } from '../../types/OrderDTO';
 import { DepotTeamAssigment } from '../../types/OrderDTO';
-import { useAuth } from '../../components/login/AuthContext';
+
 
 
 //EJEMPLO DE USO DEL NAVBAR: 

@@ -4,18 +4,20 @@ import React from "react";
 import { View } from "react-native";
 import NavbarOperator from "../../components/Navbar/NavbarOperator";
 import OperatorDashboardComponent from "../../navigation/OperatorDashboard";
-
-// Simulación de usuario y autenticación
-const user = { name: 'Juan Pérez', role: 'Operario' };
-const isAuthenticated = true;
+import { useAuth } from "../../../Login/context/useAuth";
 
 const OperatorDashboardPage = () => {
-    return(
-        <View style={{flex: 1, backgroundColor: '#ffffff'}}>
-            <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log("Cerrar sesión")} />
-            <OperatorDashboardComponent/>
-        </View>
-    )
-}
+  const { name, role, isAuthenticated, logout } = useAuth();
+
+  const user = name && role ? { name, role } : null;
+    console.log('user:', user);
+    console.log('isAuthenticated:', isAuthenticated);
+  return (
+    <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
+      <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={logout} />
+      <OperatorDashboardComponent />
+    </View>
+  );
+};
 
 export default OperatorDashboardPage;

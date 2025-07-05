@@ -6,7 +6,6 @@ import { View, Image,Text, TouchableOpacity } from 'react-native';
 import { useState } from "react";
 import { useNavigation } from '@react-navigation/native';
 //import NavbarDropdownMenuComponent from "./NavbarDropdownMenu";
-import { useAuth } from '../login/AuthContext';
 
 
 interface NavbarProps {

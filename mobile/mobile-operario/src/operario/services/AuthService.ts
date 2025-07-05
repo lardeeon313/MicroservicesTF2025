@@ -1,7 +1,7 @@
 //Consulta al backend 
 import { api } from "../../services/api"
 import { OperatorDTO } from "../types/OrderDTO"
-import type { RegisterRequest,LoginRequest,AuthResponse } from "../types/AuthTypes";
+//import type { RegisterRequest,LoginRequest,AuthResponse } from "../types/AuthTypes";
 
 export const GetOperatorById = async(id:string): Promise<OperatorDTO> => {
     try{
@@ -21,7 +21,7 @@ export const GetOperatorById = async(id:string): Promise<OperatorDTO> => {
     }
 }
 
-export const register = async (data: RegisterRequest): Promise<void> => {
+/*export const register = async (data: RegisterRequest): Promise<void> => {
     const response = await api.post('/auth/register', data);
     return response.data;
 }
@@ -29,4 +29,4 @@ export const register = async (data: RegisterRequest): Promise<void> => {
 export const login = async (data:LoginRequest) : Promise<AuthResponse> => {
     const response = await api.post('/auth/login', data);
     return response.data;
-}
+}*/

@@ -12,9 +12,10 @@ import ListOfConfirmedOrdersPage from "../pages/listOrdersPages/ListofConfirmOrd
 //NUEVA PAGE ; Para ir a los pedidos con statusd Prepared y SentToBilling: 
 import ListOfPreparedOrdersPage from "../pages/listOrdersPages/ListOfPreparedOrdersPage";
 import OperatorDashboardPage from "../pages/navigationPages/OperatorDashboardPage";
-import { LoginPage } from "../pages/login/LoginPage";
-import { RegisterPage } from "../pages/login/RegisterPage";
-
+//import { LoginPage } from "../pages/login/LoginPage";
+//import { RegisterPage } from "../pages/login/RegisterPage";
+import LoginPage from "../../Login/pages/LoginPage";
+import RegisterPage from "../../Login/pages/RegisterPage";
 
 const Stack = createNativeStackNavigator<DepotStackParamList>();
 

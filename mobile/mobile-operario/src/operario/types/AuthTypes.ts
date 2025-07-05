@@ -1,6 +1,6 @@
 // src/types/AuthTypes.ts
 
-export interface RegisterRequest {
+/*export interface RegisterRequest {
   userName: string;
   name: string;
   lastName: string;
@@ -18,3 +18,4 @@ export interface LoginRequest {
 export interface AuthResponse {
   token: string;
 }
+*/

@@ -5,7 +5,6 @@ import DetailOrderCard from "../../components/detail/DetailOrderCard";
 import NavbarOperator from "../../components/Navbar/NavbarOperator";
 import { View, ActivityIndicator, Text } from "react-native";
 import { useGetOneOrder } from "../../hocks/useGetOneOrder";
-import { useAuth } from "../../components/login/AuthContext";
 
 const user = { name: "Juan Pérez", role: "Operario", id: "aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa" };
 const isAuthenticated = true;
