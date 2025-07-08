@@ -13,22 +13,10 @@ export function useOperators() {
         try {
             setLoading(true);
             setError(null);
-            console.log('Starting to fetch operators...');
             const data = await getAllOperators();
-            console.log('Received operators data:', data);
-            if (!data || !Array.isArray(data)) {
-                console.error('Invalid operators data received:', data);
-                throw new Error('Invalid response format from server');
-            }
-            setOperators(data);
+            setOperators(Array.isArray(data) ? data : []);
         } catch (error) {
-            console.error('Error in fetchOperators:', error);
             if (error instanceof AxiosError) {
-                console.error('Axios error details:', {
-                    status: error.response?.status,
-                    data: error.response?.data,
-                    headers: error.response?.headers
-                });
                 handleFormikError({
                     error,
                     customMessages: {
@@ -38,6 +26,7 @@ export function useOperators() {
                 });
             }
             setError("Error al cargar los operadores");
+            setOperators([]);
         } finally {
             setLoading(false);
         }
@@ -46,8 +35,9 @@ export function useOperators() {
     const assignOperator = async (request: AssignOperatorRequest): Promise<void> => {
         try {
             setLoading(true);
-            await assignOperatorToTeam(request.teamId, request.operatorUserId);
             setError(null);
+            await assignOperatorToTeam(request.teamId, request.operatorUserId);
+            await fetchOperators();
         } catch (error) {
             handleFormikError({
                 error,
@@ -64,11 +54,12 @@ export function useOperators() {
         }
     };
 
-    const removeOperator = async (operatorId: string, teamId: string): Promise<void> => {
+    const removeOperator = async (operatorId: string, teamId: number): Promise<void> => {
         try {
             setLoading(true);
-            await removeOperatorFromTeam(Number(teamId), operatorId);
             setError(null);
+            await removeOperatorFromTeam(teamId, operatorId);
+            await fetchOperators();
         } catch (error) {
             handleFormikError({
                 error,

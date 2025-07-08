@@ -1,10 +1,10 @@
-import { OperatorInTeam } from './OperatorTypes';
+import { OperatorInTeamDto } from './OperatorTypes';
 
 export interface DepotTeam {
     id: number;
     teamName: string;
     teamDescription: string;
-    operators: OperatorInTeam[];
+    operators: OperatorInTeamDto[];
 }
 
 export interface CreateTeamResponse {

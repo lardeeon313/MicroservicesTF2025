@@ -29,7 +29,7 @@ export const UpdateTeamDialog = ({ isOpen, onClose, team }: UpdateTeamDialogProp
                 teamName: values.teamName,
                 teamDescription: values.teamDescription || ''
             };
-            await updateExistingTeam(team.id, updateRequest);
+            await updateExistingTeam(updateRequest);
             toast.success('Equipo actualizado exitosamente');
             onClose(true);
         } catch (error) {

@@ -3,7 +3,7 @@ import { DepotTeam } from '../types/DepotTeamTypes';
 import { useState } from 'react';
 import { AssignOperatorToTeam } from './AssignOperatorToTeam';
 import { RemoveOperatorFromTeam } from './RemoveOperatorFromTeam';
-import { OperatorInTeam } from '../types/OperatorTypes';
+import { OperatorInTeamDto } from '../types/OperatorTypes';
 import { TeamOperatorsList } from './TeamOperatorsList';
 
 interface TeamCardProps {
@@ -15,10 +15,10 @@ interface TeamCardProps {
 export const TeamCard = ({ team, onEdit, onDelete }: TeamCardProps) => {
     const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
     const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
-    const [selectedOperator, setSelectedOperator] = useState<OperatorInTeam | null>(null);
+    const [selectedOperator, setSelectedOperator] = useState<OperatorInTeamDto | null>(null);
     const [isOperatorsListOpen, setIsOperatorsListOpen] = useState(false);
 
-    const handleRemoveOperator = (operator: OperatorInTeam) => {
+    const handleRemoveOperator = (operator: OperatorInTeamDto) => {
         setSelectedOperator(operator);
         setIsRemoveDialogOpen(true);
     };

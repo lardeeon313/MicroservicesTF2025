@@ -3,12 +3,12 @@ import { Fragment } from 'react';
 import { useOperators } from '../hooks/useOperators';
 import { useTeams } from '../hooks/useTeams';
 import { X } from 'lucide-react';
-import { OperatorInTeam } from '../types/OperatorTypes';
+import { OperatorInTeamDto } from '../types/OperatorTypes';
 
 interface RemoveOperatorFromTeamProps {
     isOpen: boolean;
     onClose: () => void;
-    operator: OperatorInTeam;
+    operator: OperatorInTeamDto;
     teamId: number;
 }
 
@@ -18,7 +18,7 @@ export const RemoveOperatorFromTeam = ({ isOpen, onClose, operator, teamId }: Re
 
     const handleRemove = async () => {
         try {
-            await removeOperator(operator.operatorByUserId, teamId.toString());
+            await removeOperator(operator.operatorByUserId, teamId);
             await refetch();
             onClose();
         } catch (error) {

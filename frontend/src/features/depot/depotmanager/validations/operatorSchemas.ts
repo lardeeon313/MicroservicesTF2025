@@ -9,4 +9,9 @@ export const assignOperatorSchema = yup.object({
         .required('OperatorId is required')
 });
 
+export const assignOrderSchema = yup.object().shape({
+  DepotOrderId: yup.number().required('La orden de depósito es obligatoria.'),
+  OperatorUserId: yup.string().required('El opeador es obligatorio.'),
+});
+
 export type AssignOperatorFormData = yup.InferType<typeof assignOperatorSchema>;

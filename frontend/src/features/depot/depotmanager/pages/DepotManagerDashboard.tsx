@@ -1,4 +1,4 @@
-import { ClipboardList, PackageCheck, AlertTriangle, Users, BarChart2 } from "lucide-react";
+import { ClipboardList, PackageCheck, AlertTriangle, Users, BarChart2, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const cards = [
@@ -6,25 +6,31 @@ const cards = [
     title: "Pedidos Pendientes",
     description: "Revisá todos los pedidos que esperan ser preparados.",
     Icon: ClipboardList,
-    link: "/depot/pending-orders",
+    link: "/depot/pending-orders",      
+  },
+  {
+    title: "Pedidos en Preparación",
+    description: "Visualizá los pedidos que están siendo preparados por operarios.",
+    Icon: Clock,
+    link: "/depot/in-preparation-orders",  
   },
   {
     title: "Pedidos Armados",
     description: "Visualizá los pedidos ya preparados y listos para continuar.",
     Icon: PackageCheck,
-    link: "/depot/assembled-orders",
+    link: "/depot/prepared-orders",    
   },
   {
     title: "Pedidos con Faltantes",
     description: "Gestioná los pedidos que tienen productos faltantes.",
     Icon: AlertTriangle,
-    link: "/depot/missing-items",
+    link: "/depot/missing-orders",  
   },
   {
     title: "Gestión de Equipos",
     description: "Administrá los operarios y equipos de depósito.",
     Icon: Users,
-    link: "/depot/team",
+    link: "/depot/teams",  
   },
   {
     title: "Reportes",
@@ -34,7 +40,7 @@ const cards = [
   },
 ];
 
-export const DepotDashboardPage = () => {
+const DepotManagerDashboardPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -61,4 +67,4 @@ export const DepotDashboardPage = () => {
     </div>
   );
 };
-export default DepotDashboardPage;
+export default DepotManagerDashboardPage;

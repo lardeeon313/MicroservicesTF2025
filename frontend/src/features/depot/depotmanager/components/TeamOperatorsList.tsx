@@ -1,18 +1,18 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useState, useEffect } from 'react';
 import { X, User, Mail } from 'lucide-react';
-import { OperatorInTeam } from '../types/OperatorTypes';
+import { OperatorInTeamDto } from '../types/OperatorTypes';
 
 interface TeamOperatorsListProps {
     isOpen: boolean;
     onClose: () => void;
     teamName: string;
-    operators: OperatorInTeam[];
-    onRemoveOperator: (operator: OperatorInTeam) => void;
+    operators: OperatorInTeamDto[];
+    onRemoveOperator: (operator: OperatorInTeamDto) => void;
 }
 
 export const TeamOperatorsList = ({ isOpen, onClose, teamName, operators, onRemoveOperator }: TeamOperatorsListProps) => {
-    const [selectedOperator, setSelectedOperator] = useState<OperatorInTeam | null>(null);
+    const [selectedOperator, setSelectedOperator] = useState<OperatorInTeamDto | null>(null);
 
     useEffect(() => {
         console.log('TeamOperatorsList: operators prop updated:', operators);

@@ -5,9 +5,9 @@ import OrderTable from '../../billingmanager/components/OrderTable';
 import OrderDetails from '../../billingmanager/components/OrderDetails';
 import LoadingSpinner from '../../../../components/LoadingSpinner';
 
-function PreparedOrdersPage() {
+function InPreparationOrdersPage() {
   const {
-    preparedOrders,
+    inPreparationOrders,
     loading,
     error,
     refetch
@@ -30,29 +30,29 @@ function PreparedOrdersPage() {
     }))
   });
 
-  const tableData = preparedOrders.map(convertToTableData);
+  const tableData = inPreparationOrders.map(convertToTableData);
 
   const handleView = (id: number) => {
-    const order = preparedOrders.find(o => o.DepotOrderId === id);
+    const order = inPreparationOrders.find(o => o.DepotOrderId === id);
     setSelectedOrder(order || null);
   };
 
   const handleActionChange = (action: string, id: number) => {
-    // Sin acciones específicas para pedidos preparados
+    // Sin acciones específicas para pedidos en preparación
     console.log('Acción no implementada:', action, id);
   };
 
   if (loading) {
-    return <LoadingSpinner message="Cargando órdenes preparadas..." />;
+    return <LoadingSpinner message="Cargando órdenes en preparación..." />;
   }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Órdenes Preparadas</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Órdenes en Preparación</h1>
           <p className="mt-2 text-gray-600">
-            Visualiza las órdenes que ya están preparadas y listas para continuar
+            Visualiza las órdenes que están siendo preparadas por operarios asignados
           </p>
         </div>
 
@@ -79,7 +79,7 @@ function PreparedOrdersPage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Detalles de la Orden Preparada</h2>
+                <h2 className="text-xl font-semibold">Detalles de la Orden en Preparación</h2>
                 <button
                   onClick={() => setSelectedOrder(null)}
                   className="text-gray-500 hover:text-gray-700"
@@ -96,4 +96,4 @@ function PreparedOrdersPage() {
   );
 }
 
-export default PreparedOrdersPage;
+export default InPreparationOrdersPage; 
