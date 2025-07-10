@@ -14,6 +14,12 @@ namespace DepotService.Application.Queries.Operator.GetOrderById
         public int DepotOrderId { get; set; }
         public Guid OperatorUserId { get; set; }
 
+        public GetOrderByIdQuery()
+        {
+             
+        }
+
+
         public GetOrderByIdQuery(int depotOrderId, Guid operatorUserId)
         {
             DepotOrderId = depotOrderId;

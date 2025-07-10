@@ -12,10 +12,10 @@ namespace DepotService.Application.Commands.DepotOperator.AddPackaing
     /// </summary>
     public class AddPackagingCommand
     {
-        public List<AddPackagingRequest> PackaingItems { get; set; } = [];
-        public AddPackagingCommand(List<AddPackagingRequest> packaingItems)
+        public List<AddPackagingRequest> PackagingItems { get; set; } = [];
+        public AddPackagingCommand(List<AddPackagingRequest> packagingItems)
         {
-            PackaingItems = packaingItems;
+            PackagingItems = packagingItems;
         }
     }
 }

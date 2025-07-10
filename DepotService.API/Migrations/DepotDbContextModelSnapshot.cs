@@ -29,7 +29,8 @@ namespace DepotService.API.Migrations
                         .HasColumnType("int");
 
                     b.Property<Guid?>("AssignedOperatorId")
-                        .HasColumnType("char(36)");
+                        .HasColumnType("char(36)")
+                        .HasColumnName("AssignedOperatorId");
 
                     b.Property<string>("CustomerEmail")
                         .IsRequired()
@@ -60,6 +61,9 @@ namespace DepotService.API.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(65,30)");
 
                     b.HasKey("DepotOrderId");
 
@@ -99,6 +103,9 @@ namespace DepotService.API.Migrations
 
                     b.Property<int>("SalesOrderItemId")
                         .HasColumnType("int");
+
+                    b.Property<decimal?>("Total")
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<decimal?>("UnitPrice")
                         .HasColumnType("decimal(65,30)");

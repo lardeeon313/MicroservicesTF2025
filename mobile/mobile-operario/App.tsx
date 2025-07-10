@@ -1,15 +1,52 @@
-import { View, Text } from 'react-native';
-import { styled } from 'nativewind';
-
-const StyledView = styled(View);
-const StyledText = styled(Text);
+/*import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+//import { AuthProvider } from './src/operario/components/login/AuthContext';
+import { AuthProvider } from './src/Login/context/AuthProvider';
+import DepotNavigator from './src/operario/navigation/DepotNativagator';
 
 export default function App() {
   return (
-    <StyledView className="flex-1 items-center justify-center bg-white">
-      <StyledText className="text-2xl font-bold text-blue-600">
-        ✅ NativeWind funcionando!
-      </StyledText>
-    </StyledView>
+    <AuthProvider>
+      <NavigationContainer>
+        <DepotNavigator />
+      </NavigationContainer>
+    </AuthProvider>
+  );
+}
+
+*/
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { AuthProvider } from './src/Login/context/AuthProvider';
+import DepotNavigator from './src/operario/navigation/DepotNativagator';
+import LoginNavigator from './src/Login/LoginNavigator/LoginNavigator';
+import { useAuth } from './src/Login/context/useAuth';
+import { View, ActivityIndicator, Text } from 'react-native';
+
+const AppContent = () => {
+  const { isAuthenticated, loading } = useAuth(); // ⬅️ ACA ESTÁ EL SECRETO
+
+  if (loading) {
+    // Mostrar un splash o loader mientras validás token
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+        <Text>Cargando...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <NavigationContainer>
+      {isAuthenticated ? <DepotNavigator /> : <LoginNavigator />}
+    </NavigationContainer>
+  );
+};
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }

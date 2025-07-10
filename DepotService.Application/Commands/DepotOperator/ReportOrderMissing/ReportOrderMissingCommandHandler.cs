@@ -37,8 +37,8 @@ namespace DepotService.Application.Commands.DepotOperator.ReportOrderMissing
                 _logger.LogError($"Order with ID {command.DepotOrderId} is not assigned to operator {command.OperatorUserId}.");
                 throw new InvalidOperationException($"Order with ID {command.DepotOrderId} is not assigned to operator {command.OperatorUserId}.");
             }
-
-            if (order.Status != OrderStatus.InPreparation)
+            //NUEVO DIEGO: le puse con el status MissingProduct para que pueda emitir mas faltantes incluso si esta con ese estado
+            if (order.Status != OrderStatus.InPreparation && order.Status != OrderStatus.MissingProduct)
             {
                 _logger.LogError($"Order with ID {command.DepotOrderId} is not in progress.");
                 throw new InvalidOperationException($"Order with ID {command.DepotOrderId} is not in progress.");
@@ -62,6 +62,15 @@ namespace DepotService.Application.Commands.DepotOperator.ReportOrderMissing
             };
 
             await _repository.AddMissing(missing);
+            /// <summary>
+            /// Basicamente si el operario emite un faltante , uno solo 
+            /// El estado del pedido cambia a Inpreparation a MissingProduct
+            /// Indicando que se presentaron tal faltanes de dicho pedido 
+            /// </summary>
+            order.Status = OrderStatus.MissingProduct;
+            await _repository.UpdateOrderAsync(order);
+
+
             await _context.SaveChangesAsync();
 
             _logger.LogInformation($"Order with ID {command.DepotOrderId} reported as missing by operator {command.OperatorUserId}.");

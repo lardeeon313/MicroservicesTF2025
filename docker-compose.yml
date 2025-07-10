@@ -4,6 +4,7 @@ services:
     container_name: mysql-db
     environment:
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: depot_db
     ports:
       - "3307:3306"
     volumes:
@@ -79,7 +80,7 @@ services:
   salesservice:
     build:
       context: .
-      dockerfile: ./SalesService.API/Dockerfile
+      dockerfile: SalesService.API/Dockerfile
     ports:
       - "5004:8080"
     depends_on:

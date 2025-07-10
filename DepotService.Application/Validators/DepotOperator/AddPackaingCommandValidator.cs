@@ -13,11 +13,11 @@ namespace DepotService.Application.Validators.DepotOperator
     {
         public AddPackaingCommandValidator()
         {
-            RuleForEach(x => x.PackaingItems).ChildRules(item =>
+            RuleForEach(x => x.PackagingItems).ChildRules(item =>
             {
                 item.RuleFor(i => i.DepotOrderItemId)
                     .NotEmpty().WithMessage("DepotOrderItemId is required.");
-                item.RuleFor(i => i.PackaingType)
+                item.RuleFor(i => i.PackagingType)
                     .NotEmpty().WithMessage("PackaingType is required.")
                     .MaximumLength(50).WithMessage("PackaingType must be at most 50 characters long.");
             });

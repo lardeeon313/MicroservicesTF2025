@@ -36,7 +36,8 @@ namespace DepotService.Application.Commands.DepotOperator.SentOrderToBilling
                 _logger.LogError($"Order with ID {command.DepotOrderId} not found.");
                 return false;
             }
-            if (order.Status != OrderStatus.InPreparation)
+            //Nuevo: se tuvo que cambiar el status de InPreparation a Prepared 
+            if (order.Status != OrderStatus.Prepared)
             {
                 _logger.LogError($"Order with ID {command.DepotOrderId} is not in preparation status.");
                 return false;

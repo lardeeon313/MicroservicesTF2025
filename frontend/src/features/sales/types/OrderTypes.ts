@@ -10,7 +10,9 @@ export enum OrderStatus {
     Verify = "verify",
     OnTheWay = "onTheWay",   
     Delivered = "delivered",  
-    Canceled = "canceled"
+    Canceled = "canceled",
+    //SE LO TUVO QUE CAMBIAR PARA EL REPORTE: 
+    Modified = "modified"
 }
 
 export enum PaymentType {
@@ -96,6 +98,9 @@ export interface Order {
   customerFirstName?: string;
   customerLastName?: string;
   items: OrderItem[];
+  //NUEVO CAMPOS : 
+  startedDate : string;
+  finishDate: string; 
 }
 
 // Submodelo: ítems dentro de la orden devuelta

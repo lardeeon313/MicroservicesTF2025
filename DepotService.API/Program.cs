@@ -1,3 +1,4 @@
+//
 using DepotService.Application.Commands.BillingManager.ExportInvoiceOrderPdf;
 using DepotService.Application.Commands.BillingManager.InvoicedOrder;
 using DepotService.Application.Commands.BillingManager.SetItemUnitPrices;
@@ -35,6 +36,7 @@ using DepotService.Application.Queries.DepotManager.GetTeamById;
 using DepotService.Application.Queries.DepotManager.GetTeamByName;
 using DepotService.Application.Queries.Operator.GetAssignedPendingOrders;
 using DepotService.Application.Queries.Operator.GetOrderById;
+using DepotService.Application.Queries.Operator.GetOrdersByOperator;
 using DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery;
 using DepotService.Application.Validators.BillingManager;
 using DepotService.Application.Validators.DepotManager;
@@ -42,6 +44,7 @@ using DepotService.Application.Validators.DepotOperator;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
 using DepotService.Infraestructure.Documents;
+using DepotService.Infraestructure.Documents.Excel;
 using DepotService.Infraestructure.Documents.Pdf;
 using DepotService.Infraestructure.Email;
 using DepotService.Infraestructure.Messaging;
@@ -56,9 +59,12 @@ using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+//para acceder desde el celular
+builder.WebHost.UseUrls("http://0.0.0.0:5003");
 
 // Add services to the container.
 builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -120,6 +126,7 @@ builder.Services.AddScoped<ISetItemUnitPricesCommandHandler, SetItemUnitPricesCo
 builder.Services.AddScoped<IUpdateInvoicedItemPriceCommandHandler, UpdateInvoicedItemPriceCommandHandler>();
 builder.Services.AddScoped<IExportInvoiceDocumentCommandHandler, ExportInvoiceDocumentCommandHandler>();
 
+
 // Add FluentValidation
 builder.Services.AddScoped<IValidator<AssignOperatorRequest>, AssignOperatorCommandValidator>();
 builder.Services.AddScoped<IValidator<CreateTeamRequest>, CreateTeamCommandValidator>();
@@ -135,15 +142,23 @@ builder.Services.AddScoped<IValidator<GetInvoicedOrdersByDateRangeQuery>, GetInv
 builder.Services.AddScoped<IValidator<GetInvoicedOrdersByCustomerQuery>,  GetInvoicedOrdersByCustomerQueryValidator>();
 builder.Services.AddScoped<IValidator<UpdateInvoicedItemPriceCommand>, UpdateInvoicedItemPriceCommandValidator>();
 
+//Nuevo: AGREGÁ ESTA LÍNEA QUE FALTA
+builder.Services.AddScoped<OrderMissingReportedCommandValidator>();
+builder.Services.AddScoped<AddPackaingCommandValidator>();
+builder.Services.AddScoped<RejectOrderCommandValidator>();
+builder.Services.AddScoped<MarkItemIsReadyCommandValidator>();
+builder.Services.AddScoped<UnmarkItemReadyValidator>();
+
 // Add HostedService RabbitConsumer
 builder.Services.AddHostedService<OrderIssuedConsumer>();
 builder.Services.AddHostedService<OrderReissuedConsumer>();
 
-// Add Email Service
-builder.Services.AddSingleton<IEmailService, MailgunEmailService>();
-
 // Add Export Document Service 
 builder.Services.AddScoped<IInvoiceDocumentGenerator, InvoicePdfGenerator>();
+builder.Services.AddScoped<InvoicePdfGenerator>();
+builder.Services.AddScoped<InvoiceWordGenerator>();
+builder.Services.AddScoped<InvoiceExcelGenerator>();
+
 
 // Obtener la cadena de conexión del appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -211,6 +226,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+//se la tuvo que comentar para acceder a la aplicacion movil momentaneamente 
 app.UseAuthentication();
 
 app.UseAuthorization();

@@ -13,7 +13,8 @@ namespace DepotService.Application.DTOs.DepotOperator.Request
         [Required(ErrorMessage = "El ID del producto de la orden es obligatorio.")]
         public int DepotOrderItemId { get; set; }
         [Required(ErrorMessage = "El tipo de empaque es obligatorio.")]
-        public string PackaingType { get; set; } = string.Empty;
+        //con la dos g 
+        public string PackagingType { get; set; } = string.Empty;
     }
 }
     
