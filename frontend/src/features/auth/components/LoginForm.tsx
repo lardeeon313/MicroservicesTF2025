@@ -46,6 +46,9 @@ const LoginForm = () => {
       case "VerificationStaff":
         navigate("/verification");
         break;
+      case "BillingManager":
+        navigate("/depot/billingmanager");
+        break;
       default:
         navigate("/");
         break;
