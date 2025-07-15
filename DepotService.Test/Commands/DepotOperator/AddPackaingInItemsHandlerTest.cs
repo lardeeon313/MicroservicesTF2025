@@ -55,7 +55,7 @@ namespace DepotService.Test.Commands.DepotOperator
 
             var command = new AddPackagingCommand(new List<AddPackagingRequest>
             {
-                new() { DepotOrderItemId = itemId, PackaingType = "Box" }
+                new() { DepotOrderItemId = itemId, PackagingType = "Box" }
             });
 
             _repositoryMock.Setup(r => r.GetOrderItemsByIdsAsync(It.IsAny<List<int>>()))
@@ -87,7 +87,7 @@ namespace DepotService.Test.Commands.DepotOperator
             // Arrange
             var command = new AddPackagingCommand(new List<AddPackagingRequest>
             {
-                new() { DepotOrderItemId = 99, PackaingType = "Bag" }
+                new() { DepotOrderItemId = 99, PackagingType = "Bag" }
             });
 
             _repositoryMock.Setup(r => r.GetOrderItemsByIdsAsync(It.IsAny<List<int>>()))
@@ -123,7 +123,7 @@ namespace DepotService.Test.Commands.DepotOperator
 
             var command = new AddPackagingCommand(new List<AddPackagingRequest>
             {
-                new() { DepotOrderItemId = itemId, PackaingType = "Pallet" }
+                new() { DepotOrderItemId = itemId, PackagingType = "Pallet" }
             });
 
             _repositoryMock.Setup(r => r.GetOrderItemsByIdsAsync(It.IsAny<List<int>>()))

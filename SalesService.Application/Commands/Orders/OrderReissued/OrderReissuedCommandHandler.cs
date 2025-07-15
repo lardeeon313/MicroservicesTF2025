@@ -1,7 +1,7 @@
-﻿using DepotService.Application.Common.Interfaces;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SalesService.Application.DTOs.Order;
+using SalesService.Domain.Common.Interfaces;
 using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;

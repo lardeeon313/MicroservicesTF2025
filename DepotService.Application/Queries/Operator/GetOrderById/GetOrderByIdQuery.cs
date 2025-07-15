@@ -25,10 +25,5 @@ namespace DepotService.Application.Queries.Operator.GetOrderById
             DepotOrderId = depotOrderId;
             OperatorUserId = operatorUserId;
         }
-
-        public GetOrderByIdQuery()
-        {
-            
-        }
     }
 }

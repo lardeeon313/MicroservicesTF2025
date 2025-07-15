@@ -1,10 +1,11 @@
-﻿using DepotService.Application.Common.Interfaces;
-using SalesService.Application.DTOs.Order;
+﻿using SalesService.Application.DTOs.Order;
+using SalesService.Domain.Common.Interfaces;
 using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Email.EmailTemplates;
 using SalesService.Infraestructure.Messaging.Publisher;
+using SharedKernel.IntegrationEvents.SalesEvents.DTOs;
 using SharedKernel.IntegrationEvents.SalesEvents.Order;
 using System;
 using System.Collections.Generic;
@@ -40,17 +41,13 @@ namespace SalesService.Application.Commands.Orders.Register
                 OrderDate = DateTime.UtcNow,
                 Status = OrderStatus.Pending,
                 CreatedByUserId = command.CreatedByUserId,
+                Items = command.Items.Select(i => new OrderItem
+                {
+                    ProductBrand = i.ProductBrand,
+                    ProductName = i.ProductName,
+                    Quantity = i.Quantity
+                }).ToList()
             };
-
-            // Asignar los items a la orden
-            order.Items = command.Items.Select(i => new OrderItem
-            {
-                ProductName = i.ProductName,
-                ProductBrand = i.ProductBrand,
-                Quantity = i.Quantity,
-            }).ToList();
-
-
 
             // Guardar la orden en la base de datos
             await _orderRepository.AddAsync(order);
@@ -65,7 +62,7 @@ namespace SalesService.Application.Commands.Orders.Register
                 OrderId = order.Id,
                 CustomerId = order.CustomerId,
                 OrderDate = order.OrderDate,
-                Items = order.Items.Select(i => new OrderItem
+                Items = order.Items.Select(i => new OrderItemsDto
                 {
                     ProductName = i.ProductName,
                     ProductBrand = i.ProductBrand,

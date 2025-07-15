@@ -4,10 +4,7 @@ import LoginPage from "../features/auth/pages/LoginPage";
 import ProtectedRoute from "../features/auth/components/ProtectedRoute";
 import Unauthorized from "../features/auth/components/Unauthorized";
 import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
-
 import DepotManagerDashboard from "../features/depot/depotmanager/pages/DepotManagerDashboard";
-import OperatorDashboard from "../features/depot/operator/navigation/OperatorDashboard";
-
 import BillingManagerDashboard from "../features/depot/billingmanager/pages/BillingManagerDashboard";
 import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
 import NotFoundPage from "../features/common/pages/NotFoundPage";
@@ -35,9 +32,16 @@ import OrderCompletedDayPage from "../features/depot/pages/reports/Depot/DepotPa
 import TeamProdictivityPage from "../features/depot/pages/reports/Depot/DepotPages/TeamProdictiviyPage";
 
 //REPORTES DE FACTURACION
-import BillingTimeProcessPage from "../features/depot/pages/reports/Billing/BillingPages/BillingTimeProcessPage";
-import CustomerIncomePage from "../features/depot/pages/reports/Billing/BillingPages/CustomerIncomePage";
-import OrderBilledPage from "../features/depot/pages/reports/Billing/BillingPages/OrderBilledPage";
+
+import CustomerSatisfactionReportPage from "../features/sales/pages/reports/CustomerSatisfactionReportPage";
+import TeamsPage from "../features/depot/depotmanager/pages/TeamsPage";
+import PendingOrdersPage from "../features/depot/depotmanager/pages/PendingOrdersPage";
+import InPreparationOrdersPage from "../features/depot/depotmanager/pages/InPreparationOrdersPage";
+import PreparedOrdersPage from "../features/depot/depotmanager/pages/PreparedOrdersPage";
+import MissingOrdersPage from "../features/depot/depotmanager/pages/MissingOrdersPage";
+import PendingOrderDetailsPage from "../features/depot/billingmanager/pages/PendingOrderDetailsPage";
+import InvoicedOrdersPage from "../features/depot/billingmanager/pages/InvoicedOrdersPage";
+import InvoicedOrderDetailsPage from "../features/depot/billingmanager/pages/InvoicedOrderDetailsPage";
 
 const AppRouter = () => {
   return (
@@ -60,7 +64,6 @@ const AppRouter = () => {
         <Route path="/sales/customer/update/:id" element={<EditCustomerPage/>}/>
         <Route path="/sales/reports" element={<DashboardReportsPage/>}/>
 
-<<<<<<< HEAD
 
         {/**reportes de ventas*/}
         <Route path="/sales/reports/customerStatusReport" element={<CustomerInactiveReportPage/>} />
@@ -101,9 +104,6 @@ const AppRouter = () => {
         </Route>
         
 
-=======
-        
->>>>>>> origin/feature/milton-microservicestf2025
         <Route 
             path="/admin" 
             element = {
@@ -153,10 +153,10 @@ const AppRouter = () => {
             }
         >
             <Route index element={<BillingManagerDashboard />} />
-            <Route path="pending-orders" element={<BillingPendingOrdersPage />} />
-            <Route path="pending-orders/:id" element={<BillingPendingOrderDetailsPage />} />
-            <Route path="invoiced-orders" element={<BillingInvoicedOrdersPage />} />
-            <Route path="invoiced-orders/:id" element={<BillingInvoicedOrderDetailsPage />} />
+            <Route path="pending-orders" element={<PendingOrdersPage />} />
+            <Route path="pending-orders/:id" element={<PendingOrderDetailsPage />} />
+            <Route path="invoiced-orders" element={<InvoicedOrdersPage />} />
+            <Route path="invoiced-orders/:id" element={<InvoicedOrderDetailsPage />} />
             {/* <Route path="reports" element={<BillingManagerReportsPage />} /> */}
         </Route>
 

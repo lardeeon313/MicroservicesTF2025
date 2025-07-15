@@ -46,6 +46,7 @@ using DepotService.Infraestructure;
 using DepotService.Infraestructure.Documents;
 using DepotService.Infraestructure.Documents.Excel;
 using DepotService.Infraestructure.Documents.Pdf;
+using DepotService.Infraestructure.Documents.Word;
 using DepotService.Infraestructure.Email;
 using DepotService.Infraestructure.Messaging;
 using DepotService.Infraestructure.Messaging.Consumers;
