@@ -61,6 +61,9 @@ namespace DepotService.API.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(65,30)");
+
                     b.HasKey("DepotOrderId");
 
                     b.HasIndex("AssignedDepotTeamId");
@@ -99,6 +102,9 @@ namespace DepotService.API.Migrations
 
                     b.Property<int>("SalesOrderItemId")
                         .HasColumnType("int");
+
+                    b.Property<decimal?>("Total")
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<decimal?>("UnitPrice")
                         .HasColumnType("decimal(65,30)");

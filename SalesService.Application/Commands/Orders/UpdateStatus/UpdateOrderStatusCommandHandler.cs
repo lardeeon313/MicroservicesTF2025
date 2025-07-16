@@ -42,32 +42,40 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
 
             await _repository.UpdateAsync(existingOrder);
 
-            
-            if (command.Request.Status == OrderStatus.Issued)
-            {
-                // Creamos el evento de integración para la orden emitida
-                var integrationEvent = new OrderIssuedIntegrationEvent
-                {
-                    OrderId = existingOrder.Id,
-                    CustomerId = existingOrder.CustomerId,
-                    CustomerName = existingOrder.Customer.FirstName + " " + existingOrder.Customer.LastName,
-                    CustomerEmail = existingOrder.Customer.Email,
-                    PhoneNumber = existingOrder.Customer.PhoneNumber,
-                    DeliveryDetail = existingOrder.DeliveryDetail,
-                    OrderDate = existingOrder.OrderDate,
-                    Status = existingOrder.Status,
-                    Items = existingOrder.Items.Select(i => new OrderItemsDto
-                    {
-                        Id = i.Id,
-                        OrderId = existingOrder.Id,
-                        ProductBrand = i.ProductBrand,
-                        ProductName = i.ProductName,
-                        Quantity = i.Quantity
-                    }).ToList()
-                };
 
-                // Publicamos el evento en RabbitMQ
-                await _publisher.PublishAsync(integrationEvent, "order_issued_queue");
+            try
+            {
+                if (command.Request.Status == OrderStatus.Issued)
+                {
+                    // Creamos el evento de integración para la orden emitida
+                    var integrationEvent = new OrderIssuedIntegrationEvent
+                    {
+                        OrderId = existingOrder.Id,
+                        CustomerId = existingOrder.CustomerId,
+                        CustomerName = existingOrder.Customer.FirstName + " " + existingOrder.Customer.LastName,
+                        CustomerEmail = existingOrder.Customer.Email,
+                        PhoneNumber = existingOrder.Customer.PhoneNumber,
+                        DeliveryDetail = existingOrder.DeliveryDetail,
+                        OrderDate = existingOrder.OrderDate,
+                        Status = existingOrder.Status,
+                        Items = existingOrder.Items.Select(i => new OrderItemsDto
+                        {
+                            Id = i.Id,
+                            OrderId = existingOrder.Id,
+                            ProductBrand = i.ProductBrand,
+                            ProductName = i.ProductName,
+                            Quantity = i.Quantity
+                        }).ToList()
+                    };
+
+                    // Publicamos el evento en RabbitMQ
+                    await _publisher.PublishAsync(integrationEvent, "order_issued_queue");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Manejo de errores al publicar el evento
+                throw new InvalidOperationException("Error al publicar el evento de orden emitida.", ex);
             }
 
             return true;

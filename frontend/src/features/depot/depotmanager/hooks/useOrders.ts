@@ -41,6 +41,35 @@ export interface UseOrdersReturn {
   refetch: () => void;
 }
 
+// Función auxiliar para manejar errores específicos
+const handleOrderError = (err: unknown, defaultMessage: string): string => {
+  if (err && typeof err === 'object' && 'response' in err) {
+    const axiosError = err as any;
+    const status = axiosError.response?.status;
+    
+    // Manejo específico para errores 500 (servidor sin órdenes)
+    if (status === 500) {
+      return 'No hay órdenes disponibles en el sistema. Verifique la conexión con el microservicio de ventas.';
+    }
+    
+    // Manejo para errores 404 (no encontrado)
+    if (status === 404) {
+      return 'No se encontraron órdenes con los criterios especificados.';
+    }
+    
+    // Manejo para errores de red
+    if (status === 0 || !status) {
+      return 'Error de conexión. Verifique la conectividad con el servidor.';
+    }
+    
+    // Otros errores HTTP
+    return `Error del servidor (${status}): ${defaultMessage}`;
+  }
+  
+  // Error genérico
+  return err instanceof Error ? err.message : defaultMessage;
+};
+
 export const useOrders = (): UseOrdersReturn => {
   const [orders, setOrders] = useState<DepotOrderDto[]>([]);
   const [missingOrders, setMissingOrders] = useState<DepotOrderMissingDto[]>([]);
@@ -58,9 +87,15 @@ export const useOrders = (): UseOrdersReturn => {
       setError(null);
       const data = await getAllOrders();
       setOrders(data);
+      
+      // Si no hay órdenes pero no hay error, mostrar mensaje informativo
+      if (data.length === 0) {
+        setError('No hay órdenes pendientes en el sistema. Las órdenes se sincronizan automáticamente desde el módulo de ventas.');
+      }
     } catch (err) {
       console.error('Error fetching all orders:', err);
-      setError(err instanceof Error ? err.message : 'Error al cargar las órdenes');
+      const errorMessage = handleOrderError(err, 'Error al cargar las órdenes');
+      setError(errorMessage);
       // En caso de error, establecer un array vacío
       setOrders([]);
     }
@@ -75,9 +110,15 @@ export const useOrders = (): UseOrdersReturn => {
         const otherOrders = prevOrders.filter(order => order.Status !== status);
         return [...otherOrders, ...data];
       });
+      
+      // Si no hay órdenes para este estado específico
+      if (data.length === 0) {
+        setError(`No hay órdenes con estado "${status}" disponibles.`);
+      }
     } catch (err) {
       console.error('Error fetching orders by status:', err);
-      setError(err instanceof Error ? err.message : 'Error al cargar las órdenes por estado');
+      const errorMessage = handleOrderError(err, 'Error al cargar las órdenes por estado');
+      setError(errorMessage);
     }
   }, []);
 
@@ -86,9 +127,16 @@ export const useOrders = (): UseOrdersReturn => {
       setError(null);
       const data = await getMissingOrders();
       setMissingOrders(data);
+      
+      // Si no hay órdenes con faltantes
+      if (data.length === 0) {
+        // No establecer error aquí ya que es normal no tener faltantes
+        console.log('No hay órdenes con faltantes reportados.');
+      }
     } catch (err) {
       console.error('Error fetching missing orders:', err);
-      setError(err instanceof Error ? err.message : 'Error al cargar las órdenes con faltantes');
+      const errorMessage = handleOrderError(err, 'Error al cargar las órdenes con faltantes');
+      setError(errorMessage);
       // En caso de error, establecer un array vacío
       setMissingOrders([]);
     }
@@ -101,7 +149,8 @@ export const useOrders = (): UseOrdersReturn => {
       setOperators(data);
     } catch (err) {
       console.error('Error fetching operators:', err);
-      setError(err instanceof Error ? err.message : 'Error al cargar los operadores');
+      const errorMessage = handleOrderError(err, 'Error al cargar los operadores');
+      setError(errorMessage);
       // En caso de error, establecer un array vacío
       setOperators([]);
     }
@@ -119,7 +168,8 @@ export const useOrders = (): UseOrdersReturn => {
       await fetchAllOrders();
     } catch (err) {
       console.error('Error assigning operator:', err);
-      setError(err instanceof Error ? err.message : 'Error al asignar operador');
+      const errorMessage = handleOrderError(err, 'Error al asignar operador');
+      setError(errorMessage);
       throw err;
     }
   }, [fetchAllOrders]);
@@ -133,7 +183,8 @@ export const useOrders = (): UseOrdersReturn => {
       await fetchMissingOrders();
     } catch (err) {
       console.error('Error reporting missing order:', err);
-      setError(err instanceof Error ? err.message : 'Error al reportar orden faltante');
+      const errorMessage = handleOrderError(err, 'Error al reportar orden faltante');
+      setError(errorMessage);
       throw err;
     }
   }, [fetchAllOrders, fetchMissingOrders]);
@@ -144,7 +195,8 @@ export const useOrders = (): UseOrdersReturn => {
       return await getOrderByIdService(orderId);
     } catch (err) {
       console.error('Error getting order by id:', err);
-      setError(err instanceof Error ? err.message : 'Error al obtener la orden');
+      const errorMessage = handleOrderError(err, 'Error al obtener la orden');
+      setError(errorMessage);
       throw err;
     }
   }, []);

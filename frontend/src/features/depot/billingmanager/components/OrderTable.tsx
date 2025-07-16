@@ -40,16 +40,70 @@ export default function OrderTable({
     return (
       <LoadingSpinner message="Cargando órdenes..."/>
     )
-  if (error)
+  
+  if (error) {
+    // Determinar si es un error relacionado con falta de órdenes
+    const isNoOrdersError = error.includes('No hay órdenes') || 
+                           error.includes('microservicio') || 
+                           error.includes('sincronizan');
+    
     return (
       <div className="text-center py-8">
-        <p className="text-red-600 mb-4">{error}</p>
-        <button onClick={onRefetch} className="btn-primary inline-block">Reintentar</button>
+        <div className="max-w-md mx-auto">
+          {isNoOrdersError ? (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <div className="text-blue-600 mb-4">
+                <Package className="w-12 h-12 mx-auto mb-3" />
+                <h3 className="text-lg font-semibold mb-2">Sin Órdenes Disponibles</h3>
+                <p className="text-sm text-blue-700">{error}</p>
+              </div>
+              <div className="text-xs text-blue-600 space-y-1">
+                <p>• Verifique que el microservicio de ventas esté funcionando</p>
+                <p>• Confirme que RabbitMQ esté procesando las órdenes</p>
+                <p>• Las órdenes se sincronizan automáticamente</p>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+              <div className="text-red-600 mb-4">
+                <h3 className="text-lg font-semibold mb-2">Error al Cargar Órdenes</h3>
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
+            </div>
+          )}
+          <button 
+            onClick={onRefetch} 
+            className="mt-4 btn-primary inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
+          >
+            Reintentar
+          </button>
+        </div>
       </div>
     );
+  }
 
   if (orders.length === 0)
-    return <div className="text-center py-8 text-gray-500">No hay órdenes registradas.</div>;
+    return (
+      <div className="text-center py-8">
+        <div className="max-w-md mx-auto">
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
+            <div className="text-gray-600 mb-4">
+              <Package className="w-12 h-12 mx-auto mb-3" />
+              <h3 className="text-lg font-semibold mb-2">No Hay Órdenes Registradas</h3>
+              <p className="text-sm text-gray-700">
+                Actualmente no hay órdenes en el sistema. Las órdenes aparecerán automáticamente cuando se registren desde el módulo de ventas.
+              </p>
+            </div>
+            <button 
+              onClick={onRefetch} 
+              className="mt-4 btn-primary inline-block bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors"
+            >
+              Actualizar
+            </button>
+          </div>
+        </div>
+      </div>
+    );
 
   return (
       <div className="w-full overflow-hidden rounded-lg border border-gray-200 shadow">
