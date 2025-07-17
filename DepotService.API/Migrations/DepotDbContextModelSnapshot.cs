@@ -29,7 +29,8 @@ namespace DepotService.API.Migrations
                         .HasColumnType("int");
 
                     b.Property<Guid?>("AssignedOperatorId")
-                        .HasColumnType("char(36)");
+                        .HasColumnType("char(36)")
+                        .HasColumnName("AssignedOperatorId");
 
                     b.Property<string>("CustomerEmail")
                         .IsRequired()

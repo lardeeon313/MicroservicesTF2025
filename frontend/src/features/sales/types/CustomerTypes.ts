@@ -7,7 +7,17 @@ export interface Customer {
   phoneNumber: string;
   address: string;
   registrationDate: string; // ISO string
+  status: CustomerStatus;
+  descriptionsatisfaction: string;
 }
+
+//estado del cliente , si este perdido inactivo y perdido: 
+export enum CustomerStatus{
+  Active,
+  Inactive,
+  Lost
+}
+
 
 // Representa la respuesta que devuelve la API al obtener un cliente
 export interface CustomerResponse {
@@ -72,5 +82,13 @@ export enum CustomerSatisfaction {
   Neutra = "Neutra"
 }
 
+//----------Reports Billing 
+
+export interface CustomerIncome{
+  id: Customer['id']
+  FirstName : Customer['firstName']
+  LastName : Customer['lastName']
+  TotalIncome : number
+}
 
 

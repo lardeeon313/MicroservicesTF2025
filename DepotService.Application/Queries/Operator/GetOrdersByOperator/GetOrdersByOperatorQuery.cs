@@ -13,5 +13,10 @@ namespace DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery
         {
             OperatorUserId = operatorUserId;
         }
+
+        public GetOrdersByOperatorQuery()
+        {
+            
+        }
     }
 }

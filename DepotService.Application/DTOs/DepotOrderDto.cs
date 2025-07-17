@@ -21,12 +21,14 @@ namespace DepotService.Application.DTOs
         public decimal TotalAmount { get; set; } = 0;
 
         // Relacion con Items
-        public ICollection<DepotOrderItemEntity> Items { get; set; } = [];
+        public ICollection<DepotOrderItemDto> Items { get; set; } = [];
 
         // Relacion con Faltantes
         public ICollection<DepotOrderMissing> Missings { get; set; } = [];
-        public Guid? AssignedOperatorId { get; private set; }
+        
+        public Guid? AssignedOperatorId { get; set; }
         public DepotTeamEntity? AssignedDepotTeam { get; set; }
         public int? AssignedDepotTeamId { get; private set; }
+
     }
 }

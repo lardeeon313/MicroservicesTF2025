@@ -36,19 +36,18 @@ namespace DepotService.Application.Queries.BillingManager.GetOrdersPendingBillin
                 CustomerEmail = o.CustomerEmail,
                 TotalAmount = o.TotalAmount,
                 Status = o.Status,
-                Items = o.Items.Select(i => new DepotOrderItemEntity
+                Items = o.Items.Select(i => new DepotOrderItemDto
                 {
                     Id = i.Id,
                     ProductBrand = i.ProductBrand,
                     ProductName = i.ProductName,
-                    PackagingType = i.PackagingType,
+                    Packaging = i.PackagingType,
                     Quantity = i.Quantity,
                     Total = i.UnitPrice.HasValue ? i.UnitPrice.Value * i.Quantity : 0,
                 }).ToList(),
                 PhoneNumber = o.PhoneNumber,
                 DeliveryDetail = o.DeliveryDetail,
                 OrderDate = o.OrderDate,
-             
             }).ToList();
 
         }

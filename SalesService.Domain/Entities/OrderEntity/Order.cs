@@ -26,7 +26,7 @@ namespace SalesService.Domain.Entities.OrderEntity
 
         // Relacion con el cliente
         public Guid CustomerId { get; set; }
-        public Customer Customer { get; set; } = new Customer();
+        public Customer Customer { get; set; } = null!;
 
         // Relacion con el Usuario que creó el pedido
         public string CreatedByUserId { get; set; } = string.Empty;

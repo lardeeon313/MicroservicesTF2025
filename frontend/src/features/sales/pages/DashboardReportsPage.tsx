@@ -9,8 +9,8 @@ const cards = [
     link: "/sales/reports/customersReport",
   },
   {
-    title: "Estados de los clientes",
-    description: "Analiza los clientes en base a sus pedidos.",
+    title: "Estados de los clientes inactivos",
+    description: "Analiza los clientes que hayan dejado de realizar pedidos en un lapso de tiempo.",
     icon: <PieChart className="h-10 w-10 text-red-600" />,
     link: "/sales/reports/customerStatusReport",
   },
@@ -43,7 +43,7 @@ export const DashboardReportsPage = () => {
             </Link>
       </div>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Panel de reportes</h1>
+        <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Panel de reportes de Ventas</h1>
         <p className="text-center text-lg text-gray-700 mb-12">
           Todos los reportes para la toma de decisiones
         </p>

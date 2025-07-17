@@ -1,4 +1,5 @@
-﻿using DepotService.Application.Commands.BillingManager.InvoicedOrder;
+﻿using DepotService.Application.Commands.BillingManager.ExportInvoiceOrderPdf;
+using DepotService.Application.Commands.BillingManager.InvoicedOrder;
 using DepotService.Application.Commands.BillingManager.SetItemUnitPrices;
 using DepotService.Application.Commands.BillingManager.UpdateInvoicedItemPrice;
 using DepotService.Application.DTOs;
@@ -8,7 +9,9 @@ using DepotService.Application.Queries.BillingManager.GetInvoicedOrderById;
 using DepotService.Application.Queries.BillingManager.GetInvoicedOrdersByCustomer;
 using DepotService.Application.Queries.BillingManager.GetInvoicedOrdersByDateRange;
 using DepotService.Application.Queries.BillingManager.GetOrdersPendingBilling;
+using DepotService.Application.Utilities;
 using DepotService.Application.Validators.BillingManager;
+using DepotService.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,9 +34,11 @@ namespace DepotService.API.Controllers
         GetInvoicedOrdersByCustomerQueryValidator getInvoicedOrdersByCustomerQueryValidator,
         IGetInvoicedOrdersByCustomerQueryHandler getInvoicedOrdersByCustomerQueryHandler,
         IUpdateInvoicedItemPriceCommandHandler updateInvoicedItemPriceCommandHandler,
-        UpdateInvoicedItemPriceCommandValidator updateInvoicedItemPriceCommandValidator
+        UpdateInvoicedItemPriceCommandValidator updateInvoicedItemPriceCommandValidator,
+        IExportInvoiceDocumentCommandHandler exportInvoiceToPdfCommandHandler
         ) : ControllerBase
     {
+        private readonly IExportInvoiceDocumentCommandHandler _exportInvoiceToPdfCommandHandler = exportInvoiceToPdfCommandHandler;
         private readonly UpdateInvoicedItemPriceCommandValidator _updateInvoicedItemPriceCommandValidator = updateInvoicedItemPriceCommandValidator;
         private readonly IUpdateInvoicedItemPriceCommandHandler _updateInvoicedItemPriceCommandHandler = updateInvoicedItemPriceCommandHandler;
         private readonly GetInvoicedOrdersByCustomerQueryValidator _getInvoicedOrdersByCustomerQueryValidator = getInvoicedOrdersByCustomerQueryValidator;
@@ -266,5 +271,28 @@ namespace DepotService.API.Controllers
             }
             return Ok("Item price updated successfully.");
         }
+
+        /// <summary>
+        /// Endpoint para exportar una factura a PDF / WORD / EXCEL.
+        /// </summary>
+        /// <param name="billingOrderId"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        [HttpGet("export-invoice")]
+        [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(void), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ExportInvoiceToPdf(int billingOrderId, [FromQuery] DocumentType type)
+        {
+            var fileBytes = await _exportInvoiceToPdfCommandHandler.ExportInvoiceHandleAsync(new ExportInvoiceDocumentCommand(billingOrderId, type));
+
+            var fileName = $"Invoice_{billingOrderId}.{DocumentHelper.GetExtension(type)}";
+            var contentType = DocumentHelper.GetContentType(type);
+
+            return File(fileBytes, contentType, fileName);
+        }
+
+
+        
     }
 }

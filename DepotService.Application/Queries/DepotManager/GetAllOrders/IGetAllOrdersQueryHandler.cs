@@ -1,4 +1,5 @@
-﻿using DepotService.Domain.Entities;
+﻿using DepotService.Application.DTOs;
+using DepotService.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,6 @@ namespace DepotService.Application.Queries.DepotManager.GetAllOrders
     /// </summary>
     public interface IGetAllOrdersQueryHandler
     {
-        Task<IEnumerable<DepotOrderEntity?>> AllOrdersHandleAsync();
+        Task<IEnumerable<DepotOrderDto?>> AllOrdersHandleAsync();
     }
 }

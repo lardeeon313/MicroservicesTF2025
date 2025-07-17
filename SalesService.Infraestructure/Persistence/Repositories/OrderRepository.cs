@@ -60,7 +60,6 @@ namespace SalesService.Infraestructure.Persistence.Repositories
             return await _context.Orders
                 .Include(o => o.Customer)
                 .Include(o => o.Items)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(o => o.Id == orderId);
         }
 

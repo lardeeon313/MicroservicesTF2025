@@ -45,12 +45,12 @@ namespace DepotService.Application.Queries.BillingManager.GetBillingDetailsByOrd
                 DeliveryDetail = order.DeliveryDetail,
                 OrderDate = order.OrderDate,
                 Status = order.Status,
-                Items = order.Items.Select(i => new DepotOrderItemEntity
+                Items = order.Items.Select(i => new DepotOrderItemDto
                 {
                     Id = i.Id,
                     ProductBrand = i.ProductBrand,
                     ProductName = i.ProductName,
-                    PackagingType = i.PackagingType,
+                    Packaging = i.PackagingType,
                     Quantity = i.Quantity,
                     UnitPrice = i.UnitPrice,
                     Total = i.UnitPrice.HasValue ? i.UnitPrice.Value * i.Quantity : 0

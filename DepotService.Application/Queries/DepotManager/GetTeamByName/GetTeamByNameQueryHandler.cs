@@ -39,7 +39,6 @@ namespace DepotService.Application.Queries.DepotManager.GetTeamByName
                     OperatorByUserId = o.OperatorUserId,
                     AssignAt = o.AssignedAt,
                     RoleInTeam = o.RoleInTeam,
-
                 }).ToList(),
             };
         }

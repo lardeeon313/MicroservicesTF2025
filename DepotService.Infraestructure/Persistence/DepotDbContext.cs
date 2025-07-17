@@ -44,6 +44,10 @@ namespace DepotService.Infraestructure
             modelBuilder.Entity<DepotOrderEntity>(order =>
             {
                 order.HasKey(o => o.DepotOrderId);
+
+                //NUEVO: 
+                order.Property(o => o.AssignedOperatorId)
+                    .HasColumnName("AssignedOperatorId");
             });
 
             modelBuilder.Entity<DepotOrderEntity>()

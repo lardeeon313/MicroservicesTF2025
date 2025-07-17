@@ -85,7 +85,7 @@ namespace DepotService.Infraestructure
                             Status = OrderStatus.Received,
                             Items = evento.Items.Select(item => new DepotOrderItemEntity
                             {
-                                Id = item.Id,
+                                SalesOrderItemId = item.Id,
                                 ProductName = item.ProductName,
                                 ProductBrand = item.ProductBrand,
                                 Quantity = item.Quantity

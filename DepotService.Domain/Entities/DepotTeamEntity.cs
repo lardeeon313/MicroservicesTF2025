@@ -15,8 +15,16 @@ namespace DepotService.Domain.Entities
         public List<DepotTeamAssignment> Assignments { get; set; } = new();
 
 
+        public DepotTeamEntity()
+        {
+        }
+
         // Constructor protegido para EF Core
-        private DepotTeamEntity() { }
+        public  DepotTeamEntity(int id, string teamName) 
+        {
+            Id = id;
+            TeamName = teamName;
+        }
 
         public DepotTeamEntity(string teamName, string? teamDescription)
         {

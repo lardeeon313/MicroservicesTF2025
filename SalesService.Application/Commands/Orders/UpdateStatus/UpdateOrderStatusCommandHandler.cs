@@ -9,18 +9,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace SalesService.Application.Commands.Orders.UpdateStatus
 {
-    public class UpdateOrderStatusCommandHandler(IOrderRepository repository, IRabbitMQPublisher publisher) : IUpdateOrderStatusCommandHandler
+    public class UpdateOrderStatusCommandHandler(IOrderRepository repository, IRabbitMQPublisher publisher, ILogger<UpdateOrderStatusCommandHandler> logger) : IUpdateOrderStatusCommandHandler
     {
         private readonly IOrderRepository _repository = repository;
         private readonly IRabbitMQPublisher _publisher = publisher;
+        private readonly ILogger<UpdateOrderStatusCommandHandler> ILogger = logger;
+
         public async Task<bool> HandleAsync(UpdateOrderStatusCommand command)
         {
             var existingOrder = await _repository.GetByIdAsync(command.OrderId);
             if (existingOrder is null)
                 throw new KeyNotFoundException($"Order with ID {command.OrderId} not found.");
+
+            ILogger.LogInformation("📧 DatosCUSTOMER:  CustomerName={Name}, Email={Email}, Phone={Phone}",
+                existingOrder.Customer.FirstName + " " + existingOrder.Customer.LastName,
+                existingOrder.Customer.Email,
+                existingOrder.Customer.PhoneNumber);
 
             // Validamos que unicamente sea pending y que no tenga otro estado.
             if (existingOrder.Status != OrderStatus.Pending && existingOrder.Status != OrderStatus.Canceled)
@@ -39,9 +47,7 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
             existingOrder.ModifiedStatusDate = DateTime.UtcNow;
             existingOrder.CreatedByUserId = command.Request.ModifiedByUserId ?? existingOrder.CreatedByUserId;
 
-
             await _repository.UpdateAsync(existingOrder);
-
 
             try
             {
@@ -67,6 +73,11 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
                             Quantity = i.Quantity
                         }).ToList()
                     };
+
+                    ILogger.LogInformation("📧 Emitiendo evento: CustomerName={Name}, Email={Email}, Phone={Phone}",
+                        existingOrder.Customer.FirstName + " " + existingOrder.Customer.LastName,
+                        existingOrder.Customer.Email,
+                        existingOrder.Customer.PhoneNumber);
 
                     // Publicamos el evento en RabbitMQ
                     await _publisher.PublishAsync(integrationEvent, "order_issued_queue");
