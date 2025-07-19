@@ -15,5 +15,7 @@ namespace SharedKernel.IntegrationEvents.SalesEvents.Order
         public string ResolutionDescription { get; set; } = string.Empty;
         public List<OrderItemsDto> UpdateItems { get; set; } = [];
         public DateTime ReissuedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? DeliveryDate { get; set; }
+
     }
 }

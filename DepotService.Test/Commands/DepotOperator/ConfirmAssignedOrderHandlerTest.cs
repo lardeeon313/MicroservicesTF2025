@@ -1,4 +1,5 @@
 ﻿using DepotService.Application.Commands.DepotOperator.ConfirmAssignedOrder;
+using DepotService.Application.Common.Interfaces;
 using DepotService.Domain.Entities;
 using DepotService.Domain.Enums;
 using DepotService.Domain.IRepositories;
@@ -24,6 +25,7 @@ namespace DepotService.Test.Commands.DepotOperator
         private readonly Mock<IRabbitMQPublisher> _publisherMock;
         private readonly Mock<ILogger<ConfirmAssignedOrderCommandHandler>> _loggerMock;
         private readonly ConfirmAssignedOrderCommandHandler _handler;
+        private readonly Mock<IEmailService> _emailServiceMock;
 
         public ConfirmAssignedOrderCommandHandlerTest()
         {
@@ -31,8 +33,10 @@ namespace DepotService.Test.Commands.DepotOperator
             _contextMock = new Mock<DepotDbContext>(new DbContextOptions<DepotDbContext>());
             _publisherMock = new Mock<IRabbitMQPublisher>();
             _loggerMock = new Mock<ILogger<ConfirmAssignedOrderCommandHandler>>();
+            _emailServiceMock = new Mock<IEmailService>();
 
             _handler = new ConfirmAssignedOrderCommandHandler(
+                _emailServiceMock.Object,
                 _publisherMock.Object,
                 _contextMock.Object,
                 _repositoryMock.Object,

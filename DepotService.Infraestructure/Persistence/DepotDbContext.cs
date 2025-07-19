@@ -21,6 +21,7 @@ namespace DepotService.Infraestructure
         public DbSet<DepotTeamEntity> DepotTeams { get; set; }
         public DbSet<DepotTeamAssignment> TeamAssignments { get; set; }
         public DbSet<DepotOrderMissing> DepotOrderMissings { get; set; }
+        public DbSet<OrderStatusHistory> OrderStatusHistories { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -75,6 +76,23 @@ namespace DepotService.Infraestructure
 
             modelBuilder.Entity<DepotOrderItemEntity>()
                 .HasKey(i => i.Id);
+
+            modelBuilder.Entity<OrderStatusHistory>(status =>
+            {
+                status.HasKey(h => h.Id);
+                status.Property(h => h.OldStatus)
+                    .IsRequired();
+                status.Property(h => h.NewStatus)
+                    .IsRequired();
+                status.Property(h => h.ChangedAt)
+                    .IsRequired();
+                status.HasOne(h => h.DepotOrderEntity)
+                    .WithMany(o => o.StatusHistory)
+                    .HasForeignKey(h => h.OrderId);
+            });
+                
+
+                
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using DepotService.Application.Commands.DepotManager.OrderMissingReported;
+using DepotService.Application.Common.Interfaces;
 using DepotService.Application.DTOs;
 using DepotService.Domain.Entities;
 using DepotService.Domain.Enums;
@@ -26,17 +27,20 @@ namespace DepotService.Test.Commands.DepotManager
         private readonly Mock<IDepotOrderRepository> _repositoryMock;
         private readonly Mock<IRabbitMQPublisher> _publisherMock;
         private readonly Mock<DepotDbContext> _contextMock;
-        private readonly Mock<ILogger<OrderMissingReportedCommand>> _loggerMock;
+        private readonly Mock<ILogger<OrderMissingReportedCommandHandler>> _loggerMock;
         private readonly OrderMissingReportedCommandHandler _handler;
+        private readonly Mock<IEmailService> _emailServiceMock;
 
         public ReportOrderMissingHandlerTest()
         {
             _repositoryMock = new Mock<IDepotOrderRepository>();
             _publisherMock = new Mock<IRabbitMQPublisher>();
             _contextMock = new Mock<DepotDbContext>(new DbContextOptions<DepotDbContext>());
-            _loggerMock = new Mock<ILogger<OrderMissingReportedCommand>>();
+            _loggerMock = new Mock<ILogger<OrderMissingReportedCommandHandler>>();
+            _emailServiceMock = new Mock<IEmailService>();
 
             _handler = new OrderMissingReportedCommandHandler(
+                _emailServiceMock.Object, // Se agregó el servicio de correo electrónico requerido
                 _publisherMock.Object,
                 _repositoryMock.Object,
                 _contextMock.Object,

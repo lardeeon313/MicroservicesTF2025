@@ -62,6 +62,7 @@ namespace SalesService.Application.Commands.Orders.OrderReissued
                     SalesOrderId = command.SalesOrderId,
                     ResolutionDescription = command.DescriptionResolution,
                     ReissuedAt = DateTime.UtcNow,
+                    DeliveryDate = orderExists.DeliveryDate,
                     UpdateItems = command.UpdateItems.Select(i => new OrderItemsDto
                     {
                         Id = i.Id,

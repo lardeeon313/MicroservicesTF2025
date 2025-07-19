@@ -1,6 +1,7 @@
 ﻿using DepotService.Domain.Entities;
 using DepotService.Domain.Enums;
 using DepotService.Domain.IRepositories;
+using DepotService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

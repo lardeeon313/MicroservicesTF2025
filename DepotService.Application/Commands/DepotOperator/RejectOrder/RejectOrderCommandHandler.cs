@@ -1,4 +1,5 @@
-﻿using DepotService.Domain.Enums;
+﻿using DepotService.Domain.Entities;
+using DepotService.Domain.Enums;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
 using Microsoft.Extensions.Logging;
@@ -38,6 +39,17 @@ namespace DepotService.Application.Commands.DepotOperator.RejectOrder
             
             order.RejectOrder(command.RejectionReason);
             await _repository.UpdateOrderAsync(order);
+            await _context.SaveChangesAsync();
+
+            var statusHistory = new OrderStatusHistory
+            {
+                OrderId = order.DepotOrderId,
+                OldStatus = order.Status,
+                NewStatus = OrderStatus.Received,
+                ChangedAt = DateTime.UtcNow,
+            };
+            // Agregar el historial de estado a la base de datos
+            await _context.OrderStatusHistories.AddAsync(statusHistory);
             await _context.SaveChangesAsync();
 
             _logger.LogInformation($"Order with ID {command.DepotOrderId} has been rejected by operator {command.OperatorUserId}.");

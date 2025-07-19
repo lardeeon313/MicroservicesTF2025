@@ -1,4 +1,5 @@
 ﻿using DepotService.Application.Common.Interfaces;
+using DepotService.Domain.Entities;
 using DepotService.Domain.Enums;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
@@ -36,7 +37,7 @@ namespace DepotService.Application.Commands.DepotOperator.SentOrderToBilling
                 _logger.LogError($"Order with ID {command.DepotOrderId} not found.");
                 return false;
             }
-            //Nuevo: se tuvo que cambiar el status de InPreparation a Prepared 
+
             if (order.Status != OrderStatus.Prepared)
             {
                 _logger.LogError($"Order with ID {command.DepotOrderId} is not in preparation status.");
@@ -45,7 +46,18 @@ namespace DepotService.Application.Commands.DepotOperator.SentOrderToBilling
 
             order.Status = OrderStatus.SentToBilling;
             await _repository.UpdateOrderAsync(order);
+            await _context.SaveChangesAsync();
             _logger.LogInformation($"Order with ID {command.DepotOrderId} has been sent to billing successfully.");
+
+            // Agregar el historial de estado a la base de datos
+            var statusHistory = new OrderStatusHistory
+            {
+                OrderId = order.DepotOrderId,
+                OldStatus = order.Status,
+                NewStatus = OrderStatus.SentToBilling,
+                ChangedAt = DateTime.UtcNow,
+            };
+            await _context.OrderStatusHistories.AddAsync(statusHistory);
             await _context.SaveChangesAsync();
 
             var integrationEvent = new OrderSentToBillingIntegrationEvent

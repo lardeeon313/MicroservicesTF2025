@@ -19,6 +19,7 @@ namespace SharedKernel.IntegrationEvents.SalesEvents.Order
         public string PhoneNumber { get; set; } = string.Empty;
         public OrderStatus Status { get; set; }
         public DateTime OrderDate { get; set; }
+        public DateTime? DeliveryDate { get; set; }
         public string? DeliveryDetail { get; set; }
         public List<OrderItemsDto> Items { get; set; } = [];
     }

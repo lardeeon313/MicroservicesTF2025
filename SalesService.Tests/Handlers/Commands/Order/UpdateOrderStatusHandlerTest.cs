@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using Castle.Core.Logging;
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using SalesService.Application.Commands.Orders.UpdateStatus;
 using SalesService.Application.DTOs.Order.Request;
@@ -20,12 +22,16 @@ namespace SalesService.Tests.Handlers
         private readonly Mock<IOrderRepository> _orderRepositoryMock;
         private readonly Mock<IRabbitMQPublisher> _publisherMock;
         private readonly UpdateOrderStatusCommandHandler _handler;
+        private readonly ILogger<UpdateOrderStatusCommandHandler> _logger;
+
 
         public UpdateOrderStatusHandlerTest()
         {
             _orderRepositoryMock = new Mock<IOrderRepository>();
             _publisherMock = new Mock<IRabbitMQPublisher>();
-            _handler = new UpdateOrderStatusCommandHandler(_orderRepositoryMock.Object, _publisherMock.Object);
+            _logger = Mock.Of<ILogger<UpdateOrderStatusCommandHandler>>();
+            _handler = new UpdateOrderStatusCommandHandler(_orderRepositoryMock.Object, _publisherMock.Object, _logger);
+
         }
 
         [Fact(DisplayName = "Actualiza correctamente el estado y publica evento si se cambia a Issued")]

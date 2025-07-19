@@ -1,5 +1,6 @@
 ﻿using DepotService.Domain.Entities;
 using DepotService.Domain.Enums;
+using DepotService.Domain.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,9 +28,6 @@ namespace DepotService.Domain.IRepositories
         Task<IEnumerable<DepotOrderEntity>> GetWithInPreparationOrMissingAsync(Guid operatorId);
         //Para pedidos con status Prepared o sentToBilling
         Task<IEnumerable<DepotOrderEntity>> GetPreparedOrSentToBillingAsync(Guid operatorId);
-        //
-
-
         Task AddMissing(DepotOrderMissing missingOrder);
         Task<List<DepotOrderItemEntity>> GetOrderItemsByIdsAsync(List<int> ids);
         Task UpdateDepotOrderItemsAsync(List<DepotOrderItemEntity> items);
@@ -38,8 +36,5 @@ namespace DepotService.Domain.IRepositories
         Task<List<DepotOrderEntity>> GetAllInvoicedOrdersAsync();
         Task<List<DepotOrderEntity>> GetInvoicedOrdersByDateRangeAsync(DateTime startDate, DateTime endDate);
         Task<List<DepotOrderEntity>> GetInvoicedOrdersByCustomerAsync(Guid customerId);
-
-
-
     }
 }

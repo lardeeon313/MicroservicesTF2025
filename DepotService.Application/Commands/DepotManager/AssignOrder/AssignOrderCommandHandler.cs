@@ -1,4 +1,6 @@
-﻿using DepotService.Domain.IRepositories;
+﻿using DepotService.Domain.Entities;
+using DepotService.Domain.Enums;
+using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
 using DepotService.Infraestructure.Messaging.Publisher;
 using Microsoft.Extensions.Logging;
@@ -23,6 +25,20 @@ namespace DepotService.Application.Commands.DepotManager.AssignOrder
             var order = await _repository.GetByIdAsync(command.DepotOrderId);
             if (order == null)
                 throw new KeyNotFoundException($"Order with ID {command.DepotOrderId} not found.");
+
+            if (order.Status != OrderStatus.Assigned)
+            {
+                var statusHistory = new OrderStatusHistory
+                {
+                    OrderId = order.DepotOrderId,
+                    OldStatus = order.Status,
+                    NewStatus = OrderStatus.Assigned,
+                    ChangedAt = DateTime.UtcNow,
+                };
+
+                await _context.OrderStatusHistories.AddAsync(statusHistory);
+                await _context.SaveChangesAsync();
+            }
 
             order.AssignToOperator(command.OperatorUserId);
 

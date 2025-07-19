@@ -38,6 +38,12 @@ using DepotService.Application.Queries.Operator.GetAssignedPendingOrders;
 using DepotService.Application.Queries.Operator.GetOrderById;
 using DepotService.Application.Queries.Operator.GetOrdersByOperator;
 using DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery;
+using DepotService.Application.Queries.Reports.GetAverageDepotProcessingTime;
+using DepotService.Application.Queries.Reports.GetAverageTimePerStatus;
+using DepotService.Application.Queries.Reports.GetDepotTeamPerformance;
+using DepotService.Application.Queries.Reports.GetOrdersByDeliveryDate;
+using DepotService.Application.Queries.Reports.GetOrderStatusCount;
+using DepotService.Application.Queries.Reports.GetProcessingTimePerOrder;
 using DepotService.Application.Validators.BillingManager;
 using DepotService.Application.Validators.DepotManager;
 using DepotService.Application.Validators.DepotOperator;
@@ -106,6 +112,11 @@ builder.Services.AddScoped<IGetInvoicedOrderByIdQueryHandler, GetInvoicedOrderBy
 builder.Services.AddScoped<IGetInvoicedOrdersByDateRangeQueryHandler, GetInvoicedOrdersByDateRangeQueryHandler>();
 builder.Services.AddScoped<IGetInvoicedOrdersByCustomerQueryHandler, GetInvoicedOrdersByCustomerQueryHandler>();
 builder.Services.AddScoped<IExportInvoiceDocumentCommandHandler, ExportInvoiceDocumentCommandHandler>();
+builder.Services.AddScoped<IGetAverageTimePerStatusQueryHandler, GetAverageTimePerStatusQueryHandler>();
+builder.Services.AddScoped<IGetOrderCountPerStatusQueryHandler, GetOrderCountPerStatusQueryHandler>();
+builder.Services.AddScoped<IGetProcessingTimePerOrderQueryHandler, GetProcessingTimePerOrderQueryHandler>();
+builder.Services.AddScoped<IGetDepotTeamPerformanceQueryHandler, GetDepotTeamPerformanceQueryHandler>();
+builder.Services.AddScoped<IGetOrdersByDeliveryDateQueryHandler, GetOrdersByDeliveryDateQueryHandler>();
 
 // Add Commands
 builder.Services.AddScoped<IAssignOperatorCommandHandler, AssignOperatorCommandHandler>();

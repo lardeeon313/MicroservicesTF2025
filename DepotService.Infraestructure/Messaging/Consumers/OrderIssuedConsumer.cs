@@ -73,6 +73,17 @@ namespace DepotService.Infraestructure
                         var context = scope.ServiceProvider.GetRequiredService<DepotDbContext>();
                         var repository = scope.ServiceProvider.GetRequiredService<IDepotOrderRepository>();
 
+                        var statusHistory = new OrderStatusHistory
+                        {
+                            OrderId = evento.OrderId,
+                            OldStatus = OrderStatus.Issued,
+                            NewStatus = OrderStatus.Received,
+                            ChangedAt = DateTime.UtcNow,
+                        };
+
+                        await context.OrderStatusHistories.AddAsync(statusHistory);
+                        await context.SaveChangesAsync();
+
                         var order = new DepotOrderEntity
                         {   
                             SalesOrderId = evento.OrderId,
@@ -81,6 +92,7 @@ namespace DepotService.Infraestructure
                             CustomerEmail = evento.CustomerEmail,
                             PhoneNumber = evento.PhoneNumber,
                             DeliveryDetail = evento.DeliveryDetail,
+                            DeliveryDate = evento.DeliveryDate,
                             OrderDate = evento.OrderDate,
                             Status = OrderStatus.Received,
                             Items = evento.Items.Select(item => new DepotOrderItemEntity
