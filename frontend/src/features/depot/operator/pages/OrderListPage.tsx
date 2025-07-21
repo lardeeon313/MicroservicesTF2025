@@ -1,5 +1,4 @@
 //Para gestionar la logica de negocio de todo el listado de pedidos que le llegan al operario
-import React from "react";
 import { useOrderList } from "../hocks/useOrderList";
 import OrderListScreen from "../screens/OrderListScreen";
 

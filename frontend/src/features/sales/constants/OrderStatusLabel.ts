@@ -11,4 +11,5 @@ export const OrderStatusLabels: Record<OrderStatus, string> = {
   [OrderStatus.OnTheWay]: "En camino",
   [OrderStatus.Delivered]: "Entregado",
   [OrderStatus.Canceled]: "Cancelado",
+  [OrderStatus.Modified]: "Modificado",
 };

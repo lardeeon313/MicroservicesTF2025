@@ -1,25 +1,14 @@
-import { CalendarDays, Package, User, BadgeCheck, Eye, Pencil, Trash } from "lucide-react"
-import { OrderTableData } from "../../depotmanager/types/OrderTypes";
+import { CalendarDays, User, BadgeCheck, Eye } from "lucide-react"
 import formatDate from "../../../../utils/formateDate";
-import { OrderStatusBadge } from "./OrderStatusBadge";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
 
 interface Props {
-  orders: OrderTableData[];
+  orders: any[];
   loading: boolean;
   error: string | null;
   onRefetch: () => void;
   onView: (id: number) => void;
-  onEdit?: (id: number) => void;
-  onDelete?: (id: number) => void;
-  onActionChange: (action: string, id: number) => void;
-  showEditButton?: boolean;
-  showDeleteButton?: boolean;
-  showStatusChange?: boolean;
-  customActions?: {
-    label: string;
-    value: string;
-  }[];
+  // El resto de props se ignoran para Pending Orders
 }
 
 export default function OrderTable({
@@ -28,13 +17,6 @@ export default function OrderTable({
   error,
   onRefetch,
   onView,
-  onEdit,
-  onDelete,
-  onActionChange,
-  showEditButton = true,
-  showDeleteButton = true,
-  showStatusChange = true,
-  customActions = []
 }: Props) {
   if (loading)
     return (
@@ -42,25 +24,17 @@ export default function OrderTable({
     )
   
   if (error) {
-    // Determinar si es un error relacionado con falta de órdenes
     const isNoOrdersError = error.includes('No hay órdenes') || 
                            error.includes('microservicio') || 
                            error.includes('sincronizan');
-    
     return (
       <div className="text-center py-8">
         <div className="max-w-md mx-auto">
           {isNoOrdersError ? (
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
               <div className="text-blue-600 mb-4">
-                <Package className="w-12 h-12 mx-auto mb-3" />
                 <h3 className="text-lg font-semibold mb-2">Sin Órdenes Disponibles</h3>
                 <p className="text-sm text-blue-700">{error}</p>
-              </div>
-              <div className="text-xs text-blue-600 space-y-1">
-                <p>• Verifique que el microservicio de ventas esté funcionando</p>
-                <p>• Confirme que RabbitMQ esté procesando las órdenes</p>
-                <p>• Las órdenes se sincronizan automáticamente</p>
               </div>
             </div>
           ) : (
@@ -88,7 +62,6 @@ export default function OrderTable({
         <div className="max-w-md mx-auto">
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
             <div className="text-gray-600 mb-4">
-              <Package className="w-12 h-12 mx-auto mb-3" />
               <h3 className="text-lg font-semibold mb-2">No Hay Órdenes Registradas</h3>
               <p className="text-sm text-gray-700">
                 Actualmente no hay órdenes en el sistema. Las órdenes aparecerán automáticamente cuando se registren desde el módulo de ventas.
@@ -114,61 +87,24 @@ export default function OrderTable({
                 <th className="px-4 py-3 text-left">ID</th>
                 <th className="px-4 py-3 text-left"><User className="inline w-4 h-4 mr-1" /> Cliente</th>
                 <th className="px-4 py-3 text-left"><CalendarDays className="inline w-4 h-4 mr-1" /> Fecha Pedido</th>
-                <th className="px-4 py-3 text-left"><Package className="inline w-4 h-4 mr-1" /> Fecha Entrega</th>
                 <th className="px-4 py-3 text-left"><BadgeCheck className="inline w-4 h-4 mr-1" /> Estado</th>
-                <th className="px-4 py-3 text-center">Acciones</th>
-                {showStatusChange && (
-                  <th className="px-4 py-3 text-center">Cambiar estado</th>
-                )}
+                <th className="px-4 py-3 text-center">Ver Detalle</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {orders.map((order) => (
                 <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3 font-medium">V-{order.id}</td>
-                  <td className="px-4 py-3">{order.customerFirstName ?? ""} {order.customerLastName ?? ""}</td>
+                  <td className="px-4 py-3 font-medium">D-{order.id}</td>
+                  <td className="px-4 py-3">{order.customerFirstName ?? ""}</td>
                   <td className="px-4 py-3">{formatDate(order.orderDate)}</td>
-                  <td className="px-4 py-3">{order.deliveryDate ? formatDate(order.deliveryDate) : "No asignada"}</td>
-                  <td className="px-4 py-3"><OrderStatusBadge status={order.status}></OrderStatusBadge></td>
+                  <td className="px-4 py-3">
+                    Pendiente de facturar
+                  </td>
                   <td className="px-4 py-3 space-x-2 text-center">
                     <button onClick={() => onView(order.id)}>
                       <Eye className="w-5 h-5 text-blue-600 hover:text-gray-700 transition-colors" />
                     </button>
-                    {showEditButton && onEdit && (
-                      <button onClick={() => onEdit(order.id)}>
-                        <Pencil className="w-5 h-5 text-yellow-600 hover:text-gray-700 transition-colors" />
-                      </button>
-                    )}
-                    {showDeleteButton && onDelete && (
-                      <button onClick={() => onDelete(order.id)}>
-                        <Trash className="w-5 h-5 text-red-600 hover:text-gray-700 transition-colors" />
-                      </button>
-                    )}
                   </td>
-                  {showStatusChange && (
-                    <td className="px-4 py-3 text-center">
-                      <select
-                        onChange={(e) => onActionChange(e.target.value, order.id)}
-                        defaultValue=""
-                        className="text-sm rounded border border-gray-300 px-2 py-1 focus:outline-none"
-                      >
-                        <option value="" disabled>Acción</option>
-                        {customActions.length > 0 ? (
-                          customActions.map((action, index) => (
-                            <option key={index} value={action.value}>
-                              {action.label}
-                            </option>
-                          ))
-                        ) : (
-                          <>
-                            <option value="emitir">Emitir</option>
-                            <option value="cancelar">Cancelar</option>
-                            <option value="pendiente">Pendiente</option>
-                          </>
-                        )}
-                      </select>
-                    </td>
-                  )}
                 </tr>
               ))}
             </tbody>

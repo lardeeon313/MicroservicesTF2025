@@ -1,5 +1,5 @@
 
-import { ShoppingCart, User, FilePlus2, Users, BarChart2, Icon } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const CardsOperator = [

@@ -8,8 +8,8 @@ import Footer from "../../../components/Footer";
 
 const SalesPerfomancePage:React.FC = () => {
     const [empleados, setEmpleados] = useState<EmployeeSales[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error,setError] = useState<string | null>(null);
+    const [loading] = useState(true);
+    const [error] = useState<string | null>(null);
     
     useEffect(() => {
         const fetchEmpleados = async () => {

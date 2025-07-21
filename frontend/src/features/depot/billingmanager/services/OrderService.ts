@@ -1,6 +1,8 @@
 import axios from '../../../../api/axios';
 import { DepotOrderDto } from '../types/OrderTypes';
 
+// Eliminar todas las referencias a los mocks y dejar solo la lógica real de la API
+
 // Obtener todas las órdenes pendientes de facturación
 export const getPendingBillingOrders = async (): Promise<DepotOrderDto[]> => {
   const { data } = await axios.get<DepotOrderDto[]>('/depot/billingmanager/pending-billing-orders');
@@ -10,61 +12,46 @@ export const getPendingBillingOrders = async (): Promise<DepotOrderDto[]> => {
 // Obtener detalles de una orden pendiente por ID
 export const getPendingOrderDetails = async (depotOrderId: number): Promise<DepotOrderDto> => {
   const { data } = await axios.get<DepotOrderDto>('/depot/billingmanager/orders-pending-billing', {
-    params: { DepotOrderId: depotOrderId },
+    params: { depotOrderId },
   });
   return data;
 };
 
 // Asignar precios unitarios a los ítems de una orden
 export const setItemUnitPrices = async (payload: {
-  DepotOrderId: number;
-  ItemUnitPrices: { ItemId: number; UnitPrice: number }[];
+  depotOrderId: number;
+  itemUnitPrices: { itemId: number; unitPrice: number }[];
 }): Promise<void> => {
   await axios.post('/depot/billingmanager/set-item-unit-prices', payload);
 };
 
 // Facturar una orden
 export const invoiceOrder = async (depotOrderId: number): Promise<void> => {
-  await axios.post('/depot/billingmanager/invoice-order', depotOrderId, {
+  await axios.post('/depot/billingmanager/invoice-order', { depotOrderId }, {
     headers: { 'Content-Type': 'application/json' },
   });
 };
 
-// Obtener todas las órdenes facturadas
-export const getAllInvoicedOrders = async (): Promise<DepotOrderDto[]> => {
-  const { data } = await axios.get<DepotOrderDto[]>('/depot/billingmanager/all-invoiced-orders');
+export const getAllInvoicedOrders = async (): Promise<any[]> => {
+  const { data } = await axios.get('/depot/billingmanager/all-invoiced-orders');
   return data;
 };
 
-// Obtener una orden facturada por ID
-export const getInvoicedOrderById = async (billingOrderId: number): Promise<DepotOrderDto> => {
-  const { data } = await axios.get<DepotOrderDto>('/depot/billingmanager/invoiced-order-by-id', {
-    params: { BillingOrderId: billingOrderId },
-  });
+export const getInvoicedOrderById = async (billingOrderId: number): Promise<any> => {
+  const { data } = await axios.get('/depot/billingmanager/invoiced-order-by-id', { params: { billingOrderId } });
   return data;
 };
 
-// Obtener órdenes facturadas por rango de fechas
-export const getInvoicedOrdersByDateRange = async (startDate: string, endDate: string): Promise<DepotOrderDto[]> => {
-  const { data } = await axios.get<DepotOrderDto[]>('/depot/billingmanager/invoiced-orders-by-date-range', {
-    params: { StartDate: startDate, EndDate: endDate },
-  });
+export const getInvoicedOrdersByDateRange = async (startDate: string, endDate: string): Promise<any[]> => {
+  const { data } = await axios.get('/depot/billingmanager/invoiced-orders-by-date-range', { params: { startDate, endDate } });
   return data;
 };
 
-// Obtener órdenes facturadas por cliente
-export const getInvoicedOrdersByCustomer = async (customerId: string): Promise<DepotOrderDto[]> => {
-  const { data } = await axios.get<DepotOrderDto[]>('/depot/billingmanager/invoiced-orders-by-customer', {
-    params: { CustomerId: customerId },
-  });
+export const getInvoicedOrdersByCustomer = async (customerName: string): Promise<any[]> => {
+  const { data } = await axios.get('/depot/billingmanager/invoiced-orders-by-customer', { params: { customerName } });
   return data;
 };
 
-// Actualizar el precio de un ítem facturado
-export const updateInvoicedItemPrice = async (payload: {
-  BillingOrderId: number;
-  ItemId: number;
-  NewUnitPrice: number;
-}): Promise<void> => {
+export const updateInvoicedItemPrice = async (payload: { billingOrderId: number; itemId: number; newUnitPrice: number }): Promise<void> => {
   await axios.put('/depot/billingmanager/update-invoiced-item-price', payload);
 }; 

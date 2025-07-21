@@ -11,10 +11,10 @@ import {
 
 // Tipos para las peticiones
 export interface OrderMissingReportedRequest {
-    DepotOrderId: number;
-    MissingItems: DepotOrderItemsReportedDto[];
-    MissingReason?: string;
-    MissingDescription?: string;
+    depotOrderId: number;
+    missingItems: DepotOrderItemsReportedDto[];
+    missingReason?: string;
+    missingDescription?: string;
 }
 
 // FUNCIONES CON API REAL - Rutas corregidas según el controlador DepotManagerController
@@ -22,7 +22,9 @@ export const assignOperator = async (
     orderId: number, 
     request: AssignOrderRequest
 ): Promise<void> => {
-    await API.post(`/depot/depotmanager/${orderId}/assign`, request);
+    console.log('assignOperator called with:', { orderId, request });
+    const response = await API.post(`/depot/depotmanager/${orderId}/assign`, request);
+    console.log('assignOperator response:', response);
 };
 
 export const reportMissingOrder = async (
@@ -33,8 +35,15 @@ export const reportMissingOrder = async (
 };
 
 export const getOrdersByStatus = async (status: string): Promise<DepotOrderDto[]> => {
-    const response = await API.get(`/depot/depotmanager/get-orders-by-status/${status}`);
-    return response.data;
+    console.log('getOrdersByStatus called with status:', status);
+    try {
+        const response = await API.get(`/depot/depotmanager/get-orders-by-status/${status}`);
+        console.log('getOrdersByStatus response:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error('getOrdersByStatus error:', error);
+        throw error;
+    }
 };
 
 export const getAllOrders = async (): Promise<DepotOrderDto[]> => {

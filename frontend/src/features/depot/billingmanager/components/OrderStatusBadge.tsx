@@ -1,25 +1,41 @@
-import { OrderStatus } from "../../depotmanager/types/OrderTypes"
 import { orderStatusStyles } from "../../../../utils/orderStatusColors"
-import { OrderStatusLabels } from "../../depotmanager/constants/OrderStatusLabel"
 
 type Props = {
-  status: OrderStatus
+  status: string;
 }
 
 export const OrderStatusBadge = ({ status }: Props) => {
-  const styles = orderStatusStyles[status]
+  let label = status;
+  let styleKey: string | number = status;
+
+  if (status === 'Pendiente' || status === 'Emitido' || String(status) === '0') {
+    label = 'Pendiente';
+    styleKey = 'pending';
+  } else if (status === 'Asignado' || String(status) === '2') {
+    label = 'Asignado';
+    styleKey = 'confirmed';
+  } else if (status === 'En Preparación' || String(status) === '3') {
+    label = 'En Preparación';
+    styleKey = 'inPreparation';
+  } else if (status === 'Preparado' || String(status) === '7') {
+    label = 'Preparado';
+    styleKey = 'prepared';
+  } else if (status === 'Facturado' || String(status) === '8') {
+    label = 'Facturado';
+    styleKey = 'invoiced';
+  }
+
+  const styles = orderStatusStyles[styleKey as keyof typeof orderStatusStyles];
 
   if (!styles) {
     return (
       <span className="px-2 py-1 text-sm font-medium rounded-xl text-gray-600 bg-gray-200">
-        Estado desconocido
+        {label}
       </span>
     );
   }
 
   const { text, bg } = styles;
-  const label = OrderStatusLabels[status] ?? status;
-
   return (
     <span className={`px-2 py-1 text-sm font-medium rounded-xl ${text} ${bg}`}>
       {label}

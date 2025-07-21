@@ -7,6 +7,9 @@ export interface DepotTeam {
     operators: OperatorInTeamDto[];
 }
 
+// Exportar el tipo Operator para que esté disponible
+export type Operator = OperatorInTeamDto;
+
 export interface CreateTeamResponse {
   teamId: number;
   teamName: string;

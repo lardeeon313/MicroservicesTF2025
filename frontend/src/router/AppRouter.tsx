@@ -35,10 +35,11 @@ import TeamProdictivityPage from "../features/depot/pages/reports/Depot/DepotPag
 
 import CustomerSatisfactionReportPage from "../features/sales/pages/reports/CustomerSatisfactionReportPage";
 import TeamsPage from "../features/depot/depotmanager/pages/TeamsPage";
-import PendingOrdersPage from "../features/depot/depotmanager/pages/PendingOrdersPage";
+import PendingOrdersPageDepot from "../features/depot/depotmanager/pages/PendingOrdersPage";
 import InPreparationOrdersPage from "../features/depot/depotmanager/pages/InPreparationOrdersPage";
 import PreparedOrdersPage from "../features/depot/depotmanager/pages/PreparedOrdersPage";
 import MissingOrdersPage from "../features/depot/depotmanager/pages/MissingOrdersPage";
+import PendingOrdersPageBilling from "../features/depot/billingmanager/pages/PendingOrdersPage";
 import PendingOrderDetailsPage from "../features/depot/billingmanager/pages/PendingOrderDetailsPage";
 import InvoicedOrdersPage from "../features/depot/billingmanager/pages/InvoicedOrdersPage";
 import InvoicedOrderDetailsPage from "../features/depot/billingmanager/pages/InvoicedOrderDetailsPage";
@@ -133,7 +134,7 @@ const AppRouter = () => {
         >
                 <Route index element={<DepotManagerDashboard />} />
                 <Route path="teams" element={<TeamsPage />} />
-                <Route path="pending-orders" element={<PendingOrdersPage />} />
+                <Route path="pending-orders" element={<PendingOrdersPageDepot />} />
                 <Route path="in-preparation-orders" element={<InPreparationOrdersPage />} />
                 <Route path="prepared-orders" element={<PreparedOrdersPage />} />
                 <Route path="missing-orders" element={<MissingOrdersPage />} />
@@ -153,7 +154,7 @@ const AppRouter = () => {
             }
         >
             <Route index element={<BillingManagerDashboard />} />
-            <Route path="pending-orders" element={<PendingOrdersPage />} />
+            <Route path="pending-orders" element={<PendingOrdersPageBilling />} />
             <Route path="pending-orders/:id" element={<PendingOrderDetailsPage />} />
             <Route path="invoiced-orders" element={<InvoicedOrdersPage />} />
             <Route path="invoiced-orders/:id" element={<InvoicedOrderDetailsPage />} />

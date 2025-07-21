@@ -14,9 +14,9 @@ export default function OperatorList({ operators, onRemoveOperator }: Props) {
     <div className="space-y-2">
       {operators.map((op) => (
         <OperatorCard
-          key={op.id}
+          key={op.operatorByUserId}
           operator={op}
-          onRemove={() => onRemoveOperator(op.id)}
+          onRemove={() => onRemoveOperator(op.operatorByUserId)}
         />
       ))}
     </div>

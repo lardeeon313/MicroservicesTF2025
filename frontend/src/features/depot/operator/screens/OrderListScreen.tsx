@@ -1,4 +1,3 @@
-import React from "react";
 import OrderListComponent from "../components/OrderList";
 import { Order } from "../../../sales/types/OrderTypes";
 

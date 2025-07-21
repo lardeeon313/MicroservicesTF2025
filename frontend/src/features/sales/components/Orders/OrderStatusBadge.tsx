@@ -1,6 +1,6 @@
 import { OrderStatus } from "../../types/OrderTypes"
 import { orderStatusStyles } from "../../../../utils/orderStatusColors"
-import { OrderStatusLabels } from "../../constants/OrderStatusLabel"
+import { OrderStatusLabels } from "../../constants/OrderStatusLabel";
 
 type Props = {
   status: OrderStatus
