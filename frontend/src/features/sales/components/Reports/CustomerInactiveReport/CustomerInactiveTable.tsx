@@ -43,7 +43,7 @@ const CustomerInactiveTable: React.FC<Props> = ({ data }) => {
                     <td className="px-4 py-3">{cliente.phoneNumber}</td>
                     <td className="px-4 py-3 text-center">{cliente.orderCount}</td>
                     <td className="px-4 py-3"><CustomerStatusBadge status={cliente.status}></CustomerStatusBadge></td>
-
+                    
                     </tr>
                 ))}
                 <tr className="bg-gray-100 text-xs font-semibold uppercase tracking-wide text-gray-600">

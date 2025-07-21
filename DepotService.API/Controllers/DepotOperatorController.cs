@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DepotService.API.Controllers
 {
-    //[Authorize(Roles = "DepotOperator")]
+    [Authorize(Roles = "DepotOperator")]
     [ApiController]
     [Route("api/depotoperator")]
     public class DepotOperatorController(

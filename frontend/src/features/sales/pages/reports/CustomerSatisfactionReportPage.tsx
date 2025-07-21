@@ -5,6 +5,9 @@ import { CustomerSatisfactionTable } from "../../components/Reports/CustomerSati
 import { GraphSatisfactionCustomer } from "../../components/Reports/CustomerSatisfactionReport/GraphCustomerSatisfaction";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
 import { Link } from "react-router-dom";
+//FIlter: 
+import CustomerSatisfactionFilter from "./SalesFilters/CustomerSatisfactionFilter";
+
 
 const CustomerSatisfactionReportPage: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -12,6 +15,9 @@ const CustomerSatisfactionReportPage: React.FC = () => {
   const [filter, setFilter] = useState<"Todas" | "Positiva" | "Negativa" | "Neutra">("Todas");
   const [nameFilter, setNameFilter] = useState("");
   const [emailFilter, setEmailFilter] = useState("");
+  //
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
   const { data: customers, loading, totalPages } = useCustomerSatisfaction(page, pageSize);
 

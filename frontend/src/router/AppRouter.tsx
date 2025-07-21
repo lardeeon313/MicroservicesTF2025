@@ -42,6 +42,9 @@ import MissingOrdersPage from "../features/depot/depotmanager/pages/MissingOrder
 import PendingOrderDetailsPage from "../features/depot/billingmanager/pages/PendingOrderDetailsPage";
 import InvoicedOrdersPage from "../features/depot/billingmanager/pages/InvoicedOrdersPage";
 import InvoicedOrderDetailsPage from "../features/depot/billingmanager/pages/InvoicedOrderDetailsPage";
+import BillingTimeProcessPage from "../features/depot/pages/reports/Billing/BillingPages/BillingTimeProcessPage";
+import CustomerIncomePage from "../features/depot/pages/reports/Billing/BillingPages/CustomerIncomePage";
+import OrderBilledPage from "../features/depot/pages/reports/Billing/BillingPages/OrderBilledPage";
 
 const AppRouter = () => {
   return (
@@ -77,6 +80,11 @@ const AppRouter = () => {
         <Route path="/depot/depotmanager/report/DailyMissing" element={<DailyMissingPage/>}/>
         <Route path="/depot/depotmanager/report/OrderCompletedDay" element={<OrderCompletedDayPage/>}/>
         <Route path="/depot/depotmanager/report/TeamProdictivity" element={<TeamProdictivityPage/>}/>
+
+        {/**Reportes de facturacion */}
+        <Route path="/depot/billingmanager/report/BillingTimeProcess" element={<BillingTimeProcessPage/>} />
+        <Route path="/depot/billingmanager/report/CustomerIncome" element={<CustomerIncomePage/>} />
+        <Route path="/depot/billingmanager/report/OrderBilled" element={<OrderBilledPage />} />
 
         <Route
         path="/sales"

@@ -6,16 +6,24 @@ import { Pagination } from "../../../../../../components/Pagination";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import { Link } from "react-router-dom";
 
+//filtro: 
+import OrderCompletedDayFilter from "../DepotFilters/OrderCompletedDayFilter";
+
 const OrderCompletedDayPage : React.FC = () => {
     const [page,setPage] = useState(1);
     const pageSize = 10;
     const [idfilter,setidFilter] = useState("");
+    const [selectedDate, setSelectedDate] = useState(""); // ✅ nuevo estado
+
 
     const {data: orders,loading , error , totalpages} = useOrderCompletedDay(page,pageSize);
 
-    const filterOrders = orders.filter((order) =>
-        order.OrderId.toString().includes(idfilter) 
-    );
+    const filterOrders = orders.filter((order) => {
+        const matchesId = order.OrderId.toString().includes(idfilter);
+        const matchesDate =
+            selectedDate === "" || order.finishdate.startsWith(selectedDate); // formateo ISO: 'YYYY-MM-DD'
+        return matchesId && matchesDate;
+    });
 
     if(loading) return <LoadingSpinner message="Cargando datos , por favor espere.." height="h-screen" />
 
@@ -36,14 +44,18 @@ const OrderCompletedDayPage : React.FC = () => {
                 </p>
 
                 <div className="flex flex-col md:flex-row mb-4 w-full justify-between">
-                    <input 
-                        type="text"
-                        placeholder="Filtrar por ID de pedido"
-                        className="border border-gray-300 rounded px-3 py-2 focus:bg-red-100 focus:outline-gray-400 focus:transition-colors focus:duration-500 outline-gray-200"
-                        value={idfilter}
-                        onChange={(e) => setidFilter(e.target.value)}
-                    />
-
+                    <div className="flex flex-col">
+                        <label className="mb-1 text-sm font-medium text-gray-700">Filtrar por ID de pedido</label>
+                        <input
+                            type="text"
+                            placeholder="Ej: 12345"
+                            className="border border-gray-300 rounded px-3 py-2 focus:bg-red-100 focus:outline-gray-400 focus:transition-colors focus:duration-500 outline-gray-200 w-60"
+                            value={idfilter}
+                            onChange={(e) => setidFilter(e.target.value)}
+                        />
+                    </div>
+                    {/**Filtra por la fecha:  */}
+                    <OrderCompletedDayFilter selectedDate={selectedDate} onDateChange={setSelectedDate} />
                 </div>
 
 

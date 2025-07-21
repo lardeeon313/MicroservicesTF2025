@@ -19,6 +19,8 @@ using IdentityService.Application.Queries.GetAllOperators;
 using IdentityService.Application.Queries.GetAllSalesStaffs;
 
 var builder = WebApplication.CreateBuilder(args);
+//para acceder desde el celular
+builder.WebHost.UseUrls("http://0.0.0.0:5006");
 
 // Add services to the container.
 builder.Services.AddControllers();

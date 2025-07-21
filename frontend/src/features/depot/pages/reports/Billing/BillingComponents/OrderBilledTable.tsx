@@ -13,7 +13,7 @@ const OrderBilledTable: React.FC<Props> = ({data}) => {
                     <th className="px-4 py-2">Pedido ID</th>
                     <th className="px-4 py-2">Fecha Pedido</th>
                     <th className="px-4 py-2">Fecha Factura</th>
-                    <th className="px-4 py-2">Tiempo (días)</th>
+                    <th className="px-4 py-2">Tiempo</th>
                 </tr>
             </thead>
             <tbody>
