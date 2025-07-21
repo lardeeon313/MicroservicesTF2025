@@ -5,6 +5,7 @@ using DepotService.Application.Queries.Reports.GetAverageTimePerStatus;
 using DepotService.Application.Queries.Reports.GetDepotTeamPerformance;
 using DepotService.Application.Queries.Reports.GetOrdersByDeliveryDate;
 using DepotService.Application.Queries.Reports.GetOrderStatusCount;
+using DepotService.Application.Queries.Reports.GetReissuedReportOrders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,9 +19,11 @@ namespace DepotService.API.Controllers
         IGetOrderCountPerStatusQueryHandler getOrderCountPerStatusQueryHandler,
         IGetProcessingTimePerOrderQueryHandler getProcessingTimePerOrderQueryHandler,
         IGetDepotTeamPerformanceQueryHandler getDepotTeamPerformanceQueryHandler,
-        IGetOrdersByDeliveryDateQueryHandler getOrdersByDeliveryDateQueryHandler
+        IGetOrdersByDeliveryDateQueryHandler getOrdersByDeliveryDateQueryHandler,
+        IGetReissuedOrdersQueryHandler getReissuedOrdersQueryHandler
         ) : ControllerBase
     {
+        private readonly IGetReissuedOrdersQueryHandler _getReissuedOrdersQueryHandler = getReissuedOrdersQueryHandler;
         private readonly IGetOrdersByDeliveryDateQueryHandler _getOrdersByDeliveryDateQueryHandler = getOrdersByDeliveryDateQueryHandler;
         private readonly IGetDepotTeamPerformanceQueryHandler _getDepotTeamPerformanceQueryHandler = getDepotTeamPerformanceQueryHandler;
         private readonly IGetProcessingTimePerOrderQueryHandler _getProcessingTimePerOrderQueryHandler = getProcessingTimePerOrderQueryHandler;
@@ -118,6 +121,30 @@ namespace DepotService.API.Controllers
             var query = new GetOrdersByDeliveryDateQuery(from, to);
             var orders = await _getOrdersByDeliveryDateQueryHandler.HandleAsync(query);
             return Ok(orders);
+        }
+
+        /// <summary>
+        /// Endpoint para obtener las órdenes reemitidas en un rango de fechas.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        [HttpGet("reports/reissued-orders")]
+        [ProducesResponseType(typeof(PaginatedResult<ReissuedOrderReportDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetReissuedOrders(
+            [FromQuery] DateTime? from,
+            [FromQuery] DateTime? to,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            var query = new GetReissuedOrdersQuery(from, to, page, pageSize);
+            var reissuedOrders = await _getReissuedOrdersQueryHandler.HandleAsync(query);
+            return Ok(reissuedOrders);
+
         }
     }
 }

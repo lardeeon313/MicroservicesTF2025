@@ -199,5 +199,46 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 CurrentPage = page,
             };
         }
+
+        public async Task<PaginatedResult<ReissuedOrderReport>> GetReissuedOrdersAsync(DateTime? from, DateTime? to, int page, int pageSize)
+        {
+            var query = _context.DepotOrders
+        .Include(o => o.StatusHistory)
+        .Where(o => o.StatusHistory.Any(h =>
+            h.NewStatus == OrderStatus.ReReceived &&
+            (!from.HasValue || h.ChangedAt >= from.Value) &&
+            (!to.HasValue || h.ChangedAt <= to.Value)))
+        .AsNoTracking();
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(o => o.OrderDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(o => new ReissuedOrderReport
+                {
+                    DepotOrderId = o.DepotOrderId,
+                    SalesOrderId = o.SalesOrderId,
+                    CustomerId = o.CustomerId,
+                    CustomerName = o.CustomerName,
+                    CustomerEmail = o.CustomerEmail,
+                    PhoneNumber = o.PhoneNumber,
+                    OrderDate = o.OrderDate,
+                    DeliveryDate = o.DeliveryDate,
+                    ReissuedAt = o.StatusHistory
+                        .Where(h => h.NewStatus == OrderStatus.ReReceived)
+                        .OrderByDescending(h => h.ChangedAt)
+                        .First().ChangedAt
+                })
+                .ToListAsync();
+
+            return new PaginatedResult<ReissuedOrderReport>{
+                Items = items,
+                TotalItems = totalCount,
+                TotalPages = pageSize,
+                CurrentPage = page,
+            };
+        }
     }
 }
