@@ -1,7 +1,9 @@
-﻿using DepotService.Domain.Entities;
+﻿using DepotService.Application.Common.Interfaces;
+using DepotService.Domain.Entities;
 using DepotService.Domain.Enums;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
+using DepotService.Infraestructure.Email.EmailTemplates;
 using DepotService.Infraestructure.Messaging.Publisher;
 using DepotService.Infraestructure.Persistence.Repositories;
 using Microsoft.Extensions.Logging;
@@ -16,12 +18,14 @@ using System.Threading.Tasks;
 namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
 {
     public class OrderMissingReportedCommandHandler(
+        IEmailService emailService,
         IRabbitMQPublisher rabbitMQ,
         IDepotOrderRepository repository,
         DepotDbContext context, 
         ILogger<OrderMissingReportedCommand> logger
         ) : IOrderMissingReportedCommandHandler
     {
+        private readonly IEmailService _emailService = emailService;
         private readonly IRabbitMQPublisher _rabbitMQ = rabbitMQ;
         private readonly IDepotOrderRepository _repository = repository;
         private readonly DepotDbContext _context = context;
@@ -81,8 +85,30 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
 
             // Publicar el evento de orden faltante
             await _rabbitMQ.PublishAsync(integrationEvent, "order_missing_reported_queue");
-
             _logger.LogInformation($"Order missing reported successfully for DepotOrderId: {command.DepotOrderId}.");
+
+            // Enviar notificación por correo electrónico 
+            var subject = "Notificacion sobre tu pedido - Productos faltantes reportados";
+            var htmlBody = EmailTemplateGenerator.Generate(
+                subject,
+                "Productos faltantes reportados",
+                depotOrder.CustomerName,
+                $"""
+                Detectamos un inconveniente con tu pedido <strong>#{depotOrder.DepotOrderId}</strong>. Uno o más productos presentan faltantes.
+                <br><br>
+                <strong>Motivo:</strong> {command.MissingReason}<br>
+                <strong>Descripción:</strong> {command.MissingDescription}
+                <br><br>
+                Nuestro equipo ya está trabajando para resolverlo lo antes posible. Nos estaremos comunicando para informarte sobre la resolución.
+                """
+            );
+
+            await _emailService.SendEmailAsync(
+                depotOrder.CustomerEmail,
+                subject,
+                htmlBody
+            );
+            _logger.LogInformation($"Email sent to {depotOrder.CustomerEmail} regarding missing items in order {depotOrder.DepotOrderId}.");
 
             // Retornar un mensaje de éxito
             return true;

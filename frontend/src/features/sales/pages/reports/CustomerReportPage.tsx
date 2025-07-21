@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
 import { useCustomerReport } from "../../hooks/useCustomerReport";
 import { Pagination } from "../../../../components/Pagination";
+import OrderCountFilter from "./SalesFilters/CustomerReportFilter";
+
 
 export default function CustomerReportPage() {
   const [page, setPage] = useState(1);
@@ -13,14 +15,17 @@ export default function CustomerReportPage() {
 
   const [nameFilter, setNameFilter] = useState("");
   const [emailFilter, setEmailFilter] = useState("");
+  const [minOrdersFilter,setMinOrdersFilter] = useState(0);
 
   const { data: customers, loading, totalPages } = useCustomerReport(page, pageSize);
 
   const filteredCustomers = customers.filter((c) => {
-    const fullName = `${c.firstName} ${c.lastName}`.toLowerCase();
-    return (
+  const fullName = `${c.firstName} ${c.lastName}`.toLowerCase();
+  return (
       fullName.includes(nameFilter.toLowerCase()) &&
-      c.email.toLowerCase().includes(emailFilter.toLowerCase())
+      c.email.toLowerCase().includes(emailFilter.toLowerCase()) &&
+      //Filtro para la cantidad de pedidos: 
+      c.orderCount >= minOrdersFilter
     );
   });
 
@@ -57,6 +62,8 @@ export default function CustomerReportPage() {
                     value={emailFilter}
                     onChange={(e) => setEmailFilter(e.target.value)}
                 />
+                {/* Nuevo filtro por cantidad de pedidos */}
+                <OrderCountFilter onFilterChange={setMinOrdersFilter} />
             </div>
         
             

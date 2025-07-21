@@ -18,6 +18,7 @@ const CustomerReportTable: React.FC<Props> = ({ data }) => {
                     <th className="px-4 py-3 text-left">Nombre</th>
                     <th className="px-4 py-3 text-left">Email</th>
                     <th className="px-4 py-3 text-left">Teléfono</th>
+                    
                     <th className="px-4 py-3 text-left">Cantidad de Pedidos</th>
                 </tr>
                 </thead>
@@ -27,6 +28,7 @@ const CustomerReportTable: React.FC<Props> = ({ data }) => {
                     <td className="px-4 py-3">{cliente.fullName}</td>
                     <td className="px-4 py-3">{cliente.email}</td>
                     <td className="px-4 py-3">{cliente.phoneNumber}</td>
+                    
                     <td className="px-4 py-3">{cliente.orderCount}</td>
                     </tr>
                 ))}

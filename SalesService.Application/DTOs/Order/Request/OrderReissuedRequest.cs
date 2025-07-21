@@ -11,9 +11,9 @@ namespace SalesService.Application.DTOs.Order.Request
     {
         [Required]
         public int SalesOrderId { get; set; }
+
         [Required]
-        [Range(1, int.MaxValue)]
-        public List<UpdateOrderItemRequest> UpdateItems { get; set; } = [];
+        public List<OrderItemDto> UpdateItems { get; set; } = [];
 
         [Required, MaxLength(500)]
         public string DescriptionResolution { get; set; } = string.Empty;

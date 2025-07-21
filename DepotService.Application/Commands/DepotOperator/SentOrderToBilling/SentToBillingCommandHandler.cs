@@ -1,6 +1,8 @@
-﻿using DepotService.Domain.Enums;
+﻿using DepotService.Application.Common.Interfaces;
+using DepotService.Domain.Enums;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
+using DepotService.Infraestructure.Email.EmailTemplates;
 using DepotService.Infraestructure.Messaging.Publisher;
 using Microsoft.Extensions.Logging;
 using SharedKernel.IntegrationEvents.DepotEvents;
@@ -12,12 +14,13 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Commands.DepotOperator.SentOrderToBilling
 {
-    public class SentToBillingCommandHandler(IRabbitMQPublisher publisher ,DepotDbContext context, IDepotOrderRepository repository, ILogger<SentToBillingCommandHandler> logger) : ISentToBillingCommandHandler
+    public class SentToBillingCommandHandler(IEmailService emailService, IRabbitMQPublisher publisher ,DepotDbContext context, IDepotOrderRepository repository, ILogger<SentToBillingCommandHandler> logger) : ISentToBillingCommandHandler
     {
         private readonly IRabbitMQPublisher _publisher = publisher;
         private readonly DepotDbContext _context = context;
         private readonly IDepotOrderRepository _repository = repository;
         private readonly ILogger<SentToBillingCommandHandler> _logger = logger;
+        private readonly IEmailService _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
 
         /// <summary>
         /// handler para enviar una orden a facturación en el servicio de depósito.
@@ -54,6 +57,21 @@ namespace DepotService.Application.Commands.DepotOperator.SentOrderToBilling
             // Publish the integration event to the billing queue
             await _publisher.PublishAsync(integrationEvent, "order_sent_billing_queue");
             _logger.LogInformation($"Order with ID {command.DepotOrderId} has been published to billing queue successfully.");
+
+            // Send email notification
+            var subjetc = "Tu pedido ha sido enviado a facturación";
+            var htmlBody = EmailTemplateGenerator.Generate(
+                subjetc,
+                "Tu pedido ha sido enviado a facturación",
+                order.CustomerName,
+                $"Nos complace informarte que tu pedido con ID {order.DepotOrderId} ha sido enviado a facturación. Te notificaremos una vez que se procese la factura. Gracias por tu preferencia."
+            );
+
+            await _emailService.SendEmailAsync(
+                order.CustomerEmail,
+                subjetc,
+                htmlBody
+            );
 
             return true;
         }

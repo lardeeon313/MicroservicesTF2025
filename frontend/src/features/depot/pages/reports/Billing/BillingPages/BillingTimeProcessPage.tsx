@@ -8,6 +8,9 @@ import GraphBillingTimeProcess from "../BillingGraphs/GraphBillingTimeProcess";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import { Pagination } from "../../../../../../components/Pagination";
 
+//filter: 
+import BillingTimeProcessFilter from "../BillingFilters/BillingTimeProcessFilter";
+
 const BillingTimeProcessPage: React.FC = () => {
     const [page,setPage] = useState(1);
     const pageSize = 10; 
@@ -15,7 +18,19 @@ const BillingTimeProcessPage: React.FC = () => {
     const {data,loading, error, totalpages} = useBillingTimeProcess(page,pageSize);
 
     const [idfilter,setidFilter] = useState("");
+    //Permite filtrar en base a un valor max o min que desee el administrador:
+    const [minIncome, setMinIncome] = useState<number | "">("");
+    const [maxIncome, setMaxIncome] = useState<number | "">("");
 
+
+    // Paso 3: Filtrar los datos
+    const filteredData = data.filter((item) => {
+        const income = item.TotalIncome;
+        const minOK = minIncome === "" || income >= Number(minIncome);
+        const maxOK = maxIncome === "" || income <= Number(maxIncome);
+        const idOK = item.id.toLowerCase().includes(idfilter.toLowerCase());
+        return minOK && maxOK && idOK;
+    });
 
     if(loading){
         return<LoadingSpinner message="cargando los datos..." height="h-screen"/>
@@ -46,16 +61,17 @@ const BillingTimeProcessPage: React.FC = () => {
                         value={idfilter}
                         onChange={(e) => setidFilter(e.target.value)}
                     />
+                    <BillingTimeProcessFilter minIncome={minIncome} maxIncome={maxIncome} onMinChange={setMinIncome} onMaxChange={setMaxIncome}/>
                 </div>
 
                 {error ? (
                 <p className="text-red-600 text-center">{error}</p>
                 ): (
                 <>
-                <BillingTimeProcessTable data={data}/>
+                <BillingTimeProcessTable data={filteredData}/>
                 <Pagination currentPage={page} totalPages={totalpages} onPageChange={setPage} />
                 <GraphBillingTimeProcess data={
-                    data.map(item => ({
+                    filteredData.map(item => ({
                         CustomerID: item.id,
                         TotalIncome: item.TotalIncome
                     }))

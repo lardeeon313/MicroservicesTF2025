@@ -1,74 +1,112 @@
-import React from "react";
-import TeamCard from "./TeamCard";
-import { Loader2, PlusCircle } from "lucide-react";
-import { DepotTeamUpdateDTO } from "../types/DepotTeamTypes";
+import { useState, useCallback } from 'react';
+import { useTeams } from '../hooks/useTeams';
+import { TeamCard } from './TeamCard';
+import { CreateTeamDialog } from './CreateTeamDialog';
+import { UpdateTeamDialog } from './UpdateTeamDialog';
+import { DeleteTeamDialog } from './DeleteTeamDialog';
+import { DepotTeam } from '../types/DepotTeamTypes';
+import { Plus } from 'lucide-react';
 
-interface TeamListProps {
-  teams: DepotTeamUpdateDTO[];
-  loading: boolean;
-  error: string | null;
-  onRefetch: () => void;
-  onEditTeam: (team: DepotTeamUpdateDTO) => void;
-  onAssignOperator: (teamId: number) => void;
-  onRemoveOperator: (teamId: number, operatorId: string) => void;
-  onCreateTeam: () => void;
-}
+export const TeamList = () => {
+    const { teams, loading, error, refetch } = useTeams();
+    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+    const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [selectedTeam, setSelectedTeam] = useState<DepotTeam | null>(null);
 
-export default function TeamList({
-  teams,
-  loading,
-  error,
-  onRefetch,
-  onEditTeam,
-  onAssignOperator,
-  onRemoveOperator,
-  onCreateTeam,
-}: TeamListProps) {
-  if (loading)
+    const handleEdit = useCallback((team: DepotTeam) => {
+        setSelectedTeam(team);
+        setIsUpdateDialogOpen(true);
+    }, []);
+
+    const handleDelete = useCallback((team: DepotTeam) => {
+        setSelectedTeam(team);
+        setIsDeleteDialogOpen(true);
+    }, []);
+
+    const handleDeleteDialogClose = useCallback((success?: boolean) => {
+        setIsDeleteDialogOpen(false);
+        setSelectedTeam(null);
+        if (success) {
+            refetch();
+        }
+    }, [refetch]);
+
+    const handleUpdateDialogClose = useCallback((success?: boolean) => {
+        setIsUpdateDialogOpen(false);
+        setSelectedTeam(null);
+        if (success) {
+            refetch();
+        }
+    }, [refetch]);
+
+    const handleCreateDialogClose = useCallback((success?: boolean) => {
+        setIsCreateDialogOpen(false);
+        if (success) {
+            refetch();
+        }
+    }, [refetch]);
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="text-center text-red-600 p-4">
+                {error}
+            </div>
+        );
+    }
+
     return (
-      <div className="flex justify-center py-10">
-        <Loader2 className="animate-spin w-8 h-8 text-gray-600" />
-        <span className="ml-2 text-gray-700">Cargando equipos...</span>
-      </div>
-    );
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold text-gray-900">Equipos</h2>
+                <button
+                    onClick={() => setIsCreateDialogOpen(true)}
+                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                >
+                    <Plus className="h-5 w-5 mr-2" />
+                    Nuevo Equipo
+                </button>
+            </div>
 
-  if (error)
-    return (
-      <div className="text-center py-8">
-        <p className="text-red-600 mb-4">{error}</p>
-        <button
-          onClick={onRefetch}
-          className="btn-primary px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition"
-        >
-          Reintentar
-        </button>
-      </div>
-    );
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {teams.map((team) => (
+                    <TeamCard
+                        key={team.id}
+                        team={team}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                    />
+                ))}
+            </div>
 
-  if (teams.length === 0)
-    return (
-      <div className="text-center py-8 text-gray-500">
-        No hay equipos registrados.
-        <button
-          onClick={onCreateTeam}
-          className="ml-3 inline-flex items-center px-3 py-1.5 bg-green-600 text-white rounded hover:bg-green-700 transition"
-        >
-          <PlusCircle className="w-5 h-5 mr-1" /> Crear equipo
-        </button>
-      </div>
-    );
+            <CreateTeamDialog
+                isOpen={isCreateDialogOpen}
+                onClose={handleCreateDialogClose}
+            />
 
-  return (
-    <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-      {teams.map((team) => (
-        <TeamCard
-          key={team.id}
-          team={team}
-          onEdit={() => onEditTeam(team)}
-          onAssignOperator={() => onAssignOperator(team.id)}
-          onRemoveOperator={onRemoveOperator}
-        />
-      ))}
-    </div>
-  );
-}
+            {selectedTeam && (
+                <>
+                    <UpdateTeamDialog
+                        isOpen={isUpdateDialogOpen}
+                        onClose={handleUpdateDialogClose}
+                        team={selectedTeam}
+                    />
+
+                    <DeleteTeamDialog
+                        isOpen={isDeleteDialogOpen}
+                        onClose={handleDeleteDialogClose}
+                        team={selectedTeam}
+                    />
+                </>
+            )}
+        </div>
+    );
+};

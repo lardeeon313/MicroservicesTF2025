@@ -9,18 +9,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace SalesService.Application.Commands.Orders.UpdateStatus
 {
-    public class UpdateOrderStatusCommandHandler(IOrderRepository repository, IRabbitMQPublisher publisher) : IUpdateOrderStatusCommandHandler
+    public class UpdateOrderStatusCommandHandler(IOrderRepository repository, IRabbitMQPublisher publisher, ILogger<UpdateOrderStatusCommandHandler> logger) : IUpdateOrderStatusCommandHandler
     {
         private readonly IOrderRepository _repository = repository;
         private readonly IRabbitMQPublisher _publisher = publisher;
+        private readonly ILogger<UpdateOrderStatusCommandHandler> ILogger = logger;
         public async Task<bool> HandleAsync(UpdateOrderStatusCommand command)
         {
             var existingOrder = await _repository.GetByIdAsync(command.OrderId);
             if (existingOrder is null)
                 throw new KeyNotFoundException($"Order with ID {command.OrderId} not found.");
+
+            ILogger.LogInformation("📧 DatosCUSTOMER:  CustomerName={Name}, Email={Email}, Phone={Phone}",
+            existingOrder.Customer.FirstName + " " + existingOrder.Customer.LastName,
+            existingOrder.Customer.Email,
+            existingOrder.Customer.PhoneNumber);
 
             // Validamos que unicamente sea pending y que no tenga otro estado.
             if (existingOrder.Status != OrderStatus.Pending && existingOrder.Status != OrderStatus.Canceled)
@@ -42,32 +49,42 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
 
             await _repository.UpdateAsync(existingOrder);
 
-            
-            if (command.Request.Status == OrderStatus.Issued)
+            try
             {
-                // Creamos el evento de integración para la orden emitida
-                var integrationEvent = new OrderIssuedIntegrationEvent
+                if (command.Request.Status == OrderStatus.Issued)
                 {
-                    OrderId = existingOrder.Id,
-                    CustomerId = existingOrder.CustomerId,
-                    CustomerName = existingOrder.Customer.FirstName + " " + existingOrder.Customer.LastName,
-                    CustomerEmail = existingOrder.Customer.Email,
-                    PhoneNumber = existingOrder.Customer.PhoneNumber,
-                    DeliveryDetail = existingOrder.DeliveryDetail,
-                    OrderDate = existingOrder.OrderDate,
-                    Status = existingOrder.Status,
-                    Items = existingOrder.Items.Select(i => new OrderItemsDto
+                    // Creamos el evento de integración para la orden emitida
+                    var integrationEvent = new OrderIssuedIntegrationEvent
                     {
-                        Id = i.Id,
                         OrderId = existingOrder.Id,
-                        ProductBrand = i.ProductBrand,
-                        ProductName = i.ProductName,
-                        Quantity = i.Quantity
-                    }).ToList()
-                };
+                        CustomerId = existingOrder.CustomerId,
+                        CustomerName = existingOrder.Customer.FirstName + " " + existingOrder.Customer.LastName,
+                        CustomerEmail = existingOrder.Customer.Email,
+                        PhoneNumber = existingOrder.Customer.PhoneNumber,
+                        DeliveryDetail = existingOrder.DeliveryDetail,
+                        OrderDate = existingOrder.OrderDate,
+                        Status = existingOrder.Status,
+                        Items = existingOrder.Items.Select(i => new OrderItemsDto
+                        {
+                            Id = i.Id,
+                            OrderId = existingOrder.Id,
+                            ProductBrand = i.ProductBrand,
+                            ProductName = i.ProductName,
+                            Quantity = i.Quantity
+                        }).ToList()
+                    };
+                    ILogger.LogInformation("📧 Emitiendo evento: CustomerName={Name}, Email={Email}, Phone={Phone}",
+                        existingOrder.Customer.FirstName + " " + existingOrder.Customer.LastName,
+                        existingOrder.Customer.Email,
+                        existingOrder.Customer.PhoneNumber);
 
-                // Publicamos el evento en RabbitMQ
-                await _publisher.PublishAsync(integrationEvent, "order_issued_queue");
+                    // Publicamos el evento en RabbitMQ
+                    await _publisher.PublishAsync(integrationEvent, "order_issued_queue");
+                }
+            } catch (Exception ex)
+            {
+                // Manejo de errores al publicar el evento
+                throw new InvalidOperationException("Error al publicar el evento de orden emitida.", ex);
             }
 
             return true;

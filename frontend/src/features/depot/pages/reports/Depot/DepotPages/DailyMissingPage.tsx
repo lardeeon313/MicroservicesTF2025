@@ -7,11 +7,18 @@ import GraphDailyMissing from "../DepotGraph/GraphDailyMissing";
 import { Pagination } from "../../../../../../components/Pagination";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 
+//codigo del filtro: 
+import DailyMissingFilter from "../DepotFilters/DailyMissingFilter";
+
 const DailyMissingPage : React.FC = () => {
-  const [page,setPage] = useState(2);
+  const [page,setPage] = useState(1);
+  const [selectedHour, setSelectedHour] = useState<number | "">("");
   const pageSize = 10;
 
   const {data,loading,error, totalPages} = useDailyMissing(page,pageSize);
+
+  const filteredData =
+    selectedHour === "" ? data : data.filter((d) => d.MissingHour === selectedHour);
 
   if(loading) {
     return <LoadingSpinner message="Cargando los datos..." height="h-screen" />;
@@ -33,15 +40,17 @@ const DailyMissingPage : React.FC = () => {
           Aquí podrás visualizar los productos que no se encontraron en stock al momento del armado de pedidos.
         </p>
 
+        <DailyMissingFilter  selectedHour={selectedHour} onHourChange={setSelectedHour} />
+
         {error ? (
           <p className="text-red-600 text-center">{error}</p>
         ): (
           <>
-          <DailyMissingTable data={data}/>
+          <DailyMissingTable data={filteredData}/>
           {totalPages >1 && (
             <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
           )}
-          <GraphDailyMissing data={data} />
+          <GraphDailyMissing data={filteredData} />
           </>
         )}
       </div>

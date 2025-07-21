@@ -15,12 +15,12 @@ namespace DepotService.Application.Commands.DepotOperator.UnMarkItemReady
     /// <summary>
     /// Handler for the command to unmark an item as ready in the depot.
     /// </summary>
-    public class UnmarkItemReadyCommandHandler(IRabbitMQPublisher publisher, DepotDbContext context, IDepotOrderRepository repository, ILogger<SentToBillingCommandHandler> logger) : IUnmarkItemReadyCommandHandler
+    public class UnmarkItemReadyCommandHandler(IRabbitMQPublisher publisher, DepotDbContext context, IDepotOrderRepository repository, ILogger<UnmarkItemReadyCommandHandler> logger) : IUnmarkItemReadyCommandHandler
     {
         private readonly IRabbitMQPublisher _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
         private readonly DepotDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
         private readonly IDepotOrderRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        private readonly ILogger<SentToBillingCommandHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        private readonly ILogger<UnmarkItemReadyCommandHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         public async Task<bool> UnmarkItemReady(UnmarkItemReadyCommand command)
         {

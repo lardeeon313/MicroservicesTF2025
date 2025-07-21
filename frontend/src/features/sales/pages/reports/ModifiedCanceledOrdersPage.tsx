@@ -5,7 +5,8 @@ import { Pagination } from "../../../../components/Pagination";
 import ModifiedCanceledOrdersTable from "../../components/Reports/OrderModifiedCanceledReport/ModifiedCanceledOrdersTable";
 import GraphModifiedCanceledOrders from "../../components/Reports/OrderModifiedCanceledReport/GraphModifiedCanceledOrders";
 import { useModifiedCanceled } from "../../hooks/useModifiedCanceled";
-
+//filter: 
+import ModifiedCanceledOrdersFilter from "./SalesFilters/ModifiedCanceledOrdersFilter";
 
 export default function ModifiedCanceledOrdersPage() {
     const [page, setPage] = useState(1);
@@ -14,14 +15,25 @@ export default function ModifiedCanceledOrdersPage() {
     const [nameFilter, setNameFilter] = useState("");
     const [emailFilter, setEmailFilter] = useState("");
 
+    //datos y set para utilizar los filtros tanto por la fecha de modificacion y status: 
+    const [fromDate, setFromDate] = useState("");
+    const [toDate, setToDate] = useState("");
+    const [statusFilter, setStatusFilter] = useState<"Todos" | "Canceled" | "Issued" | "Pending">("Todos");
+
+
     const { data: orders, loading, totalPages } = useModifiedCanceled(page, pageSize);
 
     const filteredOrders = orders.filter((o) => {
-        console.log("Pedidos traídos:", orders);
         const fullName = `${o.customerFirstName} ${o.customerLastName}`.toLowerCase();
-        return (
-        fullName.includes(nameFilter.toLowerCase())
-        );
+        const matchesName = fullName.includes(nameFilter.toLowerCase());
+        const matchesEmail = o.customer?.email.toLowerCase().includes(emailFilter.toLowerCase());
+
+        const orderDate = new Date(o.orderDate); // ⚠️ reemplazar por el campo correcto
+        const matchesDate =
+            (!fromDate || orderDate >= new Date(fromDate)) &&
+            (!toDate || orderDate <= new Date(toDate));
+
+        return matchesName && matchesEmail && matchesDate;
     });
     
     if (loading)
@@ -57,6 +69,7 @@ export default function ModifiedCanceledOrdersPage() {
                         onChange={(e) => setEmailFilter(e.target.value)}
                     />
                 </div>
+                <ModifiedCanceledOrdersFilter fromDate={fromDate} toDate={toDate} statusFilter={statusFilter} onFromDateChange={setFromDate} onToDateChange={setToDate} onStatusFilterChange={setStatusFilter}/>
                 <ModifiedCanceledOrdersTable orders={filteredOrders}/>
                 <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage}/>
                 <GraphModifiedCanceledOrders orders={filteredOrders}/>

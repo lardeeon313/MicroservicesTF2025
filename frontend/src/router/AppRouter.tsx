@@ -4,10 +4,7 @@ import LoginPage from "../features/auth/pages/LoginPage";
 import ProtectedRoute from "../features/auth/components/ProtectedRoute";
 import Unauthorized from "../features/auth/components/Unauthorized";
 import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
-
 import DepotManagerDashboard from "../features/depot/depotmanager/pages/DepotManagerDashboard";
-import OperatorDashboard from "../features/depot/operator/navigation/OperatorDashboard";
-
 import BillingManagerDashboard from "../features/depot/billingmanager/pages/BillingManagerDashboard";
 import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
 import NotFoundPage from "../features/common/pages/NotFoundPage";
@@ -22,11 +19,9 @@ import EditCustomerPage from "../features/sales/pages/customers/EditCustomerPage
 import CustomersPage from "../features/sales/pages/customers/CustomersPage";
 import { DashboardPage } from "../features/sales/pages/DashboardPage";
 import { DashboardReportsPage } from "../features/sales/pages/DashboardReportsPage";
-
-
-import CustomerInactiveReportPage from "../features/sales/pages/reports/CustomerInactiveReportPage";
 import CustomerReportPage from "../features/sales/pages/reports/CustomerReportPage";
-import CustomerSatisfactionReportPage from "../features/sales/pages/reports/CustomerSatisfactionReportPage";
+import CustomerSatisfactionPage from "../features/sales/pages/reports/CustomerSatisfactionReportPage";
+import CustomerInactiveReportPage from "../features/sales/pages/reports/CustomerInactiveReportPage";
 import ModifiedCanceledOrdersPage from "../features/sales/pages/reports/ModifiedCanceledOrdersPage";
 import {SalesPerfomanceReportPage}  from "../features/sales/pages/reports/SalesPerfomanceReportPage";
 
@@ -37,6 +32,16 @@ import OrderCompletedDayPage from "../features/depot/pages/reports/Depot/DepotPa
 import TeamProdictivityPage from "../features/depot/pages/reports/Depot/DepotPages/TeamProdictiviyPage";
 
 //REPORTES DE FACTURACION
+
+import CustomerSatisfactionReportPage from "../features/sales/pages/reports/CustomerSatisfactionReportPage";
+import TeamsPage from "../features/depot/depotmanager/pages/TeamsPage";
+import PendingOrdersPage from "../features/depot/depotmanager/pages/PendingOrdersPage";
+import InPreparationOrdersPage from "../features/depot/depotmanager/pages/InPreparationOrdersPage";
+import PreparedOrdersPage from "../features/depot/depotmanager/pages/PreparedOrdersPage";
+import MissingOrdersPage from "../features/depot/depotmanager/pages/MissingOrdersPage";
+import PendingOrderDetailsPage from "../features/depot/billingmanager/pages/PendingOrderDetailsPage";
+import InvoicedOrdersPage from "../features/depot/billingmanager/pages/InvoicedOrdersPage";
+import InvoicedOrderDetailsPage from "../features/depot/billingmanager/pages/InvoicedOrderDetailsPage";
 import BillingTimeProcessPage from "../features/depot/pages/reports/Billing/BillingPages/BillingTimeProcessPage";
 import CustomerIncomePage from "../features/depot/pages/reports/Billing/BillingPages/CustomerIncomePage";
 import OrderBilledPage from "../features/depot/pages/reports/Billing/BillingPages/OrderBilledPage";
@@ -62,7 +67,6 @@ const AppRouter = () => {
         <Route path="/sales/customer/update/:id" element={<EditCustomerPage/>}/>
         <Route path="/sales/reports" element={<DashboardReportsPage/>}/>
 
-<<<<<<< HEAD
 
         {/**reportes de ventas*/}
         <Route path="/sales/reports/customerStatusReport" element={<CustomerInactiveReportPage/>} />
@@ -77,15 +81,37 @@ const AppRouter = () => {
         <Route path="/depot/depotmanager/report/OrderCompletedDay" element={<OrderCompletedDayPage/>}/>
         <Route path="/depot/depotmanager/report/TeamProdictivity" element={<TeamProdictivityPage/>}/>
 
-
         {/**Reportes de facturacion */}
-        <Route path="/depot/billingmanager/report/BillingTimeProcess" element={<BillingTimeProcessPage/>}/>
-        <Route path="/depot/billingmanager/report/CustomerIncome" element={<CustomerIncomePage/>}/>
-        <Route path="/depot/billingmanager/report/OrderBilled" element={<OrderBilledPage/>}/>
+        <Route path="/depot/billingmanager/report/BillingTimeProcess" element={<BillingTimeProcessPage/>} />
+        <Route path="/depot/billingmanager/report/CustomerIncome" element={<CustomerIncomePage/>} />
+        <Route path="/depot/billingmanager/report/OrderBilled" element={<OrderBilledPage />} />
 
-=======
+        <Route
+        path="/sales"
+        element={
+            <ProtectedRoute requiredRole="SalesStaff">
+            <Outlet />
+            </ProtectedRoute>
+        }
+        >
+        <Route path="home" element={<DashboardPage/>}/>
+        <Route path="orders" element={<OrdersPage />} />
+        <Route path="orders/view/:id" element={<ViewOrderPage />} />
+        <Route path="orders/registerOrder" element={<RegisterOrderPage />} />
+        <Route path="orders/update/:id" element={<EditOrderPage />} />
+        <Route path="customer/registerCustomer" element={<RegisterCustomerPage />} />
+        <Route path="customer/viewCustomer/:id" element={<ViewCustomerPage />} />
+        <Route path="customers" element={<CustomersPage />} />
+        <Route path="customer/update/:id" element={<EditCustomerPage />} />
+        <Route path="reports/dashboard" element={<DashboardReportsPage />} />
+        <Route path="reports/customersReport" element={<CustomerReportPage/>}/>
+        <Route path="reports/customerSatisfactionReport" element={<CustomerSatisfactionPage/>}/>
+        <Route path="reports/customerStatusReport" element={<CustomerInactiveReportPage />}/>
+        <Route path="reports/modifiedCanceledReport" element={<ModifiedCanceledOrdersPage/>}/>
+        <Route path="reports/salesPerfomance" element={<SalesPerfomanceReportPage/>}/>
+        </Route>
         
->>>>>>> origin/feature/milton-microservicestf2025
+
         <Route 
             path="/admin" 
             element = {
@@ -105,24 +131,41 @@ const AppRouter = () => {
         </Route>
 
 
-    
-
         <Route
-            path="/depot/operator"
-            element = {
-                <ProtectedRoute requiredRole="Operator">
-                    <OperatorDashboard/>
-                </ProtectedRoute>
-            }>
-        </Route>
+        path="/depot"
+        element={
+            <ProtectedRoute requiredRole="DepotManager">
+            <Outlet />
+            </ProtectedRoute>
+        }
+        >
+                <Route index element={<DepotManagerDashboard />} />
+                <Route path="teams" element={<TeamsPage />} />
+                <Route path="pending-orders" element={<PendingOrdersPage />} />
+                <Route path="in-preparation-orders" element={<InPreparationOrdersPage />} />
+                <Route path="prepared-orders" element={<PreparedOrdersPage />} />
+                <Route path="missing-orders" element={<MissingOrdersPage />} />
+                <Route path="reports" element={<div>Reportes</div>} />
+            </Route>
+       
+
+
+
 
         <Route
             path="/depot/billingmanager"
-            element = {
+            element={
                 <ProtectedRoute requiredRole="BillingManager">
-                    <BillingManagerDashboard/>
+                    <Outlet />
                 </ProtectedRoute>
-            }>
+            }
+        >
+            <Route index element={<BillingManagerDashboard />} />
+            <Route path="pending-orders" element={<PendingOrdersPage />} />
+            <Route path="pending-orders/:id" element={<PendingOrderDetailsPage />} />
+            <Route path="invoiced-orders" element={<InvoicedOrdersPage />} />
+            <Route path="invoiced-orders/:id" element={<InvoicedOrderDetailsPage />} />
+            {/* <Route path="reports" element={<BillingManagerReportsPage />} /> */}
         </Route>
 
         <Route

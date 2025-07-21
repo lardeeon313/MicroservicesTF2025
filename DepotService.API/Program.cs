@@ -17,6 +17,7 @@ using DepotService.Application.Commands.DepotOperator.RejectOrder;
 using DepotService.Application.Commands.DepotOperator.ReportOrderMissing;
 using DepotService.Application.Commands.DepotOperator.SentOrderToBilling;
 using DepotService.Application.Commands.DepotOperator.UnMarkItemReady;
+using DepotService.Application.Common.Interfaces;
 using DepotService.Application.DTOs.DepotManager.Request;
 using DepotService.Application.DTOs.DepotOperator.Request;
 using DepotService.Application.Queries.BillingManager.GetAllInvoicedOrders;
@@ -46,6 +47,7 @@ using DepotService.Infraestructure.Documents;
 using DepotService.Infraestructure.Documents.Excel;
 using DepotService.Infraestructure.Documents.Pdf;
 using DepotService.Infraestructure.Documents.Word;
+using DepotService.Infraestructure.Email;
 using DepotService.Infraestructure.Messaging;
 using DepotService.Infraestructure.Messaging.Consumers;
 using DepotService.Infraestructure.Messaging.Publisher;
@@ -93,11 +95,6 @@ builder.Services.AddScoped<IGetAllOrdersQueryHandler, GetAllOrdersQueryHandler>(
 builder.Services.AddScoped<IGetOrdersByStatusQueryHandler, GetOrdersByStatusQueryHandler>();
 builder.Services.AddScoped<IGetByIdOrderQueryHandler, GetByIdOrderQueryHandler>();
 builder.Services.AddScoped<IGetOrdersByOperatorQueryHandler, GetOrdersByOperatorQueryHandler>();
-//
-builder.Services.AddScoped<IGetOrdersMissingOrPreparingHandler, GetOrdersMissingOrPendingHandler>();
-//
-builder.Services.AddScoped<IGetOrdersPreparedOrSentToBillingHandler, GetOrdersPreparedOrSentToBillingHandler>();
-//
 builder.Services.AddScoped<IGetOrderByIdQueryHandler, GetOrderByIdQueryHandler>();
 builder.Services.AddScoped<IGetAssignedPendingOrdersQueryHandler, GetAssignedPendingOrdersQueryHandler>();
 builder.Services.AddScoped<IGetOrdersPendingBillingQueryHandler , GetOrdersPendingBillingQueryHandler>();
@@ -129,10 +126,7 @@ builder.Services.AddScoped<IInvoiceOrderCommandHandler , InvoiceOrderCommandHand
 builder.Services.AddScoped<ISetItemUnitPricesCommandHandler, SetItemUnitPricesCommandHandler>();
 builder.Services.AddScoped<IUpdateInvoicedItemPriceCommandHandler, UpdateInvoicedItemPriceCommandHandler>();
 builder.Services.AddScoped<IExportInvoiceDocumentCommandHandler, ExportInvoiceDocumentCommandHandler>();
-// Registro de clases concretas necesarias (porque se usan directamente)
-builder.Services.AddScoped<DepotOrderRepository>();
-builder.Services.AddScoped<InvoiceOrderCommandHandler>();
-builder.Services.AddScoped<ExportInvoiceDocumentCommandHandler>();
+
 
 // Add FluentValidation
 builder.Services.AddScoped<IValidator<AssignOperatorRequest>, AssignOperatorCommandValidator>();
