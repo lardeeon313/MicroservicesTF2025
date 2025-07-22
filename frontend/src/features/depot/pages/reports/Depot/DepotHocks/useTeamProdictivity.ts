@@ -20,7 +20,7 @@ export const useTeamProdictivity = (page: number, pageSize: number) => {
             setError(null);
             try{
                 const response = await API.get<ProdictivityProps[]>(
-                    "/teams",
+                    '/depot/depotmanager/get-all-teams',
                     {
                         params: {page, pageSize},
                     }

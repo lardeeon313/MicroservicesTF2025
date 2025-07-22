@@ -13,7 +13,7 @@ export const useDailyMissing = (page:number,pageSize:number) => {
         const fetchData = async () => {
             setLoading(true);
             try{
-                const response = await API.get<DailyMissing[]>("/missings");
+                const response = await API.get<DailyMissing[]>("/depot/depotmanager/get-all-missing-orders");
 
                 const allData = response.data;
                 const start = (page - 1) * pageSize;

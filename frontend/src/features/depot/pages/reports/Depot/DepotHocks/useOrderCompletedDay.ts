@@ -20,7 +20,7 @@ export const useOrderCompletedDay = (page: number, pageSize: number) => {
             setError(null);
             try{
                 //Cambiar la ruta de la api:
-                const response = await API.get<OrderCompleted[]>("/orders", {
+                const response = await API.get<OrderCompleted[]>('/depot/depotmanager/get-all-orders', {
                     params: { page, pageSize },
                 });
 

@@ -12,7 +12,7 @@ export const useBillingTimeProcess = (page:number,pageSize:number) => {
     useEffect(() => {
         const fetchData = async () => {
             try{
-                const response = await API.get("/income" ,{
+                const response = await API.get("/depot/billingmanager/invoiced-orders-by-date-range" ,{
                     params: {page,pageSize},
                 })
 

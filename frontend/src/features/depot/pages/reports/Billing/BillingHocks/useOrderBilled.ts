@@ -11,7 +11,7 @@ export const useOrderBilled = (page:number,pageSize:number) => {
     useEffect(() => {
         const fetchData = async () => {
             try{
-                const response = await API.get("/billingTimeProcess" , {
+                const response = await API.get("/depot/billingmanager/pending-billing-orders" , {
                     params: {page,pageSize}
                 })
 

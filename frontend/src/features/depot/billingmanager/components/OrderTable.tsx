@@ -68,8 +68,8 @@ export default function OrderTable({
               </p>
             </div>
             <button 
-              onClick={onRefetch} 
-              className="mt-4 btn-primary inline-block bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors"
+                onClick={onRefetch} 
+                className="mt-4 btn-primary inline-block bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors"
             >
               Actualizar
             </button>

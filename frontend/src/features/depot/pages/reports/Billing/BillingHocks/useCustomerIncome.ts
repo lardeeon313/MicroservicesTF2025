@@ -11,7 +11,7 @@ export const useCustomerIncome = (page:number,pageSize:number) => {
     useEffect(() => {
         const fetchData = async () => {
             try{
-                const response = await API.get("/billing" , {
+                const response = await API.get('/depot/billingmanager/invoiced-orders-by-customer' , {
                     params: {page,pageSize}
                 })
 
