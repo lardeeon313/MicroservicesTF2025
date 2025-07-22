@@ -4,6 +4,8 @@ using DepotService.Application.Queries.Reports.GetAverageDepotProcessingTime;
 using DepotService.Application.Queries.Reports.GetAverageTimePerStatus;
 using DepotService.Application.Queries.Reports.GetDepotTeamPerformance;
 using DepotService.Application.Queries.Reports.GetOrdersByDeliveryDate;
+using DepotService.Application.Queries.Reports.GetOrdersCompleted;
+using DepotService.Application.Queries.Reports.GetOrdersInPreparation;
 using DepotService.Application.Queries.Reports.GetOrderStatusCount;
 using DepotService.Application.Queries.Reports.GetReissuedReportOrders;
 using Microsoft.AspNetCore.Authorization;
@@ -20,9 +22,13 @@ namespace DepotService.API.Controllers
         IGetProcessingTimePerOrderQueryHandler getProcessingTimePerOrderQueryHandler,
         IGetDepotTeamPerformanceQueryHandler getDepotTeamPerformanceQueryHandler,
         IGetOrdersByDeliveryDateQueryHandler getOrdersByDeliveryDateQueryHandler,
-        IGetReissuedOrdersQueryHandler getReissuedOrdersQueryHandler
+        IGetReissuedOrdersQueryHandler getReissuedOrdersQueryHandler,
+        IGetOrdersCompletedQueryHandler getOrdersCompletedQueryHandler,
+        IGetOrdersInPreparationQueryHandler getOrdersInPreparationQueryHandler
         ) : ControllerBase
     {
+        private readonly IGetOrdersInPreparationQueryHandler _getOrdersInPreparationQueryHandler = getOrdersInPreparationQueryHandler;
+        private readonly IGetOrdersCompletedQueryHandler _getOrdersCompletedQueryHandler = getOrdersCompletedQueryHandler;
         private readonly IGetReissuedOrdersQueryHandler _getReissuedOrdersQueryHandler = getReissuedOrdersQueryHandler;
         private readonly IGetOrdersByDeliveryDateQueryHandler _getOrdersByDeliveryDateQueryHandler = getOrdersByDeliveryDateQueryHandler;
         private readonly IGetDepotTeamPerformanceQueryHandler _getDepotTeamPerformanceQueryHandler = getDepotTeamPerformanceQueryHandler;
@@ -145,6 +151,52 @@ namespace DepotService.API.Controllers
             var reissuedOrders = await _getReissuedOrdersQueryHandler.HandleAsync(query);
             return Ok(reissuedOrders);
 
+        }
+
+        /// <summary>
+        /// Endpoint para obtener las ordenes completadas en un rango de fechas. 
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        [HttpGet("reports/orders-completed")]
+        [ProducesResponseType(typeof(PaginatedResult<CompletedOrdersReportDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetCompletedOrders(
+            [FromQuery] DateTime? from,
+            [FromQuery] DateTime? to,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            var query = new GetOrdersCompletedQuery(from, to, page, pageSize);
+            var completedOrders = await _getOrdersCompletedQueryHandler.HandleAsync(query);
+            return Ok(completedOrders);
+        }
+
+        /// <summary>
+        /// Endpoint para obtener las ordenes en preparacion en un rango de fechas.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        [HttpGet("reports/orders-in-preparation")]
+        [ProducesResponseType(typeof(PaginatedResult<OrdersInPreparationDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetOrdersInPreparation(
+            [FromQuery] DateTime? from,
+            [FromQuery] DateTime? to,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            var query = new GetOrdersInPreparationQuery(from, to, page, pageSize);
+            var completedOrders = await _getOrdersInPreparationQueryHandler.HandleAsync(query);
+            return Ok(completedOrders);
         }
     }
 }

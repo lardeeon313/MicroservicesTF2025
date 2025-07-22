@@ -2,6 +2,7 @@
 using DepotService.Domain.Enums;
 using DepotService.Domain.IRepositories;
 using DepotService.Domain.ValueObjects;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -102,6 +103,49 @@ namespace DepotService.Infraestructure.Persistence.Repositories
             }).ToList();
         }
 
+        public async Task<PaginatedResult<CompletedOrdersReport>> GetCompletedOrdersAsync(DateTime? from, DateTime? to, int page, int pageSize)
+        {
+            var query = _context.DepotOrders
+            .AsNoTracking()
+            .Where(o => o.Status == OrderStatus.Prepared);
+
+            if (from.HasValue)
+                query = query.Where(o => o.OrderDate >= from.Value);
+
+            if (to.HasValue)
+                query = query.Where(o => o.OrderDate <= to.Value);
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderByDescending(o => o.OrderDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(o => new CompletedOrdersReport
+                {
+                    DepotOrderId = o.DepotOrderId,
+                    SalesOrderId = o.SalesOrderId,
+                    CustomerName = o.CustomerName,
+                    CustomerEmail = o.CustomerEmail,
+                    OrderDate = o.OrderDate,
+                    CompletedAt = o.StatusHistory
+                        .Where(h => h.NewStatus == OrderStatus.Prepared)
+                        .OrderByDescending(h => h.ChangedAt)
+                        .Select(h => h.ChangedAt)
+                        .FirstOrDefault(),
+                    DeliveryDate = o.DeliveryDate,
+                })
+                .ToListAsync();
+
+            return new PaginatedResult<CompletedOrdersReport>
+            {
+                Items = items,
+                TotalItems = totalCount,
+                CurrentPage = page,
+                TotalPages = pageSize
+            };
+        }
+
         public async Task<List<DepotTeamPerformance>> GetDepotTeamPerformancesAsync(DateTime? from, DateTime? to)
         {
             var orders = _context.DepotOrders
@@ -199,6 +243,51 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 CurrentPage = page,
             };
         }
+
+        public async Task<PaginatedResult<OrdersInPreparation>> GetOrdersInPreparationAsync(int page, int pageSize, DateTime? from, DateTime? to)
+        {
+            var query = _context.DepotOrders
+            .Include(o => o.AssignedDepotTeam)
+            .Include(o => o.StatusHistory)
+            .Where(o => o.Status == OrderStatus.InPreparation);
+
+            if (from.HasValue)
+                query = query.Where(o => o.OrderDate >= from.Value);
+
+            if (to.HasValue)
+                query = query.Where(o => o.OrderDate <= to.Value);
+
+            var total = await query.CountAsync();
+
+            var data = await query
+                .OrderByDescending(o => o.OrderDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(o => new OrdersInPreparation
+                {
+                    OrderId = o.DepotOrderId,
+                    CreatedAt = o.OrderDate,
+                    CustomerName = o.CustomerName,
+                    CustomerEmail = o.CustomerEmail,
+                    PhoneNumber = o.PhoneNumber,
+                    DeliveryDetail = o.DeliveryDetail,
+                    InPreparationAt = o.StatusHistory
+                        .Where(h => h.NewStatus == OrderStatus.InPreparation)
+                        .OrderByDescending(h => h.ChangedAt)
+                        .Select(h => h.ChangedAt)
+                        .FirstOrDefault(),
+                    DeliveryDate = o.DeliveryDate,
+                    DepotTeamName = o.AssignedDepotTeam.TeamName
+                }).ToListAsync();
+           
+            return new PaginatedResult<OrdersInPreparation>
+            {
+                Items = data,
+                TotalItems = total,
+                TotalPages = pageSize,
+                CurrentPage = page,
+            };
+        }   
 
         public async Task<PaginatedResult<ReissuedOrderReport>> GetReissuedOrdersAsync(DateTime? from, DateTime? to, int page, int pageSize)
         {

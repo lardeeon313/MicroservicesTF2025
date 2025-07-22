@@ -42,6 +42,8 @@ using DepotService.Application.Queries.Reports.GetAverageDepotProcessingTime;
 using DepotService.Application.Queries.Reports.GetAverageTimePerStatus;
 using DepotService.Application.Queries.Reports.GetDepotTeamPerformance;
 using DepotService.Application.Queries.Reports.GetOrdersByDeliveryDate;
+using DepotService.Application.Queries.Reports.GetOrdersCompleted;
+using DepotService.Application.Queries.Reports.GetOrdersInPreparation;
 using DepotService.Application.Queries.Reports.GetOrderStatusCount;
 using DepotService.Application.Queries.Reports.GetProcessingTimePerOrder;
 using DepotService.Application.Queries.Reports.GetReissuedReportOrders;
@@ -119,6 +121,8 @@ builder.Services.AddScoped<IGetProcessingTimePerOrderQueryHandler, GetProcessing
 builder.Services.AddScoped<IGetDepotTeamPerformanceQueryHandler, GetDepotTeamPerformanceQueryHandler>();
 builder.Services.AddScoped<IGetOrdersByDeliveryDateQueryHandler, GetOrdersByDeliveryDateQueryHandler>();
 builder.Services.AddScoped<IGetReissuedOrdersQueryHandler, GetReissuedOrdersQueryHandler>();
+builder.Services.AddScoped<IGetOrdersCompletedQueryHandler, GetOrdersCompletedQueryHandler>();
+builder.Services.AddScoped<IGetOrdersInPreparationQueryHandler, GetOrdersInPreparationQueryHandler>();
 
 // Add Commands
 builder.Services.AddScoped<IAssignOperatorCommandHandler, AssignOperatorCommandHandler>();

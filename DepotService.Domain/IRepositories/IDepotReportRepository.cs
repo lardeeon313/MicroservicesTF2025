@@ -17,5 +17,7 @@ namespace DepotService.Domain.IRepositories
         Task<List<DepotTeamPerformance>> GetDepotTeamPerformancesAsync(DateTime? from, DateTime? to);
         Task<PaginatedResult<OrderByDeliveryDate>> GetOrdersByDeliveryDateAsync(DateTime? from, DateTime? to, int page, int pageSize);
         Task<PaginatedResult<ReissuedOrderReport>> GetReissuedOrdersAsync(DateTime? from, DateTime? to, int page, int pageSize);
+        Task<PaginatedResult<CompletedOrdersReport>> GetCompletedOrdersAsync(DateTime? from, DateTime? to, int page, int pageSize);
+        Task<PaginatedResult<OrdersInPreparation>> GetOrdersInPreparationAsync(int page, int pageSize, DateTime? from, DateTime? to);
     }
 }
