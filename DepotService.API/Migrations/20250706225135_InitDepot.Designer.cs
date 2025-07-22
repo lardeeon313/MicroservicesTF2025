@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DepotService.API.Migrations
 {
     [DbContext(typeof(DepotDbContext))]
-    [Migration("20250617023202_AddMissingEntities")]
-    partial class AddMissingEntities
+    [Migration("20250706225135_InitDepot")]
+    partial class InitDepot
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -64,6 +64,9 @@ namespace DepotService.API.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(65,30)");
+
                     b.HasKey("DepotOrderId");
 
                     b.HasIndex("AssignedDepotTeamId");
@@ -102,6 +105,9 @@ namespace DepotService.API.Migrations
 
                     b.Property<int>("SalesOrderItemId")
                         .HasColumnType("int");
+
+                    b.Property<decimal?>("Total")
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<decimal?>("UnitPrice")
                         .HasColumnType("decimal(65,30)");

@@ -12,10 +12,10 @@ export interface Customer {
 }
 
 //estado del cliente , si este perdido inactivo y perdido: 
-export enum CustomerStatus{
-  Active,
-  Inactive,
-  Lost
+export enum CustomerStatus {
+  Active = "Active",
+  Inactive = "Inactive",
+  Lost = "Lost"
 }
 
 
@@ -28,12 +28,6 @@ export interface CustomerResponse {
   phoneNumber: string;
   address: string;
   status: CustomerStatus;
-}
-
-export enum CustomerStatus {
-  Active = "Active",
-  Inactive = "Inactive",
-  Lost = "Lost"
 }
 
 // Para el formulario de registro de cliente

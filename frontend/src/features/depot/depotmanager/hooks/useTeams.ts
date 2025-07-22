@@ -60,10 +60,10 @@ export function useTeams() {
         }
     };
 
-    const updateExistingTeam = async (team: UpdateTeamRequest): Promise<void> => {
+    const updateExistingTeam = async (id: number, team: UpdateTeamRequest): Promise<void> => {
         try {
             setError(null);
-            await updateTeam(team);
+            await updateTeam(id, team);
             await fetchTeams(); // Refresca la lista tras actualizar
         } catch (error) {
             console.error("Error in updateExistingTeam:", error);

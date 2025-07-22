@@ -18,6 +18,14 @@ export const TeamCard = ({ team, onEdit, onDelete }: TeamCardProps) => {
     const [selectedOperator, setSelectedOperator] = useState<OperatorInTeamDto | null>(null);
     const [isOperatorsListOpen, setIsOperatorsListOpen] = useState(false);
 
+    // Debug: Log team data
+    console.log('TeamCard: Team data:', {
+        id: team.id,
+        name: team.teamName,
+        operatorsCount: team.operators?.length || 0,
+        operators: team.operators
+    });
+
     const handleRemoveOperator = (operator: OperatorInTeamDto) => {
         setSelectedOperator(operator);
         setIsRemoveDialogOpen(true);

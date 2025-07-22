@@ -117,6 +117,10 @@ export default function OrdersPage() {
         if (!newStatus) return;
 
         try {
+            console.log("Response from updateOrderStatus:", {
+            orderId: id,
+            status: newStatus
+          });
           await updateOrderStatus(id, {
             orderId: id,
             status: newStatus

@@ -1,39 +1,51 @@
-import { useState } from 'react';
-import { useOrders } from '../hooks/useOrders';
+import { useState, useMemo } from 'react';
+import { useInPreparationOrders } from '../hooks/useOrders';
 import { DepotOrderDto } from '../types/OrderTypes';
 import OrderTable from '../../billingmanager/components/OrderTable';
 import OrderDetails from '../../billingmanager/components/OrderDetails';
 import LoadingSpinner from '../../../../components/LoadingSpinner';
+import BackButton from '../components/BackButton';
+import Pagination from '../components/Pagination';
 
 function InPreparationOrdersPage() {
   const {
-    inPreparationOrders,
+    orders,
     loading,
     error,
     refetch
-  } = useOrders();
+  } = useInPreparationOrders();
 
   const [selectedOrder, setSelectedOrder] = useState<DepotOrderDto | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // Convertir DepotOrderDto a OrderTableData para compatibilidad
-  const convertToTableData = (order: DepotOrderDto) => ({
-    id: order.DepotOrderId,
-    status: order.Status,
-    orderDate: order.OrderDate.toString(),
-    deliveryDetail: order.DeliveryDetail,
-    customerFirstName: order.CustomerName.split(' ')[0] || '',
-    customerLastName: order.CustomerName.split(' ').slice(1).join(' ') || '',
-    items: order.Items.map(item => ({
-      productName: item.ProductName,
-      productBrand: item.ProductBrand,
-      quantity: item.Quantity
-    }))
+  const convertToTableData = (order: any) => ({
+    id: order.depotOrderId,
+    status: 'En Preparación', // Estado fijo para órdenes en preparación
+    orderDate: order.orderDate ? order.orderDate.toString() : 'Sin fecha',
+    deliveryDate: order.deliveryDate ?? null,
+    deliveryDetail: order.deliveryDetail ?? '',
+    customerFirstName: order.customerName ? order.customerName.split(' ')[0] : '',
+    customerLastName: order.customerName ? order.customerName.split(' ').slice(1).join(' ') : '',
+    items: Array.isArray(order.items) ? order.items.map((item: any) => ({
+      productName: item.productName ?? '',
+      productBrand: item.productBrand ?? '',
+      quantity: item.quantity ?? 0
+    })) : []
   });
 
-  const tableData = inPreparationOrders.map(convertToTableData);
+  // Paginación
+  const paginatedOrders = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return orders.slice(startIndex, endIndex);
+  }, [orders, currentPage, itemsPerPage]);
+  
+  const tableData = paginatedOrders.map(convertToTableData);
 
   const handleView = (id: number) => {
-    const order = inPreparationOrders.find(o => o.DepotOrderId === id);
+    const order = orders.find((o: any) => (o as any).depotOrderId === id);
     setSelectedOrder(order || null);
   };
 
@@ -50,10 +62,15 @@ function InPreparationOrdersPage() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Órdenes en Preparación</h1>
-          <p className="mt-2 text-gray-600">
-            Visualiza las órdenes que están siendo preparadas por operarios asignados
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Órdenes en Preparación</h1>
+              <p className="mt-2 text-gray-600">
+                Visualiza las órdenes que están siendo preparadas por operarios asignados
+              </p>
+            </div>
+            <BackButton to="/depot" />
+          </div>
         </div>
 
         {error && (
@@ -62,34 +79,45 @@ function InPreparationOrdersPage() {
           </div>
         )}
 
-        <OrderTable
-          orders={tableData}
-          loading={loading}
-          error={error}
-          onRefetch={refetch}
-          onView={handleView}
-          showEditButton={false}
-          showDeleteButton={false}
-          showStatusChange={false}
-          onActionChange={handleActionChange}
-        />
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <OrderTable
+            orders={tableData}
+            loading={loading}
+            error={error}
+            onRefetch={refetch}
+            onView={handleView}
+          />
+          
+          {!loading && !error && orders.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(orders.length / itemsPerPage)}
+              onPageChange={setCurrentPage}
+              totalItems={orders.length}
+              itemsPerPage={itemsPerPage}
+            />
+          )}
+        </div>
 
         {/* Diálogo de detalles de orden */}
         {selectedOrder && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Detalles de la Orden en Preparación</h2>
-                <button
-                  onClick={() => setSelectedOrder(null)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  ✕
-                </button>
+          <>
+            <div className="fixed inset-0 backdrop-blur-sm bg-black/30 z-40" />
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold">Detalles de la Orden en Preparación</h2>
+                  <button
+                    onClick={() => setSelectedOrder(null)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <OrderDetails order={{...convertToTableData(selectedOrder), status: 'En Preparación'}} />
               </div>
-              <OrderDetails order={convertToTableData(selectedOrder)} />
             </div>
-          </div>
+          </>
         )}
       </div>
     </div>

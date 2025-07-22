@@ -18,6 +18,7 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
         private readonly IOrderRepository _repository = repository;
         private readonly IRabbitMQPublisher _publisher = publisher;
         private readonly ILogger<UpdateOrderStatusCommandHandler> ILogger = logger;
+
         public async Task<bool> HandleAsync(UpdateOrderStatusCommand command)
         {
             var existingOrder = await _repository.GetByIdAsync(command.OrderId);
@@ -25,9 +26,9 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
                 throw new KeyNotFoundException($"Order with ID {command.OrderId} not found.");
 
             ILogger.LogInformation("📧 DatosCUSTOMER:  CustomerName={Name}, Email={Email}, Phone={Phone}",
-            existingOrder.Customer.FirstName + " " + existingOrder.Customer.LastName,
-            existingOrder.Customer.Email,
-            existingOrder.Customer.PhoneNumber);
+                existingOrder.Customer.FirstName + " " + existingOrder.Customer.LastName,
+                existingOrder.Customer.Email,
+                existingOrder.Customer.PhoneNumber);
 
             // Validamos que unicamente sea pending y que no tenga otro estado.
             if (existingOrder.Status != OrderStatus.Pending && existingOrder.Status != OrderStatus.Canceled)
@@ -45,7 +46,6 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
             existingOrder.Status = command.Request.Status;
             existingOrder.ModifiedStatusDate = DateTime.UtcNow;
             existingOrder.CreatedByUserId = command.Request.ModifiedByUserId ?? existingOrder.CreatedByUserId;
-
 
             await _repository.UpdateAsync(existingOrder);
 
@@ -73,6 +73,7 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
                             Quantity = i.Quantity
                         }).ToList()
                     };
+
                     ILogger.LogInformation("📧 Emitiendo evento: CustomerName={Name}, Email={Email}, Phone={Phone}",
                         existingOrder.Customer.FirstName + " " + existingOrder.Customer.LastName,
                         existingOrder.Customer.Email,
@@ -81,7 +82,8 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
                     // Publicamos el evento en RabbitMQ
                     await _publisher.PublishAsync(integrationEvent, "order_issued_queue");
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 // Manejo de errores al publicar el evento
                 throw new InvalidOperationException("Error al publicar el evento de orden emitida.", ex);

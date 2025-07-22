@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Header from "../../../components/Header";
 import CustomerSatisfactionTable from "../SalesComponents/IndividualComponentsSales/CustomerSatisfactionTable";
 import GraphSatisfactionCustomer from "../SalesGraph/GraphSatisfactionCustomer";
-import { CustomerStatus,Customer } from "../../../types/CustomerTypes";
+import { Customer } from "../../../types/CustomerTypes";
 import type { Order } from "../../../types/OrderTypes";
 import API from "../../../../../api/axios";
 import Footer from "../../../components/Footer";
@@ -10,9 +10,8 @@ import Footer from "../../../components/Footer";
 
 const CustomerSatisfacionPage: React.FC = () => {
   const [customers, setCustomers] = useState<(Customer & { pedidoID?: string | number })[]>([]);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loading] = useState<boolean>(true);
+  const [error] = useState<string | null>(null);
 
   useEffect(() => {
     //API:
@@ -32,7 +31,6 @@ const CustomerSatisfacionPage: React.FC = () => {
         });
 
         setCustomers(mergedCustomers);
-        setOrders(orderRes.data);
       } catch (error) {
         console.error("Error al cargar datos:", error);
       }
