@@ -11,12 +11,12 @@ interface AssignPricesModalProps {
 }
 
 const AssignPricesModal: React.FC<AssignPricesModalProps> = ({ order, isOpen, onClose, onSuccess }) => {
-  const [prices, setPrices] = useState(order.Items.map(item => ({ ItemId: item.Id, UnitPrice: item.UnitPrice || 0 })));
+  const [prices, setPrices] = useState(order.items.map(item => ({ itemId: item.id, unitPrice: item.unitPrice || 0 })));
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (idx: number, value: number) => {
-    setPrices(prices => prices.map((p, i) => i === idx ? { ...p, UnitPrice: value } : p));
+    setPrices(prices => prices.map((p, i) => i === idx ? { ...p, unitPrice: value } : p));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,13 +24,13 @@ const AssignPricesModal: React.FC<AssignPricesModalProps> = ({ order, isOpen, on
     setError(null);
     try {
       await setItemUnitPricesSchema.validate({
-        DepotOrderId: order.DepotOrderId,
-        ItemUnitPrices: prices,
+        depotOrderId: order.depotOrderId,
+        itemUnitPrices: prices,
       });
       setLoading(true);
       await setItemUnitPrices({
-        DepotOrderId: order.DepotOrderId,
-        ItemUnitPrices: prices,
+        depotOrderId: order.depotOrderId,
+        itemUnitPrices: prices,
       });
       setLoading(false);
       onSuccess();
@@ -58,17 +58,17 @@ const AssignPricesModal: React.FC<AssignPricesModalProps> = ({ order, isOpen, on
               </tr>
             </thead>
             <tbody>
-              {order.Items.map((item, idx) => (
-                <tr key={item.Id}>
-                  <td>{item.ProductName}</td>
-                  <td>{item.ProductBrand}</td>
-                  <td>{item.Quantity}</td>
+              {order.items.map((item, idx) => (
+                <tr key={item.id}>
+                  <td>{item.productName}</td>
+                  <td>{item.productBrand}</td>
+                  <td>{item.quantity}</td>
                   <td>
                     <input
                       type="number"
                       min={0}
                       step={0.01}
-                      value={prices[idx].UnitPrice}
+                      value={prices[idx].unitPrice}
                       onChange={e => handleChange(idx, parseFloat(e.target.value))}
                       className="border rounded px-2 py-1 w-24"
                       required

@@ -41,4 +41,8 @@ export const orderStatusStyles: Record<OrderStatus, { text: string; bg: string }
     text: "text-red-700",
     bg: "bg-red-100",
   },
+  [OrderStatus.Modified]: {
+    text: "text-amber-700",
+    bg: "bg-amber-100",
+  },
 }

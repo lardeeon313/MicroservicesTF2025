@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
-import type { Customer,CustomerStatus } from "../../../types/CustomerTypes";
-import { Order, OrderStatus } from "../../../types/OrderTypes";
+import type { Customer } from "../../../types/CustomerTypes";
+import { Order } from "../../../types/OrderTypes";
 import CustomerReportTable, { CustomerWithCount } from "../SalesComponents/IndividualComponentsSales/CustomerReportTable";
 import GraphCustomerReport from "../SalesGraph/GraphCustomerReport";
 import API from "../../../../../api/axios";
@@ -12,8 +12,8 @@ import API from "../../../../../api/axios";
 const CustomerReportPage: React.FC = () => {
   const [data,setData] = useState<CustomerWithCount[]>([])
 
-  const [loading,setLoading] = useState(true);
-  const [error,setError] = useState<string | null>(null);
+  const [loading] = useState(true);
+  const [error] = useState<string | null>(null);
 
    useEffect(() => {
     const fetchData = async () => {

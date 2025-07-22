@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../../components/Header";
-import type { Order,OrderStatus } from "../../../types/OrderTypes";
+import type { Order } from "../../../types/OrderTypes";
 import ModifiedCanceledOrdersTable from "../SalesComponents/IndividualComponentsSales/ModifiedCanceledOrdersTable";
 import GraphModifiedCanceledOrders from "../SalesGraph/GraphModifiedCanceledOrders";
 import API from "../../../../../api/axios";

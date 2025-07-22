@@ -31,9 +31,9 @@ const EditUnitPriceModal: React.FC<EditUnitPriceModalProps> = ({ orderId, item, 
       });
       setLoading(true);
       await updateInvoicedItemPrice({
-        BillingOrderId: orderId,
-        ItemId: item.Id,
-        NewUnitPrice: unitPrice,
+        billingOrderId: orderId,
+        itemId: item.Id,
+        newUnitPrice: unitPrice,
       });
       setLoading(false);
       onSuccess();

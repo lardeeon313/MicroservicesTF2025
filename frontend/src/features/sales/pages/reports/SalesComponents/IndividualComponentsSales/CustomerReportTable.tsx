@@ -1,5 +1,5 @@
 import React from "react";
-import { Customer,CustomerStatus } from "../../../../types/CustomerTypes";
+import { Customer } from "../../../../types/CustomerTypes";
 
 export interface CustomerWithCount extends Customer{
     orderCount:number;

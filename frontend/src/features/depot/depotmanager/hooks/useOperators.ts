@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
-import { AssignOperatorRequest, OperatorDto } from '../types/OperatorTypes';
+import { AssignOperatorRequest, OperatorDto, AssignOrderRequest } from '../types/OperatorTypes';
 import { assignOperatorToTeam, removeOperatorFromTeam, getAllOperators } from '../services/operatorService';
+import { assignOperator as assignOrderOperatorApi } from '../services/orderService';
 import { handleFormikError } from '../../../../components/ErrorHandler';
 import { AxiosError } from 'axios';
 
@@ -75,12 +76,38 @@ export function useOperators() {
         }
     };
 
+    const assignOrderToOperator = async (orderId: number, operatorUserId: string): Promise<void> => {
+        try {
+            setLoading(true);
+            setError(null);
+            const request: AssignOrderRequest = {
+                depotOrderId: orderId,
+                operatorUserId: operatorUserId
+            };
+            await assignOrderOperatorApi(orderId, request);
+        } catch (error) {
+            handleFormikError({
+                error,
+                customMessages: {
+                    400: "Datos inválidos, por favor verificá los campos.",
+                    404: "Orden o operador no encontrado.",
+                    500: "Error interno del servidor.",
+                },
+            });
+            setError("Error al asignar la orden al operador");
+            throw error;
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return {
         loading,
         error,
         operators,
         fetchOperators,
         assignOperator,
-        removeOperator
+        removeOperator,
+        assignOrderToOperator
     };
 }

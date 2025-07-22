@@ -1,14 +1,13 @@
-import { OrderStatus } from "../types/OrderTypes";
 
-export const OrderStatusLabels: Record<OrderStatus, string> = {
-  [OrderStatus.Pending]: "Pendiente",
-  [OrderStatus.Issued]: "Emitido",
-  [OrderStatus.Confirmed]: "Confirmado",
-  [OrderStatus.InPreparation]: "En preparación",
-  [OrderStatus.Prepared]: "Preparado",
-  [OrderStatus.Invoiced]: "Facturado",
-  [OrderStatus.Verify]: "Por verificar",
-  [OrderStatus.OnTheWay]: "En camino",
-  [OrderStatus.Delivered]: "Entregado",
-  [OrderStatus.Canceled]: "Cancelado",
+
+export const OrderStatusLabel: { [key: number]: string } = {
+  0: "Recibido",
+  1: "Re-Recibido",
+  2: "Asignado a operario",
+  3: "En preparación",
+  4: "Notificado falta",
+  5: "Enviado a facturar",
+  6: "Pendiente de resolución",
+  7: "Preparado",
+  8: "Facturado"
 };

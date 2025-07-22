@@ -5,19 +5,23 @@ import {
   getInvoicedOrdersByCustomer,
   getInvoicedOrdersByDateRange
 } from '../services/OrderService';
-import { DepotOrderDto } from '../types/OrderTypes';
 import OrderTable from '../components/OrderTable';
-import { OrderStatus } from '../../depotmanager/types/OrderTypes';
-import { getInvoicedOrdersByCustomerSchema, getInvoicedOrdersByDateRangeSchema } from '../validations/orderSchemas';
+import BackButton from '../components/BackButton';
+import Tabs from '../components/Tabs';
+import SearchBar from '../components/SearchBar';
+
+const PAGE_SIZE = 5;
 
 const InvoicedOrdersPage: React.FC = () => {
-  const [orders, setOrders] = useState<DepotOrderDto[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [customerId, setCustomerId] = useState('');
+  const [search, setSearch] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [filterError, setFilterError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [tab, setTab] = useState<'all' | 'modified'>('all');
+  const [searching, setSearching] = useState(false);
   const navigate = useNavigate();
 
   const fetchOrders = () => {
@@ -32,117 +36,99 @@ const InvoicedOrdersPage: React.FC = () => {
     fetchOrders();
   }, []);
 
-  // Adaptar DepotOrderDto a OrderTableData
-  const mapToOrderTableData = (order: DepotOrderDto) => ({
-    id: order.DepotOrderId,
-    customerFirstName: order.CustomerName,
-    customerLastName: '',
-    orderDate: order.OrderDate,
-    deliveryDate: '',
-    deliveryDetail: order.DeliveryDetail,
-    status: order.Status as OrderStatus,
-    items: order.Items.map(item => ({
-      id: item.Id,
-      productName: item.ProductName,
-      productBrand: item.ProductBrand,
-      quantity: item.Quantity,
-    })),
-    total: order.TotalAmount,
-  });
+  // Tabs
+  const allOrders = orders.filter(o => !o.wasModified);
+  const modifiedOrders = orders.filter(o => o.wasModified);
 
-  const orderTableData = orders.map(mapToOrderTableData);
-
-  const handleFilterByCustomer = async (e: React.FormEvent) => {
+  // Buscador avanzado
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFilterError(null);
+    setSearching(true);
+    setError(null);
     try {
-      await getInvoicedOrdersByCustomerSchema.validate({ CustomerId: customerId });
-      setLoading(true);
-      const data = await getInvoicedOrdersByCustomer(customerId);
-      setOrders(data);
-    } catch (err: any) {
-      setFilterError(err.errors ? err.errors[0] : 'Error en el filtro.');
+      if (search) {
+        const data = await getInvoicedOrdersByCustomer(search);
+        setOrders(data);
+      } else if (startDate && endDate) {
+        const data = await getInvoicedOrdersByDateRange(startDate, endDate);
+        setOrders(data);
+      } else {
+        fetchOrders();
+      }
+      setPage(1);
+    } catch {
+      setError('Error en la búsqueda.');
     } finally {
-      setLoading(false);
+      setSearching(false);
     }
   };
 
-  const handleFilterByDate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFilterError(null);
-    try {
-      await getInvoicedOrdersByDateRangeSchema.validate({ StartDate: startDate, EndDate: endDate });
-      setLoading(true);
-      const data = await getInvoicedOrdersByDateRange(startDate, endDate);
-      setOrders(data);
-    } catch (err: any) {
-      setFilterError(err.errors ? err.errors[0] : 'Error en el filtro.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Paginación
+  const filtered = tab === 'all' ? allOrders : modifiedOrders;
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paginatedOrders = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const handleClearFilters = () => {
-    setCustomerId('');
-    setStartDate('');
-    setEndDate('');
-    setFilterError(null);
-    fetchOrders();
+  const handleViewDetail = (id: number) => {
+    navigate(`/depot/billingmanager/invoiced-orders/${id}`);
   };
 
   return (
     <div className="p-8">
-      <h2 className="text-2xl font-bold mb-6 text-red-600">Órdenes Facturadas</h2>
-      <div className="mb-6 flex flex-col md:flex-row gap-4 items-end">
-        <form onSubmit={handleFilterByCustomer} className="flex gap-2 items-end">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">ID Cliente</label>
-            <input
-              type="text"
-              value={customerId}
-              onChange={e => setCustomerId(e.target.value)}
-              className="border rounded px-2 py-1 w-48"
-              placeholder="GUID del cliente"
-            />
-          </div>
-          <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Filtrar por cliente</button>
-        </form>
-        <form onSubmit={handleFilterByDate} className="flex gap-2 items-end">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Desde</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={e => setStartDate(e.target.value)}
-              className="border rounded px-2 py-1"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Hasta</label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={e => setEndDate(e.target.value)}
-              className="border rounded px-2 py-1"
-            />
-          </div>
-          <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">Filtrar por fechas</button>
-        </form>
-        <button onClick={handleClearFilters} className="px-4 py-2 bg-gray-300 rounded">Limpiar filtros</button>
+      <div className="flex items-center justify-between mb-6">
+        <BackButton to="/depot/billingmanager" />
+        <h2 className="text-2xl font-bold text-blue-700">Órdenes Facturadas</h2>
       </div>
-      {filterError && <div className="text-red-500 mb-2">{filterError}</div>}
-      <OrderTable
-        orders={orderTableData}
-        loading={loading}
-        error={error}
-        onRefetch={fetchOrders}
-        onView={(id) => navigate(`/depot/billingmanager/invoiced-orders/${id}`)}
-        onActionChange={() => {}}
-        showEditButton={false}
-        showDeleteButton={false}
-        showStatusChange={false}
-        customActions={[]}
+      <div className="mb-6 flex flex-col md:flex-row md:items-end md:gap-6 gap-4">
+        <SearchBar
+          search={search}
+          setSearch={setSearch}
+          startDate={startDate}
+          setStartDate={setStartDate}
+          endDate={endDate}
+          setEndDate={setEndDate}
+          onSearch={handleSearch}
+          onClear={() => { setSearch(''); setStartDate(''); setEndDate(''); fetchOrders(); }}
+          loading={searching}
+        />
+      </div>
+      {/* Tabs */}
+      <Tabs
+        tabs={[
+          { key: 'all', label: 'Órdenes Facturadas', count: allOrders.length },
+          { key: 'modified', label: 'Órdenes Modificadas', count: modifiedOrders.length },
+        ]}
+        activeTab={tab}
+        onChange={key => { setTab(key as 'all' | 'modified'); setPage(1); }}
       />
+      <div className="bg-white rounded-lg shadow p-4 border">
+        <OrderTable
+          orders={paginatedOrders.map(order => ({
+            id: order.depotOrderId,
+            customerFirstName: order.customerName,
+            orderDate: order.orderDate,
+            deliveryDetail: order.deliveryDetail,
+            status: order.status,
+            items: order.items,
+            total: order.totalAmount,
+          }))}
+          loading={loading}
+          error={error}
+          onRefetch={fetchOrders}
+          onView={handleViewDetail}
+        />
+      </div>
+      {/* Paginación */}
+      <div className="flex justify-center mt-4 space-x-2">
+        {Array.from({ length: totalPages }, (_, i) => (
+          <button
+            key={i + 1}
+            className={`px-3 py-1 rounded ${page === i + 1 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`}
+            onClick={() => setPage(i + 1)}
+          >
+            {i + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

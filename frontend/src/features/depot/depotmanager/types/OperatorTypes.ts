@@ -27,22 +27,22 @@ export interface AssignOperatorRequest {
 }
 
 export interface AssignOrderResponse {
-    OrderId: number;
-    OperatorId: string;
-    AssignedAt: Date;
+    orderId: number;
+    operatorId: string;
+    assignedAt: Date;
 }
 
 export interface AssignOrderRequest {
     /** Identificador de la orden de depósito que se asignará al equipo. */
-    DepotOrderId: number;
+    depotOrderId: number;
     /** Identificador del operador al que se asignará la orden de depósito. */
-    OperatorUserId: string;
+    operatorUserId: string;
 }
 
 export interface OrderMissingReportedRequest {
-    DepotOrderId: number;
-    MissingReason: string;
-    MissingDescription: string;
-    MissingItems: DepotOrderItemsReportedDto[];
+    depotOrderId: number;
+    missingReason: string;
+    missingDescription: string;
+    missingItems: DepotOrderItemsReportedDto[];
 }
 

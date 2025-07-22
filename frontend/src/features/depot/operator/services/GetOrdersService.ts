@@ -3,5 +3,6 @@
 import type { Order } from "../../../sales/types/OrderTypes";
 
 export const GetOrders = async() : Promise<Order[]> => {
-    
+    // TODO: Implementar la llamada a la API
+    return [];
 }

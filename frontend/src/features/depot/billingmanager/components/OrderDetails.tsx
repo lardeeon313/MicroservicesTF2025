@@ -1,8 +1,7 @@
-import { Link } from "react-router-dom";
-import { OrderTableData } from "../../depotmanager/types/OrderTypes";
+import { OrderTableData } from "../types/OrderTypes";
 
 type Props = {
-  order: OrderTableData | null;
+  order: OrderTableData;
 };
 
 export default function OrderDetails({ order }: Props) {
@@ -22,10 +21,6 @@ export default function OrderDetails({ order }: Props) {
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">Fecha Pedido:</label> 
               <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{formatDate(order.orderDate)}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-1">Fecha Entrega:</label> 
-              <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{order.deliveryDate ? formatDate(order.deliveryDate) : "No asignada"}</p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">Detalles de entrega:</label>
@@ -55,14 +50,6 @@ export default function OrderDetails({ order }: Props) {
                   </tbody>
                 </table>
             </div>
-            <div className="mt-10">
-              <Link 
-                to={`/sales/orders/update/${order.id}`}
-                className="flex w-full justify-center items-center rounded-md bg-red-700 px-3 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-red-600 transition duration-150 disabled:opacity-50"
-              >
-                Editar órden
-              </Link>
-            </div>        
           </div>
         )}
       </div>

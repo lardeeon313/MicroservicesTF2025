@@ -1,4 +1,4 @@
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import React from 'react';
 import { Order } from "../../../sales/types/OrderTypes";
 
 interface Props {
@@ -6,31 +6,30 @@ interface Props {
     loading: boolean,
 }
 
-const OrderListComponent = ({orders,loading}: Props) => {
+const OrderListComponent: React.FC<Props> = ({orders, loading}) => {
     
-    const renderItem = ({item}: {item:Order}) => (
-        <TouchableOpacity>
-            <Text >Cliente: {item.customerFirstName}{item.customerLastName}</Text>
-            <Text>Direccion: {item.deliveryDetail} </Text>
-            <Text>Estado: {item.status} </Text>
-            <Text>Fecha del pedido: {item.orderDate} </Text>
-        </TouchableOpacity>
+    const renderItem = (item: Order) => (
+        <div key={item.id} className="p-4 border border-gray-200 rounded-lg mb-2 cursor-pointer hover:bg-gray-50">
+            <p className="font-medium">Cliente: {item.customerFirstName} {item.customerLastName}</p>
+            <p className="text-sm text-gray-600">Direccion: {item.deliveryDetail}</p>
+            <p className="text-sm text-gray-600">Estado: {item.status}</p>
+            <p className="text-sm text-gray-600">Fecha del pedido: {item.orderDate}</p>
+        </div>
     ); 
 
     if(loading){
         return(
-            <View>
-                <ActivityIndicator size="large" color="#007AFF"/>
-                <Text>Cargando pedidos....</Text>
-            </View>
+            <div className="flex flex-col items-center justify-center p-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p className="mt-2 text-gray-600">Cargando pedidos....</p>
+            </div>
         )
     }
+    
     return(
-        <FlatList 
-        data={orders}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
-        />
+        <div className="space-y-2">
+            {orders.map(renderItem)}
+        </div>
     )
 }
 

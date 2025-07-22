@@ -1,5 +1,7 @@
-import { ClipboardList, PackageCheck, AlertTriangle, Users, BarChart2, Clock } from "lucide-react";
+import { ClipboardList, PackageCheck, AlertTriangle, Users, BarChart2, Clock, Search } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import GeneralOrderSearch from "../components/GeneralOrderSearch";
 
 const cards = [
   {
@@ -41,13 +43,40 @@ const cards = [
 ];
 
 const DepotManagerDashboardPage = () => {
+  const [showSearchModal, setShowSearchModal] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-50 py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Panel de Depósito</h1>
-        <p className="text-center text-lg text-gray-700 mb-12">
+        <p className="text-center text-lg text-gray-700 mb-8">
           Todo lo que necesitás para gestionar las operaciones del depósito
         </p>
+        
+        {/* Barra de búsqueda compacta */}
+        <div className="mb-8">
+          <div className="max-w-md mx-auto">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <input
+                type="text"
+                placeholder="Buscar órdenes..."
+                onClick={() => setShowSearchModal(true)}
+                readOnly
+                className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+              />
+            </div>
+            <div className="flex justify-center space-x-3 mt-1">
+              <Link
+                to="/depot/order-search"
+                className="text-xs text-red-600 hover:text-red-700 font-medium"
+              >
+                Búsqueda por ID
+              </Link>
+            </div>
+          </div>
+        </div>
+        
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {cards.map(({ title, description, Icon, link }, idx) => (
             <Link
@@ -64,6 +93,33 @@ const DepotManagerDashboardPage = () => {
           ))}
         </div>
       </div>
+
+      {/* Modal de búsqueda */}
+      {showSearchModal && (
+        <>
+          <div className="fixed inset-0 backdrop-blur-sm bg-black/30 z-40" />
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+              <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                <h2 className="text-xl font-semibold text-gray-900">Búsqueda de Órdenes</h2>
+                <button
+                  onClick={() => setShowSearchModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+                <GeneralOrderSearch 
+                  onOrderSelected={() => setShowSearchModal(false)}
+                />
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

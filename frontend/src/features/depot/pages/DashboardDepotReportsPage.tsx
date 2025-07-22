@@ -1,4 +1,4 @@
-import { User, FilePlus2, BarChart2, FileText, PieChart } from "lucide-react";
+import { User, FilePlus2, FileText, PieChart } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const cards = [
