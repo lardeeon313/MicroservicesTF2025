@@ -19,7 +19,9 @@ namespace IdentityService.Application.Queries.GetAllOperators
             return operators.Select(o => new OperatorDto
             {
                 Id = o.Id,
-                FullName = $"{o.Name} {o.LastName}",
+                FirstName = o.Name,
+                LastName = o.LastName,
+                PhoneNumber = o.PhoneNumber,
                 Email = o.Email
             }).ToList();
         }

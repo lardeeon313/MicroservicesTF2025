@@ -1,5 +1,6 @@
 ﻿using DepotService.Application.DTOs;
 using DepotService.Application.DTOs.DepotManager;
+using DepotService.Application.DTOs.DepotOrder;
 using DepotService.Domain.Entities;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;

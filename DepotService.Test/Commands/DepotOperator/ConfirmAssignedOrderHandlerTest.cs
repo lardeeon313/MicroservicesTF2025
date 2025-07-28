@@ -1,5 +1,5 @@
 ﻿using DepotService.Application.Commands.DepotOperator.ConfirmAssignedOrder;
-using DepotService.Application.Common.Interfaces;
+using DepotService.Domain.Common.Interfaces;
 using DepotService.Domain.Entities;
 using DepotService.Domain.Enums;
 using DepotService.Domain.IRepositories;

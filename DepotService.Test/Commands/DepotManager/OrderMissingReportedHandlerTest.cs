@@ -1,6 +1,6 @@
 ﻿using DepotService.Application.Commands.DepotManager.OrderMissingReported;
-using DepotService.Application.Common.Interfaces;
-using DepotService.Application.DTOs;
+using DepotService.Application.DTOs.DepotOrder;
+using DepotService.Domain.Common.Interfaces;
 using DepotService.Domain.Entities;
 using DepotService.Domain.Enums;
 using DepotService.Domain.IRepositories;

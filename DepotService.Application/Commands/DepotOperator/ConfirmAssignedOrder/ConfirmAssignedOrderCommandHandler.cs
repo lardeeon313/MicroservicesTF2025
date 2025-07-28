@@ -1,4 +1,4 @@
-﻿using DepotService.Application.Common.Interfaces;
+﻿using DepotService.Domain.Common.Interfaces;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
 using DepotService.Infraestructure.Email.EmailTemplates;

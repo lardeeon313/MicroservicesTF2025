@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DepotService.Application.DTOs;
+using DepotService.Application.DTOs.DepotOrder;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
 using DocumentFormat.OpenXml.Spreadsheet;

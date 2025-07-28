@@ -1,4 +1,5 @@
 ﻿using DepotService.Application.DTOs.DepotManager;
+using DepotService.Application.Services.IdentityServiceClient;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
 using System;
@@ -9,14 +10,27 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.DepotManager.GetAllTeams
 {
-    public class GetAllTeamsQueryHandler(ITeamRepository repository, DepotDbContext context) : IGetAllTeamsQueryHandler
+    public class GetAllTeamsQueryHandler(ITeamRepository repository, IIdentityServiceClient identityClient) : IGetAllTeamsQueryHandler
     {
         private readonly ITeamRepository _repository = repository;
-        private readonly DepotDbContext _context = context;
+        private readonly IIdentityServiceClient identityServiceClient = identityClient;
         public async Task<IEnumerable<DepotTeamDto>> HandleAsync()
         {
             var teams = await _repository.GetAllAsync();
-             
+            var depotOperators = await identityServiceClient.GetUserWithRoleOperator();
+
+            // Check if depotOperators is null or empty
+            if (depotOperators == null || !depotOperators.Any())
+                throw new Exception("No operators found in Identity Service");
+
+            // Debug: Mostramos los IDs de los operadores
+            Console.WriteLine("IDs de operadores obtenidos:");
+            foreach (var operatorDto in depotOperators)
+            {
+                Console.WriteLine($"  -> {operatorDto.Id}");
+            }
+
+            // Check if teams are null or empty
             if (teams == null)
                 throw new Exception("No teams found");
 
@@ -27,11 +41,20 @@ namespace DepotService.Application.Queries.DepotManager.GetAllTeams
                 TeamName = t.TeamName,
                 TeamDescription = t.TeamDescription,
                 CreatedAt = t.CreatedAt,
-                Operators = t.Assignments.Select(o => new OperatorInTeamDto
+                Operators = t.Assignments
+                .Select(a =>
                 {
-                    OperatorByUserId = o.OperatorUserId,
-                    AssignAt = o.AssignedAt,
-                    RoleInTeam = o.RoleInTeam,
+                    var operatorData = depotOperators.FirstOrDefault(op => op.Id == a.OperatorUserId);
+                    return new OperatorsInTeamDto
+                    {
+                        OperatorByUserId = a.OperatorUserId,
+                        AssignAt = a.AssignedAt,
+                        RoleInTeam = a.RoleInTeam,
+                        FirstName = operatorData?.FirstName,
+                        LastName = operatorData?.LastName,
+                        PhoneNumber = operatorData?.PhoneNumber,
+                        Email = operatorData?.Email
+                    };
                 }).ToList()
             }).ToList();
         }

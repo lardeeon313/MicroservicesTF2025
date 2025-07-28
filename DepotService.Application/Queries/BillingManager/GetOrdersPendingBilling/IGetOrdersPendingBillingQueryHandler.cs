@@ -1,4 +1,4 @@
-﻿using DepotService.Application.DTOs;
+﻿using DepotService.Application.DTOs.DepotOrder;
 
 namespace DepotService.Application.Queries.BillingManager.GetOrdersPendingBilling
 {

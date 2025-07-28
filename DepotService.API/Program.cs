@@ -17,7 +17,6 @@ using DepotService.Application.Commands.DepotOperator.RejectOrder;
 using DepotService.Application.Commands.DepotOperator.ReportOrderMissing;
 using DepotService.Application.Commands.DepotOperator.SentOrderToBilling;
 using DepotService.Application.Commands.DepotOperator.UnMarkItemReady;
-using DepotService.Application.Common.Interfaces;
 using DepotService.Application.DTOs.DepotManager.Request;
 using DepotService.Application.DTOs.DepotOperator.Request;
 using DepotService.Application.Queries.BillingManager.GetAllInvoicedOrders;
@@ -47,9 +46,11 @@ using DepotService.Application.Queries.Reports.GetOrdersInPreparation;
 using DepotService.Application.Queries.Reports.GetOrderStatusCount;
 using DepotService.Application.Queries.Reports.GetProcessingTimePerOrder;
 using DepotService.Application.Queries.Reports.GetReissuedReportOrders;
+using DepotService.Application.Services.IdentityServiceClient;
 using DepotService.Application.Validators.BillingManager;
 using DepotService.Application.Validators.DepotManager;
 using DepotService.Application.Validators.DepotOperator;
+using DepotService.Domain.Common.Interfaces;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
 using DepotService.Infraestructure.Documents;
@@ -70,7 +71,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 //para acceder desde el celular
-builder.WebHost.UseUrls("http://0.0.0.0:5003");
+//builder.WebHost.UseUrls("http://0.0.0.0:5003");
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -177,13 +178,19 @@ builder.Services.AddScoped<InvoicePdfGenerator>();
 builder.Services.AddScoped<InvoiceWordGenerator>();
 builder.Services.AddScoped<InvoiceExcelGenerator>();
 
-
 // Obtener la cadena de conexión del appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Registrar los repositorios
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 builder.Services.AddScoped<IDepotOrderRepository, DepotOrderRepository>();
+builder.Services.AddScoped<IDepotReportRepository, DepotReportRepository>();
+
+// Registrar el servicio de identidad para consultar los operadores
+builder.Services.AddScoped<IIdentityServiceClient, IdentityServiceClient>();
+
+// Registrar el servicio de correo electrónico
+builder.Services.AddScoped<IEmailService, MailgunEmailService>();
 
 // Registrar el servicio de mensajería RabbitMQ
 builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
@@ -209,9 +216,7 @@ builder.Services.AddAuthentication("Bearer")
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey!)),
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero,
-            //NUEVO: 
-            RoleClaimType = "role"
+            ClockSkew = TimeSpan.Zero
         };
     });
 
