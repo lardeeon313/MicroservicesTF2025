@@ -27,18 +27,12 @@ export const getTeams = async (): Promise<DepotTeam[]> => {
             teamDescription: team.teamDescription || '',
             operators: (team.operators || []).map((operator: any) => {
                 console.log('Mapping operator:', operator);
-                
-                // Intentar obtener el nombre completo si existe (múltiples variaciones)
-                const fullName = operator.fullName || operator.operatorName || operator.OperatorName || operator.FullName || '';
-                const nameParts = fullName.split(' ');
-                const firstName = nameParts[0] || 'Sin nombre';
-                const lastName = nameParts.slice(1).join(' ') || 'Sin apellido';
-                
+                                
                 const mappedOperator = {
                     operatorByUserId: operator.operatorByUserId || operator.OperatorByUserId || operator.id || operator.Id || '',
-                    operatorName: operator.operatorName || operator.OperatorName || firstName,
-                    operatorLastName: operator.operatorLastName || operator.OperatorLastName || lastName,
-                    operatorEmail: operator.operatorEmail || operator.OperatorEmail || operator.email || operator.Email || 'Sin email',
+                    operatorName: operator.firstName || 'Sin nombre',
+                    operatorLastName: operator.lastName || 'Sin apellido',
+                    operatorEmail: operator.email || operator.Email || 'Sin email',
                     roleInTeam: operator.roleInTeam || operator.RoleInTeam || 'Sin rol',
                     assignAt: operator.assignAt || operator.AssignAt ? new Date(operator.assignAt || operator.AssignAt) : new Date()
                 };

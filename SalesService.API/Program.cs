@@ -156,7 +156,7 @@ builder.Services.AddAuthorizationBuilder()
 // Creamos un Http Client IdentityService para consultar los usuarios con role SalesStaff
 builder.Services.AddHttpClient("IdentityService", client =>
 {
-    client.BaseAddress = new Uri("http://identityservice:8080/api/auth/"); // Ajustá al puerto y path correcto
+    client.BaseAddress = new Uri("http://identityservice:8080/api/auth/");
 });
 
 var app = builder.Build();  

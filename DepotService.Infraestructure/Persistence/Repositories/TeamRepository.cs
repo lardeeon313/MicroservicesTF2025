@@ -32,6 +32,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         public async Task<IEnumerable<DepotTeamEntity>> GetAllAsync()
         {
             return await _context.DepotTeams
+                .Include(t => t.Assignments)
                 .AsNoTracking()
                 .ToListAsync();
         }

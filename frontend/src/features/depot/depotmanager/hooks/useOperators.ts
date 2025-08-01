@@ -37,6 +37,7 @@ export function useOperators() {
         try {
             setLoading(true);
             setError(null);
+            console.log(request.operatorUserId, request.teamId);
             await assignOperatorToTeam(request.teamId, request.operatorUserId);
             await fetchOperators();
         } catch (error) {

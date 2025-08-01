@@ -34,6 +34,8 @@ namespace DepotService.Application.Queries.DepotManager.GetAllTeams
             if (teams == null)
                 throw new Exception("No teams found");
 
+            var operatorsById = depotOperators.ToDictionary(op => op.Id.ToLower());
+
             // Project to DTO
             return teams.Select(t => new DepotTeamDto
             {
@@ -42,20 +44,21 @@ namespace DepotService.Application.Queries.DepotManager.GetAllTeams
                 TeamDescription = t.TeamDescription,
                 CreatedAt = t.CreatedAt,
                 Operators = t.Assignments
-                .Select(a =>
-                {
-                    var operatorData = depotOperators.FirstOrDefault(op => op.Id == a.OperatorUserId);
-                    return new OperatorsInTeamDto
+                    .Where(a => operatorsById.ContainsKey(a.OperatorUserId.ToString().ToLower()))
+                    .Select(a =>
                     {
-                        OperatorByUserId = a.OperatorUserId,
-                        AssignAt = a.AssignedAt,
-                        RoleInTeam = a.RoleInTeam,
-                        FirstName = operatorData?.FirstName,
-                        LastName = operatorData?.LastName,
-                        PhoneNumber = operatorData?.PhoneNumber,
-                        Email = operatorData?.Email
-                    };
-                }).ToList()
+                        var operatorData = operatorsById[a.OperatorUserId.ToString().ToLower()];
+                        return new OperatorsInTeamDto
+                        {
+                            OperatorByUserId = a.OperatorUserId,
+                            AssignAt = a.AssignedAt,
+                            RoleInTeam = a.RoleInTeam,
+                            FirstName = operatorData?.FirstName,
+                            LastName = operatorData?.LastName,
+                            PhoneNumber = operatorData?.PhoneNumber,
+                            Email = operatorData?.Email
+                        };
+                    }).ToList()
             }).ToList();
         }
     }

@@ -25,7 +25,6 @@ export const AssignOperatorToTeam = ({ isOpen, onClose, team }: AssignOperatorTo
 
     useEffect(() => {
         if (isOpen) {
-            console.log('Fetching operators...');
             fetchOperators();
         }
     }, [isOpen, fetchOperators]);
@@ -57,6 +56,7 @@ export const AssignOperatorToTeam = ({ isOpen, onClose, team }: AssignOperatorTo
     const handleSubmit = async (values: AssignOperatorFormData) => {
         try {
             await assignOperator(values);
+            console.log(values)
             toast.success('Operador asignado exitosamente');
             await refetch();
             onClose();

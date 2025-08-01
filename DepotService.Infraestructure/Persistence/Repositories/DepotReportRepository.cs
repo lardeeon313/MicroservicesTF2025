@@ -277,7 +277,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                         .Select(h => h.ChangedAt)
                         .FirstOrDefault(),
                     DeliveryDate = o.DeliveryDate,
-                    DepotTeamName = o.AssignedDepotTeam.TeamName
+                    DepotTeamName = o.AssignedDepotTeam != null ? o.AssignedDepotTeam.TeamName : null
                 }).ToListAsync();
            
             return new PaginatedResult<OrdersInPreparation>

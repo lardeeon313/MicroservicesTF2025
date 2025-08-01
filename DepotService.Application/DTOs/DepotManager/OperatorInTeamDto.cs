@@ -11,7 +11,7 @@ namespace DepotService.Application.DTOs.DepotManager
     /// </summary>
     public class OperatorsInTeamDto
     {
-        public string OperatorByUserId { get; set; } = string.Empty;
+        public Guid OperatorByUserId { get; set; } 
         public string RoleInTeam { get; set; } = "Operator";
         public string? FirstName { get; set; }
         public string? LastName { get; set; }

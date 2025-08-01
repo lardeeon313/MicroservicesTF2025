@@ -171,6 +171,7 @@ builder.Services.AddScoped<UnmarkItemReadyValidator>();
 // Add HostedService RabbitConsumer
 builder.Services.AddHostedService<OrderIssuedConsumer>();
 builder.Services.AddHostedService<OrderReissuedConsumer>();
+builder.Services.AddHostedService<OrderDeletedConsumer>();
 
 // Add Export Document Service 
 builder.Services.AddScoped<IInvoiceDocumentGenerator, InvoicePdfGenerator>();
@@ -188,6 +189,7 @@ builder.Services.AddScoped<IDepotReportRepository, DepotReportRepository>();
 
 // Registrar el servicio de identidad para consultar los operadores
 builder.Services.AddScoped<IIdentityServiceClient, IdentityServiceClient>();
+builder.Services.AddHttpContextAccessor(); // Necesario para acceder al contexto HTTP
 
 // Registrar el servicio de correo electrónico
 builder.Services.AddScoped<IEmailService, MailgunEmailService>();
@@ -224,6 +226,13 @@ builder.Services.AddAuthentication("Bearer")
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("DepotAcces", policy =>
         policy.RequireClaim("role", "DepotManager, DepotOperator, BillingManager"));
+
+// Creamos un Http Client IdentityService para consultar los usuarios con role SalesStaff
+builder.Services.AddHttpClient("IdentityService", client =>
+{
+    client.BaseAddress = new Uri("http://identityservice:8080/api/auth/");
+});
+
 
 var app = builder.Build();
 

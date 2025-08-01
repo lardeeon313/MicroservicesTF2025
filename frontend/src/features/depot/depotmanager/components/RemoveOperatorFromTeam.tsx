@@ -70,7 +70,7 @@ export const RemoveOperatorFromTeam = ({ isOpen, onClose, operator, teamId }: Re
 
                                 <div className="mt-2">
                                     <p className="text-sm text-gray-500">
-                                        ¿Estás seguro que deseas remover al operador "{operator.operatorByUserId}" del equipo? Esta acción no se puede deshacer.
+                                        ¿Estás seguro que deseas remover al operador "{operator.operatorName} {operator.operatorLastName}" del equipo? Esta acción no se puede deshacer.
                                     </p>
                                 </div>
 

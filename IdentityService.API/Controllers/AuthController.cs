@@ -106,9 +106,7 @@ namespace IdentityService.API.Controllers
         /// <response code="200">Lista obtenida exitosamente</response>
         /// <response code="401">No autorizado</response>
         [HttpGet("operators")]
-        [Authorize(Roles = "DepotManager, Admin")]
         [ProducesResponseType(typeof(List<OperatorDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetAllOperators()
         {
             var operators = await _getAllOperatorsQueryHandler.HandleAsync();
@@ -122,9 +120,7 @@ namespace IdentityService.API.Controllers
         /// <response code="200">Lista obtenida exitosamente</response>
         /// <response code="401">No autorizado</response>
         [HttpGet("salesstaffs")]
-        [Authorize(Roles = "SalesStaff, Admin")]
         [ProducesResponseType(typeof(List<OperatorDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> GetAllSalesStaffs()
         {
             var SalesStaffs = await _getAllSalesStaffsQueryHandler.HandleAsync();

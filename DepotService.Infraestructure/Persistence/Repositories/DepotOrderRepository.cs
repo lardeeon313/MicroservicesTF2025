@@ -37,7 +37,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 .FirstOrDefaultAsync(o => o.DepotOrderId == depotOrderId);
         }
 
-        public async Task<IEnumerable<DepotOrderEntity?>> GetAllAsync()
+        public async Task<IEnumerable<DepotOrderEntity>> GetAllAsync()
         {
             return await _context.DepotOrders
                 .Include(x => x.Items)
@@ -185,6 +185,22 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 .Include(o => o.Items)
                 .Where(o => o.Status == OrderStatus.Invoiced && o.CustomerId == customerId)
                 .ToListAsync();
+        }
+
+        public async Task<DepotOrderEntity?> GetBySalesIdAsync(int salesOrderId)
+        {
+            return await _context.DepotOrders
+                .Include(o => o.Items)
+                .Include(o => o.Missings)
+                    .ThenInclude(m => m.MissingItems)
+                .FirstOrDefaultAsync(o => o.SalesOrderId == salesOrderId);
+        }
+
+        public async Task DeleteOrderByIdAsync(int depotOrderId)
+        {
+            await _context.DepotOrders
+                .Where(o => o.DepotOrderId == depotOrderId)
+                .ExecuteDeleteAsync();
         }
     }
 }

@@ -72,7 +72,7 @@ namespace DepotService.API.Migrations
 
                     b.HasIndex("AssignedDepotTeamId");
 
-                    b.ToTable("DepotOrders");
+                    b.ToTable("DepotOrders", (string)null);
                 });
 
             modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderItemEntity", b =>
@@ -119,7 +119,7 @@ namespace DepotService.API.Migrations
 
                     b.HasIndex("DepotOrderMissingId");
 
-                    b.ToTable("DepotOrderItems");
+                    b.ToTable("DepotOrderItems", (string)null);
                 });
 
             modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderMissing", b =>
@@ -150,7 +150,7 @@ namespace DepotService.API.Migrations
 
                     b.HasIndex("DepotOrderId");
 
-                    b.ToTable("DepotOrderMissings");
+                    b.ToTable("DepotOrderMissings", (string)null);
                 });
 
             modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderMissingItem", b =>
@@ -185,7 +185,7 @@ namespace DepotService.API.Migrations
 
                     b.HasIndex("OrderMissingId");
 
-                    b.ToTable("DepotOrderMissingItem");
+                    b.ToTable("DepotOrderMissingItem", (string)null);
                 });
 
             modelBuilder.Entity("DepotService.Domain.Entities.DepotTeamAssignment", b =>
@@ -211,7 +211,7 @@ namespace DepotService.API.Migrations
 
                     b.HasIndex("DepotTeamId");
 
-                    b.ToTable("TeamAssignments");
+                    b.ToTable("TeamAssignments", (string)null);
                 });
 
             modelBuilder.Entity("DepotService.Domain.Entities.DepotTeamEntity", b =>
@@ -233,7 +233,7 @@ namespace DepotService.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DepotTeams");
+                    b.ToTable("DepotTeams", (string)null);
                 });
 
             modelBuilder.Entity("DepotService.Domain.Entities.OrderStatusHistory", b =>
@@ -261,7 +261,7 @@ namespace DepotService.API.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderStatusHistories");
+                    b.ToTable("OrderStatusHistories", (string)null);
                 });
 
             modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderEntity", b =>
