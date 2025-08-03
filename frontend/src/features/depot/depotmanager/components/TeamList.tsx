@@ -83,6 +83,7 @@ export const TeamList = () => {
                         team={team}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
+                        onRefetch={refetch}
                     />
                 ))}
             </div>

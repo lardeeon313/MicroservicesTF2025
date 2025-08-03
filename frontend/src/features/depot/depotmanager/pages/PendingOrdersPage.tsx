@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { useIssuedOrders } from '../hooks/useOrders';
 import { DepotOrderDto } from '../types/OrderTypes';
 import OrderTable from '../../billingmanager/components/OrderTable';
 import OrderDetails from '../../billingmanager/components/OrderDetails';
@@ -7,6 +6,7 @@ import { AssignOrderToOperator } from '../components/AssignOrderToOperator';
 import LoadingSpinner from '../../../../components/LoadingSpinner';
 import BackButton from '../components/BackButton';
 import Pagination from '../components/Pagination';
+import { fetchPendingOrders } from '../hooks/useOrders';
 
 function PendingOrdersPage() {
   const {
@@ -16,16 +16,18 @@ function PendingOrdersPage() {
     error,
     refetch,
     refetchOrders
-  } = useIssuedOrders();
+  } = fetchPendingOrders();
 
   const [selectedOrder, setSelectedOrder] = useState<DepotOrderDto | null>(null);
   const [showAssignDialog, setShowAssignDialog] = useState(false);
-  const [activeTab, setActiveTab] = useState<'pending' | 'assigned' | 'reemitted'>('pending');
+  const [activeTab, setActiveTab] = useState<'pending' | 'assigned' | 'rereceived'>('pending');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   // Convertir DepotOrderDto a OrderTableData para compatibilidad
-  const convertToTableData = (order: any) => ({
+  const convertToTableData = (order: any) => {
+  return {
+    
     id: order.depotOrderId,
     status:
       Number(order.status) === 0
@@ -40,6 +42,10 @@ function PendingOrdersPage() {
     deliveryDetail: order.deliveryDetail ?? '',
     customerFirstName: order.customerName ? order.customerName.split(' ')[0] : '',
     customerLastName: order.customerName ? order.customerName.split(' ').slice(1).join(' ') : '',
+    operatorName: (() => {
+      const found = operators.find(op => op.id === order.assignedOperatorId);
+      return found?.fullName || '-';
+    })(),
     items: Array.isArray(order.items)
       ? order.items.map((item: any) => ({
           productName: item.productName ?? '',
@@ -47,10 +53,11 @@ function PendingOrdersPage() {
           quantity: item.quantity ?? 0,
         }))
       : [],
-  });
+    };
+  };
 
 
-  
+
   // Filtrar órdenes por estado según la pestaña activa
   const getFilteredOrders = () => {
     if (activeTab === 'pending') {
@@ -59,7 +66,7 @@ function PendingOrdersPage() {
     } else if (activeTab === 'assigned') {
       // Estado 2: Asignado a Operario
       return orders.filter((order: any) => Number(order.status) === 2);
-    } else if (activeTab === 'reemitted') {
+    } else if (activeTab === 'rereceived') {
       // Estado 1: Re-emitida
       return orders.filter((order: any) => Number(order.status) === 1);
     }
@@ -67,7 +74,6 @@ function PendingOrdersPage() {
   };
 
   const filteredOrders = getFilteredOrders();
-  console.log('filteredOrders result:', filteredOrders.length, filteredOrders);
   
   // Paginación
   const paginatedOrders = useMemo(() => {
@@ -79,7 +85,7 @@ function PendingOrdersPage() {
   const tableData = paginatedOrders.map(convertToTableData);
   
   // Resetear página cuando cambia la pestaña
-  const handleTabChange = (tab: 'pending' | 'assigned' | 'reemitted') => {
+  const handleTabChange = (tab: 'pending' | 'assigned' | 'rereceived') => {
     setActiveTab(tab);
     setCurrentPage(1);
   };
@@ -101,9 +107,6 @@ function PendingOrdersPage() {
   //   setShowAssignDialog(false);
   //   setSelectedOrder(null);
   // };
-
-
-  console.log('PendingOrdersPage render - loading:', loading, 'error:', error, 'orders:', orders.length);
   
   if (loading) {
     return <LoadingSpinner message="Cargando órdenes pendientes..." />;
@@ -149,14 +152,14 @@ function PendingOrdersPage() {
                 Asignadas ({orders.filter((order: any) => Number(order.status) === 2).length})
               </button>
               <button
-                onClick={() => handleTabChange('reemitted')}
+                onClick={() => handleTabChange('rereceived')}
                 className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'reemitted'
+                  activeTab === 'rereceived'
                     ? 'border-red-500 text-red-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                Re-emitidas ({orders.filter((order: any) => Number(order.status) === 1).length})
+                Re-Emitidas ({orders.filter((order: any) => Number(order.status) === 1).length})
               </button>
             </nav>
           </div>
@@ -208,6 +211,7 @@ function PendingOrdersPage() {
               error={error}
               onRefetch={refetch}
               onView={handleView}
+              activeTab={activeTab}
             />
             
             {!loading && !error && filteredOrders.length > 0 && (
@@ -269,10 +273,8 @@ function PendingOrdersPage() {
                 orderId={(selectedOrder as any).depotOrderId}
                 operators={operators}
                 onAssignSuccess={() => {
-                  console.log('AssignOrderToOperator onAssignSuccess called');
                   setShowAssignDialog(false);
                   setSelectedOrder(null);
-                  console.log('Calling refetchOrders...');
                   refetchOrders();
                 }}
               />

@@ -8,6 +8,7 @@ interface Props {
   error: string | null;
   onRefetch: () => void;
   onView: (id: number) => void;
+  activeTab: 'pending' | 'assigned' | 'rereceived';
   // El resto de props se ignoran para Pending Orders
 }
 
@@ -17,6 +18,7 @@ export default function OrderTable({
   error,
   onRefetch,
   onView,
+  activeTab,
 }: Props) {
   if (loading)
     return (
@@ -88,6 +90,9 @@ export default function OrderTable({
                 <th className="px-4 py-3 text-left"><User className="inline w-4 h-4 mr-1" /> Cliente</th>
                 <th className="px-4 py-3 text-left"><CalendarDays className="inline w-4 h-4 mr-1" /> Fecha Pedido</th>
                 <th className="px-4 py-3 text-left"><BadgeCheck className="inline w-4 h-4 mr-1" /> Estado</th>
+                {activeTab === 'assigned' && (
+                  <th className="px-4 py-3 text-left">Operario Asignado</th>
+                )}
                 <th className="px-4 py-3 text-center">Ver Detalle</th>
               </tr>
             </thead>
@@ -97,9 +102,10 @@ export default function OrderTable({
                   <td className="px-4 py-3 font-medium">D-{order.id}</td>
                   <td className="px-4 py-3">{order.customerFirstName ?? ""}</td>
                   <td className="px-4 py-3">{formatDate(order.orderDate)}</td>
-                  <td className="px-4 py-3">
-                    Pendiente de facturar
-                  </td>
+                  <td className="px-4 py-3">{order.status}</td>
+                  {activeTab === 'assigned' && (
+                    <td className="px-4 py-3">{order.operatorName || '-'}</td>
+                  )}
                   <td className="px-4 py-3 space-x-2 text-center">
                     <button onClick={() => onView(order.id)}>
                       <Eye className="w-5 h-5 text-blue-600 hover:text-gray-700 transition-colors" />

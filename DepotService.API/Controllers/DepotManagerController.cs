@@ -105,7 +105,7 @@ namespace DepotService.API.Controllers
             await _AssignOperatorCommandHandler.AssignOperatorAsync(command);
             return Ok();
         }
-
+  
         /// <summary>
         /// Remover un operador de un equipo 
         /// </summary>

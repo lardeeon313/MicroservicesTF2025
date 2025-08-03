@@ -58,6 +58,7 @@ namespace DepotService.Application.Queries.DepotManager.GetOrdersByStatus
                     }).ToList(),
                     Missings = order.Missings,
                     AssignedDepotTeam = order.AssignedDepotTeam,
+                    AssignedOperatorId = order.AssignedOperatorId,
                 });
 
                 _logger.LogInformation("Orders retrieved successfully for status: {Status}", status);

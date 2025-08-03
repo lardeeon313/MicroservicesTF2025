@@ -110,6 +110,7 @@ export interface DepotOrderEntity {
 
 export enum OrderStatus {
     Pending = "pending",
+    ReReceived = "reReceived",
     Issued = "issued",
     Confirmed = "confirmed",
     InPreparation = "inPreparation",
@@ -118,7 +119,8 @@ export enum OrderStatus {
     Verify = "verify",
     OnTheWay = "onTheWay",   
     Delivered = "delivered",  
-    Canceled = "canceled"
+    Canceled = "canceled",
+    Assigned = "assigned"
 }
 
 // Tipo para compatibilidad con componentes de tabla

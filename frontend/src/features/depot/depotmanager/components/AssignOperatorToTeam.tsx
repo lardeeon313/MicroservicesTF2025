@@ -3,7 +3,6 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';
 import { assignOperatorSchema, AssignOperatorFormData } from '../validations/operatorSchemas';
 import { useOperators } from '../hooks/useOperators';
-import { useTeams } from '../hooks/useTeams';
 import { X, Search, User } from 'lucide-react';
 import { DepotTeam } from '../types/DepotTeamTypes';
 import { OperatorDto } from '../types/OperatorTypes';
@@ -14,11 +13,11 @@ interface AssignOperatorToTeamProps {
     isOpen: boolean;
     onClose: () => void;
     team: DepotTeam;
+    onRefetch?: () => Promise<void>;
 }
 
-export const AssignOperatorToTeam = ({ isOpen, onClose, team }: AssignOperatorToTeamProps) => {
+export const AssignOperatorToTeam = ({ isOpen, onClose, team , onRefetch}: AssignOperatorToTeamProps) => {
     const { assignOperator, operators, fetchOperators, loading: loadingOperators, error } = useOperators();
-    const { refetch } = useTeams();
     const [query, setQuery] = useState('');
     const [selectedOperator, setSelectedOperator] = useState<OperatorDto | null>(null);
     const [previewOperator, setPreviewOperator] = useState<OperatorDto | null>(null);
@@ -54,15 +53,12 @@ export const AssignOperatorToTeam = ({ isOpen, onClose, team }: AssignOperatorTo
     };
 
     const handleSubmit = async (values: AssignOperatorFormData) => {
-        try {
+        try{
             await assignOperator(values);
-            console.log(values)
             toast.success('Operador asignado exitosamente');
-            await refetch();
+            if (onRefetch) await onRefetch();
             onClose();
-        } catch (error) {
-            // Error is handled by the hook
-        }
+        }catch{}
     };
 
     return (

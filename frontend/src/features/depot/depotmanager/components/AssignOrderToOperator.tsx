@@ -32,14 +32,11 @@ export const AssignOrderToOperator = ({
         operatorUserId: selectedOperatorId
       };
       
-      console.log('Before assignment - orderId:', orderId);
       await assignOperator(orderId, request);
-      console.log('After assignment - orderId:', orderId);
       toast.success('Orden asignada al operador exitosamente');
       setSelectedOperatorId('');
       onAssignSuccess?.();
     } catch (error) {
-      console.error('Error assigning order:', error);
       toast.error('Error al asignar la orden al operador');
     } finally {
       setLoading(false);

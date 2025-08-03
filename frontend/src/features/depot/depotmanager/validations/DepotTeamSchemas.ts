@@ -3,24 +3,24 @@ import * as yup from 'yup';
 export const createTeamSchema = yup.object({
     teamName: yup
         .string()
-        .required('TeamName is required')
-        .max(100, 'TeamName must be at most 100 characters'),
+        .required('El nombre del equipo es requerido')
+        .max(50, 'El nombre del equipo no puede contener mas de 50 carácteres'),
     teamDescription: yup
         .string()
-        .max(500, 'TeamDescription must be at most 500 characters')
+        .max(500, 'La descripcion del equipo no puede contener mas de 500 carácteres')
 });
 
 export const updateTeamSchema = yup.object({
     teamId: yup
         .number()
         .required('Id is required'),
-    teamName: yup
+    teamName: yup 
         .string()
-        .required('TeamName is required')
-        .max(50, 'TeamName must be at most 50 characters'),
+        .required('El nombre del equipo es requerido')
+        .max(50, 'El nombre del equipo no puede contener mas de 50 carácteres'),
     teamDescription: yup
         .string()
-        .max(500, 'TeamDescription must be at most 500 characters')
+        .max(500, 'La descripcion del equipo no puede contener mas de 500 carácteres')
 });
 
 export type CreateTeamFormData = yup.InferType<typeof createTeamSchema>;

@@ -349,16 +349,15 @@ export const usePreparedOrders = () => {
   };
 };
 
-// Hook para traer órdenes pendientes y asignadas (estados 0 y 2) y operadores
-export const useIssuedOrders = () => {
+// Hook para traer órdenes pendientes, asignadas y re emitidas(estados 0, 1 y 2) y operadores
+export const fetchPendingOrders = () => {
   const [orders, setOrders] = useState<DepotOrderDto[]>([]);
   const [operators, setOperators] = useState<OperatorDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Traer órdenes pendientes y asignadas
-  const fetchIssuedOrders = useCallback(async () => {
-    console.log('fetchIssuedOrders called');
+  const fetchPendingOrders = useCallback(async () => {
     try {
       setError(null);
       setLoading(true);
@@ -366,47 +365,41 @@ export const useIssuedOrders = () => {
       // Intentar usar el endpoint específico por estado, si falla usar el general
       let pendingData: any[] = [];
       let assignedData: any[] = [];
+      let rereceivedData: any[] = [];
       
       try {
         // Traer órdenes pendientes (estado 0)
         pendingData = await getOrdersByStatus('0');
-        console.log('Órdenes pendientes recibidas:', pendingData);
       } catch (error) {
-        console.log('Error al obtener órdenes pendientes, usando endpoint general');
         // Si falla, usar el endpoint general y filtrar
         const allOrders = await getAllOrders();
         pendingData = allOrders.filter((order: any) => Number(order.status) === 0);
-        console.log('Órdenes pendientes filtradas del endpoint general:', pendingData);
+      }
+
+      try {
+        // Traer órdenes re emitidas (estado 1)
+        rereceivedData = await getOrdersByStatus('1');
+      } catch {
+        const allOrders = await getAllOrders();
+        rereceivedData = allOrders.filter(order => Number(order.status) === 1);
       }
       
       try {
         // Traer órdenes asignadas (estado 2)
         assignedData = await getOrdersByStatus('2');
-        console.log('Órdenes asignadas recibidas:', assignedData);
       } catch (error) {
-        console.log('Error al obtener órdenes asignadas, usando endpoint general');
         // Si falla, usar el endpoint general y filtrar
         const allOrders = await getAllOrders();
         assignedData = allOrders.filter((order: any) => Number(order.status) === 2);
-        console.log('Órdenes asignadas filtradas del endpoint general:', assignedData);
       }
       
-      // Combinar ambas listas
-      const combinedData = [...pendingData, ...assignedData];
-      console.log('Combined data:', combinedData);
-      console.log('Orders by status:', {
-        pending: pendingData.map(o => ({ id: o.depotOrderId, status: o.status })),
-        assigned: assignedData.map(o => ({ id: o.depotOrderId, status: o.status }))
-      });
+      // Combinar listas
+      const combinedData = [...pendingData, ...assignedData, ...rereceivedData];
+
       setOrders(combinedData);
       
-      // No establecer error si no hay órdenes, es normal
-      if (combinedData.length === 0) {
-        console.log('No hay órdenes pendientes o asignadas disponibles.');
-      }
     } catch (err) {
-      console.error('Error fetching pending/assigned orders:', err);
-      let errorMessage = 'Error al cargar las órdenes pendientes y asignadas';
+      let errorMessage = 'Error al cargar las ordenes';
       
       // Verificar si es un error específico del backend
       if (err && typeof err === 'object' && 'response' in err) {
@@ -423,7 +416,6 @@ export const useIssuedOrders = () => {
       setError(errorMessage);
       setOrders([]);
     } finally {
-      console.log('fetchIssuedOrders finished, loading set to false');
       setLoading(false);
     }
   }, []);
@@ -434,7 +426,6 @@ export const useIssuedOrders = () => {
       const data = await getAllOperators();
       setOperators(data);
     } catch (err) {
-      console.error('Error fetching operators:', err);
       const errorMessage = handleOrderError(err, 'Error al cargar los operadores');
       setError(errorMessage);
       setOperators([]);
@@ -444,17 +435,15 @@ export const useIssuedOrders = () => {
   useEffect(() => {
     setLoading(true);
     Promise.allSettled([
-      fetchIssuedOrders(),
+      fetchPendingOrders(),
       fetchOperators()
     ]).finally(() => setLoading(false));
-  }, [fetchIssuedOrders, fetchOperators]);
+  }, [fetchPendingOrders, fetchOperators]);
 
   const refetchOrders = useCallback(async () => {
-    console.log('refetchOrders called');
-    // Agregar un pequeño delay para asegurar que el backend haya procesado la asignación
     await new Promise(resolve => setTimeout(resolve, 500));
-    await fetchIssuedOrders();
-  }, [fetchIssuedOrders]);
+    await fetchPendingOrders();
+  }, [fetchPendingOrders]);
 
   return {
     orders,
@@ -462,7 +451,7 @@ export const useIssuedOrders = () => {
     loading,
     error,
     refetch: () => {
-      fetchIssuedOrders();
+      fetchPendingOrders();
       fetchOperators();
     },
     refetchOrders
