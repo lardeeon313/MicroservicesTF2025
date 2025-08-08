@@ -32,9 +32,9 @@ namespace DepotService.Application.Queries.DepotManager.GetOrdersByStatus
                     throw new ArgumentException($"Invalid order status: {status}");
 
                 var orders = await _repository.GetOrderByStatusAsync(parsedStatus.ToString());
-
+                
                 if (!orders.Any())
-                    throw new KeyNotFoundException($"No orders found with status {status}");
+                    return Enumerable.Empty<DepotOrderDto>();
 
                 var OrderDtos = orders.Select(order => new DepotOrderDto
                 {

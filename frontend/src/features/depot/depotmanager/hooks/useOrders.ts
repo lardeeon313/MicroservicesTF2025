@@ -263,7 +263,6 @@ export const useInPreparationOrders = () => {
       setError(null);
       setLoading(true);
       const data = await getOrdersByStatus('3');
-      console.log('Órdenes en preparación recibidas:', data);
       setOrders(data);
       
       if (data.length === 0) {
@@ -323,20 +322,28 @@ export const usePreparedOrders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const safeGetOrders = async (status: string) => {
+    try {
+      return await getOrdersByStatus(status);
+    } catch (err: any) {
+      // Si el error es "not found", devolvemos lista vacía
+      if (err?.response?.status === 404) {
+        return [];
+      }
+      // Si es otro error real (500, 401, etc.), lo relanzamos
+      throw err;
+    }
+  };
+
   // Traer órdenes preparadas y facturadas
   const fetchPreparedOrders = useCallback(async () => {
     try {
       setError(null);
       setLoading(true);
-      
-      // Traer órdenes preparadas (estado 7)
-      const preparedData = await getOrdersByStatus('7');
-      console.log('Órdenes preparadas recibidas:', preparedData);
-      
-      // Traer órdenes facturadas (estado 8)
-      const invoicedData = await getOrdersByStatus('8');
-      console.log('Órdenes facturadas recibidas:', invoicedData);
-      
+
+      const preparedData = await safeGetOrders('7');
+      const invoicedData = await safeGetOrders('8');
+
       // Combinar ambas listas
       const combinedData = [...preparedData, ...invoicedData];
       setOrders(combinedData);
@@ -345,7 +352,6 @@ export const usePreparedOrders = () => {
         setError('No hay órdenes preparadas o facturadas disponibles.');
       }
     } catch (err) {
-      console.error('Error fetching prepared/invoiced orders:', err);
       const errorMessage = handleOrderError(err, 'Error al cargar las órdenes preparadas y facturadas');
       setError(errorMessage);
       setOrders([]);

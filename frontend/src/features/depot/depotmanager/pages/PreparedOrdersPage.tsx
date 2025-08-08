@@ -25,7 +25,7 @@ function PreparedOrdersPage() {
     id: order.depotOrderId,
     status: Number(order.status) === 7 ? 'Preparado' : 'Facturado', // Estado según el número
     orderDate: order.orderDate ? order.orderDate.toString() : 'Sin fecha',
-    deliveryDate: order.deliveryDate ?? null,
+    deliveryDate: order.deliveryDate ? order.deliveryDate.toString() : undefined,
     deliveryDetail: order.deliveryDetail ?? '',
     customerFirstName: order.customerName ? order.customerName.split(' ')[0] : '',
     customerLastName: order.customerName ? order.customerName.split(' ').slice(1).join(' ') : '',
@@ -46,6 +46,17 @@ function PreparedOrdersPage() {
       return orders.filter((order: any) => Number(order.status) === 8);
     }
   };
+
+  const emptyMessageTitle =
+    activeTab === "prepared"
+      ? "No hay órdenes preparadas"
+      : "No hay órdenes facturadas";
+
+  const emptyMessageBody =
+    activeTab === "prepared"
+      ? "Aún no se ha terminado de preparar ninguna orden."
+      : "Aún no se ha facturado ninguna orden.";
+
 
   const filteredOrders = getFilteredOrders();
   
@@ -117,19 +128,16 @@ function PreparedOrdersPage() {
           </div>
         </div>
 
-        {error && (
-          <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-            {error}
-          </div>
-        )}
-
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <OrderTable
             orders={tableData}
             loading={loading}
-            error={error}
             onRefetch={refetch}
             onView={handleView}
+            error={error}
+            activeTab={activeTab}
+            emptyMessageTitle={emptyMessageTitle}
+            emptyMessageBody={emptyMessageBody}
           />
           
           {!loading && !error && filteredOrders.length > 0 && (

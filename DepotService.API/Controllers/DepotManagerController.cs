@@ -268,8 +268,10 @@ namespace DepotService.API.Controllers
         public async Task<IActionResult> GetOrdersByStatus(string status)
         {
             var query = await _GetOrdersByStatusQueryHandler.GetOrderByStatusHandlerAsync(status);
-            return query is not null ? Ok(query) 
-                : NotFound(new { message = "Orders not found." });
+
+            if (!query.Any())
+                return NotFound(new { message = $"No orders found with status {status}" });
+            return Ok(query);
 
         }
 

@@ -8,7 +8,7 @@ interface Props {
   error: string | null;
   onRefetch: () => void;
   onView: (id: number) => void;
-  activeTab: 'pending' | 'assigned' | 'rereceived' | 'inPreparation';
+  activeTab: 'pending' | 'assigned' | 'rereceived' | 'inPreparation' | 'prepared' | 'invoiced';
   emptyMessageTitle?: string;
   emptyMessageBody?: string;
   // El resto de props se ignoran para Pending Orders
@@ -17,7 +17,6 @@ interface Props {
 export default function OrderTable({
   orders,
   loading,
-  error,
   onRefetch,
   onView,
   activeTab,
@@ -67,8 +66,8 @@ export default function OrderTable({
     return (
       <div className="text-center py-8">
         <div className="max-w-md mx-auto">
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
-            <div className="text-gray-600 mb-4">
+          <div className="bg-gray-50 border border-red-200 rounded-lg p-6">
+            <div className="text-gray-600 mb-1">
               <h3 className="text-lg font-semibold mb-2">{emptyMessageTitle || "No Hay Órdenes Registradas"}</h3>
               <p className="text-sm text-gray-700">
                 {emptyMessageBody || "Actualmente no hay órdenes en el sistema."}
@@ -76,7 +75,7 @@ export default function OrderTable({
             </div>
             <button 
               onClick={onRefetch} 
-              className="mt-4 btn-primary inline-block bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors"
+              className="mt-4 ml-2 px-4 py-2 inline-block btn-primary border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
             >
               Actualizar
             </button>
