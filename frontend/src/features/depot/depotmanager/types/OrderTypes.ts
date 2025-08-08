@@ -7,6 +7,7 @@ export interface DepotOrderDto {
     customerEmail: string;
     phoneNumber: string;
     deliveryDetail?: string;
+    deliveryDate?: Date;
     orderDate: Date;
     status: OrderStatus | string;
     totalAmount: number;
@@ -15,6 +16,7 @@ export interface DepotOrderDto {
     // Relación con Faltantes
     missings: DepotOrderMissingDto[];
     assignedOperatorId?: string; // Guid como string
+    operatorName: string;
     assignedDepotTeam?: DepotTeam;
     assignedDepotTeamId?: number;
 }

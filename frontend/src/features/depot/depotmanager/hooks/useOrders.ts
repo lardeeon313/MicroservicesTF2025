@@ -253,6 +253,7 @@ export const useOrders = (): UseOrdersReturn => {
 // Hook para traer solo órdenes en preparación (estado 3)
 export const useInPreparationOrders = () => {
   const [orders, setOrders] = useState<DepotOrderDto[]>([]);
+  const [operators, setOperators] = useState<OperatorDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -278,17 +279,38 @@ export const useInPreparationOrders = () => {
     }
   }, []);
 
+  const fetchOperators = useCallback(async () => {
+    try {
+      const data = await getAllOperators();
+      setOperators(data);
+    } catch (err) {
+      const errorMessage = handleOrderError(err, 'Error al cargar los operadores');
+      setError(errorMessage);
+      setOperators([]);
+    }
+  }, []);
+
   const refetch = useCallback(() => {
     fetchInPreparationOrders();
-  }, [fetchInPreparationOrders]);
+    fetchOperators();
+  }, [fetchInPreparationOrders, fetchOperators]);
 
   // Cargar datos iniciales
   useEffect(() => {
-    fetchInPreparationOrders();
-  }, [fetchInPreparationOrders]);
+    Promise.allSettled([
+      fetchInPreparationOrders(),
+      fetchOperators()
+    ]);
+  }, [fetchInPreparationOrders, fetchOperators]);
+
+    // Aquí haces el mapeo igual que en PendingOrdersPage
+  const convertToTableData = (order: DepotOrderDto) => ({
+    ...order,
+    operatorName: operators.find(op => op.id === order.assignedOperatorId)?.fullName || '-'
+  });
 
   return {
-    orders,
+    orders: orders.map(convertToTableData),
     loading,
     error,
     refetch

@@ -8,7 +8,9 @@ interface Props {
   error: string | null;
   onRefetch: () => void;
   onView: (id: number) => void;
-  activeTab: 'pending' | 'assigned' | 'rereceived';
+  activeTab: 'pending' | 'assigned' | 'rereceived' | 'inPreparation';
+  emptyMessageTitle?: string;
+  emptyMessageBody?: string;
   // El resto de props se ignoran para Pending Orders
 }
 
@@ -19,12 +21,14 @@ export default function OrderTable({
   onRefetch,
   onView,
   activeTab,
+  emptyMessageTitle,
+  emptyMessageBody
 }: Props) {
   if (loading)
     return (
       <LoadingSpinner message="Cargando órdenes..."/>
     )
-  
+  /*
   if (error) {
     const isNoOrdersError = error.includes('No hay órdenes') || 
                            error.includes('microservicio') || 
@@ -57,6 +61,7 @@ export default function OrderTable({
       </div>
     );
   }
+    */
 
   if (orders.length === 0)
     return (
@@ -64,9 +69,9 @@ export default function OrderTable({
         <div className="max-w-md mx-auto">
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
             <div className="text-gray-600 mb-4">
-              <h3 className="text-lg font-semibold mb-2">No Hay Órdenes Registradas</h3>
+              <h3 className="text-lg font-semibold mb-2">{emptyMessageTitle || "No Hay Órdenes Registradas"}</h3>
               <p className="text-sm text-gray-700">
-                Actualmente no hay órdenes en el sistema. Las órdenes aparecerán automáticamente cuando se registren desde el módulo de ventas.
+                {emptyMessageBody || "Actualmente no hay órdenes en el sistema."}
               </p>
             </div>
             <button 
@@ -90,7 +95,7 @@ export default function OrderTable({
                 <th className="px-4 py-3 text-left"><User className="inline w-4 h-4 mr-1" /> Cliente</th>
                 <th className="px-4 py-3 text-left"><CalendarDays className="inline w-4 h-4 mr-1" /> Fecha Pedido</th>
                 <th className="px-4 py-3 text-left"><BadgeCheck className="inline w-4 h-4 mr-1" /> Estado</th>
-                {activeTab === 'assigned' && (
+                {(activeTab === 'assigned' || activeTab === 'inPreparation') && (
                   <th className="px-4 py-3 text-left">Operario Asignado</th>
                 )}
                 <th className="px-4 py-3 text-center">Ver Detalle</th>
@@ -103,7 +108,7 @@ export default function OrderTable({
                   <td className="px-4 py-3">{order.customerFirstName ?? ""}</td>
                   <td className="px-4 py-3">{formatDate(order.orderDate)}</td>
                   <td className="px-4 py-3">{order.status}</td>
-                  {activeTab === 'assigned' && (
+                  {(activeTab === 'assigned'  || activeTab === 'inPreparation') && (
                     <td className="px-4 py-3">{order.operatorName || '-'}</td>
                   )}
                   <td className="px-4 py-3 space-x-2 text-center">

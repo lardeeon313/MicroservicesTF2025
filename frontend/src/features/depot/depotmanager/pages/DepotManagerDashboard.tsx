@@ -46,7 +46,7 @@ const DepotManagerDashboardPage = () => {
   const [showSearchModal, setShowSearchModal] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-20">
+    <div className="container m-0 pt-10 min-w-full min-h-full py-20 pt-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Panel de Depósito</h1>
         <p className="text-center text-lg text-gray-700 mb-8">
