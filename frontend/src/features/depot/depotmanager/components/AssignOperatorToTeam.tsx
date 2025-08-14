@@ -121,7 +121,7 @@ export const AssignOperatorToTeam = ({ isOpen, onClose, team , onRefetch}: Assig
                                                     <div className="relative">
                                                         <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left border border-gray-300 focus-within:border-red-500 focus-within:ring-1 focus-within:ring-red-500">
                                                             <Combobox.Input
-                                                                className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
+                                                                className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0 focus:outline-none"
                                                                 displayValue={(operator: OperatorDto) =>
                                                                     operator ? operator.fullName : ''
                                                                 }

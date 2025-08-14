@@ -34,7 +34,7 @@ export default function RegisterCustomerPage() {
   };
 
   return (
-    <div className="container m-0 pt-10 min-w-full ">
+    <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="flex items-center justify-between mb-6">
         <Link to="/sales/customers" className="text-red-600 hover:underline pl-10">
           ← Volver atrás

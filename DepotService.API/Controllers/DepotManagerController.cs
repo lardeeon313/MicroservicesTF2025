@@ -18,6 +18,7 @@ using DepotService.Application.Queries.DepotManager.GetTeamById;
 using DepotService.Application.Queries.DepotManager.GetTeamByName;
 using DepotService.Application.Validators.DepotManager;
 using DepotService.Domain.Enums;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -315,6 +316,10 @@ namespace DepotService.API.Controllers
         public async Task<IActionResult> GetMissingOrders()
         {
             var ordersMissing = await _GetAllMissingOrdersQueryHandler.GetAllMissingOrdersAsync();
+
+            if (!ordersMissing.Any())
+                return NotFound(new { message = "No missing orders found." });
+
             return Ok(ordersMissing);
         }
 
@@ -330,7 +335,11 @@ namespace DepotService.API.Controllers
         public async Task<IActionResult> GetMissingOrderById(int missingOrderId)
         {
             var orderMissing = await _GetMissingOrderByIdQueryHandler.GetMissingOrderByIdAsync(missingOrderId);
-            return orderMissing is not null ? Ok(orderMissing) : NotFound(new { message = "Missing order not found." });
+
+            if (orderMissing == null)
+                return NotFound(new { message = $"No se encontró la orden faltante con ID {missingOrderId}." });
+
+            return Ok(orderMissing);
 
         }
 

@@ -129,6 +129,7 @@ export const useOrders = (): UseOrdersReturn => {
       setError(null);
       const data = await getMissingOrders();
       setMissingOrders(data);
+      console.log(data)
       
       // Si no hay órdenes con faltantes
       if (data.length === 0) {
@@ -262,7 +263,7 @@ export const useInPreparationOrders = () => {
     try {
       setError(null);
       setLoading(true);
-      const data = await getOrdersByStatus('3');
+      const data = await getOrdersByStatus(OrderStatus.InPreparation);
       setOrders(data);
       
       if (data.length === 0) {
@@ -322,7 +323,7 @@ export const usePreparedOrders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const safeGetOrders = async (status: string) => {
+  const safeGetOrders = async (status: number) => {
     try {
       return await getOrdersByStatus(status);
     } catch (err: any) {
@@ -341,11 +342,12 @@ export const usePreparedOrders = () => {
       setError(null);
       setLoading(true);
 
-      const preparedData = await safeGetOrders('7');
-      const invoicedData = await safeGetOrders('8');
+      const preparedData = await safeGetOrders(OrderStatus.Prepared);
+      const invoicedData = await safeGetOrders(OrderStatus.Invoiced);
+      const sentToBilling = await safeGetOrders(OrderStatus.SentToBilling)
 
       // Combinar ambas listas
-      const combinedData = [...preparedData, ...invoicedData];
+      const combinedData = [...preparedData, ...invoicedData, ...sentToBilling];
       setOrders(combinedData);
       
       if (combinedData.length === 0) {
@@ -397,7 +399,7 @@ export const fetchPendingOrders = () => {
       
       try {
         // Traer órdenes pendientes (estado 0)
-        pendingData = await getOrdersByStatus('0');
+        pendingData = await getOrdersByStatus(OrderStatus.Received);
       } catch (error) {
         // Si falla, usar el endpoint general y filtrar
         const allOrders = await getAllOrders();
@@ -406,7 +408,7 @@ export const fetchPendingOrders = () => {
 
       try {
         // Traer órdenes re emitidas (estado 1)
-        rereceivedData = await getOrdersByStatus('1');
+        rereceivedData = await getOrdersByStatus(OrderStatus.ReReceived);
       } catch {
         const allOrders = await getAllOrders();
         rereceivedData = allOrders.filter(order => Number(order.status) === 1);
@@ -414,7 +416,7 @@ export const fetchPendingOrders = () => {
       
       try {
         // Traer órdenes asignadas (estado 2)
-        assignedData = await getOrdersByStatus('2');
+        assignedData = await getOrdersByStatus(OrderStatus.Assigned);
       } catch (error) {
         // Si falla, usar el endpoint general y filtrar
         const allOrders = await getAllOrders();

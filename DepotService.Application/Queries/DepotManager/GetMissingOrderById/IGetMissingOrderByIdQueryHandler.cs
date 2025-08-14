@@ -12,6 +12,6 @@ namespace DepotService.Application.Queries.DepotManager.GetMissingOrderById
     /// </summary>
     public interface IGetMissingOrderByIdQueryHandler
     {
-        Task<DepotOrderMissingDto> GetMissingOrderByIdAsync(int id);
+        Task<DepotOrderMissingDto?> GetMissingOrderByIdAsync(int id);
     }
 }

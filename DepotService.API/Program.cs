@@ -35,8 +35,9 @@ using DepotService.Application.Queries.DepotManager.GetTeamById;
 using DepotService.Application.Queries.DepotManager.GetTeamByName;
 using DepotService.Application.Queries.Operator.GetAssignedPendingOrders;
 using DepotService.Application.Queries.Operator.GetOrderById;
-using DepotService.Application.Queries.Operator.GetOrdersByOperator;
 using DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery;
+using DepotService.Application.Queries.Operator.GetOrdersPreparedOrSentToBilling;
+using DepotService.Application.Queries.Operator.IGetOrdersMissingOrPreparing;
 using DepotService.Application.Queries.Reports.GetAverageDepotProcessingTime;
 using DepotService.Application.Queries.Reports.GetAverageTimePerStatus;
 using DepotService.Application.Queries.Reports.GetDepotTeamPerformance;
@@ -124,6 +125,8 @@ builder.Services.AddScoped<IGetOrdersByDeliveryDateQueryHandler, GetOrdersByDeli
 builder.Services.AddScoped<IGetReissuedOrdersQueryHandler, GetReissuedOrdersQueryHandler>();
 builder.Services.AddScoped<IGetOrdersCompletedQueryHandler, GetOrdersCompletedQueryHandler>();
 builder.Services.AddScoped<IGetOrdersInPreparationQueryHandler, GetOrdersInPreparationQueryHandler>();
+builder.Services.AddScoped<IGetOrdersMissingOrPreparingHandler, GetOrdersMissingOrPreparingHandler>();
+builder.Services.AddScoped<IGetOrdersPreparedOrSentToBillingHandler, GetOrdersPreparedOrSentToBillingHandler>();
 
 // Add Commands
 builder.Services.AddScoped<IAssignOperatorCommandHandler, AssignOperatorCommandHandler>();
@@ -161,7 +164,6 @@ builder.Services.AddScoped<IValidator<GetInvoicedOrdersByDateRangeQuery>, GetInv
 builder.Services.AddScoped<IValidator<GetInvoicedOrdersByCustomerQuery>,  GetInvoicedOrdersByCustomerQueryValidator>();
 builder.Services.AddScoped<IValidator<UpdateInvoicedItemPriceCommand>, UpdateInvoicedItemPriceCommandValidator>();
 
-//Nuevo: AGREGÁ ESTA LÍNEA QUE FALTA
 builder.Services.AddScoped<OrderMissingReportedCommandValidator>();
 builder.Services.AddScoped<AddPackaingCommandValidator>();
 builder.Services.AddScoped<RejectOrderCommandValidator>();

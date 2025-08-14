@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useOrders } from '../hooks/useOrders';
-import { DepotOrderMissingDto } from '../types/OrderTypes';
+import { DepotOrderMissingDto, OrderStatus } from '../types/OrderTypes';
 import LoadingSpinner from '../../../../components/LoadingSpinner';
 import BackButton from '../components/BackButton';
 import Pagination from '../components/Pagination';
@@ -24,7 +24,10 @@ function MissingOrdersPage() {
   const [searchId, setSearchId] = useState<string>('');
   const [searchLoading, setSearchLoading] = useState(false);
   const itemsPerPage = 6; // 6 cards por página (2x3 grid)
-
+  const pendingMissingOrders = missingOrders.filter(m => m.depotOrder.status === OrderStatus.MissingProduct);
+  const reportedMissingOrders = missingOrders.filter(m => m.depotOrder.status === OrderStatus.PendingResolution);
+  const orderToShow = activeTab === 'pending' ? pendingMissingOrders : reportedMissingOrders;
+  console.log(orderToShow)
   const handleView = (missingOrder: DepotOrderMissingDto) => {
     setSelectedMissingOrder(missingOrder);
   };
@@ -159,7 +162,7 @@ function MissingOrdersPage() {
 
 
 
-        {missingOrders.length === 0 ? (
+        {orderToShow.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-gray-400 text-6xl mb-4">📦</div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">No hay órdenes con faltantes</h3>
@@ -171,7 +174,7 @@ function MissingOrdersPage() {
             {(() => {
               const startIndex = (currentPage - 1) * itemsPerPage;
               const endIndex = startIndex + itemsPerPage;
-              const paginatedMissingOrders = missingOrders.slice(startIndex, endIndex);
+              const paginatedMissingOrders = orderToShow.slice(startIndex, endIndex);
               
 
               
@@ -180,7 +183,7 @@ function MissingOrdersPage() {
                   <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {paginatedMissingOrders.filter(missingOrder => missingOrder).map((missingOrder) => (
                                                                       <div
-                          key={missingOrder.missingId || `missing-${Math.random()}`}
+                          key={missingOrder.missingId}
                           className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow"
                         >
                           <div className="flex justify-between items-start mb-4">
@@ -217,14 +220,20 @@ function MissingOrdersPage() {
                         <div className="mb-4">
                           <h4 className="text-sm font-medium text-gray-900 mb-2">Productos faltantes:</h4>
                           <div className="space-y-1">
-                            {missingOrder.missingItems?.map((item, index) => (
-                              <div key={index} className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
-                                <div className="font-medium">{item.productName || 'N/A'}</div>
-                                <div className="text-xs text-gray-500">
-                                  {item.productBrand || 'N/A'} - Cantidad faltante: {item.missingQuantity || 0}
+                            {missingOrder.missingItems && missingOrder.missingItems.length > 0 ? (
+                              missingOrder.missingItems.map((item, index) => (
+                                <div key={index} className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
+                                  <div className="font-medium">{item.productName || 'N/A'}</div>
+                                  <div className="text-xs text-gray-500">
+                                    {item.productBrand || 'N/A'} - Cantidad faltante: {item.missingQuantity || 0}
+                                  </div>
                                 </div>
-                              </div>
-                            )) || <p className="text-sm text-gray-500">No hay productos faltantes registrados</p>}
+                              ))
+                            ) : (
+                              <p className="text-sm text-gray-500">
+                                No hay productos faltantes registrados
+                              </p>
+                            )}
                           </div>
                         </div>
 
@@ -239,13 +248,13 @@ function MissingOrdersPage() {
                   </div>
                   
                   {/* Paginación */}
-                  {missingOrders.length > itemsPerPage && (
+                  {orderToShow.length > itemsPerPage && (
                     <div className="mt-8">
                       <Pagination
                         currentPage={currentPage}
-                        totalPages={Math.ceil(missingOrders.length / itemsPerPage)}
+                        totalPages={Math.ceil(orderToShow.length / itemsPerPage)}
                         onPageChange={setCurrentPage}
-                        totalItems={missingOrders.length}
+                        totalItems={orderToShow.length}
                         itemsPerPage={itemsPerPage}
                       />
                     </div>

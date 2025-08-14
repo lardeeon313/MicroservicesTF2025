@@ -33,7 +33,7 @@ export const reportMissingOrder = async (
     return response.data;
 };
 
-export const getOrdersByStatus = async (status: string): Promise<DepotOrderDto[]> => {
+export const getOrdersByStatus = async (status: number): Promise<DepotOrderDto[]> => {
     try {
         const response = await API.get(`/depot/depotmanager/get-orders-by-status/${status}`);
         return response.data;

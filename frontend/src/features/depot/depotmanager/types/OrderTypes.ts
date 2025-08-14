@@ -111,11 +111,14 @@ export interface DepotOrderEntity {
 }
 
 export enum OrderStatus {
+    /*
     Pending = "pending",
     ReReceived = "reReceived",
     Issued = "issued",
     Confirmed = "confirmed",
     InPreparation = "inPreparation",
+    PendingResolution = "pendingResolution",
+    MissingProduct = "missingProduct",
     Prepared = "prepared",
     Invoiced = "invoiced",   
     Verify = "verify",
@@ -123,6 +126,19 @@ export enum OrderStatus {
     Delivered = "delivered",  
     Canceled = "canceled",
     Assigned = "assigned"
+    */
+    Received = 0,
+    ReReceived = 1,
+    Assigned = 2,
+    InPreparation = 3,
+    MissingProduct = 4,
+    SentToBilling = 5,
+    PendingResolution = 6,
+    Prepared = 7,
+    Invoiced = 8,
+    Issued = 9,
+    Cancelled = 10,
+    Deleted = 11
 }
 
 // Tipo para compatibilidad con componentes de tabla

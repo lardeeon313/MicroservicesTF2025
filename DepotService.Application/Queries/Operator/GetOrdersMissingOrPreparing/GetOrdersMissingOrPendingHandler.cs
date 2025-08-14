@@ -5,34 +5,32 @@ using System.Text;
 using System.Threading.Tasks;
 using DepotService.Application.DTOs;
 using DepotService.Application.DTOs.DepotOrder;
+using DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Extensions.Logging;
 using GetOrdersQuery = DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery.GetOrdersByOperatorQuery;
 
-namespace DepotService.Application.Queries.Operator.GetOrdersByOperator
+namespace DepotService.Application.Queries.Operator.IGetOrdersMissingOrPreparing
 {
-    public class GetOrdersPreparedOrSentToBillingHandler(IDepotOrderRepository repository,DepotDbContext context, ILogger<GetOrdersPreparedOrSentToBillingHandler> logger) : IGetOrdersPreparedOrSentToBillingHandler
+    public class GetOrdersMissingOrPreparingHandler(IDepotOrderRepository repository, DepotDbContext context, ILogger<GetOrdersMissingOrPreparingHandler> logger) : IGetOrdersMissingOrPreparingHandler
     {
-
         private readonly IDepotOrderRepository _repository = repository;
         private readonly DepotDbContext _context = context;
-        private readonly ILogger<GetOrdersPreparedOrSentToBillingHandler> _logger = logger;
+        private readonly ILogger<GetOrdersMissingOrPreparingHandler> _logger = logger;
 
-        public async Task<IEnumerable<DepotOrderDto>> GetOrdersPreparedBillingByOperatorAsync(GetOrdersQuery query)
+        public async Task<IEnumerable<DepotOrderDto>> GetOrdersMissingByOperatorAsync(GetOrdersQuery query)
         {
-            var orders = await _repository.GetPreparedOrSentToBillingAsync(query.OperatorUserId);
-
-            if(orders == null || !orders.Any())
+            var orders = await _repository.GetWithInPreparationOrMissingAsync(query.OperatorUserId);
+            if (orders == null || !orders.Any())
             {
                 _logger.LogWarning("No orders found for operator {OperatorUserId}", query.OperatorUserId);
                 return Enumerable.Empty<DepotOrderDto>();
             }
             _logger.LogInformation("Found {Count} orders for operator {OperatorUserId}", orders.Count(), query.OperatorUserId);
 
-            //lo devuelve al pedido con los respectivos status : 
-
+            //Lo devuelve
             return orders.Select(o => new DepotOrderDto
             {
                 DepotOrderId = o.DepotOrderId,
@@ -53,6 +51,7 @@ namespace DepotService.Application.Queries.Operator.GetOrdersByOperator
                 }).ToList(),
 
             }).ToList();
+
         }
     }
 }

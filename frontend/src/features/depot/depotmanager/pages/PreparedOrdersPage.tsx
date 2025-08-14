@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { usePreparedOrders } from '../hooks/useOrders';
-import { DepotOrderDto } from '../types/OrderTypes';
+import { DepotOrderDto, OrderStatus } from '../types/OrderTypes';
 import OrderTable from '../../billingmanager/components/OrderTable';
 import OrderDetails from '../../billingmanager/components/OrderDetails';
 import LoadingSpinner from '../../../../components/LoadingSpinner';
@@ -16,14 +16,19 @@ function PreparedOrdersPage() {
   } = usePreparedOrders();
 
   const [selectedOrder, setSelectedOrder] = useState<DepotOrderDto | null>(null);
-  const [activeTab, setActiveTab] = useState<'prepared' | 'invoiced'>('prepared');
+  const [activeTab, setActiveTab] = useState<'prepared' | 'invoiced' | 'sentToBilling'>('prepared');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   // Convertir DepotOrderDto a OrderTableData para compatibilidad
   const convertToTableData = (order: any) => ({
     id: order.depotOrderId,
-    status: Number(order.status) === 7 ? 'Preparado' : 'Facturado', // Estado según el número
+    status: 
+      Number(order.status) === OrderStatus.Prepared
+        ? 'Preparado'
+        : Number(order.status) === OrderStatus.Invoiced
+        ? 'Facturado'
+        : 'Enviado a facturar',      
     orderDate: order.orderDate ? order.orderDate.toString() : 'Sin fecha',
     deliveryDate: order.deliveryDate ? order.deliveryDate.toString() : undefined,
     deliveryDetail: order.deliveryDetail ?? '',
@@ -39,23 +44,29 @@ function PreparedOrdersPage() {
   // Filtrar órdenes por estado según la pestaña activa
   const getFilteredOrders = () => {
     if (activeTab === 'prepared') {
-      // Estado 7: Preparado
-      return orders.filter((order: any) => Number(order.status) === 7);
+      return orders.filter((order: any) => Number(order.status) === OrderStatus.Prepared);
+    } else if (activeTab === 'invoiced') {
+      return orders.filter((order: any) => Number(order.status) === OrderStatus.Invoiced);
     } else {
-      // Estado 8: Facturado
-      return orders.filter((order: any) => Number(order.status) === 8);
+      return orders.filter((order: any) => Number(order.status) === OrderStatus.SentToBilling);
     }
   };
 
+
   const emptyMessageTitle =
-    activeTab === "prepared"
-      ? "No hay órdenes preparadas"
-      : "No hay órdenes facturadas";
+  activeTab === "prepared"
+    ? "No hay órdenes preparadas"
+    : activeTab === "invoiced"
+    ? "No hay órdenes facturadas"
+    : "No hay órdenes enviadas a facturar";
 
   const emptyMessageBody =
     activeTab === "prepared"
       ? "Aún no se ha terminado de preparar ninguna orden."
-      : "Aún no se ha facturado ninguna orden.";
+      : activeTab === "invoiced"
+      ? "Aún no se ha facturado ninguna orden."
+      : "Aún no se ha enviado ninguna orden a facturación.";
+
 
 
   const filteredOrders = getFilteredOrders();
@@ -70,7 +81,7 @@ function PreparedOrdersPage() {
   const tableData = paginatedOrders.map(convertToTableData);
   
   // Resetear página cuando cambia la pestaña
-  const handleTabChange = (tab: 'prepared' | 'invoiced') => {
+  const handleTabChange = (tab: 'prepared' | 'invoiced' | 'sentToBilling') => {
     setActiveTab(tab);
     setCurrentPage(1);
   };
@@ -123,6 +134,17 @@ function PreparedOrdersPage() {
                 }`}
               >
                 Facturadas ({orders.filter((order: any) => Number(order.status) === 8).length})
+              </button>
+
+               <button
+                onClick={() => handleTabChange('sentToBilling')}
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'sentToBilling'
+                    ? 'border-red-500 text-red-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Enviadas a facturar ({orders.filter((order: any) => Number(order.status) === OrderStatus.SentToBilling).length})
               </button>
             </nav>
           </div>

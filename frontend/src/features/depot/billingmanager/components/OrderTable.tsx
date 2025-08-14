@@ -8,7 +8,7 @@ interface Props {
   error: string | null;
   onRefetch: () => void;
   onView: (id: number) => void;
-  activeTab: 'pending' | 'assigned' | 'rereceived' | 'inPreparation' | 'prepared' | 'invoiced';
+  activeTab: 'pending' | 'assigned' | 'rereceived' | 'inPreparation' | 'prepared' | 'invoiced' | 'sentToBilling';
   emptyMessageTitle?: string;
   emptyMessageBody?: string;
   // El resto de props se ignoran para Pending Orders
@@ -27,40 +27,6 @@ export default function OrderTable({
     return (
       <LoadingSpinner message="Cargando órdenes..."/>
     )
-  /*
-  if (error) {
-    const isNoOrdersError = error.includes('No hay órdenes') || 
-                           error.includes('microservicio') || 
-                           error.includes('sincronizan');
-    return (
-      <div className="text-center py-8">
-        <div className="max-w-md mx-auto">
-          {isNoOrdersError ? (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <div className="text-blue-600 mb-4">
-                <h3 className="text-lg font-semibold mb-2">Sin Órdenes Disponibles</h3>
-                <p className="text-sm text-blue-700">{error}</p>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-              <div className="text-red-600 mb-4">
-                <h3 className="text-lg font-semibold mb-2">Error al Cargar Órdenes</h3>
-                <p className="text-sm text-red-700">{error}</p>
-              </div>
-            </div>
-          )}
-          <button 
-            onClick={onRefetch} 
-            className="mt-4 btn-primary inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
-          >
-            Reintentar
-          </button>
-        </div>
-      </div>
-    );
-  }
-    */
 
   if (orders.length === 0)
     return (

@@ -14,9 +14,10 @@ namespace DepotService.Application.DTOs.DepotOrder
         public string? MissingReason { get; set; }
         public string? MissingDescription { get; set; }
         public string? DescriptionResolution { get; set; }
-        public List<DepotOrderMissingItem> MissingItems { get; set; } = [];
         public DateTime MissingDate { get; set; }
         public int DepotOrderId { get; set; }
-        public DepotOrderEntity DepotOrder { get; set; } = null!;
+        public List<DepotOrderMissingItemDto> MissingItems { get; set; } = new List<DepotOrderMissingItemDto>();
+        public DepotOrderDto DepotOrder { get; set; } = null!;
+
     }
 }

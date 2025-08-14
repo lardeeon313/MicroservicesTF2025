@@ -66,6 +66,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         {
             return await _context.DepotOrderMissings
                 .Include(m => m.MissingItems)
+                .Include(m => m.DepotOrder)
                 .ToListAsync();
         }
 
