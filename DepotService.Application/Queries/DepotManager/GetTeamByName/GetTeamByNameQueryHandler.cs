@@ -34,7 +34,7 @@ namespace DepotService.Application.Queries.DepotManager.GetTeamByName
                 Id = team.Id,
                 TeamName = team.TeamName,
                 TeamDescription = team.TeamDescription,
-                Operators = team.Assignments.Select(o => new OperatorInTeamDto
+                Operators = team.Assignments.Select(o => new OperatorsInTeamDto
                 {
                     OperatorByUserId = o.OperatorUserId,
                     AssignAt = o.AssignedAt,

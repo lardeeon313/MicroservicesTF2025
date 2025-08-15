@@ -168,6 +168,9 @@ builder.Services.AddScoped<RejectOrderCommandValidator>();
 builder.Services.AddScoped<MarkItemIsReadyCommandValidator>();
 builder.Services.AddScoped<UnmarkItemReadyValidator>();
 
+builder.Services.AddHttpClient();
+builder.Services.AddHttpContextAccessor();
+
 // Add HostedService RabbitConsumer
 builder.Services.AddHostedService<OrderIssuedConsumer>();
 builder.Services.AddHostedService<OrderReissuedConsumer>();
@@ -198,7 +201,8 @@ builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
 // Registrar el DbContext
 builder.Services.AddDbContext<DepotDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-    b => b.MigrationsAssembly("DepotService.API")));
+    b => b.MigrationsAssembly("DepotService.API")))
+    ;
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
@@ -223,7 +227,7 @@ builder.Services.AddAuthentication("Bearer")
 // Configuración de autorización
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("DepotAcces", policy =>
-        policy.RequireClaim("role", "DepotManager, DepotOperator, BillingManager"));
+       policy.RequireClaim("role", "DepotManager", "DepotOperator", "BillingManager"));
 
 var app = builder.Build();
 

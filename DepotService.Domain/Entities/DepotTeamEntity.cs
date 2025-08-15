@@ -50,12 +50,12 @@ namespace DepotService.Domain.Entities
         /// </summary>
         public void AssignOperator(Guid userId)
         {
-            if (Assignments.Any(a => a.OperatorUserId == userId))
+            if (Assignments.Any(a => a.OperatorUserId == userId.ToString()))
                 throw new InvalidOperationException("El operador ya está asignado a este equipo.");
 
             Assignments.Add(new DepotTeamAssignment
             {
-                OperatorUserId = userId,
+                OperatorUserId = userId.ToString(),
                 DepotTeamId = Id,
                 AssignedAt = DateTime.UtcNow,
                 RoleInTeam = "Operator" // Asignar rol por defecto
@@ -68,7 +68,7 @@ namespace DepotService.Domain.Entities
 
         public void RemoveOperator(Guid userId)
         {
-            var assignment = Assignments.FirstOrDefault(a => a.OperatorUserId == userId);
+            var assignment = Assignments.FirstOrDefault(a => a.OperatorUserId == userId.ToString());
             if (assignment == null)
                 throw new InvalidOperationException("El operador no está asignado a este equipo.");
             Assignments.Remove(assignment);

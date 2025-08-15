@@ -22,7 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DepotService.Application\DepotService.Application.csproj" />
+	  <ProjectReference Include="..\DepotService.Application\DepotService.Application.csproj" />
+	  <ProjectReference Include="..\DepotService.Domain\DepotService.Domain.csproj" />
+	  <ProjectReference Include="..\SharedKernel\SharedKernel.csproj" />
   </ItemGroup>
 
   <ItemGroup>

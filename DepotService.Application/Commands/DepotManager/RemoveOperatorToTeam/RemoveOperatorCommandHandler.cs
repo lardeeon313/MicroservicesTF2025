@@ -32,7 +32,7 @@ namespace DepotService.Application.Commands.DepotManager.RemoveOperatorToTeam
             }
 
             // Validar que el operario se encuentre en el equipo
-            var operatorAssignment = team.Assignments.FirstOrDefault(a => a.OperatorUserId == command.OperatorUserId);
+            var operatorAssignment = team.Assignments.FirstOrDefault(a => a.OperatorUserId == command.OperatorUserId.ToString());
             if (operatorAssignment == null)
                 throw new KeyNotFoundException($"Operator with UserId {command.OperatorUserId} not found in team {command.TeamId}.");
 

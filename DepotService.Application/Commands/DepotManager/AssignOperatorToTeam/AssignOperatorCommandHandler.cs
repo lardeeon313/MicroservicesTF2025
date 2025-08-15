@@ -33,7 +33,7 @@ namespace DepotService.Application.Commands.DepotManager.AssignOperator
                 throw new InvalidOperationException($"The team with ID{command.TeamId} not found.");
             }
 
-            if(team.Assignments.Any(a => a.OperatorUserId == command.OperatorUserId))
+            if(team.Assignments.Any(a => a.OperatorUserId == command.OperatorUserId.ToString()))
             {
                 _logger.LogError($"The operator with UserId {command.OperatorUserId} is already assigned to team {command.TeamId}.");
                 throw new InvalidOperationException($"The operator with UserId {command.OperatorUserId} is already assigned to team {command.TeamId}.");
