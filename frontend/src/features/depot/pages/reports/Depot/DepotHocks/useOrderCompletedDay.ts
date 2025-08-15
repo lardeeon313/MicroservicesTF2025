@@ -1,43 +1,66 @@
-
-import { useEffect,useState } from "react";
+import { useState } from "react";
 import API from "../../../../../../api/axios";
-import type { Order } from "../../../../../sales/types/OrderTypes";
 
-type OrderCompleted = {
-    OrderId: Order['id'];
-    finishdate: Order['finishDate']
+export interface Order {
+  id: number;
+  finishDate: string;
+  total: number;
+  status: string;
 }
 
-export const useOrderCompletedDay = (page: number, pageSize: number) => {
-    const [data,setData] = useState<OrderCompleted[]>([]);
-    const [loading,setLoading] = useState<boolean>(true);
-    const [error,setError] = useState<string | null>(null);
-    const [totalpages,setTotalPages] = useState<number>(1);
+export const useOrderCompletedDay = () => {
+  const [data, setData] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [selectedDate, setSelectedDate] = useState<string>("");
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            setError(null);
-            try{
-                //Cambiar la ruta de la api:
-                const response = await API.get<OrderCompleted[]>('/depot/depotmanager/get-all-orders', {
-                    params: { page, pageSize },
-                });
+  const fetchData = async (from?: string, to?: string, pageNumber = 1) => {
+    try {
+      setLoading(true);
+      setError(null);
 
-                const totalCount = Number(response.headers["x-total-count"]);
-                    setTotalPages(Math.ceil(totalCount / pageSize));
-                    setData(response.data);
-                
-            }catch(error){
-                console.error("Error al obtener los pedidos completos. " , error);
-                setError("No se pudieron obtener los datos.");
-            }finally{
-                setLoading(false);
-            }
-        }
+      const res = await API.get("/depot/depotreports/reports/orders-completed", {
+        params: {
+          from: from || "",
+          to: to || "",
+          page: pageNumber,
+          pageSize: 10,
+        },
+      });
 
-        fetchData();
-    },[page,pageSize] );
+      console.log("API response:", res.data);
 
-    return {data,loading,error,totalpages}
-}
+      // Ajustar si la API devuelve otra estructura
+      const items = res.data.items ?? res.data ?? [];
+        setData(Array.isArray(items) ? items : []
+    );
+      setTotalPages(res.data.totalPages || 1);
+    } catch (err: any) {
+      setError(
+        err.message || "Error al obtener los datos"
+    );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const clearFilters = () => {
+    setSelectedDate("");
+    fetchData();
+  };
+
+  return {
+    data,
+    loading,
+    error,
+    page,
+    setPage,
+    totalPages,
+    selectedDate,
+    setSelectedDate,
+    fetchData,
+    clearFilters,
+  };
+};

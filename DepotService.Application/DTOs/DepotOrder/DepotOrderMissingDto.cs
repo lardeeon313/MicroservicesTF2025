@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DepotService.Application.DTOs
+namespace DepotService.Application.DTOs.DepotOrder
 {
     public class DepotOrderMissingDto
     {

@@ -2,44 +2,41 @@ import { useEffect, useState } from "react";
 import type { DepotTeam } from "../../../../depotmanager/types/DepotTeamTypes";
 import API from "../../../../../../api/axios";
 
+type ProductivityProps = {
+  teamId: DepotTeam["id"];
+  completedOrders: number;
+};
 
-type ProdictivityProps = {
-    teamId: DepotTeam['id'];
-    completedOrders: number; 
-}
+export const useTeamProductivity = (from: string, to: string) => {
+  const [data, setData] = useState<ProductivityProps[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-export const useTeamProdictivity = (page: number, pageSize: number) => {
-    const [data,setData] = useState<ProdictivityProps[]>([]);
-    const [loading,setLoading] = useState(true);
-    const [error,setError] = useState<string | null>(null);
-    const [totalpages,setTotalPages] = useState<number>(1);
+  useEffect(() => {
+    if (!from || !to) return; // No hacer request si faltan fechas
 
-    useEffect(() => {
-        const fetchTeamProdictivity = async () => {
-            setLoading(true);
-            setError(null);
-            try{
-                const response = await API.get<ProdictivityProps[]>(
-                    '/depot/depotmanager/get-all-teams',
-                    {
-                        params: {page, pageSize},
-                    }
-                );
+    const fetchTeamProductivity = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await API.get<ProductivityProps[]>(
+          "/depot/depotreports/reports/depot-team-performance",
+          {
+            params: { from, to },
+          }
+        );
 
-                
-                const totalCount = Number(response.headers["x-total-count"]);
-                setTotalPages(Math.ceil(totalCount / pageSize));
-                setData(response.data);
-            }catch(error){
-                console.error("Error al obtener la productividad de los equipos:", error);
-                setError("Error al obtener los datos.");
-            }finally{
-                setLoading(false);
-            }
-        };
+        setData(response.data);
+      } catch (error) {
+        console.error("Error al obtener la productividad de los equipos:", error);
+        setError("Error al obtener los datos.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        fetchTeamProdictivity();
-    }, [page,pageSize]); 
+    fetchTeamProductivity();
+  }, [from, to]);
 
-    return {data,loading,error,totalpages}
+  return { data, loading, error };
 };

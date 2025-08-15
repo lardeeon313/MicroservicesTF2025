@@ -1,4 +1,4 @@
-﻿using DepotService.Application.Common.Interfaces;
+﻿using DepotService.Domain.Common.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;

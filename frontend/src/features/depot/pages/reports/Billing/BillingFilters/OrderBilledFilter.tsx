@@ -1,54 +1,52 @@
-import React from "react";
-import { FiCalendar } from "react-icons/fi";
+import React, { useState } from "react";
 
 type Props = {
-    orderDate: string;
-    billingDate: string;
-    onOrderDateChange: (value: string) => void;
-    onBillingDateChange: (value: string) => void;
+  onSearch: (customerId: string) => void;
+  onClear: () => void;
 };
 
-const OrderBilledFilter: React.FC<Props> = ({
-    orderDate,
-    billingDate,
-    onOrderDateChange,
-    onBillingDateChange,
-}) => {
-    return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 bg-white p-6 rounded-xl">
-            {/* Fecha de pedido */}
-            <div className="flex flex-col">
-                <label className="mb-2 text-sm font-semibold text-gray-700">
-                    Filtrar por fecha de pedido
-                </label>
-                <div className="relative">
-                    <FiCalendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                    <input
-                        type="date"
-                        className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-300 transition duration-300"
-                        value={orderDate}
-                        onChange={(e) => onOrderDateChange(e.target.value)}
-                    />
-                </div>
-            </div>
+const OrderBilledFilter: React.FC<Props> = ({ onSearch, onClear }) => {
+  const [inputValue, setInputValue] = useState("");
 
-            {/* Fecha de factura */}
-            <div className="flex flex-col">
-                <label className="mb-2 text-sm font-semibold text-gray-700">
-                    Filtrar por fecha de factura
-                </label>
-                <div className="relative">
-                    <FiCalendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                    <input
-                        type="date"
-                        className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-300 transition duration-300"
-                        value={billingDate}
-                        onChange={(e) => onBillingDateChange(e.target.value)}
-                    />
-                </div>
-            </div>
-        </div>
-    );
+  const handleSearch = () => {
+    if (inputValue.trim() !== "") {
+      onSearch(inputValue.trim());
+    }
+  };
+
+  const handleClear = () => {
+    setInputValue("");
+    onClear();
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-xl shadow-md w-full md:w-1/2 mx-auto mb-8 flex flex-col gap-4 items-center">
+      <label className="text-sm font-semibold text-gray-700 text-center">
+        Buscar por Customer ID
+      </label>
+      <input
+        type="text"
+        placeholder="🆔 Ingresar Customer ID"
+        className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-300 transition duration-300 text-center"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+      />
+      <div className="flex gap-4">
+        <button
+          onClick={handleSearch}
+          className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition"
+        >
+          Buscar
+        </button>
+        <button
+          onClick={handleClear}
+          className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg shadow hover:bg-gray-400 transition"
+        >
+          Limpiar
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default OrderBilledFilter;

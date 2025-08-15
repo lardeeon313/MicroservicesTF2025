@@ -27,25 +27,6 @@ const cards = [
     icon: <User className="h-10 w-10 text-red-600" />,
     link: "/depot/depotmanager/report/TeamProdictivity",
   },
-  //Reportes de facturacion
-  {
-    title: "Ingresos por cliente",
-    description: "Visualiza los ingresos generados por cada unos de los clientes",
-    icon: <User className="h-10 w-10 text-red-600" />,
-    link: "/depot/billingmanager/report/CustomerIncome"
-  },
-  {
-    title: "Pedidos facturados",
-    description: "Analiza los pedidos que ya se encuentran facturados para su pronta verificacion",
-    icon: <User className="h-10 w-10 text-red-600" />,
-    link: "/depot/billingmanager/report/OrderBilled"
-  },
-  {
-    title: "Tiempos de proceso de facturacion",
-    description: "Mide y visaluiza el tiempo necesario que le toma al empleado de facturacion facturar el pedido",
-    icon: <User className="h-10 w-10 text-red-600" />,
-    link: "/depot/billingmanager/report/BillingTimeProcess",
-  },
 ];
 
 export const DashboardDepotReportsPage = () => {

@@ -1,34 +1,35 @@
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import API from "../../../../../../api/axios";
 import type { BillingTimeProcess } from "../../../../billingmanager/types/BillingTimeProcessType";
 
-export const useOrderBilled = (page:number,pageSize:number) => {
-    const [data,setData] = useState<BillingTimeProcess[]>([]);
-    const [loading,setLoading] = useState(true);
-    const [error,setError] = useState<string | null>(null);
-    const [totalpages,settotalPages] = useState<number>(1);
+export const useOrderBilledByCustomer = (customerId: string) => {
+  const [data, setData] = useState<BillingTimeProcess[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try{
-                const response = await API.get("/depot/billingmanager/pending-billing-orders" , {
-                    params: {page,pageSize}
-                })
+  useEffect(() => {
+    if (!customerId) return;
 
-                const totalCount = Number(response.headers["x-total-count"]);
-                settotalPages(Math.ceil(totalCount / pageSize));
+    const fetchData = async () => {
+      try {
+        const response = await API.get(
+          "/depot/billingmanager/invoiced-orders-by-customer",
+          {
+            params: { customerId }, // mejor como query param que body en GET
+          }
+        );
 
-                setData(response.data);
-            }catch(error){
-                console.error(error);
-                setError("Error al obtener los datos.")
-            }finally{
-                setLoading(false);
-            }
-        }
+        setData(response.data);
+      } catch (error) {
+        console.error(error);
+        setError("Error al obtener los datos.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        fetchData();
-    }, [page,pageSize])
+    fetchData();
+  }, [customerId]);
 
-    return {data,loading,error,totalpages}
-}
+  return { data, loading, error };
+};

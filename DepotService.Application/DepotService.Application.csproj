@@ -7,16 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DTOs\DepotOperator\Response\**" />
+    <EmbeddedResource Remove="DTOs\DepotOperator\Response\**" />
+    <None Remove="DTOs\DepotOperator\Response\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DepotService.Domain\DepotService.Domain.csproj" />
     <ProjectReference Include="..\DepotService.Infraestructure\DepotService.Infraestructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\DepotOperator\Response\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.5" />
   </ItemGroup>
 
 </Project>

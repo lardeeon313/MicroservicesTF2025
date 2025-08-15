@@ -17,6 +17,7 @@ namespace DepotService.Domain.Entities
         public string PhoneNumber { get; set; } = null!;
         public string? DeliveryDetail { get; set; }
         public DateTime OrderDate { get; set; }
+        public DateTime? DeliveryDate { get; set; }
         public OrderStatus Status { get; set; }
         public decimal TotalAmount { get; set; } = 0;
 
@@ -29,6 +30,7 @@ namespace DepotService.Domain.Entities
         public DepotTeamEntity? AssignedDepotTeam { get; set; }
         public int? AssignedDepotTeamId { get; private set; }
         public string? RejectionReason { get; set; }
+        public ICollection<OrderStatusHistory> StatusHistory { get; set; } = [];
         public void AssignToOperator(Guid operatorId)
         {
             if (Status != OrderStatus.Received && Status != OrderStatus.ReReceived)

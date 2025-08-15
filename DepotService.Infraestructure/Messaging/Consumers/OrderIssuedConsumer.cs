@@ -74,13 +74,14 @@ namespace DepotService.Infraestructure
                         var repository = scope.ServiceProvider.GetRequiredService<IDepotOrderRepository>();
 
                         var order = new DepotOrderEntity
-                        {   
+                        {
                             SalesOrderId = evento.OrderId,
                             CustomerId = evento.CustomerId,
                             CustomerName = evento.CustomerName,
                             CustomerEmail = evento.CustomerEmail,
                             PhoneNumber = evento.PhoneNumber,
                             DeliveryDetail = evento.DeliveryDetail,
+                            DeliveryDate = evento.DeliveryDate,
                             OrderDate = evento.OrderDate,
                             Status = OrderStatus.Received,
                             Items = evento.Items.Select(item => new DepotOrderItemEntity
@@ -90,11 +91,24 @@ namespace DepotService.Infraestructure
                                 ProductBrand = item.ProductBrand,
                                 Quantity = item.Quantity
                             }).ToList()
-
                         };
 
+                        // ✅ Primero guardamos la orden
                         await repository.AddAsync(order);
                         await context.SaveChangesAsync(stoppingToken);
+
+                        // ✅ Luego guardamos el historial de estatus
+                        var statusHistory = new OrderStatusHistory
+                        {
+                            OrderId = order.DepotOrderId, // Usa el ID real ya guardado
+                            OldStatus = OrderStatus.Issued,
+                            NewStatus = OrderStatus.Received,
+                            ChangedAt = DateTime.UtcNow,
+                        };
+
+                        await context.OrderStatusHistories.AddAsync(statusHistory);
+                        await context.SaveChangesAsync();
+
 
                         _logger.LogInformation("📦 Orden recibida y guardada en DepotService: {OrderId}", order.DepotOrderId);
                     }

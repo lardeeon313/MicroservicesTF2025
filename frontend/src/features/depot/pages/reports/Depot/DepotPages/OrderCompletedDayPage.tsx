@@ -1,90 +1,88 @@
-import React,{useState} from "react";
+import { useEffect } from "react";
+//import { useOrderCompletedDay } from "../DepotHooks/useOrderCompletedDay";
 import { useOrderCompletedDay } from "../DepotHocks/useOrderCompletedDay";
 import OrderCompletedDayTable from "../DepotComponents/OrderCompletedDayTable";
 import GraphOrderCompletedDay from "../DepotGraph/GraphOrderCompletedDay";
-import { Pagination } from "../../../../../../components/Pagination";
-import LoadingSpinner from "../../../../../../components/LoadingSpinner";
-import { Link } from "react-router-dom";
 
-//filtro: 
-import OrderCompletedDayFilter from "../DepotFilters/OrderCompletedDayFilter";
+export default function OrderCompletedDayPage() {
+  const {
+    data,
+    loading,
+    error,
+    selectedDate,
+    setSelectedDate,
+    page,
+    setPage,
+    totalPages,
+    fetchData,
+    clearFilters,
+  } = useOrderCompletedDay();
 
-const OrderCompletedDayPage : React.FC = () => {
-    const [page,setPage] = useState(1);
-    const pageSize = 10;
-    const [idfilter,setidFilter] = useState("");
-    const [selectedDate, setSelectedDate] = useState(""); // ✅ nuevo estado
+  useEffect(() => {
+    fetchData(selectedDate, selectedDate, page);
+  }, [page,selectedDate]);
 
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Pedidos Completados</h1>
 
-    const {data: orders,loading , error , totalpages} = useOrderCompletedDay(page,pageSize);
+      <div className="flex gap-2 mb-4">
+        <input
+          type="date"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          className="border rounded p-2"
+        />
+        <button
+          onClick={() => fetchData(selectedDate, selectedDate, 1)}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Filtrar
+        </button>
+        <button
+          onClick={clearFilters}
+          className="bg-gray-300 px-4 py-2 rounded"
+        >
+          Limpiar
+        </button>
+      </div>
 
-    const filterOrders = orders.filter((order) => {
-        const matchesId = order.OrderId.toString().includes(idfilter);
-        const matchesDate =
-            selectedDate === "" || order.finishdate.startsWith(selectedDate); // formateo ISO: 'YYYY-MM-DD'
-        return matchesId && matchesDate;
-    });
+      {loading && <p>Cargando...</p>}
+      {error && <p className="text-red-500">{error}</p>}
+      {!loading && data.length === 0 && <p>No hay pedidos completados</p>}
 
-    if(loading) return <LoadingSpinner message="Cargando datos , por favor espere.." height="h-screen" />
+      <OrderCompletedDayTable data={data} />
 
-    return(
-        <div className="container m-0 pt-10 min-w-full min-h-full">
-            <div className="flex items-center justify-between mb-6">
-                <Link to={"/depot/depotmanager/reports/orderCompletedDay"}className="text-red-600 hover:underline pl-10"> 
-                ← Volver atrás
-                </Link>
-            </div>
+      <div className="flex items-center gap-4 mt-4">
+        <button
+          disabled={page <= 1}
+          onClick={() => {
+            const newPage = page - 1;
+            setPage(newPage);
+            fetchData(selectedDate, selectedDate, newPage);
+          }}
+          className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50"
+        >
+          Anterior
+        </button>
+        <span>
+          Página {page} de {totalPages}
+        </span>
+        <button
+          disabled={page >= totalPages}
+          onClick={() => {
+            const newPage = page + 1;
+            setPage(newPage);
+            fetchData(selectedDate, selectedDate, newPage);
+          }}
+          className="bg-gray-300 px-3 py-1 rounded disabled:opacity-50"
+        >
+          Siguiente
+        </button>
+      </div>
 
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-                    Pedidos completados del dia:
-                </h1>
-                <p className="text-center text-lg text-gray-700 mb-12">
-                    Aquí podrás ver el listado de pedidos completados en el día junto con su fecha correspondiente.
-                </p>
-
-                <div className="flex flex-col md:flex-row mb-4 w-full justify-between">
-                    <div className="flex flex-col">
-                        <label className="mb-1 text-sm font-medium text-gray-700">Filtrar por ID de pedido</label>
-                        <input
-                            type="text"
-                            placeholder="Ej: 12345"
-                            className="border border-gray-300 rounded px-3 py-2 focus:bg-red-100 focus:outline-gray-400 focus:transition-colors focus:duration-500 outline-gray-200 w-60"
-                            value={idfilter}
-                            onChange={(e) => setidFilter(e.target.value)}
-                        />
-                    </div>
-                    {/**Filtra por la fecha:  */}
-                    <OrderCompletedDayFilter selectedDate={selectedDate} onDateChange={setSelectedDate} />
-                </div>
-
-
-                {error ? (
-                    <p className="text-red-600 text-center">{error}</p>
-                ): (
-                    <>
-                    <OrderCompletedDayTable 
-                    data={filterOrders.map(order => ({
-                        OrderID: order.OrderId,
-                        finishdate: order.finishdate
-                    }))}
-                    />
-                    <GraphOrderCompletedDay
-                    data={filterOrders.map(order => ({
-                        orderId: order.OrderId,
-                        finishDate: order.finishdate
-                    }) )} />
-                    {filterOrders.length === 0 && (
-                        <p className="">
-                            No se encontraron pedidos 
-                        </p>
-                    )}
-                    <Pagination currentPage={page} totalPages={totalpages} onPageChange={setPage} />
-                    </>
-                )}
-            </div>
-        </div>
-    )
+      <GraphOrderCompletedDay data={data} />
+    </div>
+  );
 }
 
-export default OrderCompletedDayPage;

@@ -17,5 +17,6 @@ namespace DepotService.Domain.Enums
         PendingResolution, // Pendiente de resolución
         Prepared,        // Preparado
         Invoiced,        // Facturado
+        Issued,          // Emitido por ventas
     }
 }

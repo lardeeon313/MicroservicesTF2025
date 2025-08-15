@@ -1,4 +1,5 @@
-﻿using DepotService.Domain.Entities;
+﻿using DepotService.Application.DTOs.DepotOrder;
+using DepotService.Domain.Entities;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

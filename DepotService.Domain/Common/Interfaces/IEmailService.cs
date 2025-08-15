@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DepotService.Application.Common.Interfaces
+namespace DepotService.Domain.Common.Interfaces
 {
     public interface IEmailService
     {

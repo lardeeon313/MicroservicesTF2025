@@ -76,6 +76,7 @@ namespace DepotService.Infraestructure.Messaging.Consumers
                         await repository.UpdateMissingOrderAsync(missingOrder);
                         
                         order.Status = OrderStatus.ReReceived;
+                        order.DeliveryDate = evento.DeliveryDate;
                         order.Items = evento.UpdateItems.Select(item => new DepotOrderItemEntity
                         {
                             Id = item.Id,

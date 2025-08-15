@@ -46,6 +46,10 @@ import InvoicedOrderDetailsPage from "../features/depot/billingmanager/pages/Inv
 import BillingTimeProcessPage from "../features/depot/pages/reports/Billing/BillingPages/BillingTimeProcessPage";
 import CustomerIncomePage from "../features/depot/pages/reports/Billing/BillingPages/CustomerIncomePage";
 import OrderBilledPage from "../features/depot/pages/reports/Billing/BillingPages/OrderBilledPage";
+//APP DASHBOARD PARA DEPOTMANAGER Y BILLINGMANAGER: 
+import { DashboardBillingReportsPage } from "../features/depot/pages/DashboardBillingDepotPage";
+import { DashboardDepotReportsPage } from "../features/depot/pages/DashboardDepotReportsPage";
+
 
 const AppRouter = () => {
   return (
@@ -56,7 +60,7 @@ const AppRouter = () => {
         <Route path="/404notfound" element={<NotFoundPage/>}/>
         <Route path="/" element={<HomePage/>}></Route>
 
-
+        {/**Modulo de ventas */}
         <Route path="/sales" element={<DashboardPage/>}/>
         <Route path="/sales/orders" element={<OrdersPage/>}/>
         <Route path="/sales/orders/view/:id" element={<ViewOrderPage/>} />
@@ -146,7 +150,7 @@ const AppRouter = () => {
                 <Route path="in-preparation-orders" element={<InPreparationOrdersPage />} />
                 <Route path="prepared-orders" element={<PreparedOrdersPage />} />
                 <Route path="missing-orders" element={<MissingOrdersPage />} />
-                <Route path="reports" element={<div>Reportes</div>} />
+                <Route path="reports" element={<DashboardDepotReportsPage/>} />
             </Route>
        
 
@@ -166,7 +170,7 @@ const AppRouter = () => {
             <Route path="pending-orders/:id" element={<PendingOrderDetailsPage />} />
             <Route path="invoiced-orders" element={<InvoicedOrdersPage />} />
             <Route path="invoiced-orders/:id" element={<InvoicedOrderDetailsPage />} />
-            {/* <Route path="reports" element={<BillingManagerReportsPage />} /> */}
+            <Route path="reports" element={<DashboardBillingReportsPage />} /> 
         </Route>
 
         <Route

@@ -1,5 +1,5 @@
 ﻿using DepotService.Application.Commands.DepotOperator.ReportOrderMissing;
-using DepotService.Application.DTOs;
+using DepotService.Application.DTOs.DepotOrder;
 using DepotService.Domain.Entities;
 using DepotService.Domain.Enums;
 using DepotService.Domain.IRepositories;

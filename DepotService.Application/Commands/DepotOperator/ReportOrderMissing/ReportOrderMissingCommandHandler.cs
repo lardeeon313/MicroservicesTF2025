@@ -37,7 +37,7 @@ namespace DepotService.Application.Commands.DepotOperator.ReportOrderMissing
                 _logger.LogError($"Order with ID {command.DepotOrderId} is not assigned to operator {command.OperatorUserId}.");
                 throw new InvalidOperationException($"Order with ID {command.DepotOrderId} is not assigned to operator {command.OperatorUserId}.");
             }
-            //NUEVO DIEGO: le puse con el status MissingProduct para que pueda emitir mas faltantes incluso si esta con ese estado
+
             if (order.Status != OrderStatus.InPreparation && order.Status != OrderStatus.MissingProduct)
             {
                 _logger.LogError($"Order with ID {command.DepotOrderId} is not in progress.");
@@ -69,8 +69,17 @@ namespace DepotService.Application.Commands.DepotOperator.ReportOrderMissing
             /// </summary>
             order.Status = OrderStatus.MissingProduct;
             await _repository.UpdateOrderAsync(order);
+            await _context.SaveChangesAsync();
 
-
+            var statusHistory = new OrderStatusHistory
+            {
+                OrderId = order.DepotOrderId,
+                OldStatus = order.Status,
+                NewStatus = OrderStatus.MissingProduct,
+                ChangedAt = DateTime.UtcNow,
+            };
+            // Agregar el historial de estado a la base de datos
+            await _context.OrderStatusHistories.AddAsync(statusHistory);
             await _context.SaveChangesAsync();
 
             _logger.LogInformation($"Order with ID {command.DepotOrderId} reported as missing by operator {command.OperatorUserId}.");

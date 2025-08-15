@@ -3,6 +3,7 @@ using Moq;
 using SalesService.Application.Commands.Orders.Register;
 using SalesService.Application.DTOs.Order;
 using SalesService.Application.DTOs.Order.Request;
+using SalesService.Domain.Common.Interfaces;
 using SalesService.Domain.Entities.CustomerEntity;
 using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.IRepositories;
@@ -25,10 +26,17 @@ namespace SalesService.Tests.Handlers
         private readonly Mock<ICustomerRepository> _customerRepo = new();
         private readonly Mock<IRabbitMQPublisher> _publisher = new();
         private readonly RegisterOrderCommandHandler _handler;
+        private readonly Mock<IEmailService> _email = new();
 
         public RegisterOrderHandlerTest()
         {
-            _handler = new RegisterOrderCommandHandler(_orderRepo.Object, _publisher.Object, _customerRepo.Object);
+            _handler = new RegisterOrderCommandHandler
+            (
+                _email.Object,
+                _orderRepo.Object, 
+                _publisher.Object, 
+                _customerRepo.Object
+            );
         }
 
         [Fact(DisplayName = "Debe registrar una orden y publicar evento")]

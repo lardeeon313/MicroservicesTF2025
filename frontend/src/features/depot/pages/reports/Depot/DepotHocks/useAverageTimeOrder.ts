@@ -12,7 +12,7 @@ export const useAverageTimeOrder = (page:number,pageSize: number) => {
         const fetchData = async () => {
             setLoading(true);
             try{
-                const response = await API.get<Order[]>('/depot/depotmanager/get-all-orders') //Modificar ruta
+                const response = await API.get<Order[]>('/depot/depotreports/reports/average-time-per-status') 
 
                 const start = (page - 1) * pageSize;
                 const end = start + pageSize;

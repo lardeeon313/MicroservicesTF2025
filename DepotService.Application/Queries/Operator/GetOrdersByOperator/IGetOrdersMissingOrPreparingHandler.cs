@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DepotService.Application.DTOs;
+using DepotService.Application.DTOs.DepotOrder;
 using GetOrdersQuery = DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery.GetOrdersByOperatorQuery;
 
 namespace DepotService.Application.Queries.Operator.GetOrdersByOperator

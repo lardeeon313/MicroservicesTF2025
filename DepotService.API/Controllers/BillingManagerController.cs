@@ -2,7 +2,7 @@
 using DepotService.Application.Commands.BillingManager.InvoicedOrder;
 using DepotService.Application.Commands.BillingManager.SetItemUnitPrices;
 using DepotService.Application.Commands.BillingManager.UpdateInvoicedItemPrice;
-using DepotService.Application.DTOs;
+using DepotService.Application.DTOs.DepotOrder;
 using DepotService.Application.Queries.BillingManager.GetAllInvoicedOrders;
 using DepotService.Application.Queries.BillingManager.GetBillingDetailsByOrder;
 using DepotService.Application.Queries.BillingManager.GetInvoicedOrderById;

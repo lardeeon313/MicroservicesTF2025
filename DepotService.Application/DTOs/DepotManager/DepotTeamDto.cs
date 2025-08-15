@@ -12,7 +12,7 @@ namespace DepotService.Application.DTOs.DepotManager
         public string TeamName { get; set; } = string.Empty;
         public string? TeamDescription { get; set; }
         public DateTime CreatedAt { get; set; }
-        public List<OperatorInTeamDto> Operators { get; set; } = new();
+        public List<OperatorsInTeamDto> Operators { get; set; } = new();
 
     }
 }

@@ -1,4 +1,4 @@
-﻿using DepotService.Application.Common.Interfaces;
+﻿using DepotService.Domain.Common.Interfaces;
 using DepotService.Domain.Entities;
 using DepotService.Domain.Enums;
 using DepotService.Domain.IRepositories;
@@ -22,14 +22,14 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
         IRabbitMQPublisher rabbitMQ,
         IDepotOrderRepository repository,
         DepotDbContext context, 
-        ILogger<OrderMissingReportedCommand> logger
+        ILogger<OrderMissingReportedCommandHandler> logger
         ) : IOrderMissingReportedCommandHandler
     {
         private readonly IEmailService _emailService = emailService;
         private readonly IRabbitMQPublisher _rabbitMQ = rabbitMQ;
         private readonly IDepotOrderRepository _repository = repository;
         private readonly DepotDbContext _context = context;
-        private readonly ILogger<OrderMissingReportedCommand> _logger = logger;
+        private readonly ILogger<OrderMissingReportedCommandHandler> _logger = logger;
 
         /// <summary>
         /// Manejador para el comando OrderMissingReportedCommand.
@@ -47,6 +47,19 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
 
             depotOrder.Status = OrderStatus.PendingResolution;
             await _repository.UpdateOrderAsync(depotOrder);
+
+            var statusHistory = new OrderStatusHistory
+            {
+                OrderId = depotOrder.DepotOrderId,
+                OldStatus = depotOrder.Status,
+                NewStatus = OrderStatus.PendingResolution,
+                ChangedAt = DateTime.UtcNow,
+            };
+            // Agregar el historial de estado a la base de datos
+            await _context.OrderStatusHistories.AddAsync(statusHistory);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation($"Depot order with ID {command.DepotOrderId} status updated to PendingResolution.");
+
 
             // Guardar los cambios en la base de datos
             var orderMissing = new DepotOrderMissing

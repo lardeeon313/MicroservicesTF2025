@@ -62,6 +62,7 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
                         CustomerEmail = existingOrder.Customer.Email,
                         PhoneNumber = existingOrder.Customer.PhoneNumber,
                         DeliveryDetail = existingOrder.DeliveryDetail,
+                        DeliveryDate = existingOrder.DeliveryDate,
                         OrderDate = existingOrder.OrderDate,
                         Status = existingOrder.Status,
                         Items = existingOrder.Items.Select(i => new OrderItemsDto

@@ -43,6 +43,9 @@ namespace DepotService.API.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<DateTime?>("DeliveryDate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("DeliveryDetail")
                         .HasColumnType("longtext");
 
@@ -233,6 +236,34 @@ namespace DepotService.API.Migrations
                     b.ToTable("DepotTeams");
                 });
 
+            modelBuilder.Entity("DepotService.Domain.Entities.OrderStatusHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<double>("AverageDuration")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("NewStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OldStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderStatusHistories");
+                });
+
             modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderEntity", b =>
                 {
                     b.HasOne("DepotService.Domain.Entities.DepotTeamEntity", "AssignedDepotTeam")
@@ -300,11 +331,24 @@ namespace DepotService.API.Migrations
                     b.Navigation("depotTeamEntity");
                 });
 
+            modelBuilder.Entity("DepotService.Domain.Entities.OrderStatusHistory", b =>
+                {
+                    b.HasOne("DepotService.Domain.Entities.DepotOrderEntity", "DepotOrderEntity")
+                        .WithMany("StatusHistory")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DepotOrderEntity");
+                });
+
             modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderEntity", b =>
                 {
                     b.Navigation("Items");
 
                     b.Navigation("Missings");
+
+                    b.Navigation("StatusHistory");
                 });
 
             modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderMissing", b =>
