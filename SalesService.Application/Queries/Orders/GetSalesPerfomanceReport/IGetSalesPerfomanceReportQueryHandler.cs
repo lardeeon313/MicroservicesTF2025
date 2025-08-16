@@ -11,7 +11,7 @@ namespace SalesService.Application.Queries.Orders.GetSalesPerfomanceReport
 {
     public interface IGetSalesPerfomanceReportQueryHandler
     {
-        Task<IEnumerable<SalesPerfomanceDto>> Handle();
+        Task<IEnumerable<SalesPerfomanceDto>> Handle(GetSalesPerformanceReportQuery query);
 
     }
 }

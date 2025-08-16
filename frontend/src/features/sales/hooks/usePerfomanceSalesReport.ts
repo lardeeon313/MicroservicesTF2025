@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { SalesPerfomanceDto } from "../types/OrderTypes";
 import { getSalesPerfomance } from "../services/OrderService";
 import { handleFormikError } from "../../../components/ErrorHandler";
-import { isWithinInterval, parseISO, subDays, subMonths, subYears } from "date-fns";
+import { parseISO, subDays, subMonths, subYears } from "date-fns";
 
 
 
@@ -10,15 +10,16 @@ export function usePerfomanceSalesReport() {
     const [data, setData] = useState<SalesPerfomanceDto[]>([]);
     const [filteredData, setFilteredData] = useState<SalesPerfomanceDto[]>([]);
     const [loading, setLoading] = useState(true);
-    const [salesPersonName, setSalesPersonName] = useState("");
-    const [period, setPeriod] = useState<"weekly" | "monthly" | "yearly">("monthly");
+    const [salesRange, setSalesRange] = useState<"all" | "quincena" | "mensual" | "trimestral" | "semestral" | "anual">("all");
+    const [dateFrom, setDateFrom] = useState<string>("");
+    const [dateTo, setDateTo] = useState<string>("");
 
 
     useEffect(() => {
         const fetchData = async () => {
         setLoading(true);
         try {
-            const result = await getSalesPerfomance();
+            const result = await getSalesPerfomance(dateFrom || undefined, dateTo || undefined);
             setData(result);
         } catch (error) {
             handleFormikError({
@@ -33,40 +34,47 @@ export function usePerfomanceSalesReport() {
         }
         };
         fetchData();
-    }, []);
+    }, [dateFrom, dateTo]);
 
 
-    // Aplicamos los filtros en el frontend
+    // Filtro en memoria para salesRange y salesPersonName
     useEffect(() => {
-        const now = new Date();
-        const periodStart = 
-            period === "weekly"
-            ? subDays(now, 7)
-            : period === "monthly"
-            ? subMonths(now, 1)
-            : subYears(now, 1);
+    const now = new Date();
 
+    const filtered = data.filter((item) => {
+      const orderDate = parseISO(item.lastOrderDate);
 
-        const filtered = data.filter((item) => {
-        const matchName = salesPersonName
-            ? item.salespersonName.toLowerCase().toLowerCase().includes(salesPersonName.toLowerCase())
-            : true;
+      const matchesRange = (() => {
+        switch (salesRange) {
+          case "quincena":
+            return orderDate >= subDays(now, 15);
+          case "mensual":
+            return orderDate >= subMonths(now, 1);
+          case "trimestral":
+            return orderDate >= subMonths(now, 3);
+          case "semestral":
+            return orderDate >= subMonths(now, 6);
+          case "anual":
+            return orderDate >= subYears(now, 1);
+          default:
+            return true;
+        }
+      })();
 
-        const orderDate = parseISO(item.lastOrderDate);
-        const matchDate = isWithinInterval(orderDate, { start: periodStart, end: now});
+      return matchesRange;
+    });
 
-        return matchName && matchDate;
-        });
-
-        setFilteredData(filtered);
-    }, [data, salesPersonName, period]);
+    setFilteredData(filtered);
+    }, [data, salesRange]);
 
     return {
-        data:filteredData,
+        data: filteredData,
         loading,
-        salesPersonName,
-        setSalesPersonName,
-        period,
-        setPeriod,
+        salesRange,
+        setSalesRange,
+        dateFrom,
+        setDateFrom,
+        dateTo,
+        setDateTo,
     };
 };

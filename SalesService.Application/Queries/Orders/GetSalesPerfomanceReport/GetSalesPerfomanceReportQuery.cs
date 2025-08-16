@@ -6,10 +6,14 @@ using System.Threading.Tasks;
 
 namespace SalesService.Application.Queries.Orders.GetSalesPerfomanceReport
 {
-    public record GetSalesPerformanceReportQuery(
-        DateTime? DateFrom,
-        DateTime? DateTo,
-        string? CreatedByUserId,
-        string? OrderStatus
-    );
+    public class GetSalesPerformanceReportQuery
+    {
+        public DateTime? DateFrom { get; set; }
+        public DateTime? DateTo { get; set; }
+        public GetSalesPerformanceReportQuery(DateTime? dateFrom, DateTime? dateTo)
+        {
+            DateFrom = dateFrom;
+            DateTo = dateTo;
+        }
+    }
 }

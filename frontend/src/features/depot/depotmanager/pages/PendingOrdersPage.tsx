@@ -109,7 +109,7 @@ function PendingOrdersPage() {
   // };
   
   if (loading) {
-    return <LoadingSpinner message="Cargando órdenes pendientes..." />;
+    return <LoadingSpinner message="Cargando órdenes pendientes..." height='h-screen' />;
   }
 
   return (

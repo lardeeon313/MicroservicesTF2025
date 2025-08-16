@@ -83,9 +83,15 @@ export const getPagedOrders = async (pageNumber = 1, pageSize = 20): Promise<{
 };
 
 // Obtener los pedidos ordenados por userId para el reporte PerfomanceSales
-export const getSalesPerfomance = async (): Promise<SalesPerfomanceDto[]> => {
-  const response = await API.get("/sales/Order/report/performance");
+export const getSalesPerfomance = async (
+  from?: string,
+  to?: string
+): Promise<SalesPerfomanceDto[]> => {
+  const response = await API.get("/sales/Order/report/performance", {
+    params: { from, to }, // Axios se encarga de armar la query string automáticamente
+  });
+
   return response.data;
-}
+};
 
 
