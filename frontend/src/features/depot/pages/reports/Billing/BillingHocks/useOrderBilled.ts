@@ -13,7 +13,7 @@ export const useOrderBilledByCustomer = (customerId: string) => {
     const fetchData = async () => {
       try {
         const response = await API.get(
-          "/depot/billingmanager/invoiced-orders-by-customer",
+           `/depot/billingmanager/invoiced-orders-by-customer?customerId=${customerId}`,
           {
             params: { customerId }, // mejor como query param que body en GET
           }

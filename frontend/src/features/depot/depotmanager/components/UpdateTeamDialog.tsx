@@ -95,7 +95,7 @@ export const UpdateTeamDialog = ({ isOpen, onClose, team }: UpdateTeamDialogProp
                                                 <Field
                                                     type="text"
                                                     name="teamName"
-                                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
+                                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none sm:text-sm px-2 py-2"
                                                 />
                                                 <ErrorMessage
                                                     name="teamName"
@@ -112,7 +112,7 @@ export const UpdateTeamDialog = ({ isOpen, onClose, team }: UpdateTeamDialogProp
                                                     as="textarea"
                                                     name="teamDescription"
                                                     rows={3}
-                                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
+                                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 focus:outline-none sm:text-sm px-2 py-2"
                                                 />
                                                 <ErrorMessage
                                                     name="teamDescription"

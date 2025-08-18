@@ -1,125 +1,167 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useCustomerIncome } from "../BillingHocks/useCustomerIncome";
-
+import React, { useState, useEffect } from "react";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import { Pagination } from "../../../../../../components/Pagination";
 import CustomerIncomeTable from "../BillingComponents/CustomerIncomeTable";
 import GraphCustomerIncome from "../BillingGraphs/GraphCustomerIncome";
-import CustomerIncomeFilter from "../BillingFilters/CustomerIncomeFilter";
+import type { Billing } from "../../../../billingmanager/types/BillingType";
+import API from "../../../../../../api/axios";
 
 const CustomerIncomePage: React.FC = () => {
-  const [page, setPage] = useState(1);
-  const pageSize = 10;
+  // datos originales
+  const [orders, setOrders] = useState<Billing[]>([]);
+  const [filteredOrders, setFilteredOrders] = useState<Billing[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   // filtros
-  const [idFilter, setIdFilter] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [searchParams, setSearchParams] = useState({ startDate: "", endDate: "" });
+  const [searchParams, setSearchParams] = useState<{
+    startDate: string;
+    endDate: string;
+    orderId?: string;
+  }>({
+    startDate: "",
+    endDate: "",
+    orderId: "",
+  });
 
-  const { data, loading, error, totalPages } = useCustomerIncome(
-    searchParams.startDate,
-    searchParams.endDate,
-    page,
-    pageSize
-  );
+  // paginación
+  const [page, setPage] = useState<number>(1);
+  const [pageSize] = useState<number>(10);
 
+  // total de páginas
+  const totalPages = Math.ceil(filteredOrders.length / pageSize);
+
+  // traer datos una sola vez;
+  useEffect(() => {
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const res = await API.get<Billing[]>("/depot/billingmanager/all-invoiced-orders");
+      if (!res.data || res.data.length === 0) {
+        setOrders([]);
+        setFilteredOrders([]);
+        setError("No hay órdenes facturadas.");
+      } else {
+        setOrders(res.data);
+        setFilteredOrders(res.data);
+        setError("");
+      }
+    } catch (err: any) {
+      // 🚫 si es 500 o 404, mostramos mensaje pero NO hacemos console.error
+      if (err.response && (err.response.status === 404 || err.response.status === 500)) {
+        setError("No hay órdenes facturadas.");
+      } else {
+        console.error("Error fetching invoiced orders:", err);
+        setError("Error al conectar con el servidor.");
+      }
+      setOrders([]);
+      setFilteredOrders([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchOrders();
+}, []);
+
+
+  // aplicar filtros
   const handleSearch = () => {
-    setSearchParams({ startDate, endDate });
-    setPage(1); // volver a la primera página al buscar
+    let data = [...orders];
+
+    if (searchParams.startDate) {
+      data = data.filter(
+        (o) => new Date(o.billingDate) >= new Date(searchParams.startDate)
+      );
+    }
+
+    if (searchParams.endDate) {
+      data = data.filter(
+        (o) => new Date(o.billingDate) <= new Date(searchParams.endDate)
+      );
+    }
+
+    if (searchParams.orderId) {
+      data = data.filter((o) => String(o.orderID) === searchParams.orderId);
+    }
+
+    setFilteredOrders(data);
+    setPage(1); // resetear a la primera página
   };
 
-  const handleClear = () => {
-    setStartDate("");
-    setEndDate("");
-    setSearchParams({ startDate: "", endDate: "" });
-    setPage(1);
-  };
-
-  const filteredData = data.filter((item) =>
-    item.orderID.toString().includes(idFilter)
+  // slice para paginar
+  const paginatedOrders = filteredOrders.slice(
+    (page - 1) * pageSize,
+    page * pageSize
   );
-
-  if (loading) {
-    return <LoadingSpinner message="Cargando los datos..." height="h-screen" />;
-  }
 
   return (
-    <div className="container m-0 pt-10 min-w-full min-h-full">
-      <div className="flex items-center justify-between mb-6">
-        <Link
-          to={"/depot/billingmanager/reports"}
-          className="text-red-600 hover:underline pl-10"
+    <div className="p-4">
+      <h1 className="text-xl font-bold mb-4">Ingresos por Cliente</h1>
+
+      {/* filtros simples */}
+      <div className="flex gap-2 mb-4">
+        <input
+          type="date"
+          value={searchParams.startDate}
+          onChange={(e) =>
+            setSearchParams({ ...searchParams, startDate: e.target.value })
+          }
+          className="border p-2 rounded"
+        />
+        <input
+          type="date"
+          value={searchParams.endDate}
+          onChange={(e) =>
+            setSearchParams({ ...searchParams, endDate: e.target.value })
+          }
+          className="border p-2 rounded"
+        />
+        <input
+          type="text"
+          placeholder="Order ID"
+          value={searchParams.orderId}
+          onChange={(e) =>
+            setSearchParams({ ...searchParams, orderId: e.target.value })
+          }
+          className="border p-2 rounded"
+        />
+        <button
+          onClick={handleSearch}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
         >
-          ← Volver atrás
-        </Link>
+          Buscar
+        </button>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-          Ingresos generados por los clientes:
-        </h1>
-        <p className="text-center text-lg text-gray-700 mb-12">
-          Aquí podrás ver todos los ingresos que fueron generados por los
-          distintos clientes luego de hacer la facturación.
-        </p>
+      {/* estados */}
+      {loading && <LoadingSpinner />}
+      {error && <p className="text-red-500">{error}</p>}
 
-        {/* FILTROS */}
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 mb-6 w-full max-w-5xl mx-auto">
-          {/* Filtro por ID */}
-          <label className="flex items-center gap-2 border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus-within:ring-2 focus-within:ring-red-500 transition-all w-full lg:w-1/3">
-            <input
-              type="text"
-              placeholder="Filtrar por ID de pedido"
-              className="w-full bg-transparent outline-none text-sm placeholder-gray-500"
-              value={idFilter}
-              onChange={(e) => setIdFilter(e.target.value)}
-            />
-          </label>
+      {/* tabla */}
+      <CustomerIncomeTable
+        data={paginatedOrders.map((item: Billing) => ({
+          orderid: item.orderID,
+          billingDate: item.billingDate,
+          totalAmount: item.totalAmount,
+        }))}
+      />
 
-          {/* Filtro por fechas con botones */}
-          <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-2/3">
-            <CustomerIncomeFilter
-              startDate={startDate}
-              endDate={endDate}
-              onStartDateChange={setStartDate}
-              onEndDateChange={setEndDate}
-              onSearch={handleSearch}
-              onClear={handleClear}
-            />
-          </div>
-        </div>
+      {/* gráfico */}
+      <GraphCustomerIncome
+        data={filteredOrders.map((item: Billing) => ({
+          BillingDate: item.billingDate,
+          TotalAmount: item.totalAmount,
+        }))}
+      />
 
-        {/* RESULTADOS */}
-        {error ? (
-          <p className="text-red-600 text-center">{error}</p>
-        ) : (
-          <>
-            <CustomerIncomeTable
-              data={filteredData.map((item) => ({
-                orderid: item.orderID,
-                billingDate: item.billingDate,
-                totalAmount: item.totalAmount,
-              }))}
-            />
-            <GraphCustomerIncome
-              data={filteredData.map((item) => ({
-                BillingDate: item.billingDate,
-                TotalAmount: item.totalAmount,
-              }))}
-            />
-            <Pagination
-              currentPage={page}
-              totalPages={totalPages}
-              onPageChange={setPage}
-            />
-          </>
-        )}
-      </div>
+      {/* paginación */}
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
     </div>
   );
 };
 
 export default CustomerIncomePage;
-

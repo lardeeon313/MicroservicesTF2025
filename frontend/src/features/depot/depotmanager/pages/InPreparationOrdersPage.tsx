@@ -6,6 +6,7 @@ import OrderDetails from '../../billingmanager/components/OrderDetails';
 import LoadingSpinner from '../../../../components/LoadingSpinner';
 import BackButton from '../components/BackButton';
 import Pagination from '../components/Pagination';
+import { useNavigate } from 'react-router-dom';
 
 function InPreparationOrdersPage() {
   const {
@@ -18,16 +19,18 @@ function InPreparationOrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<DepotOrderDto | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const navigate = useNavigate();
 
   // Convertir DepotOrderDto a OrderTableData para compatibilidad
-  const convertToTableData = (order: any) => ({
+  const convertToTableData = (order: DepotOrderDto) => ({
     id: order.depotOrderId,
     status: 'En Preparación', // Estado fijo para órdenes en preparación
     orderDate: order.orderDate ? order.orderDate.toString() : 'Sin fecha',
-    deliveryDate: order.deliveryDate ?? null,
+    deliveryDate: order.deliveryDate ? order.deliveryDate.toString() : undefined,
     deliveryDetail: order.deliveryDetail ?? '',
-    customerFirstName: order.customerName ? order.customerName.split(' ')[0] : '',
-    customerLastName: order.customerName ? order.customerName.split(' ').slice(1).join(' ') : '',
+    customerFirstName: order.customerName?.split(' ')[0] || '' ,
+    customerLastName: order.customerName?.split(' ').slice(1).join(' ') || '',
+    operatorName: order.operatorName || '-',
     items: Array.isArray(order.items) ? order.items.map((item: any) => ({
       productName: item.productName ?? '',
       productBrand: item.productBrand ?? '',
@@ -59,25 +62,19 @@ function InPreparationOrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="container m-0 pt-10 min-w-full min-h-full py-20 pt-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Órdenes en Preparación</h1>
               <p className="mt-2 text-gray-600">
-                Visualiza las órdenes que están siendo preparadas por operarios asignados
+                Visualiza las órdenes que están siendo preparadas por operarios asignados.
               </p>
             </div>
             <BackButton to="/depot" />
           </div>
         </div>
-
-        {error && (
-          <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-            {error}
-          </div>
-        )}
 
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <OrderTable
@@ -86,18 +83,19 @@ function InPreparationOrdersPage() {
             error={error}
             onRefetch={refetch}
             onView={handleView}
+            activeTab="inPreparation"
+            emptyMessageTitle="No hay órdenes en preparación"
+            emptyMessageBody="Puedes asignar órdenes desde el módulo de órdenes pendientes."
           />
-          
-          {!loading && !error && orders.length > 0 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={Math.ceil(orders.length / itemsPerPage)}
-              onPageChange={setCurrentPage}
-              totalItems={orders.length}
-              itemsPerPage={itemsPerPage}
-            />
-          )}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(orders.length / itemsPerPage)}
+            onPageChange={setCurrentPage}
+            totalItems={orders.length}
+            itemsPerPage={itemsPerPage}
+          />
         </div>
+
 
         {/* Diálogo de detalles de orden */}
         {selectedOrder && (
@@ -119,6 +117,13 @@ function InPreparationOrdersPage() {
             </div>
           </>
         )}
+        <button
+        onClick={() => navigate('/depot/pending-orders')}
+        className="mt-4 ml-2 px-4 py-2 inline-block border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+        
+      >
+        Ir a Órdenes Pendientes
+      </button>
       </div>
     </div>
   );

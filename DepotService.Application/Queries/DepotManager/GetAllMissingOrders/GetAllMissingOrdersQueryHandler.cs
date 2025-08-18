@@ -24,30 +24,43 @@ namespace DepotService.Application.Queries.DepotManager.GetAllMissingOrders
         /// <exception cref="Exception"></exception>
         public async Task<IEnumerable<DepotOrderMissingDto>> GetAllMissingOrdersAsync()
         {
-            var ordersExists = await _repository.GetMissingOrdersAsync();
+            var missingOrders = await _repository.GetMissingOrdersAsync();
 
-            if (ordersExists == null || !ordersExists.Any())
+            if (missingOrders == null || !missingOrders.Any())
             {
-                _logger.LogError("No missing orders found.");
-                throw new Exception("No missing orders found.");
+                _logger.LogInformation("No missing orders found.");
+                return Enumerable.Empty<DepotOrderMissingDto>();
             }
 
-            var ordersMissingDtos = ordersExists.Select(order => new DepotOrderMissingDto
+            return missingOrders.Select(m => new DepotOrderMissingDto
             {
-                MissingId = order.MissingId,
-                DepotOrderId = order.DepotOrderId,
-                SalesOrderId = order.SalesOrderId,
-                MissingReason = order.MissingReason,
-                MissingDescription = order.MissingDescription,
-                MissingItems = order.MissingItems,
-                DescriptionResolution = order.DescriptionResolution,
-                MissingDate = order.MissingDate,
-                DepotOrder = order.DepotOrder
-            });
-
-            _logger.LogInformation("All missing orders retrieved successfully.");
-
-            return ordersMissingDtos;
+                MissingId = m.MissingId,
+                DepotOrderId = m.DepotOrderId,
+                SalesOrderId = m.SalesOrderId,
+                MissingReason = m.MissingReason,
+                MissingDescription = m.MissingDescription,
+                MissingDate = m.MissingDate,
+                DescriptionResolution = m.DescriptionResolution,
+                MissingItems = m.MissingItems.Select(mi => new DepotOrderMissingItemDto
+                {
+                    Id = mi.Id,
+                    DepotOrderItemId = mi.DepotOrderItemId,
+                    ProductName = mi.ProductName,
+                    ProductBrand = mi.ProductBrand,
+                    Packaging = mi.Packaging,
+                    MissingQuantity = mi.MissingQuantity
+                }).ToList(),
+                DepotOrder = new DepotOrderDto
+                {
+                    DepotOrderId = m.DepotOrder.DepotOrderId,
+                    SalesOrderId = m.DepotOrder.SalesOrderId,
+                    CustomerName = m.DepotOrder.CustomerName,
+                    CustomerEmail = m.DepotOrder.CustomerEmail,
+                    OrderDate = m.DepotOrder.OrderDate, 
+                    AssignedOperatorId = m.DepotOrder.AssignedOperatorId,
+                    Status = m.DepotOrder.Status,
+                }
+            }).ToList();
 
         }
     }

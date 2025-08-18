@@ -16,7 +16,3 @@ export const assignOperatorToTeam = async (teamId: number, operatorUserId: strin
 export const removeOperatorFromTeam = async (teamId: number, operatorUserId: string): Promise<void> => {
     await API.delete(`/depot/depotmanager/${teamId}/remove-operator/${operatorUserId}`);
 };
-
-
-
-

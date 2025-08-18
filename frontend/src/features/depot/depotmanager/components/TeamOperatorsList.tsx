@@ -1,5 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react';
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState } from 'react';
 import { X, User, Mail } from 'lucide-react';
 import { OperatorInTeamDto } from '../types/OperatorTypes';
 
@@ -14,9 +14,6 @@ interface TeamOperatorsListProps {
 export const TeamOperatorsList = ({ isOpen, onClose, teamName, operators, onRemoveOperator }: TeamOperatorsListProps) => {
     const [selectedOperator, setSelectedOperator] = useState<OperatorInTeamDto | null>(null);
 
-    useEffect(() => {
-        console.log('TeamOperatorsList: operators prop updated:', operators);
-    }, [operators]);
 
     return (
         <Transition appear show={isOpen} as={Fragment}>
@@ -93,16 +90,15 @@ export const TeamOperatorsList = ({ isOpen, onClose, teamName, operators, onRemo
                                                                 {operator.operatorEmail}
                                                             </p>
                                                         </div>
+                                                        
                                                         <div className="flex items-center space-x-2">
-                                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                                                {operator.roleInTeam}
-                                                            </span>
+
                                                             <button
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
                                                                     onRemoveOperator(operator);
                                                                 }}
-                                                                className="text-red-600 hover:text-red-800"
+                                                                className="text-red-600 bg-red-100 rounded-full p-1 pl-2 pr-2 hover:text-red-100 hover:bg-red-500 transition"
                                                             >
                                                                 Remover
                                                             </button>

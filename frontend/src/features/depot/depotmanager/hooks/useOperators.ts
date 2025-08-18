@@ -40,15 +40,9 @@ export function useOperators() {
             await assignOperatorToTeam(request.teamId, request.operatorUserId);
             await fetchOperators();
         } catch (error) {
-            handleFormikError({
-                error,
-                customMessages: {
-                    400: "Datos inválidos, por favor verificá los campos.",
-                    404: "Operador o equipo no encontrado.",
-                    500: "Error interno del servidor.",
-                },
-            });
-            setError("Error al asignar el operador");
+            if(error instanceof Error){
+                setError('El operador ya esta asignado a este equipo')
+            }
             throw error;
         } finally {
             setLoading(false);

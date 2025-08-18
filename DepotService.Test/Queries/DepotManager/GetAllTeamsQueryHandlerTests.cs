@@ -1,4 +1,5 @@
 ﻿using DepotService.Application.Queries.DepotManager.GetAllTeams;
+using DepotService.Application.Services.IdentityServiceClient;
 using DepotService.Domain.Entities;
 using DepotService.Domain.IRepositories;
 using FluentAssertions;
@@ -16,12 +17,15 @@ namespace DepotService.Test.Queries.DepotManager
         private readonly Mock<ITeamRepository> _repositoryMock;
         private readonly GetAllTeamsQueryHandler _handler;
 
+        private readonly Mock<IIdentityServiceClient> _identityClientMock;
+
         public GetAllTeamsQueryHandlerTests()
         {
             _repositoryMock = new Mock<ITeamRepository>();
+            _identityClientMock = new Mock<IIdentityServiceClient>();
             _handler = new GetAllTeamsQueryHandler(
                 repository: _repositoryMock.Object,
-                context: null // No se usa en este handler
+                identityClient: _identityClientMock.Object
             );
         }
 

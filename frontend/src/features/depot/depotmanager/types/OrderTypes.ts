@@ -7,6 +7,7 @@ export interface DepotOrderDto {
     customerEmail: string;
     phoneNumber: string;
     deliveryDetail?: string;
+    deliveryDate?: Date;
     orderDate: Date;
     status: OrderStatus | string;
     totalAmount: number;
@@ -15,6 +16,7 @@ export interface DepotOrderDto {
     // Relación con Faltantes
     missings: DepotOrderMissingDto[];
     assignedOperatorId?: string; // Guid como string
+    operatorName: string;
     assignedDepotTeam?: DepotTeam;
     assignedDepotTeamId?: number;
 }
@@ -109,16 +111,34 @@ export interface DepotOrderEntity {
 }
 
 export enum OrderStatus {
+    /*
     Pending = "pending",
+    ReReceived = "reReceived",
     Issued = "issued",
     Confirmed = "confirmed",
     InPreparation = "inPreparation",
+    PendingResolution = "pendingResolution",
+    MissingProduct = "missingProduct",
     Prepared = "prepared",
     Invoiced = "invoiced",   
     Verify = "verify",
     OnTheWay = "onTheWay",   
     Delivered = "delivered",  
-    Canceled = "canceled"
+    Canceled = "canceled",
+    Assigned = "assigned"
+    */
+    Received = 0,
+    ReReceived = 1,
+    Assigned = 2,
+    InPreparation = 3,
+    MissingProduct = 4,
+    SentToBilling = 5,
+    PendingResolution = 6,
+    Prepared = 7,
+    Invoiced = 8,
+    Issued = 9,
+    Cancelled = 10,
+    Deleted = 11
 }
 
 // Tipo para compatibilidad con componentes de tabla

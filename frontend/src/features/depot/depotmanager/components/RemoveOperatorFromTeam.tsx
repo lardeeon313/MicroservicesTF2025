@@ -1,28 +1,29 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { useOperators } from '../hooks/useOperators';
-import { useTeams } from '../hooks/useTeams';
 import { X } from 'lucide-react';
 import { OperatorInTeamDto } from '../types/OperatorTypes';
+import toast from 'react-hot-toast';
 
 interface RemoveOperatorFromTeamProps {
     isOpen: boolean;
     onClose: () => void;
     operator: OperatorInTeamDto;
     teamId: number;
+    onRefetch?: () => Promise<void>;
 }
 
-export const RemoveOperatorFromTeam = ({ isOpen, onClose, operator, teamId }: RemoveOperatorFromTeamProps) => {
+export const RemoveOperatorFromTeam = ({ isOpen, onClose, operator, teamId, onRefetch }: RemoveOperatorFromTeamProps) => {
     const { removeOperator } = useOperators();
-    const { refetch } = useTeams();
 
     const handleRemove = async () => {
         try {
             await removeOperator(operator.operatorByUserId, teamId);
-            await refetch();
+            if (onRefetch) await onRefetch();
+            toast.success('Operador removido exitosamente');
             onClose();
         } catch (error) {
-            // Error is handled by the hook
+            toast.error('Hubo un error al remover el operador');
         }
     };
 
@@ -70,7 +71,7 @@ export const RemoveOperatorFromTeam = ({ isOpen, onClose, operator, teamId }: Re
 
                                 <div className="mt-2">
                                     <p className="text-sm text-gray-500">
-                                        ¿Estás seguro que deseas remover al operador "{operator.operatorByUserId}" del equipo? Esta acción no se puede deshacer.
+                                        ¿Estás seguro que deseas remover al operador "{operator.operatorName} {operator.operatorLastName}" del equipo? Esta acción no se puede deshacer.
                                     </p>
                                 </div>
 

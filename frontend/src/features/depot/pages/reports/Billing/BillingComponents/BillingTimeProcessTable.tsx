@@ -1,38 +1,56 @@
 import React from "react";
-
-interface ProcessingTimeOrder {
-  orderId: string;
-  averageProcessingTime: number;
-}
+//import { ProcessingTimeOrder, RawOrderHistory } from "../types";
+import { ProcessingTimeOrder,RawOrderHistory } from "../../../../billingmanager/types/BillingTimeProcessType";
 
 type Props = {
-  data: ProcessingTimeOrder[];
+  data: { items: RawOrderHistory[] };
 };
 
-const ProcessingTimeOrderTable: React.FC<Props> = ({ data }) => {
+const BillingTimeProcessTable: React.FC<Props> = ({ data }) => {
+  // Transformamos la respuesta del back a lo que espera la UI
+  const tableData: ProcessingTimeOrder[] = data.items.map((h: RawOrderHistory) => ({
+    orderId: h.orderId,
+    averageProcessingTime: h.durationMinutes,
+  }));
+
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full bg-white border border-gray-300 shadow rounded-lg">
-        <thead className="bg-gray-200 text-gray-700">
-          <tr>
-            <th className="px-4 py-2 text-left">ID Orden</th>
-            <th className="px-4 py-2 text-left">Tiempo Promedio (min)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item, index) => (
-            <tr
-              key={index}
-              className={index % 2 === 0 ? "bg-white" : "bg-blue-50"}
-            >
-              <td className="px-4 py-2">{item.orderId}</td>
-              <td className="px-4 py-2">{item.averageProcessingTime}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <table className="min-w-full divide-y divide-gray-200 bg-white rounded-xl shadow-md overflow-hidden">
+  <thead className="bg-gray-100">
+    <tr>
+      <th
+        scope="col"
+        className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+      >
+        Pedido
+      </th>
+      <th
+        scope="col"
+        className="px-6 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+      >
+        Tiempo (min)
+      </th>
+    </tr>
+  </thead>
+  <tbody className="divide-y divide-gray-100">
+    {tableData.map((row) => (
+      <tr
+        key={row.orderId}
+        className="hover:bg-blue-50 transition-colors"
+      >
+        <td className="px-6 py-3 text-sm text-gray-800">
+          {row.orderId}
+        </td>
+        <td className="px-6 py-3 text-sm font-medium text-blue-600">
+          {row.averageProcessingTime}
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
   );
 };
 
-export default ProcessingTimeOrderTable;
+export default BillingTimeProcessTable;
+
+

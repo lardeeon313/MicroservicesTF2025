@@ -23,6 +23,4 @@ export const handleFormikError = ({ error, customMessages }: HandleFormikErrorPa
   } else {
     toast.error("Error desconocido al procesar la solicitud.");
   }
-
-  console.error(error);
 };

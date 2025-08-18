@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using DepotService.Application.DTOs.DepotOrder;
 using GetOrdersQuery = DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery.GetOrdersByOperatorQuery;
 
-namespace DepotService.Application.Queries.Operator.GetOrdersByOperator
+namespace DepotService.Application.Queries.Operator.GetOrdersPreparedOrSentToBilling
 {
     public interface IGetOrdersPreparedOrSentToBillingHandler
     {

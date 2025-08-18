@@ -18,5 +18,7 @@ namespace DepotService.Domain.Enums
         Prepared,        // Preparado
         Invoiced,        // Facturado
         Issued,          // Emitido por ventas
+        Cancelled,       // Cancelado
+        Deleted          // Eliminado
     }
 }

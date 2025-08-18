@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import { Pagination } from "../../../../components/Pagination";
 import CustomerInactiveTable from "../../components/Reports/CustomerInactiveReport/CustomerInactiveTable";
 import GraphCustomerInactive from "../../components/Reports/CustomerInactiveReport/GraphCustomerInactive";
-//import CustomerStatusFilter from "../../components/Reports/CustomerInactiveReport/CustomerStatusFilter";
 import CustomerInactiveReportFilter from "./SalesFilters/CustomerInactiveReportFilter";
 import { CustomerStatus } from "../../types/CustomerTypes";
 
@@ -13,17 +12,20 @@ export default function CustomerInactiveReportPage() {
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  const [nameFilter, setNameFilter] = useState("");
-  const [emailFilter, setEmailFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState<CustomerStatus | "All">("All");
+  // 🔑 ahora manejamos todos los filtros en un objeto
+  const [filters, setFilters] = useState({
+    status: "All" as CustomerStatus | "All",
+    name: "",
+    email: "",
+  });
 
   const { data: customers, loading, totalPages } = useCustomerReport(page, pageSize);
 
   const filteredCustomers = customers.filter((c) => {
     const fullName = `${c.firstName} ${c.lastName}`.toLowerCase();
-    const matchesName = fullName.includes(nameFilter.toLowerCase());
-    const matchesEmail = c.email.toLowerCase().includes(emailFilter.toLowerCase());
-    const matchesStatus = statusFilter === "All" || c.status === statusFilter;
+    const matchesName = fullName.includes(filters.name.toLowerCase());
+    const matchesEmail = c.email.toLowerCase().includes(filters.email.toLowerCase());
+    const matchesStatus = filters.status === "All" || c.status === filters.status;
 
     return matchesName && matchesEmail && matchesStatus;
   });
@@ -47,21 +49,14 @@ export default function CustomerInactiveReportPage() {
         </p>
 
         <div className="flex flex-col md:flex-row mb-4 w-full justify-between gap-2">
-          <input
-            type="text"
-            placeholder="Filtrar por Nombre"
-            className="border border-gray-300 rounded px-3 py-2 focus:bg-red-100 focus:outline-gray-400 transition-colors duration-500"
-            value={nameFilter}
-            onChange={(e) => setNameFilter(e.target.value)}
+          <CustomerInactiveReportFilter
+            selectedStatus={filters.status}
+            selectedName={filters.name}
+            selectedEmail={filters.email}
+            onChange={setFilters}
+            onSearch={(f) => console.log("Buscar con filtros:", f)}
+            onClear={() => console.log("Filtros reseteados")}
           />
-          <input
-            type="text"
-            placeholder="Filtrar por Email"
-            className="border border-gray-300 rounded px-3 py-2 focus:bg-red-100 focus:outline-gray-400 transition-colors duration-500"
-            value={emailFilter}
-            onChange={(e) => setEmailFilter(e.target.value)}
-          />
-          <CustomerInactiveReportFilter selectedStatus={statusFilter} onChange={setStatusFilter} />
         </div>
 
         <CustomerInactiveTable data={filteredCustomers} />

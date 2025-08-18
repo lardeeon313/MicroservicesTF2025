@@ -6,6 +6,7 @@ using DepotService.Infraestructure;
 using DepotService.Infraestructure.Email.EmailTemplates;
 using DepotService.Infraestructure.Messaging.Publisher;
 using DepotService.Infraestructure.Persistence.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SharedKernel.IntegrationEvents.DepotEvents;
 using SharedKernel.IntegrationEvents.DepotEvents.DTOs.Order;
@@ -49,6 +50,7 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
             await _repository.UpdateOrderAsync(depotOrder);
 
             var statusHistory = new OrderStatusHistory
+<<<<<<< HEAD
             {
                 OrderId = depotOrder.DepotOrderId,
                 OldStatus = depotOrder.Status,
@@ -63,21 +65,50 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
 
             // Guardar los cambios en la base de datos
             var orderMissing = new DepotOrderMissing
+=======
+>>>>>>> origin/feature/milton-microservicestf2025
             {
-                DepotOrderId = command.DepotOrderId,
-                MissingReason = command.MissingReason,
-                MissingDescription = command.MissingDescription,
-                MissingItems = command.MissingItems.Select(item => new DepotOrderMissingItem
-                {
-                    MissingQuantity = item.Quantity,
-                    ProductBrand = item.ProductBrand,
-                    ProductName = item.ProductName,
-                    Packaging = item.Packaging,
-                    DepotOrderItemId = item.OrderItemId,
-                }).ToList(),
-            };  
-            await _repository.AddMissingOrderAsync(orderMissing);
+                OrderId = depotOrder.DepotOrderId,
+                OldStatus = depotOrder.Status,
+                NewStatus = OrderStatus.PendingResolution,
+                ChangedAt = DateTime.UtcNow,
+            };
+            // Agregar el historial de estado a la base de datos
+            await _context.OrderStatusHistories.AddAsync(statusHistory);
             await _context.SaveChangesAsync();
+            _logger.LogInformation($"Depot order with ID {command.DepotOrderId} status updated to PendingResolution.");
+
+
+            // Antes de crear el DepotOrderMissing, validar si ya existe
+            var existingMissing = await _context.DepotOrderMissings
+                .FirstOrDefaultAsync(m => m.DepotOrderId == command.DepotOrderId);
+
+            if (existingMissing == null)
+            {
+                var orderMissing = new DepotOrderMissing
+                {
+                    DepotOrderId = command.DepotOrderId,
+                    MissingReason = command.MissingReason,
+                    MissingDescription = command.MissingDescription,
+                    MissingItems = command.MissingItems.Select(item => new DepotOrderMissingItem
+                    {
+                        MissingQuantity = item.Quantity,
+                        ProductBrand = item.ProductBrand,
+                        ProductName = item.ProductName,
+                        Packaging = item.Packaging,
+                        DepotOrderItemId = item.OrderItemId,
+                    }).ToList(),
+                };
+
+                await _repository.AddMissingOrderAsync(orderMissing);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"Depot order with ID {command.DepotOrderId} missing order created.");
+            }
+            else
+            {
+                _logger.LogInformation($"Depot order with ID {command.DepotOrderId} already has a missing order. Skipping creation.");
+            }
 
             _logger.LogInformation($"Depot order with ID {command.DepotOrderId} status updated to PendingResolution.");
 

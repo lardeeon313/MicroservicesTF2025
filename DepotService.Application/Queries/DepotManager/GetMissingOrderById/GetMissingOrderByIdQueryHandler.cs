@@ -38,10 +38,17 @@ namespace DepotService.Application.Queries.DepotManager.GetMissingOrderById
                 SalesOrderId = orderExist.SalesOrderId,
                 MissingReason = orderExist.MissingReason,
                 MissingDescription = orderExist.MissingDescription,
-                MissingItems = orderExist.MissingItems,
+                MissingItems = orderExist.MissingItems.Select(item => new DepotOrderMissingItemDto
+                {
+                    Id = item.Id,
+                    DepotOrderItemId = item.DepotOrderItemId,
+                    MissingQuantity = item.MissingQuantity,
+                    ProductName = item.ProductName,
+                    ProductBrand = item.ProductBrand,
+                    Packaging = item.Packaging,
+                }).ToList(),
                 DescriptionResolution = orderExist.DescriptionResolution,
                 MissingDate = orderExist.MissingDate,
-                DepotOrder = orderExist.DepotOrder
             };
 
             _logger.LogInformation($"Missing order with ID {id} retrieved successfully.");

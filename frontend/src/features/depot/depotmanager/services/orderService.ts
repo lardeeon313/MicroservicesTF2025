@@ -22,9 +22,8 @@ export const assignOperator = async (
     orderId: number, 
     request: AssignOrderRequest
 ): Promise<void> => {
-    console.log('assignOperator called with:', { orderId, request });
     const response = await API.post(`/depot/depotmanager/${orderId}/assign`, request);
-    console.log('assignOperator response:', response);
+    return response.data;
 };
 
 export const reportMissingOrder = async (
@@ -34,14 +33,11 @@ export const reportMissingOrder = async (
     return response.data;
 };
 
-export const getOrdersByStatus = async (status: string): Promise<DepotOrderDto[]> => {
-    console.log('getOrdersByStatus called with status:', status);
+export const getOrdersByStatus = async (status: number): Promise<DepotOrderDto[]> => {
     try {
         const response = await API.get(`/depot/depotmanager/get-orders-by-status/${status}`);
-        console.log('getOrdersByStatus response:', response.data);
         return response.data;
     } catch (error) {
-        console.error('getOrdersByStatus error:', error);
         throw error;
     }
 };

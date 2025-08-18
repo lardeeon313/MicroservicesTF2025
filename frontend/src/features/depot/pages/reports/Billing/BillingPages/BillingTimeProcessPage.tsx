@@ -1,11 +1,15 @@
 import React, { useState } from "react";
-//import { useBillingTimeProcess } from "./hooks/useBillingTimeProcess";
 import { useBillingTimeProcess } from "../BillingHocks/useBillingTimeProcess";
-//import ProcessingTimeOrderTable from "./ProcessingTimeOrderTable";
 import ProcessingTimeOrderTable from "../BillingComponents/BillingTimeProcessTable";
-//import ProcessingTimeOrderFilter from "./ProcessingTimeOrderFilter";
+import GraphProcessingTimeProcess from "../BillingGraphs/GraphBillingTimeProcess";
 import ProcessingTimeOrderFilter from "../BillingFilters/BillingTimeProcessFilter";
 import { useNavigate } from "react-router-dom";
+
+// importa tus tipos desde TU archivo de tipos
+import {
+  ProcessingTimeOrder,
+  RawOrderHistory,
+} from "../../../../billingmanager/types/BillingTimeProcessType";
 
 const ProcessingTimeOrderPage: React.FC = () => {
   const navigate = useNavigate();
@@ -22,8 +26,13 @@ const ProcessingTimeOrderPage: React.FC = () => {
   );
 
   const handleFilter = (fromDate: string, toDate: string) => {
-    setFrom(fromDate);
-    setTo(toDate);
+    const formatDate = (dateStr: string) => {
+      const [day, month, year] = dateStr.split("/");
+      return `${year}-${month}-${day}`;
+    };
+
+    setFrom(formatDate(fromDate));
+    setTo(formatDate(toDate));
     setPage(1);
   };
 
@@ -33,10 +42,27 @@ const ProcessingTimeOrderPage: React.FC = () => {
     setPage(1);
   };
 
+  // -------------------------------
+  // ADAPTADOR
+  // -------------------------------
+  // 1) Tratamos lo que viene del hook como "crudo" (RawOrderHistory[])
+  const raw: RawOrderHistory[] = (data as unknown as RawOrderHistory[]) ?? [];
+
+  // 2) Lo convertimos a lo que espera la UI (ProcessingTimeOrder[])
+  const tableData: ProcessingTimeOrder[] = raw.map((h) => ({
+    orderId: Number(h.orderId),
+    averageProcessingTime: h.durationMinutes, // 👉 usamos lo que viene del back
+  }));
+
+  // 3) Para el gráfico (usa { orderId, processingTime })
+  const graphData = tableData.map((t) => ({
+    orderId: t.orderId,
+    processingTime: t.averageProcessingTime,
+  }));
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow">
-        
         {/* Botón Volver */}
         <div className="mb-4">
           <button
@@ -52,26 +78,45 @@ const ProcessingTimeOrderPage: React.FC = () => {
           Tiempo promedio para el proceso de facturación:
         </h1>
         <p className="text-gray-600 mb-6">
-          Aquí podrás ver cuánto le toma al encargado de facturación facturar cada uno de los pedidos ya armados.
+          Aquí podrás ver cuánto le toma al encargado de facturación facturar
+          cada uno de los pedidos ya armados.
         </p>
 
         {/* Filtro */}
-        <ProcessingTimeOrderFilter
-          onFilter={handleFilter}
-          onClear={handleClear}
-        />
+        <ProcessingTimeOrderFilter onFilter={handleFilter} onClear={handleClear} />
 
-        {/* Tabla o Mensajes */}
+        {/* Tabla + Gráfico */}
         <div className="mt-6">
-          {loading && <p className="text-gray-500">Cargando datos...</p>}
-          {error && <p className="text-red-500">{error}</p>}
-          {!loading && !error && data.length > 0 && (
-            <ProcessingTimeOrderTable data={data} />
-          )}
-          {!loading && !error && data.length === 0 && (
+          {!from || !to ? (
             <p className="text-gray-500 mt-4">
-              No se encontraron resultados para las fechas seleccionadas.
+              Selecciona un rango de fechas para ver resultados.
             </p>
+          ) : (
+            <>
+              {loading && <p className="text-gray-500">Cargando datos...</p>}
+              {error && <p className="text-red-500">{error}</p>}
+
+              {!loading && !error && tableData.length > 0 && (
+                <>
+                  {/* 👉 La tabla recibe ProcessingTimeOrder[] */}
+                  <ProcessingTimeOrderTable data={{ items: raw }} />
+
+                  <div className="mt-10">
+                    <h2 className="text-xl font-semibold text-gray-700 mb-4">
+                      Visualización gráfica:
+                    </h2>
+                    {/* 👉 El gráfico recibe { orderId, processingTime } */}
+                    <GraphProcessingTimeProcess data={graphData} />
+                  </div>
+                </>
+              )}
+
+              {!loading && !error && tableData.length === 0 && (
+                <p className="text-gray-500 mt-4">
+                  No se encontraron resultados para las fechas seleccionadas.
+                </p>
+              )}
+            </>
           )}
         </div>
 
@@ -105,5 +150,3 @@ const ProcessingTimeOrderPage: React.FC = () => {
 };
 
 export default ProcessingTimeOrderPage;
-
-

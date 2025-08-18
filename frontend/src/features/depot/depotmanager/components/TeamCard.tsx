@@ -10,21 +10,14 @@ interface TeamCardProps {
     team: DepotTeam;
     onEdit: (team: DepotTeam) => void;
     onDelete: (team: DepotTeam) => void;
+    onRefetch?: () => Promise<void>;
 }
 
-export const TeamCard = ({ team, onEdit, onDelete }: TeamCardProps) => {
+export const TeamCard = ({ team, onEdit, onDelete, onRefetch }: TeamCardProps) => {
     const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
     const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
     const [selectedOperator, setSelectedOperator] = useState<OperatorInTeamDto | null>(null);
     const [isOperatorsListOpen, setIsOperatorsListOpen] = useState(false);
-
-    // Debug: Log team data
-    console.log('TeamCard: Team data:', {
-        id: team.id,
-        name: team.teamName,
-        operatorsCount: team.operators?.length || 0,
-        operators: team.operators
-    });
 
     const handleRemoveOperator = (operator: OperatorInTeamDto) => {
         setSelectedOperator(operator);
@@ -91,6 +84,7 @@ export const TeamCard = ({ team, onEdit, onDelete }: TeamCardProps) => {
                 isOpen={isAssignDialogOpen}
                 onClose={handleAssignDialogClose}
                 team={team}
+                onRefetch={onRefetch}
             />
 
             {selectedOperator && (
@@ -99,6 +93,7 @@ export const TeamCard = ({ team, onEdit, onDelete }: TeamCardProps) => {
                     onClose={handleRemoveDialogClose}
                     operator={selectedOperator}
                     teamId={team.id}
+                    onRefetch={onRefetch}
                 />
             )}
 

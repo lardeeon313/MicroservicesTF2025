@@ -9,16 +9,53 @@ import {
 } from "recharts";
 import { CustomerStatus, CustomerWithCount } from "../../../types/CustomerTypes";
 
-const COLORS = ["#FFA500", "#FF0000", "#33aa22"];
+const COLORS = ["#FFA500", "#FF0000", "#33aa22"]; // naranja, rojo, verde
+const RADIAN = Math.PI / 180;
 
 type Props = {
   customers: CustomerWithCount[];
 };
 
+// 🎯 función para renderizar las etiquetas externas
+const renderCustomizedLabel = ({
+  cx,
+  cy,
+  midAngle,
+  outerRadius,
+  percent,
+  name,
+}: any) => {
+  if (percent === 0) return null; // evitar etiquetas de 0%
+
+  const radius = outerRadius * 1.3; // separa la etiqueta
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  return (
+    <text
+      x={x}
+      y={y}
+      fill="#333"
+      textAnchor={x > cx ? "start" : "end"}
+      dominantBaseline="central"
+      fontSize={12}
+      fontWeight="bold"
+    >
+      {`${name}: ${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+};
+
 const GraphCustomerInactive: React.FC<Props> = ({ customers }) => {
-  const inactiveCount = customers.filter((c) => c.status === CustomerStatus.Inactive).length;
-  const lostCount = customers.filter((c) => c.status === CustomerStatus.Lost).length;
-  const activeCount = customers.filter((c) => c.status === CustomerStatus.Active).length;
+  const inactiveCount = customers.filter(
+    (c) => c.status === CustomerStatus.Inactive
+  ).length;
+  const lostCount = customers.filter(
+    (c) => c.status === CustomerStatus.Lost
+  ).length;
+  const activeCount = customers.filter(
+    (c) => c.status === CustomerStatus.Active
+  ).length;
 
   const data = [
     { name: "Inactivos", value: inactiveCount },
@@ -36,7 +73,6 @@ const GraphCustomerInactive: React.FC<Props> = ({ customers }) => {
 
       <ResponsiveContainer width="100%" height={300}>
         {total === 0 ? (
-          // ✅ Mostrar mensaje centrado si no hay datos
           <div className="w-full h-full flex items-center justify-center text-gray-500 text-sm border border-dashed rounded">
             No hay datos disponibles para mostrar.
           </div>
@@ -47,12 +83,15 @@ const GraphCustomerInactive: React.FC<Props> = ({ customers }) => {
               cx="50%"
               cy="50%"
               outerRadius={80}
-              fill="#AA2222"
               dataKey="value"
-              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+              labelLine={false}
+              label={renderCustomizedLabel} // ✅ usamos labels personalizadas
             >
               {data.map((_, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
               ))}
             </Pie>
             <Tooltip />
@@ -65,3 +104,4 @@ const GraphCustomerInactive: React.FC<Props> = ({ customers }) => {
 };
 
 export default GraphCustomerInactive;
+

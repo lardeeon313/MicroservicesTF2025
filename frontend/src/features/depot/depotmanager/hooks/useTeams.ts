@@ -13,14 +13,10 @@ export function useTeams() {
         try {
             setLoading(true);
             setError(null);
-            console.log('useTeams: Fetching teams from API...');
             const data = await getTeams();
-            console.log('useTeams: Received teams data:', data);
             setTeams(data);
         } catch (error) {
-            console.error("useTeams: Error in fetchTeams:", error);
             setError("Error al cargar los equipos");
-            // En caso de error, establecer un array vacío
             setTeams([]);
             
             if (error instanceof AxiosError) {
@@ -45,7 +41,6 @@ export function useTeams() {
             await createTeam(team);
             await fetchTeams(); // Refresca la lista tras crear
         } catch (error) {
-            console.error("Error in createNewTeam:", error);
             if (error instanceof AxiosError) {
                 handleFormikError({
                     error,
@@ -66,7 +61,6 @@ export function useTeams() {
             await updateTeam(id, team);
             await fetchTeams(); // Refresca la lista tras actualizar
         } catch (error) {
-            console.error("Error in updateExistingTeam:", error);
             if (error instanceof AxiosError) {
                 handleFormikError({
                     error,
@@ -88,7 +82,6 @@ export function useTeams() {
             await deleteTeam(id);
             setTeams(prevTeams => prevTeams.filter(team => team.id !== id));
         } catch (error) {
-            console.error("Error in removeTeam:", error);
             if (error instanceof AxiosError) {
                 handleFormikError({
                     error,
@@ -116,4 +109,5 @@ export function useTeams() {
         removeTeam,
         refetch: fetchTeams
     };
+    
 }

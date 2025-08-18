@@ -3,7 +3,6 @@ import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useEffect, useState } from 'react';
 import { assignOperatorSchema, AssignOperatorFormData } from '../validations/operatorSchemas';
 import { useOperators } from '../hooks/useOperators';
-import { useTeams } from '../hooks/useTeams';
 import { X, Search, User } from 'lucide-react';
 import { DepotTeam } from '../types/DepotTeamTypes';
 import { OperatorDto } from '../types/OperatorTypes';
@@ -14,18 +13,17 @@ interface AssignOperatorToTeamProps {
     isOpen: boolean;
     onClose: () => void;
     team: DepotTeam;
+    onRefetch?: () => Promise<void>;
 }
 
-export const AssignOperatorToTeam = ({ isOpen, onClose, team }: AssignOperatorToTeamProps) => {
+export const AssignOperatorToTeam = ({ isOpen, onClose, team , onRefetch}: AssignOperatorToTeamProps) => {
     const { assignOperator, operators, fetchOperators, loading: loadingOperators, error } = useOperators();
-    const { refetch } = useTeams();
     const [query, setQuery] = useState('');
     const [selectedOperator, setSelectedOperator] = useState<OperatorDto | null>(null);
     const [previewOperator, setPreviewOperator] = useState<OperatorDto | null>(null);
 
     useEffect(() => {
         if (isOpen) {
-            console.log('Fetching operators...');
             fetchOperators();
         }
     }, [isOpen, fetchOperators]);
@@ -55,14 +53,12 @@ export const AssignOperatorToTeam = ({ isOpen, onClose, team }: AssignOperatorTo
     };
 
     const handleSubmit = async (values: AssignOperatorFormData) => {
-        try {
+        try{
             await assignOperator(values);
             toast.success('Operador asignado exitosamente');
-            await refetch();
+            if (onRefetch) await onRefetch();
             onClose();
-        } catch (error) {
-            // Error is handled by the hook
-        }
+        }catch{}
     };
 
     return (
@@ -125,7 +121,7 @@ export const AssignOperatorToTeam = ({ isOpen, onClose, team }: AssignOperatorTo
                                                     <div className="relative">
                                                         <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left border border-gray-300 focus-within:border-red-500 focus-within:ring-1 focus-within:ring-red-500">
                                                             <Combobox.Input
-                                                                className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
+                                                                className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0 focus:outline-none"
                                                                 displayValue={(operator: OperatorDto) =>
                                                                     operator ? operator.fullName : ''
                                                                 }

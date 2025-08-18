@@ -35,8 +35,11 @@ using DepotService.Application.Queries.DepotManager.GetTeamById;
 using DepotService.Application.Queries.DepotManager.GetTeamByName;
 using DepotService.Application.Queries.Operator.GetAssignedPendingOrders;
 using DepotService.Application.Queries.Operator.GetOrderById;
-using DepotService.Application.Queries.Operator.GetOrdersByOperator;
 using DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery;
+
+using DepotService.Application.Queries.Operator.GetOrdersPreparedOrSentToBilling;
+using DepotService.Application.Queries.Operator.IGetOrdersMissingOrPreparing;
+
 using DepotService.Application.Queries.Reports.GetAverageDepotProcessingTime;
 using DepotService.Application.Queries.Reports.GetAverageTimePerStatus;
 using DepotService.Application.Queries.Reports.GetDepotTeamPerformance;
@@ -71,7 +74,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 //para acceder desde el celular
-//builder.WebHost.UseUrls("http://0.0.0.0:5003");
+builder.WebHost.UseUrls("http://0.0.0.0:5003");
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -125,6 +128,10 @@ builder.Services.AddScoped<IGetReissuedOrdersQueryHandler, GetReissuedOrdersQuer
 builder.Services.AddScoped<IGetOrdersCompletedQueryHandler, GetOrdersCompletedQueryHandler>();
 builder.Services.AddScoped<IGetOrdersInPreparationQueryHandler, GetOrdersInPreparationQueryHandler>();
 
+builder.Services.AddScoped<IGetOrdersMissingOrPreparingHandler, GetOrdersMissingOrPreparingHandler>();
+builder.Services.AddScoped<IGetOrdersPreparedOrSentToBillingHandler, GetOrdersPreparedOrSentToBillingHandler>();
+
+
 // Add Commands
 builder.Services.AddScoped<IAssignOperatorCommandHandler, AssignOperatorCommandHandler>();
 builder.Services.AddScoped<IAssignOrderCommandHandler,  AssignOrderCommandHandler>();
@@ -161,7 +168,6 @@ builder.Services.AddScoped<IValidator<GetInvoicedOrdersByDateRangeQuery>, GetInv
 builder.Services.AddScoped<IValidator<GetInvoicedOrdersByCustomerQuery>,  GetInvoicedOrdersByCustomerQueryValidator>();
 builder.Services.AddScoped<IValidator<UpdateInvoicedItemPriceCommand>, UpdateInvoicedItemPriceCommandValidator>();
 
-//Nuevo: AGREGÁ ESTA LÍNEA QUE FALTA
 builder.Services.AddScoped<OrderMissingReportedCommandValidator>();
 builder.Services.AddScoped<AddPackaingCommandValidator>();
 builder.Services.AddScoped<RejectOrderCommandValidator>();
@@ -174,6 +180,7 @@ builder.Services.AddHttpContextAccessor();
 // Add HostedService RabbitConsumer
 builder.Services.AddHostedService<OrderIssuedConsumer>();
 builder.Services.AddHostedService<OrderReissuedConsumer>();
+builder.Services.AddHostedService<OrderDeletedConsumer>();
 
 // Add Export Document Service 
 builder.Services.AddScoped<IInvoiceDocumentGenerator, InvoicePdfGenerator>();
@@ -191,7 +198,7 @@ builder.Services.AddScoped<IDepotReportRepository, DepotReportRepository>();
 
 // Registrar el servicio de identidad para consultar los operadores
 builder.Services.AddScoped<IIdentityServiceClient, IdentityServiceClient>();
-
+builder.Services.AddHttpContextAccessor(); 
 // Registrar el servicio de correo electrónico
 builder.Services.AddScoped<IEmailService, MailgunEmailService>();
 
@@ -228,6 +235,13 @@ builder.Services.AddAuthentication("Bearer")
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("DepotAcces", policy =>
        policy.RequireClaim("role", "DepotManager", "DepotOperator", "BillingManager"));
+
+// Creamos un Http Client IdentityService para consultar los usuarios con role SalesStaff
+builder.Services.AddHttpClient("IdentityService", client =>
+{
+    client.BaseAddress = new Uri("http://identityservice:8080/api/auth/");
+});
+
 
 var app = builder.Build();
 

@@ -14,6 +14,11 @@ namespace DepotService.Application.Queries.BillingManager.GetInvoicedOrdersByCus
     {
         public Guid CustomerId { get; set; }
 
+        public GetInvoicedOrdersByCustomerQuery()
+        {
+             
+        }
+
         public GetInvoicedOrdersByCustomerQuery(Guid customerId)
         {
             CustomerId = customerId;
