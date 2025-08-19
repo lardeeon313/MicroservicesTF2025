@@ -10,5 +10,6 @@ namespace SalesService.Infraestructure.Services
     public interface IIdentityServiceClient
     {
         Task<List<SalesStaffDto>> GetSalesStaffsAsync();
+        Task<SalesStaffDto> GetCurrentUserAsync();
     }
 }

@@ -87,7 +87,7 @@ function MissingOrdersPage() {
   };
 
   if (loading) {
-    return <LoadingSpinner message="Cargando órdenes con faltantes..." />;
+    return <LoadingSpinner message="Cargando órdenes con faltantes..." height='h-screen'/>;
   }
 
   return (

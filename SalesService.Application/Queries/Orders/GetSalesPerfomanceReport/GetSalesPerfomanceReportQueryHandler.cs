@@ -14,32 +14,34 @@ namespace SalesService.Application.Queries.Orders.GetSalesPerfomanceReport
         private readonly IOrderRepository _repository = repository;
         private readonly IIdentityServiceClient _identityClient = identityClient;
 
-        public async Task<IEnumerable<SalesPerfomanceDto>> Handle()
+        public async Task<IEnumerable<SalesPerfomanceDto>> Handle(GetSalesPerformanceReportQuery query)
         {
             var orders = await _repository.GetAllWithItemsAsync();
-            var salesStaffs = await _identityClient.GetSalesStaffsAsync();
 
-            // Debug: Mostramos los IDs
-            Console.WriteLine("CreatedByUserIds en órdenes:");
-            foreach (var o in orders.Select(x => x.CreatedByUserId).Distinct())
-                Console.WriteLine($"  -> {o}");
+            // Filtro por rangos de fecha
+            if(query.DateFrom.HasValue)
+            {
+                orders = orders.Where(o => o.OrderDate >= query.DateFrom.Value).ToList();
+            }
 
-            Console.WriteLine("IDs devueltos por Identity:");
-            foreach (var s in salesStaffs)
-                Console.WriteLine($"  -> {s.Id}");
+            if(query.DateTo.HasValue)
+            {
+                orders = orders.Where(o => o.OrderDate <= query.DateTo.Value).ToList();
+            }
+
+            var currentUser = await _identityClient.GetCurrentUserAsync();
 
             var perfomance = orders
                 .GroupBy(o => o.CreatedByUserId)
                 .Select(group => 
                 {
-                    var user = salesStaffs.FirstOrDefault(u => u.Id == group.Key);
+                    var user = currentUser; // ya tenemos el único usuario
                     return new SalesPerfomanceDto
                     {
-                        SalespersonName = user?.FirstName ?? "Desconocido",
+                        SalespersonName = $"{user?.FirstName} {user?.LastName}".Trim(),
                         TotalOrders = group.Count(),
                         TotalUnitsSold = group.SelectMany(o => o.Items).Sum(i => i.Quantity),
                         LastOrderDate = group.Max(o => o.OrderDate)
-
                     };
                 });
 

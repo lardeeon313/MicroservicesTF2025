@@ -277,9 +277,15 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                         .Select(h => h.ChangedAt)
                         .FirstOrDefault(),
                     DeliveryDate = o.DeliveryDate,
+<<<<<<< HEAD
 
                 }).ToListAsync();
             
+=======
+                    DepotTeamName = o.AssignedDepotTeam != null ? o.AssignedDepotTeam.TeamName : null
+                }).ToListAsync();
+           
+>>>>>>> origin/feature/milton-microservicestf2025
             return new PaginatedResult<OrdersInPreparation>
             {
                 Items = data,

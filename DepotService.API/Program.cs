@@ -37,6 +37,11 @@ using DepotService.Application.Queries.Operator.GetAssignedPendingOrders;
 using DepotService.Application.Queries.Operator.GetOrderById;
 using DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery;
 
+
+using DepotService.Application.Queries.Operator.GetOrdersPreparedOrSentToBilling;
+using DepotService.Application.Queries.Operator.IGetOrdersMissingOrPreparing;
+
+
 using DepotService.Application.Queries.Operator.GetOrdersPreparedOrSentToBilling;
 using DepotService.Application.Queries.Operator.IGetOrdersMissingOrPreparing;
 
@@ -74,7 +79,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 //para acceder desde el celular
-builder.WebHost.UseUrls("http://0.0.0.0:5003");
+//builder.WebHost.UseUrls("http://0.0.0.0:5003");
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -127,6 +132,11 @@ builder.Services.AddScoped<IGetOrdersByDeliveryDateQueryHandler, GetOrdersByDeli
 builder.Services.AddScoped<IGetReissuedOrdersQueryHandler, GetReissuedOrdersQueryHandler>();
 builder.Services.AddScoped<IGetOrdersCompletedQueryHandler, GetOrdersCompletedQueryHandler>();
 builder.Services.AddScoped<IGetOrdersInPreparationQueryHandler, GetOrdersInPreparationQueryHandler>();
+
+
+builder.Services.AddScoped<IGetOrdersMissingOrPreparingHandler, GetOrdersMissingOrPreparingHandler>();
+builder.Services.AddScoped<IGetOrdersPreparedOrSentToBillingHandler, GetOrdersPreparedOrSentToBillingHandler>();
+
 
 builder.Services.AddScoped<IGetOrdersMissingOrPreparingHandler, GetOrdersMissingOrPreparingHandler>();
 builder.Services.AddScoped<IGetOrdersPreparedOrSentToBillingHandler, GetOrdersPreparedOrSentToBillingHandler>();
@@ -198,7 +208,11 @@ builder.Services.AddScoped<IDepotReportRepository, DepotReportRepository>();
 
 // Registrar el servicio de identidad para consultar los operadores
 builder.Services.AddScoped<IIdentityServiceClient, IdentityServiceClient>();
+
 builder.Services.AddHttpContextAccessor(); 
+
+builder.Services.AddHttpContextAccessor(); // Necesario para acceder al contexto HTTP
+
 // Registrar el servicio de correo electrónico
 builder.Services.AddScoped<IEmailService, MailgunEmailService>();
 
@@ -235,6 +249,13 @@ builder.Services.AddAuthentication("Bearer")
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("DepotAcces", policy =>
        policy.RequireClaim("role", "DepotManager", "DepotOperator", "BillingManager"));
+
+// Creamos un Http Client IdentityService para consultar los usuarios con role SalesStaff
+builder.Services.AddHttpClient("IdentityService", client =>
+{
+    client.BaseAddress = new Uri("http://identityservice:8080/api/auth/");
+});
+
 
 // Creamos un Http Client IdentityService para consultar los usuarios con role SalesStaff
 builder.Services.AddHttpClient("IdentityService", client =>

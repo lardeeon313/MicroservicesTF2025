@@ -67,5 +67,35 @@ namespace SalesService.Application.Services.IdentityServiceClient
             // Retornar la lista de SalesStaffDto
             return result;
         }
+
+        public async Task<SalesStaffDto> GetCurrentUserAsync()
+        {
+            // Obtener el token desde el contexto HTTP
+            var accessToken = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString();
+
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                _httpClient.DefaultRequestHeaders.Remove("Authorization"); // Evitar tokens duplicados
+                _httpClient.DefaultRequestHeaders.Add("Authorization", accessToken);
+            }
+
+            // Llamada al endpoint de IdentityService que devuelve el usuario actual
+            var response = await _httpClient.GetAsync("currentUser");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException(
+                    $"Error al obtener el usuario actual: {response.StatusCode}. Contenido: {errorContent}");
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<SalesStaffDto>(json, _jsonOptions);
+
+            if (result == null)
+                throw new Exception("Error al deserializar la respuesta de GetCurrentUserAsync");
+
+            return result;
+        }
     }
 }

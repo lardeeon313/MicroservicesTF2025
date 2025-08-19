@@ -58,7 +58,7 @@ function InPreparationOrdersPage() {
   //};
 
   if (loading) {
-    return <LoadingSpinner message="Cargando órdenes en preparación..." />;
+    return <LoadingSpinner message="Cargando órdenes en preparación..." height='h-screen' />;
   }
 
   return (

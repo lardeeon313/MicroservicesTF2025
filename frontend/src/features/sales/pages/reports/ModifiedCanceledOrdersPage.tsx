@@ -54,22 +54,32 @@ export default function ModifiedCanceledOrdersPage() {
   const normalize = (s: string) =>
     s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
+  console.log("ORDER SAMPLE:", orders[0]);
+  console.log("FULL NAME BUILT:", orders.map((o: any) =>
+    o.customerInfo?.fullName ??
+      `${o.customerInfo?.firstName ?? ""} ${o.customerInfo?.lastName ?? ""}`.trim()
+    ));
+
   const filteredOrders = orders.filter((o: any) => {
-    const fullName = o.customerInfo
-      ? `${o.customerInfo.firstName ?? ""} ${o.customerInfo.lastName ?? ""}`.trim()
-      : "";
-    const matchesName =
-      !nameFilter || normalize(fullName).includes(normalize(nameFilter));
+    // Nombre
+      const fullName = `${o.customerFirstName ?? ""} ${o.customerLastName ?? ""}`.trim();
+      
+      const matchesName =
+        !nameFilter || normalize(fullName).includes(normalize(nameFilter));
 
-    const raw = o.modifiedDate ?? o.orderDate;
-    const d = raw ? new Date(raw) : null;
-    const matchesDate = !modifiedDate || (d && toLocalYMD(d) === modifiedDate);
+      // Fecha
+      const raw = o.modifiedDate ?? o.orderDate;
+      const d = raw ? new Date(raw) : null;
+      const matchesDate = !modifiedDate || (d && toLocalYMD(d) === modifiedDate);
 
-    const matchesStatus =
-      statusFilter === "Todos" || o.status === statusFilter;
+      // Estado (defensivo: normalizo a mayúsculas por si vienen variantes)
+    
+      const matchesStatus =
+        statusFilter === "Todos" || o.status?.toLowerCase() === statusFilter.toLowerCase();
 
-    return matchesName && matchesDate && matchesStatus;
+      return matchesName && matchesDate && matchesStatus;
   });
+
 
   if (loading) {
     return <LoadingSpinner message="Cargando..." height="h-screen" />;
@@ -116,8 +126,8 @@ export default function ModifiedCanceledOrdersPage() {
           onNameDraftChange={setNameDraft}
           onDateDraftChange={setDateDraft}
           onStatusDraftChange={setStatusDraft}
-      onBuscar={handleBuscar}
-  onLimpiar={handleLimpiar}
+          onBuscar={handleBuscar}
+          onLimpiar={handleLimpiar}
         />
 
         {/* Tabla */}
@@ -132,7 +142,12 @@ export default function ModifiedCanceledOrdersPage() {
         <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
 
         {/* Gráfico */}
-        <GraphModifiedCanceledOrders orders={filteredOrders} />
+        <GraphModifiedCanceledOrders 
+          orders={filteredOrders.map((o: any) => ({
+            ...o,
+            statusLabel: statusMap[o.status] ?? o.status,
+          }))}
+        />
       </div>
     </div>
   );

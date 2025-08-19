@@ -93,7 +93,7 @@ function PreparedOrdersPage() {
 
 
   if (loading) {
-    return <LoadingSpinner message="Cargando órdenes armadas..." />;
+    return <LoadingSpinner message="Cargando órdenes armadas..." height='h-screen' />;
   }
 
   return (

@@ -223,9 +223,12 @@ namespace SalesService.API.Controllers
         /// <summary> Obtenemos los pedidos ordenados por creador (usuario) - perfomance</summary>
         [HttpGet("report/performance")]
         [ProducesResponseType(typeof(IEnumerable<SalesPerfomanceDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetSalesPerformanceReport()
+        public async Task<IActionResult> GetSalesPerformanceReport([FromQuery] DateTime? from,
+                                                                   [FromQuery] DateTime? to)
         {
-            var result = await _getSalesPerfomanceReportQueryHandler.Handle();
+            var query = new GetSalesPerformanceReportQuery(from, to);
+
+            var result = await _getSalesPerfomanceReportQueryHandler.Handle(query);
             return Ok(result);
         }
 

@@ -5,11 +5,13 @@ using IdentityService.Application.DTOs;
 using IdentityService.Application.Interfaces;
 using IdentityService.Application.Queries.GetAllOperators;
 using IdentityService.Application.Queries.GetAllSalesStaffs;
+using IdentityService.Application.Queries.GetCurrentUser;
 using IdentityService.Application.Services.Interfaces;
 using IdentityService.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace IdentityService.API.Controllers
 {
@@ -21,6 +23,7 @@ namespace IdentityService.API.Controllers
         IRegisterCommandHandler registerCommandHandler,
         IGetAllOperatorsQueryHandler getAllOperatorsQueryHandler,
         IGetAllSalesStaffsQueryHandler getAllSalesStaffsQueryHandler,
+        IGetCurrentUserQueryHandler getCurrentUserQueryHandler,
         IValidator<RegisterRequest> registerValidator,
         IValidator<LoginRequest> loginValidator) : Controller
     {
@@ -30,7 +33,7 @@ namespace IdentityService.API.Controllers
         private readonly IRegisterCommandHandler _registerCommandHandler = registerCommandHandler;
         private readonly ILoginCommandHandler _loginCommandHandler = loginCommandHandler;
         private readonly IGetAllSalesStaffsQueryHandler _getAllSalesStaffsQueryHandler = getAllSalesStaffsQueryHandler;
-
+        private readonly IGetCurrentUserQueryHandler _getCurrentUserQueryHandler = getCurrentUserQueryHandler;
 
         /// <summary>
         /// Registra un nuevo usuario en el sistema 
@@ -125,6 +128,25 @@ namespace IdentityService.API.Controllers
         {
             var SalesStaffs = await _getAllSalesStaffsQueryHandler.HandleAsync();
             return Ok(SalesStaffs);
+        }
+
+        /// <summary>
+        /// Obtiene los datos del usuario autenticado actualmente.
+        /// </summary>
+        [Authorize]
+        [HttpGet("currentUser")]
+        public async Task<ActionResult<UserDto>> GetCurrentUser()
+        {
+            // Obtener el Id del usuario logueado desde los Claims
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("No se pudo determinar el usuario actual.");
+
+            var query = new GetCurrentUserQuery { UserId = userId };
+            var result = await _getCurrentUserQueryHandler.GetCurrentUserHandler(query);
+
+            return Ok(result);
         }
     }
 }

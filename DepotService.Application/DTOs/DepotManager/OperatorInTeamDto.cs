@@ -11,11 +11,15 @@ namespace DepotService.Application.DTOs.DepotManager
     /// </summary>
     public class OperatorsInTeamDto
     {
+<<<<<<< HEAD
 
         public string OperatorByUserId { get; set; } = string.Empty;
 
         public Guid OperatorByUserId { get; set; } 
 
+=======
+        public Guid OperatorByUserId { get; set; } 
+>>>>>>> origin/feature/milton-microservicestf2025
         public string RoleInTeam { get; set; } = "Operator";
         public string? FirstName { get; set; }
         public string? LastName { get; set; }

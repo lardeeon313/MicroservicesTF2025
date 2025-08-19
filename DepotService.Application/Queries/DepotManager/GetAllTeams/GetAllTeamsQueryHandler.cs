@@ -44,6 +44,7 @@ namespace DepotService.Application.Queries.DepotManager.GetAllTeams
                 TeamDescription = t.TeamDescription,
                 CreatedAt = t.CreatedAt,
                 Operators = t.Assignments
+<<<<<<< HEAD
                 .Select(a =>
                 {
                     var operatorData = depotOperators.FirstOrDefault(op => op.Id == a.OperatorUserId);
@@ -58,6 +59,8 @@ namespace DepotService.Application.Queries.DepotManager.GetAllTeams
                         Email = operatorData?.Email
                     };
                 }).ToList()
+=======
+>>>>>>> origin/feature/milton-microservicestf2025
                     .Where(a => operatorsById.ContainsKey(a.OperatorUserId.ToString().ToLower()))
                     .Select(a =>
                     {

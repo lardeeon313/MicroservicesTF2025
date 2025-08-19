@@ -1,77 +1,71 @@
 import React from "react";
 
+type RangeType = "all" | "quincena" | "mensual" | "trimestral" | "semestral" | "anual";
+
 type Props = {
-  lastOrderDate: string;
-  onLastOrderDateChange: (value: string) => void;
-  selectedRange: string;
-  onRangeChange: (value: string) => void;
-  onSearch: () => void;
-  onClear: () => void;
+  salesRange: RangeType;
+  setSalesRange: (value: RangeType) => void;
+  dateFrom: string;
+  setDateFrom: (value: string) => void;
+  dateTo: string;
+  setDateTo: (value: string) => void;
 };
 
 const SalesPerfomanceReportFilter: React.FC<Props> = ({
-  lastOrderDate,
-  onLastOrderDateChange,
-  selectedRange,
-  onRangeChange,
-  onSearch,
-  onClear,
+  salesRange,
+  setSalesRange,
+  dateFrom,
+  setDateFrom,
+  dateTo,
+  setDateTo,
 }) => {
-  const today = new Date();
-  const maxDate = today.toISOString().split("T")[0]; // Hoy
-  const minDate = new Date(today.setFullYear(today.getFullYear() - 1))
-    .toISOString()
-    .split("T")[0]; // Hace 1 año
-
   return (
-    <div className="w-full bg-gray-100 border border-gray-300 rounded-2xl shadow p-6 mb-6">
-      <div className="flex flex-col md:flex-row gap-6 items-end">
-        {/* Última Orden */}
-        <div className="flex flex-col w-full md:w-1/4">
-          <label className="text-sm font-semibold text-gray-800 mb-1">
-            Última orden
-          </label>
+    <div className="bg-white rounded-xl shadow-md p-4 mb-6">
+      <h2 className="text-lg font-semibold text-gray-700 mb-4">
+        📊 Filtros de Reporte
+      </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Fecha desde */}
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-gray-600 mb-1">📅 Fecha desde</label>
           <input
             type="date"
-            value={lastOrderDate}
-            min={minDate}
-            max={maxDate}
-            onChange={(e) => onLastOrderDateChange(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm 
+                       focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white"
+          />
+        </div>
+
+        {/* Fecha hasta */}
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-gray-600 mb-1">📅 Fecha hasta</label>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm 
+                       focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white"
           />
         </div>
 
         {/* Antigüedad */}
-        <div className="flex flex-col w-full md:w-1/4">
-          <label className="text-sm font-semibold text-gray-800 mb-1">
-            🕒 Antigüedad de pedidos
-          </label>
+        <div className="flex flex-col">
+          <label className="text-sm font-semibold text-red-700 mb-1">🕒 Antigüedad de pedidos</label>
           <select
-            value={selectedRange}
-            onChange={(e) => onRangeChange(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+            value={salesRange}
+            onChange={(e) => setSalesRange(e.target.value as RangeType)}
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm 
+                       focus:outline-none focus:ring-2 focus:ring-red-300 bg-white"
           >
             <option value="all">Todo</option>
-            <option value="1w">Última semana</option>
-            <option value="1m">Último mes</option>
-            <option value="1y">Último año</option>
+            <option value="quincena">Última quincena</option>
+            <option value="mensual">Último mes</option>
+            <option value="trimestral">Último trimestre</option>
+            <option value="semestral">Último semestre</option>
+            <option value="anual">Último año</option>
           </select>
-        </div>
-
-        {/* Botones */}
-        <div className="flex gap-2 w-full md:w-auto">
-          <button
-            onClick={onSearch}
-            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow font-semibold transition w-full md:w-auto"
-          >
-            Buscar
-          </button>
-          <button
-            onClick={onClear}
-            className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg shadow font-semibold transition w-full md:w-auto"
-          >
-            Limpiar
-          </button>
         </div>
       </div>
     </div>
@@ -79,5 +73,3 @@ const SalesPerfomanceReportFilter: React.FC<Props> = ({
 };
 
 export default SalesPerfomanceReportFilter;
-
-

@@ -41,7 +41,7 @@ export default function OrderTable({
             </div>
             <button 
               onClick={onRefetch} 
-              className="mt-4 btn-primary inline-block bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors"
+              className="mt-4 ml-2 px-4 py-2 inline-block btn-primary border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
             >
               Actualizar
             </button>

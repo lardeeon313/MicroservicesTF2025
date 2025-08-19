@@ -8,19 +8,19 @@ const BillingCards = [
         title: "Tiempos de proceso de facturacion",
         description: "Visualiza los tiempos que llevo la facturacion de cada uno de los pedidos",
         icon: <PieChart className="h-10 w-10 text-red-600" />,
-        link: '/depot/billingmanager/report/BillingTimeProcess'
+        link: '/depot/billingmanager/reports/billingTimeProcess'
     },
     {
         title: "Ingresos por clientes",
         description: "En base a los ingresos por clientes , visualiza cuales tuvieron el mayor impacto",
         icon: <User className="h-10 w-10 text-red-600" />,
-        link: '/depot/billingmanager/report/CustomerIncome'
+        link: '/depot/billingmanager/reports/customerIncome'
     },
     {
         title: "Pedidos facturados",
         description: "Visualiza todos los pedidos que ya han sido facturados.",
         icon: <FileText className="h-10 w-10 text-red-600" />,
-        link: '/depot/billingmanager/report/OrderBilled'
+        link: '/depot/billingmanager/reports/orderBilled'
     }
 ]
 

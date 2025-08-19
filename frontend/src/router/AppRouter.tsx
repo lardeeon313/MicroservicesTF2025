@@ -49,7 +49,13 @@ import InvoicedOrderDetailsPage from "../features/depot/billingmanager/pages/Inv
 import BillingTimeProcessPage from "../features/depot/pages/reports/Billing/BillingPages/BillingTimeProcessPage";
 import CustomerIncomePage from "../features/depot/pages/reports/Billing/BillingPages/CustomerIncomePage";
 import OrderBilledPage from "../features/depot/pages/reports/Billing/BillingPages/OrderBilledPage";
+
+// Otros roles
+import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
+import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
 import { DashboardBillingReportsPage } from "../features/depot/pages/DashboardBillingDepotPage";
+
+
 
 const AppRouter = () => {
   return (
@@ -58,41 +64,10 @@ const AppRouter = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/unauthorized" element={<Unauthorized/>} />
-        <Route path="/404notfound" element={<NotFoundPage/>}/>
-        <Route path="/" element={<HomePage/>}></Route>
+        <Route path="/unauthorized" element={<Unauthorized />} />
+        <Route path="/404notfound" element={<NotFoundPage />} />
 
-
-        <Route path="/sales" element={<DashboardPage/>}/>
-        <Route path="/sales/orders" element={<OrdersPage/>}/>
-        <Route path="/sales/orders/view/:id" element={<ViewOrderPage/>} />
-        <Route path="/sales/orders/registerOrder" element={<RegisterOrderPage/>}/>
-        <Route path="/sales/orders/update/:id" element={<EditOrderPage/>}/>
-        <Route path="/sales/customer/registerCustomer" element={<RegisterCustomerPage/>}/>
-        <Route path="/sales/customer/viewCustomer/:id" element={<ViewCustomerPage/>}/>
-        <Route path="/sales/customers" element={<CustomersPage/>}/>
-        <Route path="/sales/customer/update/:id" element={<EditCustomerPage/>}/>
-        <Route path="/sales/reports" element={<DashboardReportsPage/>}/>
-
-
-        {/**reportes de ventas*/}
-        <Route path="/sales/reports/customerStatusReport" element={<CustomerInactiveReportPage/>} />
-        <Route path="/sales/reports/customersReport" element={<CustomerReportPage/>}/> 
-        <Route path="/sales/reports/customerSatisfactionReport" element={<CustomerSatisfactionPage/>}/>
-        <Route path="/sales/reports/modifiedCanceledReport" element={<ModifiedCanceledOrdersPage/>}/>
-        <Route path="/sales/reports/salesPerfomance" element={<SalesPerfomanceReportPage/>}/>
-
-        {/**Reportes de deposito  */}
-        <Route path="/depot/depotmanager/report/AverageTimeOrder" element={<AverageTimeOrderPage/>}/>
-        <Route path="/depot/depotmanager/report/DailyMissing" element={<DailyMissingPage/>}/>
-        <Route path="/depot/depotmanager/report/OrderCompletedDay" element={<OrderCompletedDayPage/>}/>
-        <Route path="/depot/depotmanager/report/TeamProdictivity" element={<TeamProdictivityPage/>}/>
-
-        {/**Reportes de facturacion */}
-        <Route path="/depot/billingmanager/report/BillingTimeProcess" element={<BillingTimeProcessPage/>} />
-        <Route path="/depot/billingmanager/report/CustomerIncome" element={<CustomerIncomePage/>} />
-        <Route path="/depot/billingmanager/report/OrderBilled" element={<OrderBilledPage />} />
-
+        {/* Ventas */}
         <Route
             path="/sales"
             element={
@@ -127,19 +102,20 @@ const AppRouter = () => {
             </ProtectedRoute>
             }
         >
-                <Route index element={<DepotManagerDashboard />} />
-                <Route path="teams" element={<TeamsPage />} />
-                <Route path="pending-orders" element={<PendingOrdersPageDepot />} />
-                <Route path="in-preparation-orders" element={<InPreparationOrdersPage />} />
-                <Route path="prepared-orders" element={<PreparedOrdersPage />} />
-                <Route path="missing-orders" element={<MissingOrdersPage />} />
-                <Route path="reports" element={<DashboardDepotReportsPage/>} />
-            </Route>
-       
+            <Route index element={<DepotManagerDashboard />} />
+            <Route path="teams" element={<TeamsPage />} />
+            <Route path="pending-orders" element={<PendingOrdersPageDepot />} />
+            <Route path="in-preparation-orders" element={<InPreparationOrdersPage />} />
+            <Route path="prepared-orders" element={<PreparedOrdersPage />} />
+            <Route path="missing-orders" element={<MissingOrdersPage />} />
+            <Route path="reports" element={<DashboardDepotReportsPage />} />
+            <Route path="reports/averageTimeOrder" element={<AverageTimeOrderPage />} />
+            <Route path="reports/dailyMissing" element={<DailyMissingPage />} />
+            <Route path="reports/orderCompletedDay" element={<OrderCompletedDayPage />} />
+            <Route path="reports/teamProdictivity" element={<TeamProdictivityPage />} />
+        </Route>
 
-
-
-
+        {/* Depósito Facturación */}
         <Route
             path="/depot/billingmanager"
             element={
@@ -153,28 +129,31 @@ const AppRouter = () => {
             <Route path="pending-orders/:id" element={<PendingOrderDetailsPage />} />
             <Route path="invoiced-orders" element={<InvoicedOrdersPage />} />
             <Route path="invoiced-orders/:id" element={<InvoicedOrderDetailsPage />} />
-            <Route path="reports" element={<DashboardBillingReportsPage />} /> 
+            <Route path="reports" element={<DashboardBillingReportsPage/>} />
+            <Route path="reports/billingTimeProcess" element={<BillingTimeProcessPage />} />
+            <Route path="reports/customerIncome" element={<CustomerIncomePage />} />
+            <Route path="reports/orderBilled" element={<OrderBilledPage />} />
         </Route>
 
         {/* Delivery */}
-        {/*<Route
+        <Route
             path="/delivery"
             element={
             <ProtectedRoute requiredRole="Delivery">
                 <DeliveryDashboard />
             </ProtectedRoute>
             }
-        />*/}
+        />
 
         {/* Verificación */}
-        {/*<Route
+        <Route
             path="/verification"
             element={
             <ProtectedRoute requiredRole="VerificationStaff">
                 <VerificationDashboard />
             </ProtectedRoute>
             }
-        />*/}
+        />
 
         {/* Admin */}
         <Route

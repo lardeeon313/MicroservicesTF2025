@@ -51,6 +51,7 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
 
             var statusHistory = new OrderStatusHistory
 <<<<<<< HEAD
+<<<<<<< HEAD
             {
                 OrderId = depotOrder.DepotOrderId,
                 OldStatus = depotOrder.Status,
@@ -65,6 +66,8 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
 
             // Guardar los cambios en la base de datos
             var orderMissing = new DepotOrderMissing
+=======
+>>>>>>> origin/feature/milton-microservicestf2025
 =======
 >>>>>>> origin/feature/milton-microservicestf2025
             {

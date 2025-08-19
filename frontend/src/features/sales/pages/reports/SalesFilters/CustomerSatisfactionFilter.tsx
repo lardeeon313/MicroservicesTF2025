@@ -10,8 +10,7 @@ interface Props {
   selectedName: string;
   selectedEmail: string;
   selectedSatisfaction: "Todas" | "Positiva" | "Negativa" | "Neutra";
-  onChange: (filters: FilterValues) => void;
-  onSearch?: (filters: FilterValues) => void;
+  onSearch: (filters: FilterValues) => void;
   onClear?: () => void;
 }
 
@@ -19,7 +18,6 @@ const CustomerSatisfactionFilter: React.FC<Props> = ({
   selectedName,
   selectedEmail,
   selectedSatisfaction,
-  onChange,
   onSearch,
   onClear,
 }) => {
@@ -30,24 +28,21 @@ const CustomerSatisfactionFilter: React.FC<Props> = ({
   });
 
   const handleChange = (field: keyof FilterValues, value: string) => {
-    const updated = { ...filters, [field]: value };
-    setFilters(updated);
-    onChange(updated);
+    setFilters({ ...filters, [field]: value });
   };
 
   const handleSearch = () => {
-    if (onSearch) onSearch(filters);
+    onSearch(filters);
   };
 
   const handleClear = () => {
     const cleared: FilterValues = { name: "", email: "", satisfaction: "Todas" };
     setFilters(cleared);
-    onChange(cleared);
     if (onClear) onClear();
   };
 
   return (
-    <div className="bg-gray-50 border border-gray-200 shadow-sm rounded-xl p-6 w-full">
+    <div className="bg-gray-50 border border-gray-200 shadow-sm rounded-xl p-6 w-full mb-6">
       <h2 className="text-lg font-semibold text-gray-800 mb-4">
         Filtros de satisfacción del cliente
       </h2>
@@ -82,7 +77,9 @@ const CustomerSatisfactionFilter: React.FC<Props> = ({
           <label className="text-sm font-medium text-gray-600 mb-1">Satisfacción</label>
           <select
             value={filters.satisfaction}
-            onChange={(e) => handleChange("satisfaction", e.target.value)}
+            onChange={(e) =>
+              handleChange("satisfaction", e.target.value as FilterValues["satisfaction"])
+            }
             className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
           >
             <option value="Todas">Todas</option>
@@ -93,7 +90,7 @@ const CustomerSatisfactionFilter: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* Botones alineados */}
+      {/* Botones */}
       <div className="flex justify-end gap-3 mt-6">
         <button
           onClick={handleClear}
@@ -113,4 +110,3 @@ const CustomerSatisfactionFilter: React.FC<Props> = ({
 };
 
 export default CustomerSatisfactionFilter;
-

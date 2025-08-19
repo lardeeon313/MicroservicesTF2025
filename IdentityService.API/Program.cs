@@ -17,10 +17,11 @@ using IdentityService.Application.DTOs;
 using IdentityService.Application.Commands.Login;
 using IdentityService.Application.Queries.GetAllOperators;
 using IdentityService.Application.Queries.GetAllSalesStaffs;
+using IdentityService.Application.Queries.GetCurrentUser;
 
 var builder = WebApplication.CreateBuilder(args);
 //para acceder desde el celular
-builder.WebHost.UseUrls("http://0.0.0.0:5006");
+//builder.WebHost.UseUrls("http://0.0.0.0:5006");
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -92,6 +93,7 @@ builder.Services.AddScoped<IRegisterCommandHandler, RegisterCommandHandler>();
 builder.Services.AddScoped<ILoginCommandHandler, LoginCommandHandler>();
 builder.Services.AddScoped<IGetAllOperatorsQueryHandler,  GetAllOperatorsQueryHandler>();
 builder.Services.AddScoped<IGetAllSalesStaffsQueryHandler, GetAllSalesStaffsQueryHandler>();
+builder.Services.AddScoped<IGetCurrentUserQueryHandler, GetCurrentUserQueryHandler>(); 
 
 
 var app = builder.Build();
