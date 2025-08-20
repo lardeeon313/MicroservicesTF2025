@@ -1,33 +1,62 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
-//import TeamProductivityTable from "../DepotComponents/TeamProductivityTable";
 import TeamProductivityTable from "../DepotComponents/TeamProdictivityTable";
 import TeamProdictivityGraph from "../DepotGraph/GraphTeamProdictivity";
 import { useTeamProductivity } from "../DepotHocks/useTeamProdictivity";
 import TeamProductivityDateFilter from "../DepotFilters/TeamProdictivityFilter";
+
+// 🔹 Tipo que devuelve el back (según API real)
+type DepotTeamPerformance = {
+  depotTeamId: number;
+  teamName?: string;
+  ordersHandled: number;
+  missingItemsReported: number;
+  averageProcessingTimeMinutes: number;
+};
+
+// 🔹 Tipo que necesita el gráfico y la tabla
+type ProductivityProps = {
+  teamID: number;
+  completedOrders: number;
+  missingItemsReported: number;
+  averageProcessingTimeMinutes: number;
+};
 
 const TeamProductivityPage: React.FC = () => {
   const today = new Date().toISOString().split("T")[0];
   const [from, setFrom] = useState<string>(today);
   const [to, setTo] = useState<string>(today);
 
-  const { data, loading, error } = useTeamProductivity(from, to);
+  const { data = [], loading, error } = useTeamProductivity(from, to);
 
-  const GraphData = data.map((item) => ({
-    teamID: item.teamId,
-    completedOrders: item.completedOrders,
-  }));
+  // Adaptamos los nombres a los que realmente devuelve el back
+  const GraphData: ProductivityProps[] = (data as DepotTeamPerformance[]).map(
+    (item) => ({
+      teamID: item.depotTeamId,
+      completedOrders: item.ordersHandled,
+      missingItemsReported: item.missingItemsReported,
+      averageProcessingTimeMinutes: item.averageProcessingTimeMinutes,
+    })
+  );
 
   if (loading) {
-    return <LoadingSpinner message="Cargando los datos... por favor espere" height="h-screen" />;
+    return (
+      <LoadingSpinner
+        message="Cargando los datos... por favor espere"
+        height="h-screen"
+      />
+    );
   }
 
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
-        <Link to={"/depot"} className="text-blue-600 hover:underline font-medium">
-          ← Volver al depósito
+        <Link
+          to="/depot/reports"
+          className="text-red-600 hover:underline font-medium"
+        >
+          ← Volver atrás
         </Link>
       </div>
 
@@ -40,7 +69,12 @@ const TeamProductivityPage: React.FC = () => {
         </h2>
 
         <div className="flex justify-center mb-8">
-          <TeamProductivityDateFilter from={from} to={to} onFromChange={setFrom} onToChange={setTo} />
+          <TeamProductivityDateFilter
+            from={from}
+            to={to}
+            onFromChange={setFrom}
+            onToChange={setTo}
+          />
         </div>
 
         {error ? (

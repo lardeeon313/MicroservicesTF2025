@@ -15,23 +15,22 @@ type DataProps = {
   data: Order[];
 };
 
-const GraphOrderCompletedDay: React.FC<DataProps> = ({ data }) => {
+const GraphOrderByClient: React.FC<DataProps> = ({ data }) => {
   const groupedData = data.reduce((acc: Record<string, number>, curr) => {
-    if (!curr.finishDate) return acc;
-    const dateKey = new Date(curr.finishDate).toISOString().split("T")[0];
-    acc[dateKey] = (acc[dateKey] || 0) + 1;
+    if (!curr.customerName) return acc;
+    acc[curr.customerName] = (acc[curr.customerName] || 0) + 1;
     return acc;
   }, {});
 
-  const chartData = Object.entries(groupedData).map(([date, total]) => ({
-    date,
+  const chartData = Object.entries(groupedData).map(([client, total]) => ({
+    client,
     total,
   }));
 
   return (
     <div className="w-full h-80 bg-white rounded-lg shadow p-4 mt-6">
       <h3 className="text-xl font-semibold mb-4">
-        Gráfico de Pedidos Completados por Día
+        Pedidos Completados por Cliente
       </h3>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
@@ -39,16 +38,17 @@ const GraphOrderCompletedDay: React.FC<DataProps> = ({ data }) => {
           margin={{ top: 10, right: 30, left: 10, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
+          <XAxis dataKey="client" />
           <YAxis allowDecimals={false} />
           <Tooltip />
           <Legend />
-          <Bar dataKey="total" name="Completados" fill="#4CAF50" />
+          <Bar dataKey="total" name="Pedidos" fill="#3B82F6" />
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
 };
 
-export default GraphOrderCompletedDay;
+export default GraphOrderByClient;
+
 

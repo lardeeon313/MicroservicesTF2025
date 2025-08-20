@@ -4,6 +4,7 @@ using DepotService.Domain.IRepositories;
 using DepotService.Domain.ValueObjects;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
     public class DepotReportRepository(DepotDbContext context) : IDepotReportRepository
     {
         private readonly DepotDbContext _context = context;
+        private readonly ILogger<DepotTeamPerformance> _logger;
 
         public async Task<PaginatedResult<OrderProcessingTime>> GetAverageProcessingTimePerOrderAsync(DateTime? from, DateTime? to, int page, int pageSize)
         {
@@ -156,10 +158,18 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         .AsQueryable();
 
             if (from.HasValue)
-                orders = orders.Where(o => o.StatusHistory.Any(h => h.ChangedAt >= from.Value));
+            {
+                _logger.LogInformation("Primer Filtro del FROM: {From}", from.Value);
+                orders = orders.Where(o =>
+                    o.OrderDate >= from.Value || (o.DeliveryDate.HasValue && o.DeliveryDate.Value >= from.Value));
+            }
 
             if (to.HasValue)
-                orders = orders.Where(o => o.StatusHistory.Any(h => h.ChangedAt <= to.Value));
+            {
+                _logger.LogInformation("Segundo Filtro del TO: {To}", to.Value);
+                orders = orders.Where(o =>
+                    o.OrderDate <= to.Value || (o.DeliveryDate.HasValue && o.DeliveryDate.Value <= to.Value));
+            }
 
             var grouped = await orders
                 .GroupBy(o => new { o.AssignedDepotTeamId, o.AssignedDepotTeam!.TeamName })

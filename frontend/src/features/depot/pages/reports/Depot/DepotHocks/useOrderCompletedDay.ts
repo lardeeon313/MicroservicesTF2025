@@ -2,10 +2,11 @@ import { useState } from "react";
 import API from "../../../../../../api/axios";
 
 export interface Order {
-  id: number;
-  finishDate: string;
-  total: number;
-  status: string;
+  depotOrderId: number;
+  salesOrderId: number;
+  customerName: string;
+  customerEmail: string;
+  completedAt: string; 
 }
 
 export const useOrderCompletedDay = () => {
@@ -18,6 +19,7 @@ export const useOrderCompletedDay = () => {
 
   const fetchData = async (from?: string, to?: string, pageNumber = 1) => {
     try {
+      console.log("🔄 FetchData iniciado", { from, to, pageNumber });
       setLoading(true);
       setError(null);
 
@@ -30,23 +32,29 @@ export const useOrderCompletedDay = () => {
         },
       });
 
-      console.log("API response:", res.data);
+      console.log("✅ API response:", res.data);
 
       // Ajustar si la API devuelve otra estructura
       const items = res.data.items ?? res.data ?? [];
-        setData(Array.isArray(items) ? items : []
-    );
+      console.log("📦 Items procesados:", items);
+
+      setData(Array.isArray(items) ? items : []);
+      console.log("📊 Data seteada:", Array.isArray(items) ? items : []);
+
       setTotalPages(res.data.totalPages || 1);
+      console.log("📄 Total de páginas seteado:", res.data.totalPages || 1);
+
     } catch (err: any) {
-      setError(
-        err.message || "Error al obtener los datos"
-    );
+      console.error("❌ Error en fetchData:", err);
+      setError(err.message || "Error al obtener los datos");
     } finally {
+      console.log("⏹️ FetchData finalizado");
       setLoading(false);
     }
   };
 
   const clearFilters = () => {
+    console.log("🧹 Limpieza de filtros ejecutada");
     setSelectedDate("");
     fetchData();
   };

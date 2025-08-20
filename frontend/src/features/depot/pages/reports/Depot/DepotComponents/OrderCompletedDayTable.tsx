@@ -6,27 +6,34 @@ interface Props {
 
 export default function OrderCompletedDayTable({ data }: Props) {
   return (
-    <table className="min-w-full border-collapse border border-gray-300 mt-4">
-      <thead>
-        <tr className="bg-gray-100">
-          <th className="border border-gray-300 px-4 py-2">ID</th>
-          <th className="border border-gray-300 px-4 py-2">Fecha</th>
-          <th className="border border-gray-300 px-4 py-2">Total</th>
-          <th className="border border-gray-300 px-4 py-2">Estado</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((order) => (
-          <tr key={order.id}>
-            <td className="border border-gray-300 px-4 py-2">{order.id}</td>
-            <td className="border border-gray-300 px-4 py-2">{order.finishDate}</td>
-            <td className="border border-gray-300 px-4 py-2">
-              ${Number(order.total ?? 0).toFixed(2)}
-            </td>
-            <td className="border border-gray-300 px-4 py-2">{order.status}</td>
+    <div className="overflow-x-auto mt-6">
+      <table className="min-w-full bg-white rounded-xl shadow-md overflow-hidden">
+        <thead>
+          <tr className="bg-gray-100 text-gray-700 text-left">
+            <th className="px-6 py-3 font-semibold">ID Pedido</th>
+            <th className="px-6 py-3 font-semibold">Cliente</th>
+            <th className="px-6 py-3 font-semibold">Email</th>
+            <th className="px-6 py-3 font-semibold">Sales Order</th>
+            <th className="px-6 py-3 font-semibold">Fecha Pedido</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {data.map((order, idx) => (
+            <tr
+              key={order.depotOrderId}
+              className={`${
+                idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+              } hover:bg-gray-100 transition`}
+            >
+              <td className="px-6 py-3 border-t">{order.depotOrderId}</td>
+              <td className="px-6 py-3 border-t">{order.customerName}</td>
+              <td className="px-6 py-3 border-t">{order.customerEmail}</td>
+              <td className="px-6 py-3 border-t">{order.salesOrderId}</td>
+              <td className="px-6 py-3 border-t">{order.completedAt}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

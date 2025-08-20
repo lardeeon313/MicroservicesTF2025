@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 import { useAverageTimeOrder } from "../DepotHocks/useAverageTimeOrder";
-import GraphAverageTimeOrder from "../DepotGraph/GraphAverageTimeOrder";
 import AverageTimeOrderTable from "../DepotComponents/AverageTimeOrderTable";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import { Pagination } from "../../../../../../components/Pagination";
-
-// componente de filtros separados
 import AverageTimeOrderFilter from "../DepotFilters/AverageTimeOrderFilter";
+
+import type { ArmTime } from "../DepotComponents/AverageTimeOrderTable";
+import GraphAverageTimeOrder from "../DepotGraph/GraphAverageTimeOrder";
 
 const AverageTimeOrderPage: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -20,19 +20,47 @@ const AverageTimeOrderPage: React.FC = () => {
 
   const { data: orders, loading, totalPages } = useAverageTimeOrder(page, pageSize);
 
-  const filterOrders = orders.filter((order) => {
-    const matchesId = order.id.toString().includes(idFilter);
+  // 🔧 Adaptamos la data de la API al tipo ArmTime
+  const adaptedOrders: ArmTime[] = orders.map((order, index) => ({
+    id: order.id ?? index,
+    orderId: order.orderId ?? index,
+    oldStatus: Number(order.oldStatus ?? 0),
+    newStatus: Number(order.newStatus ?? 0),
+    changedAt: order.changedAt
+      ? new Date(order.changedAt).toISOString()
+      : new Date().toISOString(),
+    averageDuration: order.averageDuration ?? 0,
+  }));
 
-    const started = order.startedDate ? new Date(order.startedDate) : null;
-    const finished = order.finishDate ? new Date(order.finishDate) : null;
+  // 📌 estado auxiliar para manejar filtros aplicados
+  const [filteredData, setFilteredData] = useState<ArmTime[]>(adaptedOrders);
 
-    const matchesStartDate =
-      !startDateFilter || (started && started >= new Date(startDateFilter));
-    const matchesEndDate =
-      !endDateFilter || (finished && finished <= new Date(endDateFilter));
+  // 🔍 Buscar
+  const handleSearch = () => {
+    const filtered = adaptedOrders.filter((order) => {
+      const matchesId = order.orderId.toString().includes(idFilter);
 
-    return matchesId && matchesStartDate && matchesEndDate;
-  });
+      // ejemplo básico para fechas
+      const matchesStartDate = startDateFilter
+        ? new Date(order.changedAt) >= new Date(startDateFilter)
+        : true;
+      const matchesEndDate = endDateFilter
+        ? new Date(order.changedAt) <= new Date(endDateFilter)
+        : true;
+
+      return matchesId && matchesStartDate && matchesEndDate;
+    });
+
+    setFilteredData(filtered);
+  };
+
+  // 🧹 Limpiar
+  const handleClear = () => {
+    setIdFilter("");
+    setStartDateFilter("");
+    setEndDateFilter("");
+    setFilteredData(adaptedOrders);
+  };
 
   if (loading) {
     return <LoadingSpinner message="Cargando datos..." height="h-screen" />;
@@ -42,7 +70,7 @@ const AverageTimeOrderPage: React.FC = () => {
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="flex items-center justify-between mb-6">
         <Link
-          to="/depot/depotmanager/reports/AverageTimerOrder"
+          to="/depot/reports"
           className="text-red-600 hover:underline pl-10"
         >
           ← Volver atrás
@@ -57,6 +85,7 @@ const AverageTimeOrderPage: React.FC = () => {
           Aquí podrás visualizar cuánto tiempo lleva armar los pedidos realizados por los clientes.
         </p>
 
+        {/* Filtros */}
         <AverageTimeOrderFilter
           idFilter={idFilter}
           startDateFilter={startDateFilter}
@@ -64,14 +93,22 @@ const AverageTimeOrderPage: React.FC = () => {
           onIdChange={setIdFilter}
           onStartDateChange={setStartDateFilter}
           onEndDateChange={setEndDateFilter}
+          onSearch={handleSearch}
+          onClear={handleClear}
         />
 
-        <AverageTimeOrderTable armTime={filterOrders} />
+        {/* Tabla con datos adaptados */}
+        <AverageTimeOrderTable armTime={filteredData} />
+
+        {/* Paginación */}
         <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
-        <GraphAverageTimeOrder data={filterOrders} />
+
+        {/* Gráfico */}
+        <GraphAverageTimeOrder data={filteredData} />
       </div>
     </div>
   );
 };
+
 
 export default AverageTimeOrderPage;

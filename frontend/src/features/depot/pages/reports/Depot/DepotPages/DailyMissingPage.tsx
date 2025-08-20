@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useDailyMissing } from "../DepotHocks/useDailiyMissing";
 import DailyMissingTable, { DailyMissing } from "../DepotComponents/DailyMissingTable";
@@ -9,20 +9,29 @@ import DailyMissingFilter from "../DepotFilters/DailyMissingFilter";
 
 const DailyMissingPage: React.FC = () => {
   const [page, setPage] = useState(1);
-  const [selectedTime, setSelectedTime] = useState<string>(""); // HH:mm
+  const [selectedTime, setSelectedTime] = useState<string>(""); // formato "HH:mm"
   const pageSize = 10;
 
   const { data, loading, error, totalPages } = useDailyMissing(page, pageSize);
 
-  // Filtrado por hora/minuto
-  const filteredData: DailyMissing[] =
-  selectedTime === ""
-    ? data || []
-    : (data || []).filter((d) => {
-        if (typeof d.MissingHour !== "number") return false;
-        const selectedHour = parseInt(selectedTime.split(":")[0], 10);
-        return d.MissingHour === selectedHour;
-      });
+  // ✅ Filtrado por hora usando useMemo (evita recomputar en cada render)
+  const filteredData: DailyMissing[] = useMemo(() => {
+    if (!data) return [];
+
+    if (!selectedTime) return data;
+
+    const [hour, minute] = selectedTime.split(":").map((v) => parseInt(v, 10));
+
+    return data.filter((d) => {
+      if (!d.MissingDate) return false;
+      const date = new Date(d.MissingDate);
+      return (
+        date.getHours() === hour &&
+        (isNaN(minute) || date.getMinutes() === minute)
+      );
+    });
+  }, [data, selectedTime]);
+
   if (loading) {
     return <LoadingSpinner message="Cargando los datos..." height="h-screen" />;
   }
@@ -31,7 +40,7 @@ const DailyMissingPage: React.FC = () => {
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="flex items-center justify-between mb-6">
         <Link
-          to="/depot/depotmanager/reports"
+          to="/depot/reports"
           className="text-red-600 hover:underline pl-10"
         >
           ← Volver atrás

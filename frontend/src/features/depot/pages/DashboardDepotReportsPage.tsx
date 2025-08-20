@@ -7,25 +7,25 @@ const cards = [
     title: "Tiempos promedio de armado",
     description: "Visualizá el tiempo promedio que le toma a cada equipo armar el pedido para su pronta facturacion.",
     icon: <FileText className="h-10 w-10 text-red-600" />,
-    link: "/depot/depotmanager/report/AverageTimeOrder",
+    link: "/depot/reports/averageTimeOrder",
   },
   {
     title: "Faltantes diarios",
     description: "Muestra aquellos pedidos los cuales se producieron faltantes de tales productos",
     icon: <PieChart className="h-10 w-10 text-red-600" />,
-    link: "/depot/depotmanager/report/DailyMissing",
+    link: "/depot/reports/dailyMissing",
   },
   {
     title: "Pedidos completados por dia",
     description: "Analiza la cantidad de pedidos que son completados al dia por los diferentes equipos.",
     icon: <FilePlus2 className="h-10 w-10 text-red-600" />,
-    link: "/depot/depotmanager/report/OrderCompletedDay",
+    link: "/depot/reports/orderCompletedDay",
   },
   {
     title: "Productividad del equipo",
     description: "Visualiza la productividad de los diferentes equipos al momento de armar el pedido",
     icon: <User className="h-10 w-10 text-red-600" />,
-    link: "/depot/depotmanager/report/TeamProdictivity",
+    link: "/depot/reports/teamProdictivity",
   },
 ];
 
