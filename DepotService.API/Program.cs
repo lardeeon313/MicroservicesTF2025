@@ -183,6 +183,7 @@ builder.Services.AddScoped<AddPackaingCommandValidator>();
 builder.Services.AddScoped<RejectOrderCommandValidator>();
 builder.Services.AddScoped<MarkItemIsReadyCommandValidator>();
 builder.Services.AddScoped<UnmarkItemReadyValidator>();
+builder.Services.AddScoped<SetItemUnitPricesCommandValidator>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();

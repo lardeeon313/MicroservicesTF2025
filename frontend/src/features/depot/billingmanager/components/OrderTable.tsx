@@ -72,7 +72,13 @@ export default function OrderTable({
                   <td className="px-4 py-3 font-medium">D-{order.id}</td>
                   <td className="px-4 py-3">{order.customerFirstName ?? ""}</td>
                   <td className="px-4 py-3">{formatDate(order.orderDate)}</td>
-                  <td className="px-4 py-3">{order.status}</td>
+                  <td className="px-4 py-3">
+                    {order.status === 8 || order.status === '8' || order.status === 'Facturada' ? (
+                      <span className="inline-block px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-semibold">Facturada</span>
+                    ) : (
+                      order.status
+                    )}
+                  </td>
                   {(activeTab === 'assigned'  || activeTab === 'inPreparation') && (
                     <td className="px-4 py-3">{order.operatorName || '-'}</td>
                   )}

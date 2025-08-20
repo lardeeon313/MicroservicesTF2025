@@ -46,6 +46,7 @@ namespace DepotService.Application.Commands.BillingManager.SetItemUnitPrices
                 }
 
                 orderItem.UnitPrice = item.UnitPrice;
+                orderItem.Total = item.UnitPrice * orderItem.Quantity;
             }
 
             await _repository.UpdateOrderAsync(order);

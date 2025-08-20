@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { getPendingBillingOrders } from '../services/OrderService';
 import { DepotOrderDto } from '../types/OrderTypes';
 import OrderTable from '../components/OrderTable';
@@ -14,6 +14,8 @@ const PendingOrdersPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
 
   const fetchOrders = () => {
     setLoading(true);
@@ -27,6 +29,21 @@ const PendingOrdersPage: React.FC = () => {
     fetchOrders();
   }, []);
 
+  // Si llega como /pending-billing-orders?depotOrderId=2, redirigir a /pending-billing-orders/2
+  useEffect(() => {
+    const depotOrderIdParam = searchParams.get('depotOrderId');
+    if (depotOrderIdParam) {
+      const idNum = Number(depotOrderIdParam);
+      if (!Number.isNaN(idNum)) {
+        // Mantener compatibilidad con ambas rutas base
+        const base = location.pathname.includes('pending-billing-orders')
+          ? '/depot/billingmanager/pending-billing-orders'
+          : '/depot/billingmanager/pending-orders';
+        navigate(`${base}/${idNum}`, { replace: true });
+      }
+    }
+  }, [searchParams, location.pathname, navigate]);
+
   // Buscador por nombre de cliente
   const filteredOrders = orders.filter(order =>
     order.customerName.toLowerCase().includes(search.toLowerCase())
@@ -37,7 +54,8 @@ const PendingOrdersPage: React.FC = () => {
   const paginatedOrders = filteredOrders.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleViewDetail = (id: number) => {
-    navigate(`/depot/billingmanager/pending-orders/${id}`);
+    const selected = orders.find(o => o.depotOrderId === id);
+    navigate(`/depot/billingmanager/pending-orders/${id}` , { state: { order: selected || null } });
   };
 
   return (
@@ -66,6 +84,7 @@ const PendingOrdersPage: React.FC = () => {
         error={error}
         onRefetch={fetchOrders}
         onView={handleViewDetail}
+        activeTab={'sentToBilling'}
       />
       {/* Paginación */}
       <div className="flex justify-center mt-4 space-x-2">

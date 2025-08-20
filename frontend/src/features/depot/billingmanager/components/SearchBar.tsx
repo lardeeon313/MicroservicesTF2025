@@ -4,10 +4,6 @@ import React from 'react';
 interface SearchBarProps {
   search: string;
   setSearch: (v: string) => void;
-  startDate: string;
-  setStartDate: (v: string) => void;
-  endDate: string;
-  setEndDate: (v: string) => void;
   onSearch: (e: React.FormEvent) => void;
   onClear: () => void;
   loading?: boolean;
@@ -16,10 +12,6 @@ interface SearchBarProps {
 const SearchBar: React.FC<SearchBarProps> = ({
   search,
   setSearch,
-  startDate,
-  setStartDate,
-  endDate,
-  setEndDate,
   onSearch,
   onClear,
   loading
@@ -35,24 +27,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
           onChange={e => setSearch(e.target.value)}
           className="border rounded pl-8 pr-2 py-1 w-48"
           placeholder="Nombre del cliente"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Desde</label>
-        <input
-          type="date"
-          value={startDate}
-          onChange={e => setStartDate(e.target.value)}
-          className="border rounded px-2 py-1"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Hasta</label>
-        <input
-          type="date"
-          value={endDate}
-          onChange={e => setEndDate(e.target.value)}
-          className="border rounded px-2 py-1"
         />
       </div>
       <button
