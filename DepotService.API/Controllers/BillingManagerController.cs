@@ -14,6 +14,7 @@ using DepotService.Application.Validators.BillingManager;
 using DepotService.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using FluentValidation;
 
 namespace DepotService.API.Controllers
 {
@@ -25,30 +26,30 @@ namespace DepotService.API.Controllers
         IGetOrdersPendingBillingQueryHandler getOrdersPendingBillingQueryHandler,
         IGetBillingDetailsByOrderIdQueryHandler getBillingDetailsByOrderIdQueryHandler,
         ISetItemUnitPricesCommandHandler setItemUnitPricesCommandHandler,
-        SetItemUnitPricesCommandValidator setItemUnitPricesCommandValidator,
+        IValidator<SetItemUnitPricesCommand> setItemUnitPricesCommandValidator,
         IInvoiceOrderCommandHandler invoiceOrderCommandHandler,
         IGetAllInvoicedOrdersQueryHandler getAllInvoicedOrdersQueryHandler,
         IGetInvoicedOrderByIdQueryHandler getInvoicedOrderByIdQueryHandler,
         IGetInvoicedOrdersByDateRangeQueryHandler getInvoicedOrdersByDateRangeQueryHandler,
-        GetInvoicedOrdersByDateRangeQueryValidator getInvoicedOrdersByDateRangeQueryValidator,
-        GetInvoicedOrdersByCustomerQueryValidator getInvoicedOrdersByCustomerQueryValidator,
+        IValidator<GetInvoicedOrdersByDateRangeQuery> getInvoicedOrdersByDateRangeQueryValidator,
+        IValidator<GetInvoicedOrdersByCustomerQuery> getInvoicedOrdersByCustomerQueryValidator,
         IGetInvoicedOrdersByCustomerQueryHandler getInvoicedOrdersByCustomerQueryHandler,
         IUpdateInvoicedItemPriceCommandHandler updateInvoicedItemPriceCommandHandler,
-        UpdateInvoicedItemPriceCommandValidator updateInvoicedItemPriceCommandValidator,
+        IValidator<UpdateInvoicedItemPriceCommand> updateInvoicedItemPriceCommandValidator,
         IExportInvoiceDocumentCommandHandler exportInvoiceToPdfCommandHandler
         ) : ControllerBase
     {
         private readonly IExportInvoiceDocumentCommandHandler _exportInvoiceToPdfCommandHandler = exportInvoiceToPdfCommandHandler;
-        private readonly UpdateInvoicedItemPriceCommandValidator _updateInvoicedItemPriceCommandValidator = updateInvoicedItemPriceCommandValidator;
+        private readonly IValidator<UpdateInvoicedItemPriceCommand> _updateInvoicedItemPriceCommandValidator = updateInvoicedItemPriceCommandValidator;
         private readonly IUpdateInvoicedItemPriceCommandHandler _updateInvoicedItemPriceCommandHandler = updateInvoicedItemPriceCommandHandler;
-        private readonly GetInvoicedOrdersByCustomerQueryValidator _getInvoicedOrdersByCustomerQueryValidator = getInvoicedOrdersByCustomerQueryValidator;
+        private readonly IValidator<GetInvoicedOrdersByCustomerQuery> _getInvoicedOrdersByCustomerQueryValidator = getInvoicedOrdersByCustomerQueryValidator;
         private readonly IGetInvoicedOrdersByCustomerQueryHandler _getInvoicedOrdersByCustomerQueryHandler = getInvoicedOrdersByCustomerQueryHandler;
-        private readonly GetInvoicedOrdersByDateRangeQueryValidator _getInvoicedOrdersByDateRangeQueryValidator = getInvoicedOrdersByDateRangeQueryValidator;
+        private readonly IValidator<GetInvoicedOrdersByDateRangeQuery> _getInvoicedOrdersByDateRangeQueryValidator = getInvoicedOrdersByDateRangeQueryValidator;
         private readonly IGetInvoicedOrdersByDateRangeQueryHandler _getInvoicedOrdersByDateRangeQueryHandler = getInvoicedOrdersByDateRangeQueryHandler;
         private readonly IGetInvoicedOrderByIdQueryHandler _getInvoicedOrderByIdQueryHandler = getInvoicedOrderByIdQueryHandler;
         private readonly IGetAllInvoicedOrdersQueryHandler _getAllInvoicedOrdersQueryHandler = getAllInvoicedOrdersQueryHandler;
         private readonly IInvoiceOrderCommandHandler _invoiceOrderCommandHandler = invoiceOrderCommandHandler;
-        private readonly SetItemUnitPricesCommandValidator _setItemUnitPricesCommandValidator = setItemUnitPricesCommandValidator;
+        private readonly IValidator<SetItemUnitPricesCommand> _setItemUnitPricesCommandValidator = setItemUnitPricesCommandValidator;
         private readonly ISetItemUnitPricesCommandHandler _setItemUnitPricesCommandHandler = setItemUnitPricesCommandHandler;
         private readonly IGetOrdersPendingBillingQueryHandler _getOrdersPendingBillingQueryHandler = getOrdersPendingBillingQueryHandler;
         private readonly IGetBillingDetailsByOrderIdQueryHandler _getBillingDetailsByOrderIdQueryHandler = getBillingDetailsByOrderIdQueryHandler;
@@ -107,7 +108,8 @@ namespace DepotService.API.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> SetItemUnitPrices([FromBody] SetItemUnitPricesCommand command)
         {
-            var validationResult = new SetItemUnitPricesCommandValidator().Validate(command);
+            // Usar el validador inyectado
+            var validationResult = await _setItemUnitPricesCommandValidator.ValidateAsync(command);
             if (!validationResult.IsValid)
             {
                 return BadRequest(new ValidationProblemDetails(validationResult.ToDictionary()));
@@ -170,24 +172,27 @@ namespace DepotService.API.Controllers
         /// <summary>
         /// Endpoint to get an invoiced order by its ID.
         /// </summary>
-        /// <param name="query"></param>
+        /// <param name="billingOrderId"></param>
         /// <returns></returns>
         [HttpGet("invoiced-order-by-id")]
         [ProducesResponseType(typeof(DepotOrderDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(void), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> InvoicedOrderById([FromBody] GetInvoicedOrderByIdQuery query)
+        public async Task<IActionResult> InvoicedOrderById([FromQuery] int billingOrderId)
         {
-            if (query.BillingOrderId <= 0)
+            if (billingOrderId <= 0)
             {
                 return BadRequest("Invalid billing order ID.");
             }
 
+            // Crea el query manualmente
+            var query = new GetInvoicedOrderByIdQuery(billingOrderId);
+
             var order = await _getInvoicedOrderByIdQueryHandler.GetInvoicedOrderByIdAsync(query);
             if (order == null)
             {
-                return NotFound($"Invoiced order with ID {query.BillingOrderId} not found.");
+                return NotFound($"Invoiced order with ID {billingOrderId} not found.");
             }
             return Ok(order);
         }

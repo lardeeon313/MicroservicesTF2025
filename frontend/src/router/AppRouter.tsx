@@ -126,6 +126,9 @@ const AppRouter = () => {
             <Route index element={<BillingManagerDashboard />} />
             <Route path="pending-orders" element={<PendingOrdersPageBilling />} />
             <Route path="pending-orders/:id" element={<PendingOrderDetailsPage />} />
+            {/* Alias para soportar la URL usada actualmente */}
+            <Route path="pending-billing-orders" element={<PendingOrdersPageBilling />} />
+            <Route path="pending-billing-orders/:id" element={<PendingOrderDetailsPage />} />
             <Route path="invoiced-orders" element={<InvoicedOrdersPage />} />
             <Route path="invoiced-orders/:id" element={<InvoicedOrderDetailsPage />} />
             <Route path="reports/billingTimeProcess" element={<BillingTimeProcessPage />} />

@@ -169,6 +169,7 @@ builder.Services.AddScoped<AddPackaingCommandValidator>();
 builder.Services.AddScoped<RejectOrderCommandValidator>();
 builder.Services.AddScoped<MarkItemIsReadyCommandValidator>();
 builder.Services.AddScoped<UnmarkItemReadyValidator>();
+builder.Services.AddScoped<SetItemUnitPricesCommandValidator>();
 
 // Add HostedService RabbitConsumer
 builder.Services.AddHostedService<OrderIssuedConsumer>();

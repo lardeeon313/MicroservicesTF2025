@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { getPendingOrderDetails, setItemUnitPrices, invoiceOrder } from '../services/OrderService';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { getPendingOrderDetails, setItemUnitPrices, invoiceOrder, getPendingBillingOrders } from '../services/OrderService';
 import { DepotOrderDto } from '../types/OrderTypes';
 import BackButton from '../components/BackButton';
 
+
+
 function PendingOrderDetailsPage() {
+  const [hasSavedPrices, setHasSavedPrices] = useState(false);
   const { id } = useParams<{ id: string }>();
   const [order, setOrder] = useState<DepotOrderDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -19,15 +22,39 @@ function PendingOrderDetailsPage() {
   const [factureError, setFactureError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  const location = useLocation() as { state?: { order?: DepotOrderDto | null } };
+
   useEffect(() => {
     if (!id) return;
+    // Si viene por estado desde la tabla, úsalo primero
+    if (location.state?.order) {
+      const o = location.state.order;
+      setOrder(o);
+      setPrices(o.items.map(item => ({ itemId: item.id, unitPrice: item.unitPrice ?? 0 })));
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     getPendingOrderDetails(Number(id))
       .then(order => {
         setOrder(order);
         setPrices(order.items.map(item => ({ itemId: item.id, unitPrice: item.unitPrice ?? 0 })));
       })
-      .catch(() => setError('No se pudo cargar la orden.'))
+      .catch(async () => {
+        // Fallback: cargar todas y filtrar
+        try {
+          const all = await getPendingBillingOrders();
+          const found = all.find(o => o.depotOrderId === Number(id)) || null;
+          if (found) {
+            setOrder(found);
+            setPrices(found.items.map(item => ({ itemId: item.id, unitPrice: item.unitPrice ?? 0 })));
+          } else {
+            setError('No se pudo cargar la orden.');
+          }
+        } catch {
+          setError('No se pudo cargar la orden.');
+        }
+      })
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -35,11 +62,17 @@ function PendingOrderDetailsPage() {
     setPrices(prices => prices.map((p, i) => i === idx ? { ...p, unitPrice: value } : p));
   };
 
-  const total = prices.reduce((acc, p, idx) => acc + (p.unitPrice * (order?.items[idx].quantity ?? 0)), 0);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!order) return;
+    // Validar precios antes de enviar
+    for (const p of prices) {
+      if (!Number.isFinite(p.unitPrice) || p.unitPrice <= 0) {
+        setSaveError('Todos los precios deben ser números válidos y mayores a 0.');
+        return;
+      }
+    }
     setSaving(true);
     setSaveError(null);
     setSaveSuccess(false);
@@ -49,6 +82,7 @@ function PendingOrderDetailsPage() {
         itemUnitPrices: prices,
       });
       setSaveSuccess(true);
+      setHasSavedPrices(true);
       setTimeout(() => setSaveSuccess(false), 1500);
     } catch (err) {
       setSaveError('Error al guardar los precios.');
@@ -59,6 +93,17 @@ function PendingOrderDetailsPage() {
 
   const handleFacture = async () => {
     if (!order) return;
+    // Validar precios antes de facturar
+    for (const p of prices) {
+      if (!Number.isFinite(p.unitPrice) || p.unitPrice <= 0) {
+        setFactureError('Todos los precios deben ser números válidos y mayores a 0.');
+        return;
+      }
+    }
+    if (!hasSavedPrices) {
+      setFactureError('Debes guardar los precios antes de facturar.');
+      return;
+    }
     setFacturing(true);
     setFactureError(null);
     setFactureSuccess(false);
@@ -83,98 +128,95 @@ function PendingOrderDetailsPage() {
       {loading && <div className="text-center text-lg">Cargando...</div>}
       {error && <div className="text-center text-red-500">{error}</div>}
       {!loading && !error && order && (
-        <div>
-          {/* Card de datos principales */}
-          <div className="bg-white rounded-lg shadow p-6 mb-8 border">
-            <div className="flex flex-wrap gap-6">
-              <div className="flex-1 min-w-[180px]">
-                <div className="text-xs text-gray-500">Cliente</div>
-                <div className="font-semibold text-base">{order.customerName}</div>
-              </div>
-              <div className="flex-1 min-w-[180px]">
-                <div className="text-xs text-gray-500">Email</div>
-                <div className="text-base">{order.customerEmail}</div>
-              </div>
-              <div className="flex-1 min-w-[120px]">
-                <div className="text-xs text-gray-500">Teléfono</div>
-                <div className="text-base">{order.phoneNumber}</div>
-              </div>
-              <div className="flex-1 min-w-[180px]">
-                <div className="text-xs text-gray-500">Dirección</div>
-                <div className="text-base">{order.deliveryDetail}</div>
-              </div>
-              <div className="flex-1 min-w-[120px]">
-                <div className="text-xs text-gray-500">Fecha Pedido</div>
-                <div className="text-base">{new Date(order.orderDate).toLocaleDateString()}</div>
-              </div>
-              <div className="flex-1 min-w-[120px]">
-                <div className="text-xs text-gray-500">Estado</div>
-                <span className="inline-block px-2 py-1 rounded bg-yellow-100 text-yellow-800 text-xs font-semibold">Pendiente de facturar</span>
-              </div>
-            </div>
+        <div className="space-y-6 mt-10 w-3xl">
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-1">Cliente:</label>
+            <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{order.customerName}</p>
           </div>
-          {/* Tabla de ítems y formulario */}
-          <form onSubmit={handleSave} className="space-y-4">
-            <div className="overflow-x-auto">
-              <table className="w-full border rounded-lg shadow-sm">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="px-4 py-2 text-left">Producto</th>
-                    <th className="px-4 py-2 text-left">Marca</th>
-                    <th className="px-4 py-2 text-center">Cantidad</th>
-                    <th className="px-4 py-2 text-center">Precio Unitario</th>
-                    <th className="px-4 py-2 text-right">Subtotal</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {order.items.map((item, idx) => (
-                    <tr key={item.id} className="border-b hover:bg-gray-50">
-                      <td className="px-4 py-2">{item.productName}</td>
-                      <td className="px-4 py-2">{item.productBrand}</td>
-                      <td className="px-4 py-2 text-center">{item.quantity}</td>
-                      <td className="px-4 py-2 text-center">
-                        <input
-                          type="number"
-                          min={0}
-                          step={0.01}
-                          value={prices[idx]?.unitPrice ?? 0}
-                          onChange={e => handlePriceChange(idx, parseFloat(e.target.value))}
-                          className="border rounded px-2 py-1 w-24 text-right"
-                          required
-                        />
-                      </td>
-                      <td className="px-4 py-2 text-right font-medium">${(prices[idx]?.unitPrice * item.quantity).toFixed(2)}</td>
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-1">Fecha Pedido:</label>
+            <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{new Date(order.orderDate).toLocaleDateString("es-AR")}</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-1">Detalles de entrega:</label>
+            <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{order.deliveryDetail || "No especificado"}</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-1">Estado:</label>
+            <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">Pendiente de facturar</p>
+          </div>
+          <div className="space-y-4 pt-2">
+            <form onSubmit={handleSave} className="space-y-4">
+              <div className="overflow-x-auto">
+                <table className="table-fixed w-full border-separate">
+                  <thead>
+                    <tr>
+                      <th className="w-1/3 text-left px-4 py-2">Producto</th>
+                      <th className="w-1/3 text-left px-4 py-2">Marca</th>
+                      <th className="w-1/3 text-left px-4 py-2">Cantidad</th>
+                      <th className="w-1/3 text-left px-4 py-2">Precio Unitario</th>
+                      <th className="w-1/3 text-left px-4 py-2">Subtotal</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="flex justify-end items-center gap-4 mt-4">
-              <span className="text-lg font-bold">Total:</span>
-              <span className="text-2xl font-bold text-green-700">${total.toFixed(2)}</span>
-            </div>
-            {saveError && <div className="text-red-500 mb-2 text-center">{saveError}</div>}
-            {saveSuccess && <div className="text-green-600 mb-2 text-center">Precios guardados correctamente.</div>}
-            {factureError && <div className="text-red-500 mb-2 text-center">{factureError}</div>}
-            {factureSuccess && <div className="text-green-600 mb-2 text-center">Orden facturada correctamente.</div>}
-            <div className="flex justify-end gap-4">
-              <button
-                type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow"
-                disabled={saving}
-              >
-                {saving ? 'Guardando...' : 'Guardar precios'}
-              </button>
-              <button
-                type="button"
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded shadow"
-                disabled={facturing}
-                onClick={() => setShowConfirm(true)}
-              >
-                {facturing ? 'Facturando...' : 'Facturar'}
-              </button>
-            </div>
-          </form>
+                  </thead>
+                  <tbody>
+                    {order.items.map((item, idx) => (
+                      <tr key={item.id} className="align-top">
+                        <td className="pr-2 px-4 py-2">{item.productName}</td>
+                        <td className="pr-2 px-4 py-2">{item.productBrand}</td>
+                        <td className="pr-2 px-4 py-2">{item.quantity}</td>
+                        <td className="pr-2 px-4 py-2">
+                          <input
+                            type="number"
+                            min={0.01}
+                            step={0.01}
+                            value={prices[idx]?.unitPrice === 0 ? '' : prices[idx]?.unitPrice}
+                            onChange={e => {
+                              const val = e.target.value === '' ? 0 : parseFloat(e.target.value);
+                              handlePriceChange(idx, val);
+                              setHasSavedPrices(false);
+                            }}
+                            className="border rounded px-2 py-1 w-24 text-right"
+                            required
+                          />
+                        </td>
+                        <td className="pr-2 px-4 py-2">{prices[idx]?.unitPrice > 0 ? `$${(prices[idx].unitPrice * item.quantity).toFixed(2)}` : '-'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="flex justify-end items-center gap-4 mt-4">
+                <span className="text-lg font-bold">Total:</span>
+                <span className="text-2xl font-bold text-green-700">{
+                  prices.every(p => Number.isFinite(p.unitPrice) && p.unitPrice > 0)
+                    ? `$${prices.reduce((acc, p, idx) => acc + (p.unitPrice * (order?.items[idx].quantity ?? 0)), 0).toFixed(2)}`
+                    : '-'
+                }</span>
+            {!hasSavedPrices && <div className="text-yellow-600 mb-2 text-center">Recuerda guardar los precios antes de facturar.</div>}
+              </div>
+              {saveError && <div className="text-red-500 mb-2 text-center">{saveError}</div>}
+              {saveSuccess && <div className="text-green-600 mb-2 text-center">Precios guardados correctamente.</div>}
+              {factureError && <div className="text-red-500 mb-2 text-center">{factureError}</div>}
+              {factureSuccess && <div className="text-green-600 mb-2 text-center">Orden facturada correctamente.</div>}
+              <div className="flex justify-end gap-4">
+                <button
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow"
+                  disabled={saving}
+                >
+                  {saving ? 'Guardando...' : 'Guardar precios'}
+                </button>
+                <button
+                  type="button"
+                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded shadow"
+                  disabled={facturing}
+                  onClick={() => setShowConfirm(true)}
+                >
+                  {facturing ? 'Facturando...' : 'Facturar'}
+                </button>
+              </div>
+            </form>
+          </div>
           {/* Modal de confirmación */}
           {showConfirm && (
             <div className="fixed inset-0 flex items-center justify-center bg-white/60 backdrop-blur z-50">
