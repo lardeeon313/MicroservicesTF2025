@@ -21,7 +21,10 @@ const InvoicedOrdersPage: React.FC = () => {
   const fetchOrders = () => {
     setLoading(true);
     getAllInvoicedOrders()
-      .then(setOrders)
+      .then(res => {
+      console.log("Órdenes devueltas:", res[0]); // 👀 mirar la primera orden
+      setOrders(res);
+    })
       .catch(() => setError('Error al cargar las órdenes facturadas.'))
       .finally(() => setLoading(false));
   };
@@ -37,6 +40,7 @@ const InvoicedOrdersPage: React.FC = () => {
     try {
       if (search) {
         const data = await getInvoicedOrdersByCustomer(search);
+        console.log("Resultado búsqueda:", data[0]); 
         setOrders(data);
       } else {
         fetchOrders();

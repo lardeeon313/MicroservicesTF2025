@@ -1,34 +1,39 @@
-import { useEffect,useState } from "react";
-import API from "../../../../../../api/axios";
+import { useEffect, useState, useCallback } from "react";
 import type { Billing } from "../../../../billingmanager/types/BillingType";
+import API from "../../../../../../api/axios";
 
-export const useCustomerIncome = (page:number,pageSize:number) => {
-    const [data,setData] = useState<Billing[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error,setError] = useState<string | null>(null);
-    const [totalPages,setTotalPages] = useState<number>(1);
+export const useCustomerIncome = () => {
+  const [orders, setOrders] = useState<Billing[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try{
-                const response = await API.get("/billing" , {
-                    params: {page,pageSize}
-                })
+  const fetchOrders = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-                const totalCount = Number(response.headers["x-total-count"]);
-                setTotalPages(Math.ceil(totalCount / pageSize));
+      const res = await API.get<Billing[]>("/depot/billingmanager/all-invoiced-orders");
 
-                setData(response.data);
-            }catch (error){
-                console.error(error);
-                setError("Error al obtener los datos.")
-            }finally{
-                setLoading(false);
-            }
-        }
+      console.log("📌 Datos recibidos del back:", res.data);
 
-        fetchData();
-    }, [page,pageSize])
+      if (!res.data || res.data.length === 0) {
+        setOrders([]);
+        setError("No hay órdenes facturadas.");
+      } else {
+        setOrders(res.data);
+      }
+    } catch (err: any) {
+      console.error("❌ Error fetching invoiced orders:", err);
+      setError("Error al conectar con el servidor.");
+      setOrders([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    return {data,loading,error,totalPages}
-}
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  return { orders, loading, error, refetch: fetchOrders };
+};

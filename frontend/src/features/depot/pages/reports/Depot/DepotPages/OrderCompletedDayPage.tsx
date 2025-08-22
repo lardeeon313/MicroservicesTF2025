@@ -1,90 +1,127 @@
-import React,{useState} from "react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useOrderCompletedDay } from "../DepotHocks/useOrderCompletedDay";
 import OrderCompletedDayTable from "../DepotComponents/OrderCompletedDayTable";
 import GraphOrderCompletedDay from "../DepotGraph/GraphOrderCompletedDay";
-import { Pagination } from "../../../../../../components/Pagination";
-import LoadingSpinner from "../../../../../../components/LoadingSpinner";
-import { Link } from "react-router-dom";
-
-//filtro: 
 import OrderCompletedDayFilter from "../DepotFilters/OrderCompletedDayFilter";
 
-const OrderCompletedDayPage : React.FC = () => {
-    const [page,setPage] = useState(1);
-    const pageSize = 10;
-    const [idfilter,setidFilter] = useState("");
-    const [selectedDate, setSelectedDate] = useState(""); // ✅ nuevo estado
+export default function OrderCompletedDayPage() {
+  const navigate = useNavigate();
 
+  const {
+    data,
+    loading,
+    error,
+    page,
+    setPage,
+    totalPages,
+    selectedDate,
+    setSelectedDate,
+    fetchData,
+    clearFilters,
+  } = useOrderCompletedDay();
 
-    const {data: orders,loading , error , totalpages} = useOrderCompletedDay(page,pageSize);
+  // 👉 cada vez que cambie la página, se vuelve a pedir la data
+  // REMOVEMOS selectedDate de aquí para evitar llamadas automáticas
+  useEffect(() => {
+    fetchData(selectedDate, selectedDate, page);
+  }, [page]); // Solo cuando cambia la página
 
-    const filterOrders = orders.filter((order) => {
-        const matchesId = order.OrderId.toString().includes(idfilter);
-        const matchesDate =
-            selectedDate === "" || order.finishdate.startsWith(selectedDate); // formateo ISO: 'YYYY-MM-DD'
-        return matchesId && matchesDate;
-    });
+  // Función para manejar la búsqueda
+  const handleSearch = () => {
+    if (selectedDate) {
+      setPage(1); // Reset a página 1 cuando busques
+      fetchData(selectedDate, selectedDate, 1);
+    } else {
+      // Si no hay fecha, traer todos
+      fetchData("", "", 1);
+    }
+  };
 
-    if(loading) return <LoadingSpinner message="Cargando datos , por favor espere.." height="h-screen" />
+  // Función para limpiar filtros
+  const handleClear = () => {
+    setPage(1);
+    clearFilters();
+  };
 
-    return(
-        <div className="container m-0 pt-10 min-w-full min-h-full">
-            <div className="flex items-center justify-between mb-6">
-                <Link to={"/depot/depotmanager/reports/orderCompletedDay"}className="text-red-600 hover:underline pl-10"> 
-                ← Volver atrás
-                </Link>
-            </div>
-
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-                    Pedidos completados del dia:
-                </h1>
-                <p className="text-center text-lg text-gray-700 mb-12">
-                    Aquí podrás ver el listado de pedidos completados en el día junto con su fecha correspondiente.
-                </p>
-
-                <div className="flex flex-col md:flex-row mb-4 w-full justify-between">
-                    <div className="flex flex-col">
-                        <label className="mb-1 text-sm font-medium text-gray-700">Filtrar por ID de pedido</label>
-                        <input
-                            type="text"
-                            placeholder="Ej: 12345"
-                            className="border border-gray-300 rounded px-3 py-2 focus:bg-red-100 focus:outline-gray-400 focus:transition-colors focus:duration-500 outline-gray-200 w-60"
-                            value={idfilter}
-                            onChange={(e) => setidFilter(e.target.value)}
-                        />
-                    </div>
-                    {/**Filtra por la fecha:  */}
-                    <OrderCompletedDayFilter selectedDate={selectedDate} onDateChange={setSelectedDate} />
-                </div>
-
-
-                {error ? (
-                    <p className="text-red-600 text-center">{error}</p>
-                ): (
-                    <>
-                    <OrderCompletedDayTable 
-                    data={filterOrders.map(order => ({
-                        OrderID: order.OrderId,
-                        finishdate: order.finishdate
-                    }))}
-                    />
-                    <GraphOrderCompletedDay
-                    data={filterOrders.map(order => ({
-                        orderId: order.OrderId,
-                        finishDate: order.finishdate
-                    }) )} />
-                    {filterOrders.length === 0 && (
-                        <p className="">
-                            No se encontraron pedidos 
-                        </p>
-                    )}
-                    <Pagination currentPage={page} totalPages={totalpages} onPageChange={setPage} />
-                    </>
-                )}
-            </div>
+  return (
+    <div className="p-8 space-y-6">
+      {/* Header con botón volver */}
+      <div className="relative">
+        {/* Botón volver posicionado absolutamente */}
+        <button
+          onClick={() => navigate("/depot/reports")}
+          className="absolute left-0 top-0 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg shadow transition"
+        >
+          ⬅️ Volver atrás
+        </button>
+        
+        {/* Título centrado */}
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-red-600">
+               Pedidos Completados:
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Descripción de los pedidos completados o cualquier texto que necesites
+          </p>
         </div>
-    )
-}
+      </div>
 
-export default OrderCompletedDayPage;
+      {/* Filtros */}
+      <div className="bg-white rounded-xl shadow p-4">
+        <OrderCompletedDayFilter
+          selectedDate={selectedDate}
+          onDateChange={setSelectedDate}
+          onSearch={handleSearch}
+          onClear={handleClear}
+        />
+      </div>
+
+      {/* Estados de carga */}
+      {loading && <p className="text-blue-500">Cargando...</p>}
+      {error && <p className="text-red-500">{error}</p>}
+      {!loading && data.length === 0 && (
+        <p className="text-gray-500">No hay pedidos completados</p>
+      )}
+
+      {/* Tabla */}
+      <div className="bg-white rounded-xl shadow p-4">
+        <OrderCompletedDayTable data={data} />
+      </div>
+
+      {/* Paginación */}
+      <div className="flex items-center justify-center gap-4">
+        <button
+          disabled={page <= 1}
+          onClick={() => {
+            const newPage = page - 1;
+            setPage(newPage);
+            fetchData(selectedDate, selectedDate, newPage);
+          }}
+          className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg shadow disabled:opacity-50 transition"
+        >
+          ⬅️ Anterior
+        </button>
+        <span className="text-gray-700 font-medium">
+          Página {page} de {totalPages}
+        </span>
+        <button
+          disabled={page >= totalPages}
+          onClick={() => {
+            const newPage = page + 1;
+            setPage(newPage);
+            fetchData(selectedDate, selectedDate, newPage);
+          }}
+          className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg shadow disabled:opacity-50 transition"
+        >
+          Siguiente ➡️
+        </button>
+      </div>
+
+      {/* Gráfico */}
+      <div className="bg-white rounded-xl shadow p-4">
+        <GraphOrderCompletedDay data={data} />
+      </div>
+    </div>
+  );
+}

@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.BillingManager.GetInvoicedOrdersByCustomer
@@ -19,19 +18,28 @@ namespace DepotService.Application.Queries.BillingManager.GetInvoicedOrdersByCus
         private readonly ILogger<GetInvoicedOrdersByCustomerQueryHandler> _logger = logger;
 
         /// <summary>
-        /// Handler for retrieving invoiced orders by customer.
+        /// Handler for retrieving invoiced orders by customer (Id or Name).
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
         public async Task<List<DepotOrderDto>> GetInvoicedOrdersByCustomerAsync(GetInvoicedOrdersByCustomerQuery query)
         {
-            var ordersByCustomer = await _repository.GetInvoicedOrdersByCustomerAsync(query.CustomerId);
-            if (ordersByCustomer == null || !ordersByCustomer.Any())
+            if (string.IsNullOrWhiteSpace(query.CustomerName))
             {
-                _logger.LogWarning("No invoiced orders found for customer with ID {CustomerId}.", query.CustomerId);
-                throw new KeyNotFoundException($"No invoiced orders found for customer with ID {query.CustomerId}.");
+                throw new ArgumentException("Debe especificar el nombre del cliente.");
             }
-            _logger.LogInformation("Found {Count} invoiced orders for customer with ID {CustomerId}.", ordersByCustomer.Count(), query.CustomerId);
+
+            var ordersByCustomer = _context.DepotOrders
+                .Where(o => o.CustomerName.Contains(query.CustomerName))
+                .ToList();
+
+            if (!ordersByCustomer.Any())
+            {
+                _logger.LogWarning("No invoiced orders found for customer with Name {CustomerName}.", query.CustomerName);
+                throw new KeyNotFoundException($"No invoiced orders found for customer with Name {query.CustomerName}.");
+            }
+
+            _logger.LogInformation("Found {Count} invoiced orders for customer with Name {CustomerName}.", ordersByCustomer.Count(), query.CustomerName);
 
             return ordersByCustomer.Select(o => new DepotOrderDto
             {
@@ -53,9 +61,7 @@ namespace DepotService.Application.Queries.BillingManager.GetInvoicedOrdersByCus
                 PhoneNumber = o.PhoneNumber,
                 DeliveryDetail = o.DeliveryDetail,
                 OrderDate = o.OrderDate,
-
             }).ToList();
-
         }
     }
 }

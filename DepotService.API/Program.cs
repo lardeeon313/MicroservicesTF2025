@@ -97,9 +97,9 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // Add Queries
-builder.Services.AddScoped<IGetAllTeamsQueryHandler,  GetAllTeamsQueryHandler>();
+builder.Services.AddScoped<IGetAllTeamsQueryHandler, GetAllTeamsQueryHandler>();
 builder.Services.AddScoped<IGetTeamByNameQueryHandler, GetTeamByNameQueryHandler>();
-builder.Services.AddScoped<IGetTeamByIdQueryHandler,  GetTeamByIdQueryHandler>();
+builder.Services.AddScoped<IGetTeamByIdQueryHandler, GetTeamByIdQueryHandler>();
 builder.Services.AddScoped<IGetMissingOrderByIdQueryHandler, GetMissingOrderByIdQueryHandler>();
 builder.Services.AddScoped<IGetAllMissingOrdersQueryHandler, GetAllMissingOrdersQueryHandler>();
 builder.Services.AddScoped<IGetAllOrdersQueryHandler, GetAllOrdersQueryHandler>();
@@ -108,8 +108,8 @@ builder.Services.AddScoped<IGetByIdOrderQueryHandler, GetByIdOrderQueryHandler>(
 builder.Services.AddScoped<IGetOrdersByOperatorQueryHandler, GetOrdersByOperatorQueryHandler>();
 builder.Services.AddScoped<IGetOrderByIdQueryHandler, GetOrderByIdQueryHandler>();
 builder.Services.AddScoped<IGetAssignedPendingOrdersQueryHandler, GetAssignedPendingOrdersQueryHandler>();
-builder.Services.AddScoped<IGetOrdersPendingBillingQueryHandler , GetOrdersPendingBillingQueryHandler>();
-builder.Services.AddScoped<IGetBillingDetailsByOrderIdQueryHandler , GetBillingDetailsByOrderIdQueryHandler>();
+builder.Services.AddScoped<IGetOrdersPendingBillingQueryHandler, GetOrdersPendingBillingQueryHandler>();
+builder.Services.AddScoped<IGetBillingDetailsByOrderIdQueryHandler, GetBillingDetailsByOrderIdQueryHandler>();
 builder.Services.AddScoped<IGetOrdersPendingBillingQueryHandler, GetOrdersPendingBillingQueryHandler>();
 builder.Services.AddScoped<ISetItemUnitPricesCommandHandler, SetItemUnitPricesCommandHandler>();
 builder.Services.AddScoped<IGetAllInvoicedOrdersQueryHandler, GetAllInvoicedOrdersQueryHandler>();
@@ -130,20 +130,20 @@ builder.Services.AddScoped<IGetOrdersPreparedOrSentToBillingHandler, GetOrdersPr
 
 // Add Commands
 builder.Services.AddScoped<IAssignOperatorCommandHandler, AssignOperatorCommandHandler>();
-builder.Services.AddScoped<IAssignOrderCommandHandler,  AssignOrderCommandHandler>();
-builder.Services.AddScoped<ICreateTeamCommandHandler,  CreateTeamCommandHandler>();
-builder.Services.AddScoped<IDeleteTeamCommandHandler,  DeleteTeamCommandHandler>();
-builder.Services.AddScoped<IUpdateTeamCommandHandler,  UpdateTeamCommandHandler>();
+builder.Services.AddScoped<IAssignOrderCommandHandler, AssignOrderCommandHandler>();
+builder.Services.AddScoped<ICreateTeamCommandHandler, CreateTeamCommandHandler>();
+builder.Services.AddScoped<IDeleteTeamCommandHandler, DeleteTeamCommandHandler>();
+builder.Services.AddScoped<IUpdateTeamCommandHandler, UpdateTeamCommandHandler>();
 builder.Services.AddScoped<IRemoveOperatorCommandHandler, RemoveOperatorCommandHandler>();
 builder.Services.AddScoped<IOrderMissingReportedCommandHandler, OrderMissingReportedCommandHandler>();
 builder.Services.AddScoped<IConfirmAssignedOrderCommandHandler, ConfirmAssignedOrderCommandHandler>();
-builder.Services.AddScoped<IReportOrderMissingCommandHandler,  ReportOrderMissingCommandHandler>();
+builder.Services.AddScoped<IReportOrderMissingCommandHandler, ReportOrderMissingCommandHandler>();
 builder.Services.AddScoped<IAddPackaingCommandHandler, AddPackaingCommandHandler>();
-builder.Services.AddScoped<ISentToBillingCommandHandler , SentToBillingCommandHandler>();
+builder.Services.AddScoped<ISentToBillingCommandHandler, SentToBillingCommandHandler>();
 builder.Services.AddScoped<IRejectOrderCommandHandler, RejectOrderCommandHandler>();
-builder.Services.AddScoped<IMarkItemCommandHandler , MarkItemCommandHandler>();
-builder.Services.AddScoped<IUnmarkItemReadyCommandHandler , UnmarkItemReadyCommandHandler>();
-builder.Services.AddScoped<IInvoiceOrderCommandHandler , InvoiceOrderCommandHandler>();
+builder.Services.AddScoped<IMarkItemCommandHandler, MarkItemCommandHandler>();
+builder.Services.AddScoped<IUnmarkItemReadyCommandHandler, UnmarkItemReadyCommandHandler>();
+builder.Services.AddScoped<IInvoiceOrderCommandHandler, InvoiceOrderCommandHandler>();
 builder.Services.AddScoped<ISetItemUnitPricesCommandHandler, SetItemUnitPricesCommandHandler>();
 builder.Services.AddScoped<IUpdateInvoicedItemPriceCommandHandler, UpdateInvoicedItemPriceCommandHandler>();
 builder.Services.AddScoped<IExportInvoiceDocumentCommandHandler, ExportInvoiceDocumentCommandHandler>();
@@ -161,7 +161,7 @@ builder.Services.AddScoped<IValidator<MarkItemCommand>, MarkItemIsReadyCommandVa
 builder.Services.AddScoped<IValidator<UnmarkItemReadyCommand>, UnmarkItemReadyValidator>();
 builder.Services.AddScoped<IValidator<SetItemUnitPricesCommand>, SetItemUnitPricesCommandValidator>();
 builder.Services.AddScoped<IValidator<GetInvoicedOrdersByDateRangeQuery>, GetInvoicedOrdersByDateRangeQueryValidator>();
-builder.Services.AddScoped<IValidator<GetInvoicedOrdersByCustomerQuery>,  GetInvoicedOrdersByCustomerQueryValidator>();
+builder.Services.AddScoped<IValidator<GetInvoicedOrdersByCustomerQuery>, GetInvoicedOrdersByCustomerQueryValidator>();
 builder.Services.AddScoped<IValidator<UpdateInvoicedItemPriceCommand>, UpdateInvoicedItemPriceCommandValidator>();
 
 builder.Services.AddScoped<OrderMissingReportedCommandValidator>();

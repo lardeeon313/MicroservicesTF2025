@@ -2,19 +2,25 @@
 using DepotService.Domain.Enums;
 using DepotService.Domain.IRepositories;
 using DepotService.Domain.ValueObjects;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DepotService.Infraestructure.Persistence.Repositories
 {
-    public class DepotReportRepository(DepotDbContext context) : IDepotReportRepository
+    public class DepotReportRepository : IDepotReportRepository
     {
-        private readonly DepotDbContext _context = context;
+        private readonly DepotDbContext _context;
+        private readonly ILogger<DepotReportRepository> _logger;
+
+        public DepotReportRepository(DepotDbContext context, ILogger<DepotReportRepository> logger)
+        {
+            _context = context;
+            _logger = logger;
+        }
 
         public async Task<PaginatedResult<OrderProcessingTime>> GetAverageProcessingTimePerOrderAsync(DateTime? from, DateTime? to, int page, int pageSize)
         {
@@ -106,8 +112,8 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         public async Task<PaginatedResult<CompletedOrdersReport>> GetCompletedOrdersAsync(DateTime? from, DateTime? to, int page, int pageSize)
         {
             var query = _context.DepotOrders
-            .AsNoTracking()
-            .Where(o => o.Status == OrderStatus.Prepared);
+                .AsNoTracking()
+                .Where(o => o.Status == OrderStatus.Prepared);
 
             if (from.HasValue)
                 query = query.Where(o => o.OrderDate >= from.Value);
@@ -149,17 +155,25 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         public async Task<List<DepotTeamPerformance>> GetDepotTeamPerformancesAsync(DateTime? from, DateTime? to)
         {
             var orders = _context.DepotOrders
-        .Include(o => o.AssignedDepotTeam)
-        .Include(o => o.StatusHistory)
-        .Include(o => o.Missings)
-        .Where(o => o.AssignedDepotTeamId != null)
-        .AsQueryable();
+                .Include(o => o.AssignedDepotTeam)
+                .Include(o => o.StatusHistory)
+                .Include(o => o.Missings)
+                .Where(o => o.AssignedDepotTeamId != null)
+                .AsQueryable();
 
             if (from.HasValue)
-                orders = orders.Where(o => o.StatusHistory.Any(h => h.ChangedAt >= from.Value));
+            {
+                _logger.LogInformation("Primer Filtro del FROM: {From}", from.Value);
+                orders = orders.Where(o =>
+                    o.OrderDate >= from.Value || (o.DeliveryDate.HasValue && o.DeliveryDate.Value >= from.Value));
+            }
 
             if (to.HasValue)
-                orders = orders.Where(o => o.StatusHistory.Any(h => h.ChangedAt <= to.Value));
+            {
+                _logger.LogInformation("Segundo Filtro del TO: {To}", to.Value);
+                orders = orders.Where(o =>
+                    o.OrderDate <= to.Value || (o.DeliveryDate.HasValue && o.DeliveryDate.Value <= to.Value));
+            }
 
             var grouped = await orders
                 .GroupBy(o => new { o.AssignedDepotTeamId, o.AssignedDepotTeam!.TeamName })
@@ -247,9 +261,9 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         public async Task<PaginatedResult<OrdersInPreparation>> GetOrdersInPreparationAsync(int page, int pageSize, DateTime? from, DateTime? to)
         {
             var query = _context.DepotOrders
-            .Include(o => o.AssignedDepotTeam)
-            .Include(o => o.StatusHistory)
-            .Where(o => o.Status == OrderStatus.InPreparation);
+                .Include(o => o.AssignedDepotTeam)
+                .Include(o => o.StatusHistory)
+                .Where(o => o.Status == OrderStatus.InPreparation);
 
             if (from.HasValue)
                 query = query.Where(o => o.OrderDate >= from.Value);
@@ -279,7 +293,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                     DeliveryDate = o.DeliveryDate,
                     DepotTeamName = o.AssignedDepotTeam != null ? o.AssignedDepotTeam.TeamName : null
                 }).ToListAsync();
-           
+
             return new PaginatedResult<OrdersInPreparation>
             {
                 Items = data,
@@ -287,17 +301,17 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 TotalPages = pageSize,
                 CurrentPage = page,
             };
-        }   
+        }
 
         public async Task<PaginatedResult<ReissuedOrderReport>> GetReissuedOrdersAsync(DateTime? from, DateTime? to, int page, int pageSize)
         {
             var query = _context.DepotOrders
-        .Include(o => o.StatusHistory)
-        .Where(o => o.StatusHistory.Any(h =>
-            h.NewStatus == OrderStatus.ReReceived &&
-            (!from.HasValue || h.ChangedAt >= from.Value) &&
-            (!to.HasValue || h.ChangedAt <= to.Value)))
-        .AsNoTracking();
+                .Include(o => o.StatusHistory)
+                .Where(o => o.StatusHistory.Any(h =>
+                    h.NewStatus == OrderStatus.ReReceived &&
+                    (!from.HasValue || h.ChangedAt >= from.Value) &&
+                    (!to.HasValue || h.ChangedAt <= to.Value)))
+                .AsNoTracking();
 
             var totalCount = await query.CountAsync();
 
@@ -322,7 +336,8 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 })
                 .ToListAsync();
 
-            return new PaginatedResult<ReissuedOrderReport>{
+            return new PaginatedResult<ReissuedOrderReport>
+            {
                 Items = items,
                 TotalItems = totalCount,
                 TotalPages = pageSize,

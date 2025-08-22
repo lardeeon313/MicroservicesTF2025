@@ -1,11 +1,9 @@
 ﻿using DepotService.Application.DTOs.DepotManager;
 using DepotService.Application.Services.IdentityServiceClient;
 using DepotService.Domain.IRepositories;
-using DepotService.Infraestructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.DepotManager.GetAllTeams
@@ -14,6 +12,7 @@ namespace DepotService.Application.Queries.DepotManager.GetAllTeams
     {
         private readonly ITeamRepository _repository = repository;
         private readonly IIdentityServiceClient identityServiceClient = identityClient;
+
         public async Task<IEnumerable<DepotTeamDto>> HandleAsync()
         {
             var teams = await _repository.GetAllAsync();

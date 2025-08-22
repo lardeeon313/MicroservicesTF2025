@@ -1,34 +1,44 @@
-import { useEffect,useState } from "react";
+import { useState, useCallback } from "react";
 import API from "../../../../../../api/axios";
-import type { BillingTimeProcess } from "../../../../billingmanager/types/BillingTimeProcessType";
 
-export const useOrderBilled = (page:number,pageSize:number) => {
-    const [data,setData] = useState<BillingTimeProcess[]>([]);
-    const [loading,setLoading] = useState(true);
-    const [error,setError] = useState<string | null>(null);
-    const [totalpages,settotalPages] = useState<number>(1);
+export type DepotOrderDtoBilling = {
+  orderId: string;
+  customerName: string;
+  totalAmount: number;
+  orderDate: string;
+};
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try{
-                const response = await API.get("/billingTimeProcess" , {
-                    params: {page,pageSize}
-                })
+type Filters = {
+  customerName?: string;
+};
 
-                const totalCount = Number(response.headers["x-total-count"]);
-                settotalPages(Math.ceil(totalCount / pageSize));
+export function useInvoicedOrdersByCustomer() {
+  const [data, setData] = useState<DepotOrderDtoBilling[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-                setData(response.data);
-            }catch(error){
-                console.error(error);
-                setError("Error al obtener los datos.")
-            }finally{
-                setLoading(false);
-            }
-        }
+  const fetchOrders = useCallback(async (filters: Filters) => {
+    setLoading(true);
+    setError(null);
 
-        fetchData();
-    }, [page,pageSize])
+    try {
+      const params = new URLSearchParams();
+      if (filters.customerName) params.append("CustomerName", filters.customerName);
 
-    return {data,loading,error,totalpages}
+      const res = await API.get<DepotOrderDtoBilling[]>(
+        `/depot/billingmanager/invoiced-orders-by-customer?${params.toString()}`
+      );
+
+      console.log("✅ Datos recibidos del back:", res.data);
+      setData(res.data);
+    } catch (err: any) {
+      console.error("🔥 Error en fetchOrders:", err);
+      setError(err.message || "Error al obtener órdenes facturadas.");
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return { data, loading, error, fetchOrders };
 }

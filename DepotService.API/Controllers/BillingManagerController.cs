@@ -234,7 +234,7 @@ namespace DepotService.API.Controllers
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(void), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> InvoicedOrdersByCustomer([FromBody] GetInvoicedOrdersByCustomerQuery query)
+        public async Task<IActionResult> InvoicedOrdersByCustomer([FromQuery] GetInvoicedOrdersByCustomerQuery query)
         {
             var validationResult = _getInvoicedOrdersByCustomerQueryValidator.Validate(query);
             if (!validationResult.IsValid)
@@ -245,7 +245,7 @@ namespace DepotService.API.Controllers
             var orders = await _getInvoicedOrdersByCustomerQueryHandler.GetInvoicedOrdersByCustomerAsync(query);
             if (orders == null || !orders.Any())
             {
-                return NotFound($"No invoiced orders found for customer with ID {query.CustomerId}.");
+                return NotFound($"No invoiced orders found for customer with Name {query.CustomerName}.");
             }
             return Ok(orders);
         }
@@ -298,6 +298,6 @@ namespace DepotService.API.Controllers
         }
 
 
-        
+
     }
 }

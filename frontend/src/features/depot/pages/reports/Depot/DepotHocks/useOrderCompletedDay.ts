@@ -1,43 +1,72 @@
-
-import { useEffect,useState } from "react";
+import { useState } from "react";
 import API from "../../../../../../api/axios";
-import type { Order } from "../../../../../sales/types/OrderTypes";
 
-type OrderCompleted = {
-    OrderId: Order['id'];
-    finishdate: Order['finishDate']
+export interface Order {
+  depotOrderId: number;
+  salesOrderId: number;
+  customerName: string;
+  customerEmail: string;
+  orderDate: string;
 }
 
-export const useOrderCompletedDay = (page: number, pageSize: number) => {
-    const [data,setData] = useState<OrderCompleted[]>([]);
-    const [loading,setLoading] = useState<boolean>(true);
-    const [error,setError] = useState<string | null>(null);
-    const [totalpages,setTotalPages] = useState<number>(1);
+export const useOrderCompletedDay = () => {
+  const [data, setData] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [selectedDate, setSelectedDate] = useState<string>("");
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            setError(null);
-            try{
-                //Cambiar la ruta de la api:
-                const response = await API.get<OrderCompleted[]>("/orders", {
-                    params: { page, pageSize },
-                });
-
-                const totalCount = Number(response.headers["x-total-count"]);
-                    setTotalPages(Math.ceil(totalCount / pageSize));
-                    setData(response.data);
-                
-            }catch(error){
-                console.error("Error al obtener los pedidos completos. " , error);
-                setError("No se pudieron obtener los datos.");
-            }finally{
-                setLoading(false);
-            }
+  
+  const fetchData = async (startDate: string, endDate: string, pageNum: number) => {
+    try {
+      setLoading(true);
+    
+      // Si hay fecha, asegúrate de que esté en formato YYYY-MM-DD
+      const formattedStartDate = startDate || "";
+      const formattedEndDate = endDate || "";
+    
+      // Tu llamada a la API aquí
+      const response = await API.get('depot/depotreports/reports/orders-completed', {
+        params: {
+          startDate: formattedStartDate,
+          endDate: formattedEndDate,
+          page: pageNum,
+          // otros parámetros...
         }
+      });
+    
+      // Procesar respuesta...
+      setData(response.data.items || []);
+      setTotalPages(response.data.totalPages || 1);
+    
+    } catch (error) {
+      setError("Error al cargar los datos");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+};
 
-        fetchData();
-    },[page,pageSize] );
+const clearFilters = () => {
+  setSelectedDate("");
+  setPage(1);
+  fetchData("", "", 1); // Cargar todos los datos sin filtro
+};
 
-    return {data,loading,error,totalpages}
-}
+  return {
+    data,
+    loading,
+    error,
+    page,
+    setPage,
+    totalPages,
+    selectedDate,
+    setSelectedDate,
+    fetchData,
+    clearFilters,
+  };
+};
+
+
+///depot/depotreports/reports/orders-completed

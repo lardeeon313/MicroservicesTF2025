@@ -1,7 +1,7 @@
-import { Order } from "../../../sales/types/OrderTypes";
 
 export interface Billing {
-    orderID : Order['id']
-    billingDate: string
+    orderDate: string;   
     totalAmount: number
+    customerName: string;
+    customerEmail:string;
 }
