@@ -145,78 +145,124 @@ function PendingOrderDetailsPage() {
             <label className="block text-sm font-medium text-gray-900 mb-1">Estado:</label>
             <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">Pendiente de facturar</p>
           </div>
-          <div className="space-y-4 pt-2">
-            <form onSubmit={handleSave} className="space-y-4">
-              <div className="overflow-x-auto">
-                <table className="table-fixed w-full border-separate">
-                  <thead>
-                    <tr>
-                      <th className="w-1/3 text-left px-4 py-2">Producto</th>
-                      <th className="w-1/3 text-left px-4 py-2">Marca</th>
-                      <th className="w-1/3 text-left px-4 py-2">Cantidad</th>
-                      <th className="w-1/3 text-left px-4 py-2">Precio Unitario</th>
-                      <th className="w-1/3 text-left px-4 py-2">Subtotal</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {order.items.map((item, idx) => (
-                      <tr key={item.id} className="align-top">
-                        <td className="pr-2 px-4 py-2">{item.productName}</td>
-                        <td className="pr-2 px-4 py-2">{item.productBrand}</td>
-                        <td className="pr-2 px-4 py-2">{item.quantity}</td>
-                        <td className="pr-2 px-4 py-2">
-                          <input
-                            type="number"
-                            min={0.01}
-                            step={0.01}
-                            value={prices[idx]?.unitPrice === 0 ? '' : prices[idx]?.unitPrice}
-                            onChange={e => {
-                              const val = e.target.value === '' ? 0 : parseFloat(e.target.value);
-                              handlePriceChange(idx, val);
-                              setHasSavedPrices(false);
-                            }}
-                            className="border rounded px-2 py-1 w-24 text-right"
-                            required
-                          />
-                        </td>
-                        <td className="pr-2 px-4 py-2">{prices[idx]?.unitPrice > 0 ? `$${(prices[idx].unitPrice * item.quantity).toFixed(2)}` : '-'}</td>
+          <div className="space-y-6 pt-4">
+            <form onSubmit={handleSave} className="space-y-6">
+              {/* Tabla de productos */}
+                <div className="overflow-x-auto rounded-lg shadow">
+                  <table className="table-fixed w-full border-collapse">
+                    <thead className="bg-gray-100">
+                      <tr>
+                        <th className="w-1/3 text-left px-4 py-3 font-semibold text-gray-700">Producto</th>
+                        <th className="w-1/3 text-left px-4 py-3 font-semibold text-gray-700">Marca</th>
+                        <th className="w-1/3 text-left px-4 py-3 font-semibold text-gray-700">Cantidad</th>
+                        <th className="w-1/3 text-left px-4 py-3 font-semibold text-gray-700">Precio Unitario</th>
+                        <th className="w-1/3 text-left px-4 py-3 font-semibold text-gray-700">Subtotal</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="flex justify-end items-center gap-4 mt-4">
-                <span className="text-lg font-bold">Total:</span>
-                <span className="text-2xl font-bold text-green-700">{
-                  prices.every(p => Number.isFinite(p.unitPrice) && p.unitPrice > 0)
-                    ? `$${prices.reduce((acc, p, idx) => acc + (p.unitPrice * (order?.items[idx].quantity ?? 0)), 0).toFixed(2)}`
-                    : '-'
-                }</span>
-            {!hasSavedPrices && <div className="text-yellow-600 mb-2 text-center">Recuerda guardar los precios antes de facturar.</div>}
-              </div>
-              {saveError && <div className="text-red-500 mb-2 text-center">{saveError}</div>}
-              {saveSuccess && <div className="text-green-600 mb-2 text-center">Precios guardados correctamente.</div>}
-              {factureError && <div className="text-red-500 mb-2 text-center">{factureError}</div>}
-              {factureSuccess && <div className="text-green-600 mb-2 text-center">Orden facturada correctamente.</div>}
-              <div className="flex justify-end gap-4">
-                <button
-                  type="submit"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow"
-                  disabled={saving}
+                    </thead>
+                  <tbody>
+                {order.items.map((item, idx) => (
+                <tr
+                  key={item.id}
+                  className="odd:bg-white even:bg-gray-50 hover:bg-gray-100 transition-colors"
                 >
-                  {saving ? 'Guardando...' : 'Guardar precios'}
-                </button>
-                <button
-                  type="button"
-                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded shadow"
-                  disabled={facturing}
-                  onClick={() => setShowConfirm(true)}
-                >
-                  {facturing ? 'Facturando...' : 'Facturar'}
-                </button>
-              </div>
-            </form>
+                  <td className="px-4 py-3">{item.productName}</td>
+                  <td className="px-4 py-3">{item.productBrand}</td>
+                  <td className="px-4 py-3">{item.quantity}</td>
+                  <td className="px-4 py-3">
+                    <input
+                      type="number"
+                        min={0.01}
+                        step={0.01}
+                        value={prices[idx]?.unitPrice === 0 ? '' : prices[idx]?.unitPrice}
+                        onChange={e => {
+                          const val = e.target.value === '' ? 0 : parseFloat(e.target.value);
+                          handlePriceChange(idx, val);
+                          setHasSavedPrices(false);
+                        }}
+                        className="border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 
+                             rounded-md px-2 py-1 w-28 text-right shadow-sm outline-none transition"
+                        required
+                      />
+                  </td>
+                  <td className="px-4 py-3 font-medium text-gray-800">
+                    {prices[idx]?.unitPrice > 0
+                      ? `$${(prices[idx].unitPrice * item.quantity).toFixed(2)}`
+                      : '-'}
+                  </td>
+                </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+
+          {/* Total */}
+          <div className="flex justify-end items-center gap-4 mt-6 border-t pt-4">
+            <span className="text-lg font-semibold text-gray-700">Total:</span>
+            <span className="text-2xl font-bold text-green-700">
+            {prices.every(p => Number.isFinite(p.unitPrice) && p.unitPrice > 0)
+              ? `$${prices
+                .reduce(
+                  (acc, p, idx) =>
+                    acc + p.unitPrice * (order?.items[idx].quantity ?? 0),
+                  0
+                )
+                .toFixed(2)}`
+              : '-'}
+            </span>
+          </div>
+
+          {/* Mensajes de estado */}
+          {!hasSavedPrices && (
+            <div className="text-yellow-600 bg-yellow-100 px-4 py-2 rounded-md shadow-sm text-center">
+              Recuerda guardar los precios antes de facturar.
+            </div>
+          )}
+          {saveError && (
+            <div className="text-red-600 bg-red-100 px-4 py-2 rounded-md shadow-sm text-center">
+              {saveError}
+            </div>
+          )}
+          {saveSuccess && (
+          <div className="text-green-600 bg-green-100 px-4 py-2 rounded-md shadow-sm text-center">
+            Precios guardados correctamente.
+          </div>
+          )}
+          {factureError && (
+          <div className="text-red-600 bg-red-100 px-4 py-2 rounded-md shadow-sm text-center">
+            {factureError}
+          </div>
+          )}
+          {factureSuccess && (
+          <div className="text-green-600 bg-green-100 px-4 py-2 rounded-md shadow-sm text-center">
+            Orden facturada correctamente.
+          </div>
+        )}
+
+        {/* Botones */}
+        <div className="flex justify-end gap-4 mt-4">
+          <button
+            type="submit"
+              className="bg-blue-600 hover:bg-blue-700 active:scale-95
+                   text-white px-6 py-2 rounded-lg shadow-md 
+                   transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={saving}
+          >
+          {saving ? 'Guardando...' : 'Guardar precios'}
+          </button>
+          <button
+            type="button"
+              className="bg-green-600 hover:bg-green-700 active:scale-95
+                   text-white px-6 py-2 rounded-lg shadow-md 
+                   transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={facturing}
+            onClick={() => setShowConfirm(true)}
+          >
+            {facturing ? 'Facturando...' : 'Facturar'}
+          </button>
+        </div>
+      </form>
+    </div>
+
           {/* Modal de confirmación */}
           {showConfirm && (
             <div className="fixed inset-0 flex items-center justify-center bg-white/60 backdrop-blur z-50">

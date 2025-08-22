@@ -1,35 +1,44 @@
-import { useEffect, useState } from "react";
+import { useState, useCallback } from "react";
 import API from "../../../../../../api/axios";
-import type { BillingTimeProcess } from "../../../../billingmanager/types/BillingTimeProcessType";
 
-export const useOrderBilledByCustomer = (customerId: string) => {
-  const [data, setData] = useState<BillingTimeProcess[]>([]);
-  const [loading, setLoading] = useState(true);
+export type DepotOrderDtoBilling = {
+  orderId: string;
+  customerName: string;
+  totalAmount: number;
+  orderDate: string;
+};
+
+type Filters = {
+  customerName?: string;
+};
+
+export function useInvoicedOrdersByCustomer() {
+  const [data, setData] = useState<DepotOrderDtoBilling[]>([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!customerId) return;
+  const fetchOrders = useCallback(async (filters: Filters) => {
+    setLoading(true);
+    setError(null);
 
-    const fetchData = async () => {
-      try {
-        const response = await API.get(
-           `/depot/billingmanager/invoiced-orders-by-customer?customerId=${customerId}`,
-          {
-            params: { customerId }, // mejor como query param que body en GET
-          }
-        );
+    try {
+      const params = new URLSearchParams();
+      if (filters.customerName) params.append("CustomerName", filters.customerName);
 
-        setData(response.data);
-      } catch (error) {
-        console.error(error);
-        setError("Error al obtener los datos.");
-      } finally {
-        setLoading(false);
-      }
-    };
+      const res = await API.get<DepotOrderDtoBilling[]>(
+        `/depot/billingmanager/invoiced-orders-by-customer?${params.toString()}`
+      );
 
-    fetchData();
-  }, [customerId]);
+      console.log("✅ Datos recibidos del back:", res.data);
+      setData(res.data);
+    } catch (err: any) {
+      console.error("🔥 Error en fetchOrders:", err);
+      setError(err.message || "Error al obtener órdenes facturadas.");
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  return { data, loading, error };
-};
+  return { data, loading, error, fetchOrders };
+}

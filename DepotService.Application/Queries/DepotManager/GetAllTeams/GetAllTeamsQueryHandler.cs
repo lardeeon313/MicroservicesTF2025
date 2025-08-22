@@ -1,11 +1,9 @@
 ﻿using DepotService.Application.DTOs.DepotManager;
 using DepotService.Application.Services.IdentityServiceClient;
 using DepotService.Domain.IRepositories;
-using DepotService.Infraestructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.DepotManager.GetAllTeams
@@ -14,6 +12,7 @@ namespace DepotService.Application.Queries.DepotManager.GetAllTeams
     {
         private readonly ITeamRepository _repository = repository;
         private readonly IIdentityServiceClient identityServiceClient = identityClient;
+
         public async Task<IEnumerable<DepotTeamDto>> HandleAsync()
         {
             var teams = await _repository.GetAllAsync();
@@ -44,23 +43,6 @@ namespace DepotService.Application.Queries.DepotManager.GetAllTeams
                 TeamDescription = t.TeamDescription,
                 CreatedAt = t.CreatedAt,
                 Operators = t.Assignments
-<<<<<<< HEAD
-                .Select(a =>
-                {
-                    var operatorData = depotOperators.FirstOrDefault(op => op.Id == a.OperatorUserId);
-                    return new OperatorsInTeamDto
-                    {
-                        OperatorByUserId = a.OperatorUserId,
-                        AssignAt = a.AssignedAt,
-                        RoleInTeam = a.RoleInTeam,
-                        FirstName = operatorData?.FirstName,
-                        LastName = operatorData?.LastName,
-                        PhoneNumber = operatorData?.PhoneNumber,
-                        Email = operatorData?.Email
-                    };
-                }).ToList()
-=======
->>>>>>> origin/feature/milton-microservicestf2025
                     .Where(a => operatorsById.ContainsKey(a.OperatorUserId.ToString().ToLower()))
                     .Select(a =>
                     {

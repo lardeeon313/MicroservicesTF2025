@@ -12,32 +12,59 @@ export default function OrderCompletedDayPage() {
     data,
     loading,
     error,
-    selectedDate,
-    setSelectedDate,
     page,
     setPage,
     totalPages,
+    selectedDate,
+    setSelectedDate,
     fetchData,
     clearFilters,
   } = useOrderCompletedDay();
 
+  // 👉 cada vez que cambie la página, se vuelve a pedir la data
+  // REMOVEMOS selectedDate de aquí para evitar llamadas automáticas
   useEffect(() => {
     fetchData(selectedDate, selectedDate, page);
-  }, [page, selectedDate]);
+  }, [page]); // Solo cuando cambia la página
+
+  // Función para manejar la búsqueda
+  const handleSearch = () => {
+    if (selectedDate) {
+      setPage(1); // Reset a página 1 cuando busques
+      fetchData(selectedDate, selectedDate, 1);
+    } else {
+      // Si no hay fecha, traer todos
+      fetchData("", "", 1);
+    }
+  };
+
+  // Función para limpiar filtros
+  const handleClear = () => {
+    setPage(1);
+    clearFilters();
+  };
 
   return (
     <div className="p-8 space-y-6">
       {/* Header con botón volver */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-800">
-          📦 Pedidos Completados
-        </h1>
+      <div className="relative">
+        {/* Botón volver posicionado absolutamente */}
         <button
           onClick={() => navigate("/depot/reports")}
-          className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg shadow transition"
+          className="absolute left-0 top-0 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg shadow transition"
         >
           ⬅️ Volver atrás
         </button>
+        
+        {/* Título centrado */}
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-red-600">
+               Pedidos Completados:
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Descripción de los pedidos completados o cualquier texto que necesites
+          </p>
+        </div>
       </div>
 
       {/* Filtros */}
@@ -45,8 +72,8 @@ export default function OrderCompletedDayPage() {
         <OrderCompletedDayFilter
           selectedDate={selectedDate}
           onDateChange={setSelectedDate}
-          onSearch={() => fetchData(selectedDate, selectedDate, 1)}
-          onClear={clearFilters}
+          onSearch={handleSearch}
+          onClear={handleClear}
         />
       </div>
 

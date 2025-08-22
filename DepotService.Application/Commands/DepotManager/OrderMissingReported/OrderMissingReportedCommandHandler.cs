@@ -50,37 +50,17 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
             await _repository.UpdateOrderAsync(depotOrder);
 
             var statusHistory = new OrderStatusHistory
-<<<<<<< HEAD
-<<<<<<< HEAD
             {
                 OrderId = depotOrder.DepotOrderId,
                 OldStatus = depotOrder.Status,
                 NewStatus = OrderStatus.PendingResolution,
                 ChangedAt = DateTime.UtcNow,
             };
+
             // Agregar el historial de estado a la base de datos
             await _context.OrderStatusHistories.AddAsync(statusHistory);
             await _context.SaveChangesAsync();
             _logger.LogInformation($"Depot order with ID {command.DepotOrderId} status updated to PendingResolution.");
-
-
-            // Guardar los cambios en la base de datos
-            var orderMissing = new DepotOrderMissing
-=======
->>>>>>> origin/feature/milton-microservicestf2025
-=======
->>>>>>> origin/feature/milton-microservicestf2025
-            {
-                OrderId = depotOrder.DepotOrderId,
-                OldStatus = depotOrder.Status,
-                NewStatus = OrderStatus.PendingResolution,
-                ChangedAt = DateTime.UtcNow,
-            };
-            // Agregar el historial de estado a la base de datos
-            await _context.OrderStatusHistories.AddAsync(statusHistory);
-            await _context.SaveChangesAsync();
-            _logger.LogInformation($"Depot order with ID {command.DepotOrderId} status updated to PendingResolution.");
-
 
             // Antes de crear el DepotOrderMissing, validar si ya existe
             var existingMissing = await _context.DepotOrderMissings
@@ -112,6 +92,7 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
             {
                 _logger.LogInformation($"Depot order with ID {command.DepotOrderId} already has a missing order. Skipping creation.");
             }
+
 
             _logger.LogInformation($"Depot order with ID {command.DepotOrderId} status updated to PendingResolution.");
 

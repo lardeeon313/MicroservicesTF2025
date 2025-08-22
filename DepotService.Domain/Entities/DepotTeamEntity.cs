@@ -20,7 +20,7 @@ namespace DepotService.Domain.Entities
         }
 
         // Constructor protegido para EF Core
-        public  DepotTeamEntity(int id, string teamName) 
+        public DepotTeamEntity(int id, string teamName)
         {
             Id = id;
             TeamName = teamName;
@@ -50,12 +50,12 @@ namespace DepotService.Domain.Entities
         /// </summary>
         public void AssignOperator(Guid userId)
         {
-            if (Assignments.Any(a => a.OperatorUserId == userId.ToString()))
+            if (Assignments.Any(a => a.OperatorUserId == userId))
                 throw new InvalidOperationException("El operador ya está asignado a este equipo.");
 
             Assignments.Add(new DepotTeamAssignment
             {
-                OperatorUserId = userId.ToString(),
+                OperatorUserId = userId,
                 DepotTeamId = Id,
                 AssignedAt = DateTime.UtcNow,
                 RoleInTeam = "Operator" // Asignar rol por defecto
@@ -68,7 +68,7 @@ namespace DepotService.Domain.Entities
 
         public void RemoveOperator(Guid userId)
         {
-            var assignment = Assignments.FirstOrDefault(a => a.OperatorUserId == userId.ToString());
+            var assignment = Assignments.FirstOrDefault(a => a.OperatorUserId == userId);
             if (assignment == null)
                 throw new InvalidOperationException("El operador no está asignado a este equipo.");
             Assignments.Remove(assignment);

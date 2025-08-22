@@ -1,53 +1,45 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 type Props = {
-  onSearch: (customerId: string) => void;
-  onClear: () => void;
+  onSearch: (filters: { customerName?: string }) => void;
 };
 
-const OrderBilledFilter: React.FC<Props> = ({ onSearch, onClear }) => {
-  const [inputValue, setInputValue] = useState("");
+export default function InvoicedOrdersFilter({ onSearch }: Props) {
+  const [customerName, setCustomerName] = useState("");
 
   const handleSearch = () => {
-    if (inputValue.trim() !== "") {
-      onSearch(inputValue.trim());
-    }
+    onSearch({ customerName });
   };
 
   const handleClear = () => {
-    setInputValue("");
-    onClear();
+    setCustomerName("");
+    onSearch({});
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-md w-full md:w-1/2 mx-auto mb-8 flex flex-col gap-4 items-center">
-      <label className="text-sm font-semibold text-gray-700 text-center">
-        Buscar por Customer ID
-      </label>
-      <input
-        type="text"
-        placeholder="🆔 Ingresar Customer ID"
-        className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-red-300 transition duration-300 text-center"
-        value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
-      />
+    <div className="bg-gray-100 shadow-md p-4 rounded-lg mb-6">
+      <h2 className="text-lg font-bold mb-3">Buscar órdenes facturadas</h2>
       <div className="flex gap-4">
+        <input
+          type="text"
+          placeholder="Nombre del cliente"
+          value={customerName}
+          onChange={(e) => setCustomerName(e.target.value)}
+          className="border rounded p-2 flex-1"
+        />
         <button
           onClick={handleSearch}
-          className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition"
+          className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600"
         >
           Buscar
         </button>
         <button
           onClick={handleClear}
-          className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg shadow hover:bg-gray-400 transition"
+          className="bg-gray-300 px-4 py-2 rounded-lg shadow hover:bg-gray-400"
         >
           Limpiar
         </button>
       </div>
     </div>
   );
-};
-
-export default OrderBilledFilter;
-
+}

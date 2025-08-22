@@ -1,83 +1,52 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-//import { useOrderBilledByCustomer } from "../BillingHocks/useOrderBilledByCustomer";
-import { useOrderBilledByCustomer } from "../BillingHocks/useOrderBilled";
-
-import LoadingSpinner from "../../../../../../components/LoadingSpinner";
-import OrderBilledTable from "../BillingComponents/OrderBilledTable";
+import { useInvoicedOrdersByCustomer } from "../BillingHocks/useOrderBilled";
+import InvoicedOrdersFilter from "../BillingFilters/OrderBilledFilter";
+import InvoicedOrdersTable from "../BillingComponents/OrderBilledTable";
 import OrderBilledGraph from "../BillingGraphs/GraphOrderBilled";
-import OrderBilledFilter from "../BillingFilters/OrderBilledFilter";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
-const OrderBilledByCustomerPage: React.FC = () => {
-  const [customerId, setCustomerId] = useState("");
-  const [idFilter, setIdFilter] = useState("");
+export default function InvoicedOrdersPage() {
+  const { data, loading, error, fetchOrders } = useInvoicedOrdersByCustomer();
+  const navigate = useNavigate();
 
-  const { data, loading, error } = useOrderBilledByCustomer(customerId);
-
-  const filteredData = data.filter((item) =>
-    idFilter === "" || item.OrderId.toString().includes(idFilter)
-  );
+  const handleSearch = (filters: { customerName?: string }) => {
+    fetchOrders(filters);
+  };
 
   return (
-    <div className="container m-0 pt-10 min-w-full min-h-full">
-      <div className="flex items-center justify-between mb-6">
-        <Link
-          to={"/depot/billingmanager/reports"}
-          className="text-red-600 hover:underline pl-10"
-        >
-          ← Volver atrás
-        </Link>
-      </div>
-
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
+    <div className="p-6 space-y-6">
+      {/* Encabezado con botón volver */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-red-600">
           Pedidos facturados por cliente
         </h1>
-        <p className="text-center text-lg text-gray-700 mb-12">
-          Ingresa el ID de un cliente para visualizar todos sus pedidos facturados
-        </p>
-
-        {/* Componente de filtro con buscar/limpiar */}
-        <OrderBilledFilter
-          onSearch={(id) => setCustomerId(id)}
-          onClear={() => {
-            setCustomerId("");
-            setIdFilter("");
-          }}
-        />
-
-        {/* Mostrar filtro por ID de pedido solo si hay un customerId */}
-        {customerId && filteredData.length > 0 && (
-            <div className="bg-white rounded-lg shadow-md p-6 flex flex-col gap-4 items-center mb-6">
-                <input
-                    type="text"
-                    placeholder="🔍 Filtrar por ID de pedido"
-                    className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 transition duration-200 text-center"
-                    value={idFilter}
-                    onChange={(e) => setIdFilter(e.target.value)}
-                />
-            </div>
-        )}
-
-        {/* Mostrar resultados */}
-        {loading && customerId ? (
-          <LoadingSpinner message="Cargando los datos..." height="h-screen" />
-        ) : error ? (
-          <p className="text-red-600 text-center">{error}</p>
-        ) : customerId ? (
-          <>
-            <OrderBilledTable data={filteredData} />
-            <OrderBilledGraph data={filteredData} />
-          </>
-        ) : (
-          <p className="text-center text-gray-500 mt-6">
-            Ingrese un Customer ID para ver resultados
-          </p>
-        )}
+        <button
+          onClick={() => navigate("/depot/billingmanager/reports")}
+          className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-lg shadow transition"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          Volver
+        </button>
       </div>
+
+      {/* Filtro */}
+      <InvoicedOrdersFilter onSearch={handleSearch} />
+
+      {/* Estado de carga / error */}
+      {loading && (
+        <p className="text-blue-600 font-medium animate-pulse">Cargando...</p>
+      )}
+      {error && (
+        <p className="text-red-600 font-semibold">Error: {error}</p>
+      )}
+
+      {/* Tabla */}
+      <div className="bg-white shadow-md rounded-lg p-4">
+        <InvoicedOrdersTable data={data} />
+      </div>
+
+      {/* Gráfico */}
+      <OrderBilledGraph data={data} />
     </div>
   );
-};
-
-export default OrderBilledByCustomerPage;
-
+}

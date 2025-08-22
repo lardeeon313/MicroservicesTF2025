@@ -36,15 +36,8 @@ using DepotService.Application.Queries.DepotManager.GetTeamByName;
 using DepotService.Application.Queries.Operator.GetAssignedPendingOrders;
 using DepotService.Application.Queries.Operator.GetOrderById;
 using DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery;
-
-
 using DepotService.Application.Queries.Operator.GetOrdersPreparedOrSentToBilling;
 using DepotService.Application.Queries.Operator.IGetOrdersMissingOrPreparing;
-
-
-using DepotService.Application.Queries.Operator.GetOrdersPreparedOrSentToBilling;
-using DepotService.Application.Queries.Operator.IGetOrdersMissingOrPreparing;
-
 using DepotService.Application.Queries.Reports.GetAverageDepotProcessingTime;
 using DepotService.Application.Queries.Reports.GetAverageTimePerStatus;
 using DepotService.Application.Queries.Reports.GetDepotTeamPerformance;
@@ -104,9 +97,9 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // Add Queries
-builder.Services.AddScoped<IGetAllTeamsQueryHandler,  GetAllTeamsQueryHandler>();
+builder.Services.AddScoped<IGetAllTeamsQueryHandler, GetAllTeamsQueryHandler>();
 builder.Services.AddScoped<IGetTeamByNameQueryHandler, GetTeamByNameQueryHandler>();
-builder.Services.AddScoped<IGetTeamByIdQueryHandler,  GetTeamByIdQueryHandler>();
+builder.Services.AddScoped<IGetTeamByIdQueryHandler, GetTeamByIdQueryHandler>();
 builder.Services.AddScoped<IGetMissingOrderByIdQueryHandler, GetMissingOrderByIdQueryHandler>();
 builder.Services.AddScoped<IGetAllMissingOrdersQueryHandler, GetAllMissingOrdersQueryHandler>();
 builder.Services.AddScoped<IGetAllOrdersQueryHandler, GetAllOrdersQueryHandler>();
@@ -115,8 +108,8 @@ builder.Services.AddScoped<IGetByIdOrderQueryHandler, GetByIdOrderQueryHandler>(
 builder.Services.AddScoped<IGetOrdersByOperatorQueryHandler, GetOrdersByOperatorQueryHandler>();
 builder.Services.AddScoped<IGetOrderByIdQueryHandler, GetOrderByIdQueryHandler>();
 builder.Services.AddScoped<IGetAssignedPendingOrdersQueryHandler, GetAssignedPendingOrdersQueryHandler>();
-builder.Services.AddScoped<IGetOrdersPendingBillingQueryHandler , GetOrdersPendingBillingQueryHandler>();
-builder.Services.AddScoped<IGetBillingDetailsByOrderIdQueryHandler , GetBillingDetailsByOrderIdQueryHandler>();
+builder.Services.AddScoped<IGetOrdersPendingBillingQueryHandler, GetOrdersPendingBillingQueryHandler>();
+builder.Services.AddScoped<IGetBillingDetailsByOrderIdQueryHandler, GetBillingDetailsByOrderIdQueryHandler>();
 builder.Services.AddScoped<IGetOrdersPendingBillingQueryHandler, GetOrdersPendingBillingQueryHandler>();
 builder.Services.AddScoped<ISetItemUnitPricesCommandHandler, SetItemUnitPricesCommandHandler>();
 builder.Services.AddScoped<IGetAllInvoicedOrdersQueryHandler, GetAllInvoicedOrdersQueryHandler>();
@@ -132,32 +125,25 @@ builder.Services.AddScoped<IGetOrdersByDeliveryDateQueryHandler, GetOrdersByDeli
 builder.Services.AddScoped<IGetReissuedOrdersQueryHandler, GetReissuedOrdersQueryHandler>();
 builder.Services.AddScoped<IGetOrdersCompletedQueryHandler, GetOrdersCompletedQueryHandler>();
 builder.Services.AddScoped<IGetOrdersInPreparationQueryHandler, GetOrdersInPreparationQueryHandler>();
-
-
 builder.Services.AddScoped<IGetOrdersMissingOrPreparingHandler, GetOrdersMissingOrPreparingHandler>();
 builder.Services.AddScoped<IGetOrdersPreparedOrSentToBillingHandler, GetOrdersPreparedOrSentToBillingHandler>();
-
-
-builder.Services.AddScoped<IGetOrdersMissingOrPreparingHandler, GetOrdersMissingOrPreparingHandler>();
-builder.Services.AddScoped<IGetOrdersPreparedOrSentToBillingHandler, GetOrdersPreparedOrSentToBillingHandler>();
-
 
 // Add Commands
 builder.Services.AddScoped<IAssignOperatorCommandHandler, AssignOperatorCommandHandler>();
-builder.Services.AddScoped<IAssignOrderCommandHandler,  AssignOrderCommandHandler>();
-builder.Services.AddScoped<ICreateTeamCommandHandler,  CreateTeamCommandHandler>();
-builder.Services.AddScoped<IDeleteTeamCommandHandler,  DeleteTeamCommandHandler>();
-builder.Services.AddScoped<IUpdateTeamCommandHandler,  UpdateTeamCommandHandler>();
+builder.Services.AddScoped<IAssignOrderCommandHandler, AssignOrderCommandHandler>();
+builder.Services.AddScoped<ICreateTeamCommandHandler, CreateTeamCommandHandler>();
+builder.Services.AddScoped<IDeleteTeamCommandHandler, DeleteTeamCommandHandler>();
+builder.Services.AddScoped<IUpdateTeamCommandHandler, UpdateTeamCommandHandler>();
 builder.Services.AddScoped<IRemoveOperatorCommandHandler, RemoveOperatorCommandHandler>();
 builder.Services.AddScoped<IOrderMissingReportedCommandHandler, OrderMissingReportedCommandHandler>();
 builder.Services.AddScoped<IConfirmAssignedOrderCommandHandler, ConfirmAssignedOrderCommandHandler>();
-builder.Services.AddScoped<IReportOrderMissingCommandHandler,  ReportOrderMissingCommandHandler>();
+builder.Services.AddScoped<IReportOrderMissingCommandHandler, ReportOrderMissingCommandHandler>();
 builder.Services.AddScoped<IAddPackaingCommandHandler, AddPackaingCommandHandler>();
-builder.Services.AddScoped<ISentToBillingCommandHandler , SentToBillingCommandHandler>();
+builder.Services.AddScoped<ISentToBillingCommandHandler, SentToBillingCommandHandler>();
 builder.Services.AddScoped<IRejectOrderCommandHandler, RejectOrderCommandHandler>();
-builder.Services.AddScoped<IMarkItemCommandHandler , MarkItemCommandHandler>();
-builder.Services.AddScoped<IUnmarkItemReadyCommandHandler , UnmarkItemReadyCommandHandler>();
-builder.Services.AddScoped<IInvoiceOrderCommandHandler , InvoiceOrderCommandHandler>();
+builder.Services.AddScoped<IMarkItemCommandHandler, MarkItemCommandHandler>();
+builder.Services.AddScoped<IUnmarkItemReadyCommandHandler, UnmarkItemReadyCommandHandler>();
+builder.Services.AddScoped<IInvoiceOrderCommandHandler, InvoiceOrderCommandHandler>();
 builder.Services.AddScoped<ISetItemUnitPricesCommandHandler, SetItemUnitPricesCommandHandler>();
 builder.Services.AddScoped<IUpdateInvoicedItemPriceCommandHandler, UpdateInvoicedItemPriceCommandHandler>();
 builder.Services.AddScoped<IExportInvoiceDocumentCommandHandler, ExportInvoiceDocumentCommandHandler>();
@@ -175,7 +161,7 @@ builder.Services.AddScoped<IValidator<MarkItemCommand>, MarkItemIsReadyCommandVa
 builder.Services.AddScoped<IValidator<UnmarkItemReadyCommand>, UnmarkItemReadyValidator>();
 builder.Services.AddScoped<IValidator<SetItemUnitPricesCommand>, SetItemUnitPricesCommandValidator>();
 builder.Services.AddScoped<IValidator<GetInvoicedOrdersByDateRangeQuery>, GetInvoicedOrdersByDateRangeQueryValidator>();
-builder.Services.AddScoped<IValidator<GetInvoicedOrdersByCustomerQuery>,  GetInvoicedOrdersByCustomerQueryValidator>();
+builder.Services.AddScoped<IValidator<GetInvoicedOrdersByCustomerQuery>, GetInvoicedOrdersByCustomerQueryValidator>();
 builder.Services.AddScoped<IValidator<UpdateInvoicedItemPriceCommand>, UpdateInvoicedItemPriceCommandValidator>();
 
 builder.Services.AddScoped<OrderMissingReportedCommandValidator>();
@@ -184,9 +170,6 @@ builder.Services.AddScoped<RejectOrderCommandValidator>();
 builder.Services.AddScoped<MarkItemIsReadyCommandValidator>();
 builder.Services.AddScoped<UnmarkItemReadyValidator>();
 builder.Services.AddScoped<SetItemUnitPricesCommandValidator>();
-
-builder.Services.AddHttpClient();
-builder.Services.AddHttpContextAccessor();
 
 // Add HostedService RabbitConsumer
 builder.Services.AddHostedService<OrderIssuedConsumer>();
@@ -209,9 +192,6 @@ builder.Services.AddScoped<IDepotReportRepository, DepotReportRepository>();
 
 // Registrar el servicio de identidad para consultar los operadores
 builder.Services.AddScoped<IIdentityServiceClient, IdentityServiceClient>();
-
-builder.Services.AddHttpContextAccessor(); 
-
 builder.Services.AddHttpContextAccessor(); // Necesario para acceder al contexto HTTP
 
 // Registrar el servicio de correo electrónico
@@ -223,8 +203,7 @@ builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
 // Registrar el DbContext
 builder.Services.AddDbContext<DepotDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-    b => b.MigrationsAssembly("DepotService.API")))
-    ;
+    b => b.MigrationsAssembly("DepotService.API")));
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
@@ -249,14 +228,7 @@ builder.Services.AddAuthentication("Bearer")
 // Configuración de autorización
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("DepotAcces", policy =>
-       policy.RequireClaim("role", "DepotManager", "DepotOperator", "BillingManager"));
-
-// Creamos un Http Client IdentityService para consultar los usuarios con role SalesStaff
-builder.Services.AddHttpClient("IdentityService", client =>
-{
-    client.BaseAddress = new Uri("http://identityservice:8080/api/auth/");
-});
-
+        policy.RequireClaim("role", "DepotManager, DepotOperator, BillingManager"));
 
 // Creamos un Http Client IdentityService para consultar los usuarios con role SalesStaff
 builder.Services.AddHttpClient("IdentityService", client =>

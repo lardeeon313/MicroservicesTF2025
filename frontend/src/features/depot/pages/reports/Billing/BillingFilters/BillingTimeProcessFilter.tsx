@@ -23,7 +23,7 @@ const ProcessingTimeOrderFilter: React.FC<Props> = ({ onFilter, onClear }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-wrap gap-4 items-end mb-4 bg-white p-4 rounded-lg shadow"
+      className="flex flex-wrap gap-4 items-end mb-4 bg-gray-100 p-4 rounded-lg shadow"
     >
       <div>
         <label className="block text-sm font-medium text-gray-700">Desde:</label>
@@ -48,7 +48,7 @@ const ProcessingTimeOrderFilter: React.FC<Props> = ({ onFilter, onClear }) => {
       <div className="flex gap-2">
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
         >
           Filtrar
         </button>
