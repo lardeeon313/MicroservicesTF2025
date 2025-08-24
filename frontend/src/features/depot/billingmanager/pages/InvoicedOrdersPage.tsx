@@ -75,7 +75,10 @@ const InvoicedOrdersPage: React.FC = () => {
         />
       </div>
       <OrderTable
-        orders={paginatedOrders.map(order => ({
+        orders={paginatedOrders
+          //FILTRA UNICAMENTE LOS PEDIDOS CON ESTADO DE FACTURADA O CON EL STATUS 8
+          .filter(order => order.status === 8 || order.status === '8' || order.status === 'Facturada')
+          .map(order => ({
           id: order.depotOrderId,
           customerFirstName: order.customerName,
           orderDate: order.orderDate,
