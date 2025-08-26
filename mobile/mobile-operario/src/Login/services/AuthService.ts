@@ -1,7 +1,7 @@
 import { AxiosError } from "axios";
 import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from "../types/AuthType";
 //import { api } from "../../services/api";
-import { identityApi } from "../../services/api";
+import { identityApi } from "../../services/axios";
 
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
     try {

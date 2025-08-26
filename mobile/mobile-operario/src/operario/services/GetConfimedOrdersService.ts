@@ -1,4 +1,4 @@
-import { api } from "../../services/api";
+import { api } from "../../services/axios";
 import { OrderStatus, type Order } from "../../otherTypes/OrderType";
 import type { DepotOrderDTO } from "../types/OrderDTO";
 

@@ -2,6 +2,5 @@
 declare module 'react-native-sweet-alert';
 
 declare module '@env' {
-  export const API_URL: string;
-  export const IDENTITY_API: string;
+  export const  API_BASE_URL: string;
 }

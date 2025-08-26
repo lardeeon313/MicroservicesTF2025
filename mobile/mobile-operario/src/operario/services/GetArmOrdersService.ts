@@ -1,6 +1,6 @@
 //trae a todos los pedidos con el estado de Prepared =preparado que es lo mismo que 
 //decir armado
-import { api } from "../../services/api";
+import { api } from "../../services/axios";
 import type { DepotOrderDTO } from "../types/OrderDTO";
 import { DepotOrderStatus } from "../types/OrderDTO";
 
