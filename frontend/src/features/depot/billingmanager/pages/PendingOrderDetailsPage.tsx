@@ -130,20 +130,20 @@ function PendingOrderDetailsPage() {
       {!loading && !error && order && (
         <div className="space-y-6 mt-10 w-3xl">
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">Cliente:</label>
-            <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{order.customerName}</p>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Cliente:</label>
+            <p className="block w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 shadow-sm">{order.customerName}</p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">Fecha Pedido:</label>
-            <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{new Date(order.orderDate).toLocaleDateString("es-AR")}</p>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Fecha Pedido:</label>
+            <p className="block w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 shadow-sm">{new Date(order.orderDate).toLocaleDateString("es-AR")}</p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">Detalles de entrega:</label>
-            <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{order.deliveryDetail || "No especificado"}</p>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Detalles de entrega:</label>
+            <p className="block w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 shadow-sm">{order.deliveryDetail || "No especificado"}</p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">Estado:</label>
-            <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">Pendiente de facturar</p>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Estado:</label>
+            <p className="block w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 shadow-sm">Pendiente de facturar</p>
           </div>
           <div className="space-y-6 pt-4">
             <form onSubmit={handleSave} className="space-y-6">

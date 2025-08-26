@@ -1,12 +1,25 @@
 import { useState } from "react";
 import API from "../../../../../../api/axios";
 
+/**
+ * Convierte una fecha de formato "DD/MM/YYYY" a "YYYY-MM-DD".
+ * Si la fecha es inválida o vacía, devuelve un string vacío.
+ */
+const convertirFechaA_YYYYMMDD = (fechaDDMMYYYY: string): string => {
+  if (!fechaDDMMYYYY) return "";
+  const partes = fechaDDMMYYYY.split('/');
+  if (partes.length !== 3) return ""; // Formato inválido
+  const [dia, mes, anio] = partes;
+  return `${anio}-${mes}-${dia}`;
+};
+
 export interface Order {
   depotOrderId: number;
   salesOrderId: number;
   customerName: string;
   customerEmail: string;
   orderDate: string;
+  deliveryDate: string;
 }
 
 export const useOrderCompletedDay = () => {
@@ -15,44 +28,60 @@ export const useOrderCompletedDay = () => {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
 
-  
   const fetchData = async (startDate: string, endDate: string, pageNum: number) => {
     try {
       setLoading(true);
-    
-      // Si hay fecha, asegúrate de que esté en formato YYYY-MM-DD
-      const formattedStartDate = startDate || "";
-      const formattedEndDate = endDate || "";
-    
-      // Tu llamada a la API aquí
-      const response = await API.get('depot/depotreports/reports/orders-completed', {
+
+      // 1. Convertimos las fechas del formato UI (DD/MM/YYYY) al formato API (YYYY-MM-DD)
+      const fechaConvertidaInicio = convertirFechaA_YYYYMMDD(startDate);
+      const fechaConvertidaFin = convertirFechaA_YYYYMMDD(endDate);
+
+      // 2. Añadimos la hora para crear un rango de tiempo completo y válido
+      const formattedStartDate = fechaConvertidaInicio ? `${fechaConvertidaInicio}T00:00:00` : "";
+      const formattedEndDate = fechaConvertidaFin ? `${fechaConvertidaFin}T23:59:59` : "";
+
+      console.log("📤 Fetching Orders with final params:", {
+        startDate: formattedStartDate,
+        endDate: formattedEndDate,
+        page: pageNum,
+      });
+
+      const response = await API.get("depot/depotreports/reports/orders-completed", {
         params: {
           startDate: formattedStartDate,
           endDate: formattedEndDate,
           page: pageNum,
-          // otros parámetros...
-        }
+        },
       });
-    
-      // Procesar respuesta...
-      setData(response.data.items || []);
+
+      console.log("📥 Response from API:", response.data);
+
+      const items: Order[] = response.data.items || [];
+      setData(items);
       setTotalPages(response.data.totalPages || 1);
-    
+
     } catch (error) {
       setError("Error al cargar los datos");
-      console.error(error);
+      console.error("❌ Error en fetchData:", error);
     } finally {
       setLoading(false);
     }
-};
+  };
 
-const clearFilters = () => {
-  setSelectedDate("");
-  setPage(1);
-  fetchData("", "", 1); // Cargar todos los datos sin filtro
-};
+  const onSearch = () => {
+    fetchData(startDate, endDate, 1);
+  };
+
+  const clearFilters = () => {
+    setStartDate("");
+    setEndDate("");
+    setPage(1);
+    console.log("🧹 Limpiando filtros, cargando todos los datos");
+    fetchData("", "", 1); // Cargar todos los datos sin filtro
+  };
 
   return {
     data,
@@ -61,8 +90,11 @@ const clearFilters = () => {
     page,
     setPage,
     totalPages,
-    selectedDate,
-    setSelectedDate,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    onSearch,
     fetchData,
     clearFilters,
   };

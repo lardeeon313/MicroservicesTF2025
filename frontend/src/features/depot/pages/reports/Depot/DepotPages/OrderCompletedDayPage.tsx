@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useOrderCompletedDay } from "../DepotHocks/useOrderCompletedDay";
 import OrderCompletedDayTable from "../DepotComponents/OrderCompletedDayTable";
@@ -15,103 +15,110 @@ export default function OrderCompletedDayPage() {
     page,
     setPage,
     totalPages,
-    selectedDate,
-    setSelectedDate,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
     fetchData,
     clearFilters,
   } = useOrderCompletedDay();
 
-  // 👉 cada vez que cambie la página, se vuelve a pedir la data
-  // REMOVEMOS selectedDate de aquí para evitar llamadas automáticas
-  useEffect(() => {
-    fetchData(selectedDate, selectedDate, page);
-  }, [page]); // Solo cuando cambia la página
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // Función para manejar la búsqueda
-  const handleSearch = () => {
-    if (selectedDate) {
-      setPage(1); // Reset a página 1 cuando busques
-      fetchData(selectedDate, selectedDate, 1);
-    } else {
-      // Si no hay fecha, traer todos
-      fetchData("", "", 1);
+  // 🔄 Convertimos los strings del hook a Date | null para el filtro
+  const parsedStartDate = startDate ? new Date(startDate) : null;
+  const parsedEndDate = endDate ? new Date(endDate) : null;
+
+  // 👉 Filtrado por fecha y búsqueda
+  const filteredData = useMemo(() => {
+    let currentData = data;
+
+    if (parsedStartDate && parsedEndDate) {
+      currentData = currentData.filter(order => {
+        const orderDate = new Date(order.orderDate);
+        return (
+          orderDate.getTime() >= parsedStartDate.getTime() &&
+          orderDate.getTime() <= parsedEndDate.getTime()
+        );
+      });
     }
-  };
 
-  // Función para limpiar filtros
-  const handleClear = () => {
-    setPage(1);
-    clearFilters();
-  };
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      currentData = currentData.filter(order =>
+        order.customerName.toLowerCase().includes(term) ||
+        order.customerEmail.toLowerCase().includes(term) ||
+        String(order.salesOrderId).toLowerCase().includes(term) ||
+        String(order.depotOrderId).toLowerCase().includes(term)
+      );
+    }
+
+    return currentData;
+  }, [data, parsedStartDate, parsedEndDate, searchTerm]);
+
+  // 🔄 Llamamos al API con las fechas en string (del hook)
+  useEffect(() => {
+    fetchData(startDate, endDate, page);
+  }, [startDate, endDate, page]);
 
   return (
     <div className="p-8 space-y-6">
-      {/* Header con botón volver */}
+      {/* Header */}
       <div className="relative">
-        {/* Botón volver posicionado absolutamente */}
         <button
           onClick={() => navigate("/depot/reports")}
           className="absolute left-0 top-0 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg shadow transition"
         >
           ⬅️ Volver atrás
         </button>
-        
-        {/* Título centrado */}
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-red-600">
-               Pedidos Completados:
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Descripción de los pedidos completados o cualquier texto que necesites
-          </p>
-        </div>
+            <div className="text-center bg-gradient-to-r from-red-50 to-rose-50 py-8 px-6 rounded-xl border border-red-200 shadow-sm">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-red-600 to-rose-600 bg-clip-text text-transparent mb-3">
+                Pedidos Completados
+              </h1>
+              <p className="text-gray-600 text-lg leading-relaxed max-w-2xl mx-auto">
+                Aquí podrás gestionar todos los pedidos que hayan sido completados de los distintos clientes
+              </p>
+            </div>
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-xl shadow p-4">
-        <OrderCompletedDayFilter
-          selectedDate={selectedDate}
-          onDateChange={setSelectedDate}
-          onSearch={handleSearch}
-          onClear={handleClear}
-        />
-      </div>
+      <OrderCompletedDayFilter
+        startDate={parsedStartDate}
+        endDate={parsedEndDate}
+        onStartDateChange={(date) =>
+          setStartDate(date ? date.toISOString().split("T")[0] : "")
+        }
+        onEndDateChange={(date) =>
+          setEndDate(date ? date.toISOString().split("T")[0] : "")
+        }
+        searchTerm={searchTerm}
+        onSearchTermChange={setSearchTerm}
+        onClear={() => {
+          setSearchTerm("");
+          clearFilters();
+        }}
+      />
 
-      {/* Estados de carga */}
+      {/* Estados */}
       {loading && <p className="text-blue-500">Cargando...</p>}
       {error && <p className="text-red-500">{error}</p>}
-      {!loading && data.length === 0 && (
-        <p className="text-gray-500">No hay pedidos completados</p>
-      )}
 
       {/* Tabla */}
-      <div className="bg-white rounded-xl shadow p-4">
-        <OrderCompletedDayTable data={data} />
-      </div>
+      <OrderCompletedDayTable data={filteredData} />
 
       {/* Paginación */}
       <div className="flex items-center justify-center gap-4">
         <button
           disabled={page <= 1}
-          onClick={() => {
-            const newPage = page - 1;
-            setPage(newPage);
-            fetchData(selectedDate, selectedDate, newPage);
-          }}
+          onClick={() => setPage(page - 1)}
           className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg shadow disabled:opacity-50 transition"
         >
           ⬅️ Anterior
         </button>
-        <span className="text-gray-700 font-medium">
-          Página {page} de {totalPages}
-        </span>
+        <span>Página {page} de {totalPages}</span>
         <button
           disabled={page >= totalPages}
-          onClick={() => {
-            const newPage = page + 1;
-            setPage(newPage);
-            fetchData(selectedDate, selectedDate, newPage);
-          }}
+          onClick={() => setPage(page + 1)}
           className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg shadow disabled:opacity-50 transition"
         >
           Siguiente ➡️
@@ -119,9 +126,7 @@ export default function OrderCompletedDayPage() {
       </div>
 
       {/* Gráfico */}
-      <div className="bg-white rounded-xl shadow p-4">
-        <GraphOrderCompletedDay data={data} />
-      </div>
+      <GraphOrderCompletedDay data={filteredData} />
     </div>
   );
 }

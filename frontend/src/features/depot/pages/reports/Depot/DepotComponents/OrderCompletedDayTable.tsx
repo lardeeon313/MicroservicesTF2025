@@ -1,59 +1,64 @@
 import { Order } from "../DepotHocks/useOrderCompletedDay";
 
+// Función utilitaria para formatear la fecha
+const formatDate = (dateString: string | null | undefined): string => {
+  if (!dateString) return "—";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "—";
+  return date.toLocaleString("es-AR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
 interface Props {
   data: Order[];
 }
 
-//Corregido lo del tema del formato de la fecha: 
-
 export default function OrderCompletedDayTable({ data }: Props) {
-  // función utilitaria para formatear fecha
-  const formatDate = (dateString: string | null | undefined) => {
-    if (!dateString) return "—";
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "—"; // fecha inválida
-    return date.toLocaleDateString("es-AR", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   return (
-    <div className="overflow-x-auto mt-6">
-      <table className="min-w-full bg-white rounded-xl shadow-md overflow-hidden">
-        <thead>
-          <tr className="bg-gray-100 text-gray-700 text-left">
-            <th className="px-6 py-3 font-semibold">ID Pedido</th>
-            <th className="px-6 py-3 font-semibold">Sales Order</th>
-            <th className="px-6 py-3 font-semibold">Cliente</th>
-            <th className="px-6 py-3 font-semibold">Email</th>
-            
-            <th className="px-6 py-3 font-semibold">Fecha Pedido</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((order, idx) => (
-            <tr
-              key={order.depotOrderId}
-              className={`${
-                idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-              } hover:bg-gray-100 transition`}
-            >
-              <td className="px-6 py-3 border-t">{order.depotOrderId}</td>
-              <td className="px-6 py-3 border-t">{order.salesOrderId}</td>
-              <td className="px-6 py-3 border-t">{order.customerName}</td>
-              <td className="px-6 py-3 border-t">{order.customerEmail}</td>
-              
-              <td className="px-6 py-3 border-t">
-                {formatDate(order.orderDate)}
-              </td>
+    <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+      <div className="overflow-x-auto">
+        <table className="min-w-full">
+          <thead>
+            <tr className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">ID Pedido</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Sales Order</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Cliente</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Email</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Fecha Pedido</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Fecha Entrega</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {data.map((order, idx) => (
+              <tr
+                key={order.depotOrderId}
+                className={`${
+                  idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                } hover:bg-blue-50 transition-all duration-200 hover:shadow-sm group`}
+              >
+                <td className="px-6 py-4 whitespace-nowrap">{order.depotOrderId}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{order.salesOrderId}</td>
+                <td className="px-6 py-4">{order.customerName}</td>
+                <td className="px-6 py-4">{order.customerEmail}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{formatDate(order.orderDate)}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{formatDate(order.deliveryDate)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {data.length === 0 && (
+        <div className="text-center py-12">
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No hay pedidos completados</h3>
+          <p className="text-gray-500">Los pedidos aparecerán aquí una vez que sean completados.</p>
+        </div>
+      )}
     </div>
   );
 }
