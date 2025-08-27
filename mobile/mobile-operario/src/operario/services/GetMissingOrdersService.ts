@@ -1,7 +1,7 @@
 //trea a todos los pedidos que se encuentran en estado de preparacion: suponiendo que al momento 
 //de preparalos se encontro faltantes 
 
-import { api } from "../../services/api";
+import { api } from "../../services/axios";
 import type { DepotOrderDTO } from "../types/OrderDTO";
 import { DepotOrderStatus } from "../types/OrderDTO";
 import type { ReportOrderMissingRequest } from "../types/Missing";

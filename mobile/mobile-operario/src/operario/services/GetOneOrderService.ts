@@ -1,5 +1,5 @@
 //services para traer un solo pedido , en caso de querer ver un detalle o emitir un faltante: 
-import { api } from "../../services/api";
+import { api } from "../../services/axios";
 //import type { Order } from "../../otherTypes/OrderType";
 import type { DepotOrderDTO } from "../types/OrderDTO";
 //Ejemplo de la api:
