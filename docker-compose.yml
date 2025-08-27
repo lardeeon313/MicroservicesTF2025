@@ -125,6 +125,17 @@ services:
     networks:
      - micro_net
 
+  mobile:
+    build:
+      context: ./mobile/mobile-operario
+      dockerfile: docker/Dockerfile
+    ports:
+      - "3001:80"
+    depends_on:
+      - apigateway
+    networks:
+      - micro_net
+
 
 networks:
   micro_net:

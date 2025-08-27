@@ -1,7 +1,7 @@
 //Service que se comunica con el endpoint el cual recibe todos los pedidos que tenga 
 //estatus de Prepared y SentToBilling 
 
-import { api } from "../../services/api";
+import { api } from "../../services/axios";
 import { DepotOrderDTO } from "../types/OrderDTO";
 
 export const GetPreparedOrdersService = async(operatorUserId: string): Promise<DepotOrderDTO[]> => {

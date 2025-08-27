@@ -1,6 +1,6 @@
 //service que se comunica con el endpoint para agregar empaques a un pedido del deposito
 //por parte del operator 
-import { api } from "../../services/api";
+import { api } from "../../services/axios";
 import { AddPackingCommand } from "../types/AddPackings";
 import { MarkItemCommand } from "../types/AddPackings";
 import { UnMarkItemReadyCommand } from "../types/AddPackings";
