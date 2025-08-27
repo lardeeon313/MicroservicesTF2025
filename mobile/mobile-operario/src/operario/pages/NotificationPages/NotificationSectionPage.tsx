@@ -6,13 +6,21 @@ import type { DepotStackParamList } from '../../types/DepotStackType';
 import NotificacionSection from '../../components/Notification/NotifactionSection';
 import NavbarOperator from '../../components/Navbar/NavbarOperator';
 import { useGetNotificationMissing } from '../../hocks/useGetNotificationsMissing';
+//importacion del auth:  
+import { useAuth } from '../../../Login/context/useAuth';
 
-const user = { name: 'Juan Pérez', role: 'Operario', id: 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa' };
-const isAuthenticated = true;
 
 const NotificationSectionPage = () => {
   const { params } = useRoute<RouteProp<DepotStackParamList, "NotificationPage">>();
   const { order } = params;
+
+  const { userId, name, role, isAuthenticated, logout } = useAuth();
+
+  const user = {
+    id: userId!,
+    name: name!,
+    role: role!
+  };
 
   const { order: fullOrder, loading, error } = useGetNotificationMissing(order.depotOrderId, user.id);
 
@@ -26,7 +34,7 @@ const NotificationSectionPage = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log("Cerrar sesión")} />
+      <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={logout} />
       <View style={{ flex: 1, padding: 16, backgroundColor: "#fff" }}>
         <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 16 }}>
           Faltantes del Pedido#: {fullOrder.depotOrderId}

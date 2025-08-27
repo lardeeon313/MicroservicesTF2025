@@ -3,7 +3,7 @@ import API from "../../services/axios";
 
 export const SetOrderToBilled = async(orderID: number) => {
     //se comunica con el endpoint para enviar el pedido a facturar 
-    const response = await API.post('/depotoperator/sent-to-billing',{
+    const response = await API.post('depot/depotoperator/sent-to-billing',{
         depotorderId:orderID,
     });
     return response.data;
@@ -12,7 +12,7 @@ export const SetOrderToBilled = async(orderID: number) => {
 //demas services que hacen falta: tiene que recibir tanto el opeator como el order
 export const ConfirmedOrder = async (DepotOrderId: number, OperatorUserId: string) => {
     try {
-        const response = await API.post('/depotoperator/confirm-assign', {
+        const response = await API.post('depot/depotoperator/confirm-assign', {
             DepotOrderId,
             OperatorUserId
         });
@@ -33,7 +33,7 @@ export const RejectOrder = async (DepotOrderId: number, OperatorUserId: string,R
     });
 
     try{
-        const response = await API.post('/depotoperator/reject-order', {
+        const response = await API.post('depot/depotoperator/reject-order', {
             DepotOrderId,
             OperatorUserId,
             RejectReason,

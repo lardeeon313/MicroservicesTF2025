@@ -7,6 +7,8 @@ import { MissingCountContainer } from "./MissingCount";
 import type { DepotOrderItemsReportedDto, DepotOrderMissingDTO } from "../../types/Missing";
 import { OrderStatus } from "../../../otherTypes/OrderType";
 import { DepotOrderDTO, DepotOrderStatus } from "../../types/OrderDTO";
+//importacion del Auth:
+import { useAuth } from "../../../Login/context/useAuth";
 
 type Props = {
   order: DepotOrderDTO;
@@ -18,12 +20,6 @@ type Props = {
 };
 
 
-const user = {
-  name: "Juan Pérez",
-  role: "Operario",
-  id: "aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-};
-
 const ListOfMissingOrders = ({
   order,
   onVerDetalle,
@@ -31,6 +27,13 @@ const ListOfMissingOrders = ({
   onMarcarArmado,
   onSeccionNotificaciones
 }: Props) => {
+
+  const { userId } = useAuth();
+
+  const user = {
+    id: userId!
+  }
+
   const { depotOrderId, customerName, status, } = order;
   return(
     <View style={{backgroundColor: '#fff',padding: 16,borderRadius: 12,shadowColor: '#000',shadowOffset: { width: 0, height: 2 },shadowOpacity: 0.1,elevation: 2,marginBottom: 16}}>

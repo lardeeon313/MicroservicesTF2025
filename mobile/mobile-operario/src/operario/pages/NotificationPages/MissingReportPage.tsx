@@ -9,15 +9,26 @@ import type { DepotOrderDTO } from '../../types/OrderDTO';
 import { ValidationMissingReport } from '../../validations/ValidationMissingReport';
 import NavbarOperator from '../../components/Navbar/NavbarOperator';
 import { actualizarEstadoPedidoFaltante } from '../../hocks/actions/updateStatusOrder';
+//implementacion del hook: 
+import { useAuth } from '../../../Login/context/useAuth';
 
-const user = { name: 'Juan Pérez', role: 'Operario', id: 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa' };
-const isAuthenticated = true;
+
+/*const user = { name: 'Juan Pérez', role: 'Operario', id: 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa' };
+const isAuthenticated = true;*/
 
 type MissingRouteProp = RouteProp<DepotStackParamList, 'MissingReport'>;
 
 const MissingPage = () => {
   const { params } = useRoute<MissingRouteProp>();
   const order: DepotOrderDTO = params.order;
+
+  const { userId, name, role, isAuthenticated, logout } = useAuth();
+  const user = { id: userId!, name:name!, role:role! };
+
+  if (!userId) {
+    // Por ejemplo, redirigir a login o lanzar un error
+    throw new Error("El usuario no está autenticado");
+  }
 
   const [description, setDescription] = useState('');
 
@@ -30,7 +41,7 @@ const MissingPage = () => {
 
     const missingRequest: ReportOrderMissingRequest = {
       depotOrderId: order.depotOrderId,
-      operatorUserId: user.id, // necesario para el backend
+      operatorUserId: userId, // necesario para el backend
       salesOrderId: order.salesOrderId,
       missingReason: 'Faltante detectado',  // o lo que quieras, también podés agregar UI para editarlo
       missingDescription: description.trim(),
@@ -61,7 +72,11 @@ const MissingPage = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log('Cerrar sesión')} />
+      <NavbarOperator 
+      user={user} 
+      isAuthenticated={isAuthenticated} 
+      logout={logout}
+      />
       <MissingReport
         description={description}
         onNotifyMissing={onNotifyMissing}

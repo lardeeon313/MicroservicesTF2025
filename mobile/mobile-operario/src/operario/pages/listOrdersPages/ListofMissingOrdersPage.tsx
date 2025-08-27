@@ -9,18 +9,26 @@ import { useMissingOrders } from "../../hocks/useMissingOrders";
 import type { DepotOrderDTO, DepotOrderStatus } from "../../types/OrderDTO";
 import ListOfMissingOrders from "../../components/listOrders/ListofMissingOrders";
 import { ValidationToMissingToPreparation } from "../../validations/ValidationToMissingToPreparation";
-
-const user = {
-  name: "Juan Pérez",
-  role: "Operario",
-  id: "aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-};
-
-const isAuthenticated = true;
+//Utilizacion del hook: 
+import { useAuth } from '../../../Login/context/useAuth';
 
 const MissingAndPreparationOrdersPage = () => {
   const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
-  const { missingOrders: orders, loading, error } = useMissingOrders(user.id);
+
+  //trae los datos del hook del Auth:
+  const {userId, name, role, isAuthenticated, logout} = useAuth();
+
+  if (!isAuthenticated || !userId || !name || !role) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Debes iniciar sesión para ver los pedidos con faltantes.</Text>
+      </View>
+    );
+  }
+
+  const user = { id: userId, name, role };
+
+  const { missingOrders: orders, loading, error } = useMissingOrders(user?.id ?? "");
 
   const goToDetalle = (order: DepotOrderDTO) => {
     navigation.navigate("DetailOrder", {
@@ -73,7 +81,7 @@ const MissingAndPreparationOrdersPage = () => {
       <NavbarOperator
         user={user}
         isAuthenticated={isAuthenticated}
-        logout={() => console.log("Cerrar sesión")}
+        logout={logout}
       />
 
       <ScrollView contentContainerStyle={{ padding: 16 }}>

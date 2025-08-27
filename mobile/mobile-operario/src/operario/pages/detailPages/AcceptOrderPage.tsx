@@ -7,15 +7,24 @@ import { View, ActivityIndicator, Text } from "react-native";
 import { useGetOneOrder } from "../../hocks/useGetOneOrder";
 import { useOrderManagment } from "./OrderManagmentPage";
 import { RejectOrderWithReasonModal } from "../../components/additional/AlertWindows/AlertManager";
+import { useAuth } from "../../../Login/context/useAuth"; // 👈 Importar el contexto real
 
-const user = { name: "Juan Pérez", role: "Operario", id: "aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa" };
-const isAuthenticated = true;
+//MODIFICADO PARA EL USO DEL AUTH: 
 
 type AcceptOrderPageProp = RouteProp<DepotStackParamList, "AcceptOrder">;
 
 const AcceptOrderPage = () => {
   const { params } = useRoute<AcceptOrderPageProp>();
-  const { order: fetchedOrder, loading, error } = useGetOneOrder(params.order.depotOrderId, user.id);
+
+  // 👇 traemos el usuario desde el contexto
+  const { userId, name, role, isAuthenticated, logout } = useAuth();
+  const user = userId && name && role ? { id: userId, name, role } : null;
+
+  // 👇 usamos el id real del operario para pedir la orden
+  const { order: fetchedOrder, loading, error } = useGetOneOrder(
+    params.order.depotOrderId,
+    user?.id ?? "" // seguridad, si no hay user pasa string vacío
+  );
 
   const {
     order,
@@ -24,7 +33,7 @@ const AcceptOrderPage = () => {
     showMeRejectModal,
     setShowMeRejectModal,
     ConfirmRejectWithReason,
-  } = useOrderManagment(fetchedOrder ?? params.order, user.id);
+  } = useOrderManagment(fetchedOrder ?? params.order, user?.id ?? "");
 
   if (loading) return <ActivityIndicator size="large" color="#000" />;
   if (error) return <Text>ERROR: {error}</Text>;
@@ -34,7 +43,7 @@ const AcceptOrderPage = () => {
       <NavbarOperator
         user={user}
         isAuthenticated={isAuthenticated}
-        logout={() => console.log("Cerrar sesión")}
+        logout={logout}
       />
 
       <AcceptOrder

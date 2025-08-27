@@ -24,32 +24,30 @@ export function useOrderManagment(initialOrder: DepotOrderDTO, operatorID:string
     }, [order]); 
 
     const acceptOrder = () => {
-        showmeAcceptOrderAlert(async() => {
-            try{
-                const UpdateStatus = OrderStatusMap[DepotOrderStatus.InPreparation];
-                const UpdatedOrder = {...order, status: UpdateStatus}
+            showmeAcceptOrderAlert(async() => {
+        try {
+            const UpdateStatus = OrderStatusMap[DepotOrderStatus.InPreparation];
+            const UpdatedOrder = {...order, status: UpdateStatus};
 
-                console.log("Pedido ACEPTADO desde front:", {
-                    depotOrderId: order.depotOrderId,
-                    operatorID,
-                    nuevoEstado: UpdateStatus
-                });
+            console.log("Pedido ACEPTADO desde front:", {
+                depotOrderId: order.depotOrderId,
+                operatorID,
+                nuevoEstado: UpdateStatus
+            });
 
+            setOrder(UpdatedOrder);
 
+            // Primero actualiza en backend
+            await actualizarEstadoPedido(UpdatedOrder, "aceptado");
 
-                setOrder(UpdatedOrder);
+            // Usa UpdatedOrder en vez de order
+            const response = await ConfirmedOrder(UpdatedOrder.depotOrderId, operatorID);
 
-
-                await actualizarEstadoPedido(UpdatedOrder, "aceptado");
-
-                const response = await ConfirmedOrder(order.depotOrderId, operatorID)
-
-                console.log("Respuesta que se obtuvo del backend: ",response);
-            }catch(error){
-                console.error("Error al aceptar el pedido:", error);
-            };
-
-        })
+            console.log("Respuesta que se obtuvo del backend: ", response);
+        } catch(error) {
+            console.error("Error al aceptar el pedido:", error);
+        };
+    })
     }
 
     /*const rejectOrder = () => {

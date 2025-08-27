@@ -5,9 +5,8 @@ import { OrderStatusLabels } from '../../constants/UseStatusOrderOperator';
 import { DepotOrderDTO, DepotOrderStatus } from '../../types/OrderDTO';
 //NUEVO: 
 import ItemOrdersComponent from '../additional/checkList/ItemOrdersComponent';
-
-const user = { name: 'Juan Pérez', role: 'Operario' , id: 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa' };
-const isAuthenticated = true;
+//importacion del auth: 
+import { useAuth } from '../../../Login/context/useAuth';
 
 
 type Props = {
@@ -17,8 +16,17 @@ type Props = {
 
 
 const DetailOrderCard = ({order}: Props) => {
-  const allItemsReady = order.items.every(item => item.isReady === true);
+  //const allItemsReady = order.items.every(item => item.isReady === true);
   //const {TotalProducts} = order.items.reduce((acc,item) => acc + item.quantity, 0);
+
+  const { userId, name, role, isAuthenticated, logout } = useAuth();
+  
+  const user = {
+    id: userId!,
+    name: name!,
+    role: role!
+  };
+
   console.log("Detalle del pedido:", order);
   return(
     <View style={{ flex: 1, backgroundColor: '#f9f9f9', padding: 16 }}>

@@ -9,6 +9,8 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { useMissingOrders } from "../hocks/useMissingOrders";
 import { number } from "yup";
+//importacion del auth: 
+import { useAuth } from "../../Login/context/useAuth";
 
 type CardItem = {
   title: string;
@@ -45,7 +47,10 @@ const cards: CardItem[] = [
 ];
 
 const OperatorDashboardComponent = () => {
-  const user = { id: "aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa" }; // tu operador real
+  const { userId } = useAuth();
+
+  const user = { id: userId!};
+  
   const { missingOrders, loading } = useMissingOrders(user.id);
   const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
 

@@ -1,40 +1,31 @@
-import React, { useState } from 'react';
-import { ScrollView } from 'react-native';
+import React from 'react';
+import { ScrollView, View, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { DepotStackParamList } from '../../types/DepotStackType';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import ListofConfirmedOrders from '../../components/listOrders/ListofConfirmedOrders';
-import { actualizarEstadoPedido } from '../../hocks/actions/updateStatusOrder';
-import NavbarOperator from '../../components/Navbar/NavbarOperator';
-//IMPORANTE , SE DEBE IMPORTAR EL VIEW De REACT NATIVE , no el del lucide 
-import { View , Text} from 'react-native';
-//SE utiliza el hock para la vinculacion con el back: 
 import { useConfirmedOrders } from '../../hocks/useConfirmedOrders';
 import type { DepotOrderDTO } from '../../types/OrderDTO';
-import { OrderStatusMap } from '../../types/OrderDTO';
-import { DepotOrderStatus } from '../../types/OrderDTO';
-import { DepotTeamAssigment } from '../../types/OrderDTO';
-
-
-
-//EJEMPLO DE USO DEL NAVBAR: 
-// Simulamos autenticación y usuario:
-const user = { name: 'Juan Pérez', role: 'Operario' , id: 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa' };
-const isAuthenticated = true;
+import { OrderStatusMap, DepotOrderStatus } from '../../types/OrderDTO';
+import NavbarOperator from '../../components/Navbar/NavbarOperator';
+import { useAuth } from '../../../Login/context/useAuth'; // 👈 usamos auth real
 
 
 const ListOfConfirmedOrdersPage = () => {
   const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
-  //const {user,isAuthenticated} = useAuth();
   const { confirmedOrders: orders, loading, error } = useConfirmedOrders();
 
-  // Cambiar tipo de Order a BackendOrder
+  // 👇 traemos todo desde el contexto de auth
+  const { userId, name, role, isAuthenticated, logout } = useAuth();
+
+  // armamos el objeto user solo si existe
+  const user = userId && name && role ? { id: userId, name, role } : null;
+
   const handleSeeDetail = (order: DepotOrderDTO) => {
-    //filtra que tenga el rol de operator 
-     
+    if (!user) return; // seguridad extra
     navigation.navigate('DetailOrder', {
-       orderId: order.depotOrderId,
-       operatorUserId: user.id,
+      orderId: order.depotOrderId,
+      operatorUserId: user.id, // 👈 ahora va el userId real del auth
     });
   };
 
@@ -42,8 +33,7 @@ const ListOfConfirmedOrdersPage = () => {
     navigation.navigate('AcceptOrder', {
       order: {
         ...order,
-        // No hay customerFirstName ni customerLastName, si necesitás dividirlo hacelo acá
-        //customerEmail: order.customerName.split(' ')[0] ?? '',
+        // si tu backend separa nombre y apellido, lo ajustás acá
         customerName: order.customerName.split(' ')[1] ?? '',
       },
     });
@@ -59,24 +49,39 @@ const ListOfConfirmedOrdersPage = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log("Cerrar sesión")} />
+      <NavbarOperator 
+        user={user} 
+        isAuthenticated={isAuthenticated} 
+        logout={logout} 
+      />
       <ScrollView contentContainerStyle={{ padding: 16 }}>
-        <Text style={{ fontSize: 22,fontWeight: '600',marginBottom: 20,color: '#333', letterSpacing: 0.5, textAlign: 'center'}}>
+        <Text style={{ 
+          fontSize: 22, 
+          fontWeight: '600', 
+          marginBottom: 20, 
+          color: '#333', 
+          letterSpacing: 0.5, 
+          textAlign: 'center'
+        }}>
           Pedidos para poder confirmar  
         </Text>
-        { orders.length === 0? (
-          <Text style={{ fontSize: 18 ,textAlign:'center'}}>No hay pedidos para confirmar aun.</Text>
+
+        { orders.length === 0 ? (
+          <Text style={{ fontSize: 18 ,textAlign:'center'}}>
+            No hay pedidos para confirmar aun.
+          </Text>
         ) : (
-        orders.map((order) => (
-          <ListofConfirmedOrders
-            key={order.depotOrderId}
-            order={order}
-            customer={order.customerName} // Usar directamente el nombre completo
-            status={OrderStatusMap[order.status] ?? DepotOrderStatus.Assigned} // En BackendOrder es número, ListofConfirmedOrders espera string
-            onSeeDetail={() => handleSeeDetail(order)}
-            onAceeptOrder={() => handleAcceptOrder(order)}
-          />
-        )))}
+          orders.map((order) => (
+            <ListofConfirmedOrders
+              key={order.depotOrderId}
+              order={order}
+              customer={order.customerName}
+              status={OrderStatusMap[order.status] ?? DepotOrderStatus.Assigned}
+              onSeeDetail={() => handleSeeDetail(order)}
+              onAceeptOrder={() => handleAcceptOrder(order)}
+            />
+          ))
+        )}
       </ScrollView>
     </View>
   );

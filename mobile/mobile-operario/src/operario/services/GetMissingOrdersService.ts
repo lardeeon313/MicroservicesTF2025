@@ -1,7 +1,7 @@
 //trea a todos los pedidos que se encuentran en estado de preparacion: suponiendo que al momento 
 //de preparalos se encontro faltantes 
 
-import { api } from "../../services/axios";
+import API from "../../services/axios";
 import type { DepotOrderDTO } from "../types/OrderDTO";
 import { DepotOrderStatus } from "../types/OrderDTO";
 import type { ReportOrderMissingRequest } from "../types/Missing";
@@ -11,7 +11,7 @@ import type { ReportOrderMissingRequest } from "../types/Missing";
 //service para traer los pedidos asignados por parte de un operario para lo que es faltantes 
 export const GetMissingOrdersService = async(operatorUserId:string) : Promise<DepotOrderDTO[]> => {
     try{
-        const response = await api.get('/depotoperator/get-missing-orders-to-operator',
+        const response = await API.get('depot/depotoperator/get-missing-orders-to-operator',
             {
                 params:{
                     operatorUserId: operatorUserId,
@@ -31,7 +31,7 @@ export const GetMissingOrdersService = async(operatorUserId:string) : Promise<De
 //service para comunicarse con el endpoint de report-Order-Missing
 export const reportOrderMissing = async (data: ReportOrderMissingRequest) => {
     try{
-        const response = await api.post('/depotoperator/report-order-missing', data);
+        const response = await API.post('depot/depotoperator/report-order-missing', data);
         return response.data;
     }
     catch(error){

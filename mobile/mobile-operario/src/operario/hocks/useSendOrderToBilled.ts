@@ -1,3 +1,4 @@
+// useSendOrderToBilled.ts
 import { useState } from "react";
 import { SetOrderToBilled } from "../services/SetOrderToBilled";
 
@@ -18,12 +19,15 @@ export const useSendOrderToBilled = () => {
             return {ok:true}
         }catch(err: any)
         {
-            const errorMsg =
-                typeof err === "object" && err !== null && "response" in err
-                ? (err as any).response?.data?.message || 'Se obtuvo un error al enviar el pedido a facturación.'
-                : 'Unicamente error.';
-            setError(errorMsg);
-            return { ok: false, error: errorMsg };
+            // ¡AGREGÁ ESTE CONSOLE.LOG!
+            console.error("Error completo capturado en el hook:", JSON.stringify(err, null, 2));
+
+            const errorMsg =
+                typeof err === "object" && err !== null && "response" in err
+                ? (err as any).response?.data?.message || 'Se obtuvo un error al enviar el pedido a facturación.'
+                : 'Unicamente error.';
+            setError(errorMsg);
+            return { ok: false, error: errorMsg }
         }finally
         {
             setloading(false);
