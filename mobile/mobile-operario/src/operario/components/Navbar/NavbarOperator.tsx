@@ -1,11 +1,8 @@
-
-// This component renders a navigation bar for the operator with a logo and user icon*/
-
 import React from 'react';
 import { View, Image,Text, TouchableOpacity } from 'react-native';
 import { useState } from "react";
 import { useNavigation } from '@react-navigation/native';
-//import NavbarDropdownMenuComponent from "./NavbarDropdownMenu";
+
 
 
 interface NavbarProps {
@@ -19,7 +16,6 @@ interface NavbarProps {
 const NavbarOperator = ({ user, isAuthenticated, logout }: NavbarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigation = useNavigation();
-  //const {user, isAuthenticated, logout} = useAuth();
 
   return (
     <View style={{backgroundColor: '#1f2937',paddingVertical: 12,paddingHorizontal: 16,flexDirection: 'row',justifyContent: 'space-between',alignItems: 'center'}}>

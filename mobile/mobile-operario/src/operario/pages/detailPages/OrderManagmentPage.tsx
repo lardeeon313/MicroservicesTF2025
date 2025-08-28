@@ -1,9 +1,6 @@
-//se decidio utilizar un order managment (hook) , el cual lo que hace es administrar su uso 
-//para que pueda ser utilizado en la page de AcceptOrderPage.tsx
-
 import { useState,useEffect } from "react";
 import { DepotOrderStatus, type DepotOrderDTO } from "../../types/OrderDTO";
-import { OrderStatus } from "../../../otherTypes/OrderType";
+
 import { actualizarEstadoPedido } from "../../hocks/actions/updateStatusOrder";
 import { showmeAcceptOrderAlert,showmeRejectOrderAlert } from "../../components/additional/AlertWindows/AlertManager";
 import { OrderStatusMap } from "../../types/OrderDTO";
@@ -37,10 +34,10 @@ export function useOrderManagment(initialOrder: DepotOrderDTO, operatorID:string
 
             setOrder(UpdatedOrder);
 
-            // Primero actualiza en backend
+            
             await actualizarEstadoPedido(UpdatedOrder, "aceptado");
 
-            // Usa UpdatedOrder en vez de order
+           
             const response = await ConfirmedOrder(UpdatedOrder.depotOrderId, operatorID);
 
             console.log("Respuesta que se obtuvo del backend: ", response);
@@ -50,11 +47,7 @@ export function useOrderManagment(initialOrder: DepotOrderDTO, operatorID:string
     })
     }
 
-    /*const rejectOrder = () => {
-        showmeRejectOrderAlert(() => {
-            actualizarEstadoPedido(order, "rechazado");
-        });
-    };*/
+
     const rejectOrder = ()=> {
         setShowMeRejectModal(true);
     }

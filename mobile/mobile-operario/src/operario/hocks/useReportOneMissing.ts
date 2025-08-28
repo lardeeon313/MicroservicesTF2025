@@ -1,7 +1,5 @@
-//Hock que se va a utilizar unicamente para notificar el faltante :
 import { useState } from "react";
 import { reportOrderMissing } from "../services/GetMissingOrdersService";
-//import type { DepotOrderMissingDto } from "../types/Missing";
 import type { ReportOrderMissingRequest } from "../types/Missing";
 
 export function useReportOrderMissing() {

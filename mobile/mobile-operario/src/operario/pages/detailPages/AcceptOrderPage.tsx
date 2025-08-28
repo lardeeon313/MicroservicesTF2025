@@ -7,23 +7,20 @@ import { View, ActivityIndicator, Text } from "react-native";
 import { useGetOneOrder } from "../../hocks/useGetOneOrder";
 import { useOrderManagment } from "./OrderManagmentPage";
 import { RejectOrderWithReasonModal } from "../../components/additional/AlertWindows/AlertManager";
-import { useAuth } from "../../../Login/context/useAuth"; // 👈 Importar el contexto real
-
-//MODIFICADO PARA EL USO DEL AUTH: 
+import { useAuth } from "../../../Login/context/useAuth"; 
 
 type AcceptOrderPageProp = RouteProp<DepotStackParamList, "AcceptOrder">;
 
 const AcceptOrderPage = () => {
   const { params } = useRoute<AcceptOrderPageProp>();
 
-  // 👇 traemos el usuario desde el contexto
   const { userId, name, role, isAuthenticated, logout } = useAuth();
   const user = userId && name && role ? { id: userId, name, role } : null;
 
-  // 👇 usamos el id real del operario para pedir la orden
+  
   const { order: fetchedOrder, loading, error } = useGetOneOrder(
     params.order.depotOrderId,
-    user?.id ?? "" // seguridad, si no hay user pasa string vacío
+    user?.id ?? "" 
   );
 
   const {
@@ -49,7 +46,7 @@ const AcceptOrderPage = () => {
       <AcceptOrder
         order={order}
         onAccept={acceptOrder}
-        onReject={rejectOrder} // usa la del hook, que setea showMeRejectModal en true
+        onReject={rejectOrder} 
       />
 
       <RejectOrderWithReasonModal

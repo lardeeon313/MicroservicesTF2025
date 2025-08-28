@@ -1,13 +1,10 @@
-//listado de los pedidos con faltantes
 import React from "react";
 import { View, Text, TouchableOpacity } from 'react-native';
 import { OrderStatusLabels } from "../../constants/UseStatusOrderOperator";
-import MissingCount from "./MissingCount";
 import { MissingCountContainer } from "./MissingCount";
-import type { DepotOrderItemsReportedDto, DepotOrderMissingDTO } from "../../types/Missing";
-import { OrderStatus } from "../../../otherTypes/OrderType";
+import type {DepotOrderMissingDTO } from "../../types/Missing";
 import { DepotOrderDTO, DepotOrderStatus } from "../../types/OrderDTO";
-//importacion del Auth:
+
 import { useAuth } from "../../../Login/context/useAuth";
 
 type Props = {
@@ -53,14 +50,8 @@ const ListOfMissingOrders = ({
         </TouchableOpacity>
       </View>
 
-      {/**SEGUNDA FILA DE BOTONES */}
+      
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10 }}>
-        {/*{onMarcarArmado && DepotOrderStatus.InPreparation && (
-        <TouchableOpacity style={{marginTop: 10,padding: 8,backgroundColor: '#10B981',borderRadius: 10,}}onPress={onMarcarArmado}>
-          <Text style={{ color: '#fff', textAlign: 'center',fontWeight:'bold' }}>Pasar A PREPARACION</Text>
-        </TouchableOpacity>
-        )}*/}
-
         {onSeccionNotificaciones && (
           <TouchableOpacity style={{marginTop: 10,padding: 8,backgroundColor: '#ff8000',borderRadius: 10,}}onPress={onSeccionNotificaciones}>
             <Text style={{ color: '#fff', textAlign: 'center',fontWeight:'bold' }}>ATENCION: Revisar faltantes del Pedido</Text>
@@ -76,7 +67,6 @@ const ListOfMissingOrders = ({
         Total de faltantes: 
       </Text>
 
-      {/*<MissingCount missings={missings} />*/}
       <MissingCountContainer depotOrderId={order.depotOrderId} operatorUserId={user.id} />
 
     </View> 

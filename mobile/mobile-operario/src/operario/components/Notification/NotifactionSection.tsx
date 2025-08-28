@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, ScrollView } from "react-native";
-import { ShoppingCart, PackageCheck, AlertTriangle } from "lucide-react-native";
+import { PackageCheck, AlertTriangle } from "lucide-react-native";
 import type { DepotOrderMissingDTO } from "../../types/Missing";
 
 interface Props {

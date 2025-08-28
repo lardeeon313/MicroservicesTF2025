@@ -1,4 +1,3 @@
-//import { OrderStatus } from "../../otherTypes/OrderType"
 import { DepotOrderStatus } from "../types/OrderDTO";
 
 export const OrderStatusLabels: Record<DepotOrderStatus, string> = {

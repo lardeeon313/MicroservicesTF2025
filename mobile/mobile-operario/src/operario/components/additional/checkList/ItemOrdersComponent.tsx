@@ -82,12 +82,12 @@ const ItemOrdersComponent: React.FC<Props> = ({ operatorUserId, pedidoItems, ped
         <View style={{
           backgroundColor: item.marcado ? '#d4edda' : '#fff',
           padding: 16,
-          borderRadius: 12,              // Bordes redondeados
-          borderWidth: 1.5,              // Grosor del borde
-          borderColor: '#ccc',           // Color del borde
+          borderRadius: 12,              
+          borderWidth: 1.5,              
+          borderColor: '#ccc',           
           marginBottom: 12,
-          elevation: 2,                  // Sombra Android
-          shadowColor: '#000',           // Sombra iOS
+          elevation: 2,                  
+          shadowColor: '#000',           
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.1,
           shadowRadius: 4,

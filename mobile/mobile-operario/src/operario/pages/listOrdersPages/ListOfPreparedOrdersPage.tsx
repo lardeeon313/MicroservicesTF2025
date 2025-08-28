@@ -1,4 +1,3 @@
-//page nueva: 
 import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -11,8 +10,7 @@ import { useSendOrderToBilled } from "../../hocks/useSendOrderToBilled";
 import ListPreparedOrders from "../../components/listOrders/ListOfPreparedOrders";
 import NavbarOperator from "../../components/Navbar/NavbarOperator";
 
-// 🔑 Hook de autenticación (en vez de hardcodear el user)
-import { useAuth } from "../../../Login/context/useAuth"; // 👈 auth real
+import { useAuth } from "../../../Login/context/useAuth"; 
 
 
 const ListOfPreparedOrdersPage = () => {
@@ -20,10 +18,9 @@ const ListOfPreparedOrdersPage = () => {
 
   const { userId, name, role, isAuthenticated, logout } = useAuth();
 
-  // ✅ armamos el objeto `user` si tenemos todos los datos
+
   const user = userId && name && role ? { id: userId, name, role } : null;
 
-  // 👇 pedidos preparados
   const { preparedOrders: orders, loading, error } = usePreparedOrders(user?.id ?? "");
 
   const { SendOrder } = useSendOrderToBilled();
@@ -39,8 +36,7 @@ const ListOfPreparedOrdersPage = () => {
     }
   }, [orders]);
 
-  // 🔒 Filtramos solo los pedidos válidos y con label definido
-  // 
+ 
   const filteredOrders = localOrders.filter(order => {
     const status = OrderStatusMap[order.status];
     return status === DepotOrderStatus.Prepared || status === DepotOrderStatus.SentToBilling;
@@ -122,12 +118,3 @@ const ListOfPreparedOrdersPage = () => {
 };
 
 export default ListOfPreparedOrdersPage;
-
-
-
-/**
- *  const filteredOrders = localOrders.filter(order => {
-      const status = OrderStatusMap[order.status];
-      return status === DepotOrderStatus.Prepared || status === DepotOrderStatus.SentToBilling;
-    });
- */

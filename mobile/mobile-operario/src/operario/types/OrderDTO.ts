@@ -1,4 +1,3 @@
-//Nueva interfaz que se asemeja a la esctructura que devuelve la api: 
 
 import { DepotOrderMissingDTO } from "./Missing";
 
@@ -11,10 +10,9 @@ export interface DepotOrderDTO{
     deliveryDetail: string; 
     orderDate: string;
     status: number;
-    //NUEVO CAMPO: 
-    //operatorUserId: string; 
-    assignedOperatorId: string; //NUEVO CAMPO 
-    assignedDepotTeamId: number | null; //NUEVO CAMPO
+ 
+    assignedOperatorId: string; 
+    assignedDepotTeamId: number | null; 
     rejectionReason?:string | null; 
     items : any[];
     missings: DepotOrderMissingDTO[];

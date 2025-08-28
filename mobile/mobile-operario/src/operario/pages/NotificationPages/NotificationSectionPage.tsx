@@ -6,7 +6,7 @@ import type { DepotStackParamList } from '../../types/DepotStackType';
 import NotificacionSection from '../../components/Notification/NotifactionSection';
 import NavbarOperator from '../../components/Navbar/NavbarOperator';
 import { useGetNotificationMissing } from '../../hocks/useGetNotificationsMissing';
-//importacion del auth:  
+  
 import { useAuth } from '../../../Login/context/useAuth';
 
 

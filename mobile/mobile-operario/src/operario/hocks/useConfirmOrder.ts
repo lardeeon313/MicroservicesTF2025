@@ -1,7 +1,5 @@
-//hock para confirmar un pedido de forma individual
-
 import { useState } from "react";
-//Services
+
 import { ConfirmedOrder } from "../services/SetOrderToBilled";
 
 

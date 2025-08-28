@@ -1,4 +1,3 @@
-// ListOfArmOrders.tsx
 import { View, Text, TouchableOpacity } from 'react-native';
 import type { DepotOrderDTO } from '../../types/OrderDTO';
 import { OrderStatusLabels } from '../../constants/UseStatusOrderOperator';

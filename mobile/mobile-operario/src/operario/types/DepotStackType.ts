@@ -1,5 +1,4 @@
-//import { Order,OrderStatus } from "../../otherTypes/OrderType";
-import { DepotOrderItemsReportedDto, DepotOrderMissingDTO, ReportOrderMissingRequest } from "./Missing";
+import { DepotOrderItemsReportedDto } from "./Missing";
 import { DepotOrderDTO, DepotOrderStatus } from "./OrderDTO";
 
 export type DepotStackParamList = {
@@ -20,7 +19,7 @@ export type DepotStackParamList = {
     onMarcarArmado:()=> void;
     onAcceptOrder: () => void;
     status?: (DepotOrderStatus.Assigned | DepotOrderStatus.ReReceived);
-    order?: DepotOrderDTO; // Optional order object for additional details
+    order?: DepotOrderDTO; 
   };
   MissingOrders?: {
     id: number;
@@ -28,7 +27,7 @@ export type DepotStackParamList = {
     onVerDetalle: () => void;
     onEmitirFaltante: () => void;
     onMarcarArmado: () => void;
-    status?: (DepotOrderStatus.InPreparation | DepotOrderStatus.MissingProduct); // Assuming this is the status for missing orders
+    status?: (DepotOrderStatus.InPreparation | DepotOrderStatus.MissingProduct); 
     missingCount: DepotOrderItemsReportedDto[];
     onNotifySecction: () => void;
   };

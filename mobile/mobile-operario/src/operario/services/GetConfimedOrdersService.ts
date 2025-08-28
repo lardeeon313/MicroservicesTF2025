@@ -1,5 +1,5 @@
 import API from "../../services/axios";
-import { OrderStatus, type Order } from "../../otherTypes/OrderType";
+
 import type { DepotOrderDTO } from "../types/OrderDTO";
 
 export const GetConfirmedOrdersService = async (): Promise<DepotOrderDTO[]> => {

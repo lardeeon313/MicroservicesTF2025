@@ -1,6 +1,3 @@
-
-// This component serves as the main dashboard for the operator, providing quick access to different sections of the app.
-
 import React from "react";
 import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { ShoppingCart, PackageCheck, AlertTriangle,Check  } from "lucide-react-native";
@@ -8,8 +5,8 @@ import { DepotStackParamList } from "../types/DepotStackType";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { useMissingOrders } from "../hocks/useMissingOrders";
-import { number } from "yup";
-//importacion del auth: 
+
+
 import { useAuth } from "../../Login/context/useAuth";
 
 type CardItem = {
@@ -65,7 +62,7 @@ const OperatorDashboardComponent = () => {
               break;
             case 'MissingOrders':
               if (missingOrders.length > 0) {
-                const order = missingOrders[0]; // el primer pedido con faltantes
+                const order = missingOrders[0]; 
                 navigation.navigate('MissingOrders', {
                   id: order.depotOrderId,
                   customer: order.customerName,

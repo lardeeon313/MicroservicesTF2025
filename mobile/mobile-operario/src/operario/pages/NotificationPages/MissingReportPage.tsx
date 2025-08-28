@@ -1,4 +1,3 @@
-// MissingReportPage.tsx
 import React, { useState } from 'react';
 import { Alert, View } from 'react-native';
 import MissingReport from '../../components/Notification/MissingReport';
@@ -8,13 +7,10 @@ import type { ReportOrderMissingRequest } from '../../types/Missing';
 import type { DepotOrderDTO } from '../../types/OrderDTO';
 import { ValidationMissingReport } from '../../validations/ValidationMissingReport';
 import NavbarOperator from '../../components/Navbar/NavbarOperator';
-import { actualizarEstadoPedidoFaltante } from '../../hocks/actions/updateStatusOrder';
-//implementacion del hook: 
+
+ 
 import { useAuth } from '../../../Login/context/useAuth';
 
-
-/*const user = { name: 'Juan Pérez', role: 'Operario', id: 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa' };
-const isAuthenticated = true;*/
 
 type MissingRouteProp = RouteProp<DepotStackParamList, 'MissingReport'>;
 
@@ -26,13 +22,13 @@ const MissingPage = () => {
   const user = { id: userId!, name:name!, role:role! };
 
   if (!userId) {
-    // Por ejemplo, redirigir a login o lanzar un error
+    
     throw new Error("El usuario no está autenticado");
   }
 
   const [description, setDescription] = useState('');
 
-  // Armamos el objeto para enviar, al enviar usamos la descripción actualizada
+  
   const onSubmit = () => {
     if (!description.trim()) {
       Alert.alert('Error', 'La descripción no puede estar vacía');
@@ -41,23 +37,22 @@ const MissingPage = () => {
 
     const missingRequest: ReportOrderMissingRequest = {
       depotOrderId: order.depotOrderId,
-      operatorUserId: userId, // necesario para el backend
+      operatorUserId: userId, 
       salesOrderId: order.salesOrderId,
-      missingReason: 'Faltante detectado',  // o lo que quieras, también podés agregar UI para editarlo
+      missingReason: 'Faltante detectado',  
       missingDescription: description.trim(),
       missingItems: order.items.map(item => ({
         orderItemId: item.id,
         productName: item.productName,
         productBrand: item.productBrand,
-        packaging: item.packagingType ?? 'No hay producto', //error default 
+        packaging: item.packagingType ?? 'Existen faltantes dentro del pedido', 
         quantity: item.quantity,
       })),
     };
 
-    // Enviamos y validamos
+    
     ValidationMissingReport(description, missingRequest, (response) => {
-      //actualiza el status del pedido en caso de presentarse un faltante: 
-      //const updateOrder = actualizarEstadoPedidoFaltante(missingRequest)
+
       Alert.alert(
         'Notificación Enviada',
         `Descripción: ${description ?? 'Sin descripción'}`
@@ -81,13 +76,10 @@ const MissingPage = () => {
         description={description}
         onNotifyMissing={onNotifyMissing}
         onSubmit={onSubmit}
-        missing={order} // ojo: aquí pasamos el pedido completo porque el componente puede necesitar datos
+        missing={order} 
       />
     </View>
   );
 };
 
 export default MissingPage;
-
-
-// Este componente MissingReportPage se encarga de manejar la lógica de negocio relacionada con la notificación de faltantes.

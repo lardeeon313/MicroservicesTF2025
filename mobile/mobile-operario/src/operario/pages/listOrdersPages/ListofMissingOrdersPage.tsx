@@ -1,4 +1,4 @@
-// pages/MissingAndPreparationOrdersPage.tsx
+
 import React from "react";
 import { View, Text, ActivityIndicator, Alert, ScrollView } from "react-native";
 import NavbarOperator from "../../components/Navbar/NavbarOperator";
@@ -9,13 +9,13 @@ import { useMissingOrders } from "../../hocks/useMissingOrders";
 import type { DepotOrderDTO, DepotOrderStatus } from "../../types/OrderDTO";
 import ListOfMissingOrders from "../../components/listOrders/ListofMissingOrders";
 import { ValidationToMissingToPreparation } from "../../validations/ValidationToMissingToPreparation";
-//Utilizacion del hook: 
+ 
 import { useAuth } from '../../../Login/context/useAuth';
 
 const MissingAndPreparationOrdersPage = () => {
   const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
 
-  //trae los datos del hook del Auth:
+  
   const {userId, name, role, isAuthenticated, logout} = useAuth();
 
   if (!isAuthenticated || !userId || !name || !role) {
@@ -52,16 +52,14 @@ const MissingAndPreparationOrdersPage = () => {
   };
 
   const marcarComoPreparado = (order: DepotOrderDTO) => {
-    // Aquí podrías integrar lógica real para actualizar el estado
-    //console.log(`Pedido ${order.depotOrderId} marcado como preparado`);
     const { canChange, reason } = ValidationToMissingToPreparation(order);
     if (!canChange) {
       Alert.alert("Acción no permitida", reason || "No se puede actualizar el estado.");
       return;
     }
-    // Continuar con la lógica de marcado
-    console.log(`✅ Pedido ${order.depotOrderId} marcado como preparado`);
-    // Lógica real de cambio de estado acá
+    
+    
+    
   };
 
   if (loading) {

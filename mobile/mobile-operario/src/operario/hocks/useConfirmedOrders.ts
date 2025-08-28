@@ -19,7 +19,7 @@ export const useConfirmedOrders = () => {
             catch(error:any)
             {
                 setError(error);
-                //setConfirmedOrders([]);
+                
 
             }finally{
                 setLoading(false);

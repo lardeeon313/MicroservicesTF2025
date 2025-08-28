@@ -1,6 +1,3 @@
-//En base a lo de checkout, se decidio crear otro listado de pedidos para recibir los 
-//pedidos que tengan status Prepared y SentToBilling
-// ListOfPreparedOrders.tsx
 import { View, Text, Pressable, TouchableOpacity, Modal } from 'react-native';
 import { useState } from 'react';
 import type { DepotOrderDTO } from '../../types/OrderDTO';
@@ -43,7 +40,7 @@ const ListOfPreparedOrders = ({ order, id, customer, onSeeDetail, onSendToBill }
         </TouchableOpacity>
         {order.status !== DepotOrderStatus.SentToBilling && (
           <TouchableOpacity style={{ backgroundColor: '#FF0000', padding: 8, borderRadius: 8 }} onPress={openModal}>
-            <Text style={{ color: '#fff', fontWeight: 'bold' }}>Facturar pedido</Text>
+            <Text style={{ color: '#fff', fontWeight: 'bold' }}>Enviar pedido a facturar</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -64,7 +61,7 @@ const ListOfPreparedOrders = ({ order, id, customer, onSeeDetail, onSendToBill }
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20, width: '100%' }}>
               <Pressable style={[{ flex: 1, marginHorizontal: 5, paddingVertical: 10, borderRadius: 8, alignItems: 'center' }, { backgroundColor: '#4CAF50' }]} onPress={handleConfirm}>
-                <Text style={{ color: '#fff', fontWeight: 'bold' }}>Facturar</Text>
+                <Text style={{ color: '#fff', fontWeight: 'bold' }}>Enviar a facturacion</Text>
               </Pressable>
               <Pressable style={[{ flex: 1, marginHorizontal: 5, paddingVertical: 10, borderRadius: 8, alignItems: 'center' }, { backgroundColor: '#F44336' }]} onPress={closeModal}>
                 <Text style={{ color: '#fff', fontWeight: 'bold' }}>Cancelar</Text>

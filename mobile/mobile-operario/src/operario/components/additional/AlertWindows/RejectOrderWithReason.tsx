@@ -15,7 +15,7 @@ export const handleRejectOrderWithReason = async (
         Alert.alert("Motivo requerido", "Por favor ingresá una razón válida.");
         return;
       }
-      //depuracion:
+      
       console.log("Enviando rechazo con motivo:", {
         reason
       });

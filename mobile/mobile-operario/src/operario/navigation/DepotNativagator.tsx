@@ -1,7 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import type { DepotStackParamList } from "../types/DepotStackType";
 
-//se importata las paginas para colocarlas dentro de los componentes del stack
 import ListofMissingOrdersPage from "../pages/listOrdersPages/ListofMissingOrdersPage";
 import NotificationSectionPage from "../pages/NotificationPages/NotificationSectionPage";
 import DetailOrderPage from "../pages/detailPages/DetailOrderPage";
@@ -9,11 +8,10 @@ import AcceptOrderPage from "../pages/detailPages/AcceptOrderPage";
 import MissingPage from "../pages/NotificationPages/MissingReportPage";
 import ListofOrdersArmPage from "../pages/listOrdersPages/ListofOrdersArmPage";
 import ListOfConfirmedOrdersPage from "../pages/listOrdersPages/ListofConfirmOrdersPage";
-//NUEVA PAGE ; Para ir a los pedidos con statusd Prepared y SentToBilling: 
+ 
 import ListOfPreparedOrdersPage from "../pages/listOrdersPages/ListOfPreparedOrdersPage";
 import OperatorDashboardPage from "../pages/navigationPages/OperatorDashboardPage";
-//import { LoginPage } from "../pages/login/LoginPage";
-//import { RegisterPage } from "../pages/login/RegisterPage";
+
 import LoginPage from "../../Login/pages/LoginPage";
 import RegisterPage from "../../Login/pages/RegisterPage";
 
@@ -67,7 +65,7 @@ export default function DepotNavigator() {
                 component={NotificationSectionPage}
                 options={{ headerShown: false }}
             />
-            {/**LOGIN del OPERARIO */}
+            
             <Stack.Screen
                 name="LoginPage"
                 component={LoginPage}

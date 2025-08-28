@@ -1,5 +1,3 @@
-//Validador que valida que el pedido pase de MissingPRoduct a In Preparacion cuando no tenga ningun
-//faltante. 
 
 import type { DepotOrderDTO } from "../types/OrderDTO";
 import { DepotOrderStatus } from "../types/OrderDTO";

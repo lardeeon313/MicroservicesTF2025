@@ -2,7 +2,7 @@ import React,{useState} from "react";
 import { Alert, Modal, Text, TextInput, View, Button, StyleSheet  } from "react-native";
 
 type ActionCallback = () => void; 
-//Le pide una razon de por que rechazo el pedido que despues sera almacenada 
+ 
 type ActionWithReasonCallBack = (reason: string) => void; 
 
 export const AlertManager = (title:string,message:string,onConfirm:ActionCallback) => {

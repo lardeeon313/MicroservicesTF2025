@@ -15,7 +15,7 @@ export const usePreparedOrders = (operatorUserId:string) => {
             try
             {
                 const data = await  GetPreparedOrdersService(operatorUserId);
-                console.log("Pedidos con status de Prepared y SentToBilling recibidos");
+                
                 setPreparedOrders(
                       data.map(order => ({
                     ...order,

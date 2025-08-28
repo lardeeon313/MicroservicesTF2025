@@ -15,7 +15,7 @@ export const useGetNotificationMissing = (
       setLoading(true);
       try {
         const data = await GetMissingNotifications(depotOrderId, operatorUserId);
-        console.log("✅ Pedido con notificaciones recibido:", data);
+        
         setOrder(data);
       } catch (err: any) {
         setError(err);

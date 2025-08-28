@@ -37,7 +37,3 @@ export const MissingCountContainer: React.FC<Props> = ({ depotOrderId, operatorU
 
   return <MissingCount missings={order.missings} />;
 };
-
-
-
-// This component displays the total count of missing items in a list.

@@ -1,5 +1,3 @@
-//Service que se comunica con el endpoint el cual recibe todos los pedidos que tenga 
-//estatus de Prepared y SentToBilling 
 
 import API from "../../services/axios";
 import { DepotOrderDTO } from "../types/OrderDTO";
@@ -13,7 +11,7 @@ export const GetPreparedOrdersService = async(operatorUserId: string): Promise<D
         });
 
         const allOrders: DepotOrderDTO[] = response.data;
-        console.log("✅ Pedidos recibidos desde el backend:", allOrders);
+        console.log("✅ Pedidos recibidos desde el backend con status SentToBilling y Prepared:", allOrders);
         return allOrders;
     } catch (error) {
         console.error("❌ Momentaneamente no se pueden obtener los pedidos", error);

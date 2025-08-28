@@ -1,7 +1,5 @@
 import { View, Text, TouchableOpacity } from 'react-native';
-import { OrderStatus, type Order } from '../../../otherTypes/OrderType'; // Asegúrate de que la ruta sea correcta
-import NavbarOperator from '../Navbar/NavbarOperator';
-import { ScrollView } from 'react-native';
+
 import { OrderStatusLabels } from '../../constants/UseStatusOrderOperator';
 import { DepotOrderDTO } from '../../types/OrderDTO';
 import { DepotOrderStatus } from '../../types/OrderDTO';
@@ -48,6 +46,3 @@ const ListofConfirmedOrders = ({order,customer,status, onSeeDetail, onAceeptOrde
 }
 
 export default ListofConfirmedOrders;
-
-
-// This component displays a list of confirmed orders with options to view details and emit missing items.

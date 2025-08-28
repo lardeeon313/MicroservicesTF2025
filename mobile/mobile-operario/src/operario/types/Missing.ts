@@ -1,9 +1,7 @@
-//faltante 
-import type { OrderItem } from "../../otherTypes/OrderType";
+
 import { DepotOrderDTO } from "./OrderDTO";
 
-//Nueva interfaz ,es para el endpoint en el cual el operario de deposito le notifica el 
-//faltante al encargado
+
 export interface DepotOrderItemsReportedDto {
     orderItemId: number; 
     productName: string;
@@ -11,7 +9,7 @@ export interface DepotOrderItemsReportedDto {
     packaning?: string | null; 
     quantity: number;
 }
-//ESTE ES EL REQUEST QUE SE COMUNICA CON EL ENDPOINT PARA EMITIR FALTANTE: 
+ 
 export interface ReportOrderMissingRequest {
     depotOrderId: number;
     operatorUserId: string; //Guid

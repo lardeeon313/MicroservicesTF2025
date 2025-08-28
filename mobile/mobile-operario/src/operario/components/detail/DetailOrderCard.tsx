@@ -1,11 +1,11 @@
 import { View, Text, ScrollView ,Image} from 'react-native';
-import CheckList from '../additional/checkList/CheckList';
+
 import { OrderStatusLabels } from '../../constants/UseStatusOrderOperator';
-//NUEVO: 
+
 import { DepotOrderDTO, DepotOrderStatus } from '../../types/OrderDTO';
-//NUEVO: 
+ 
 import ItemOrdersComponent from '../additional/checkList/ItemOrdersComponent';
-//importacion del auth: 
+ 
 import { useAuth } from '../../../Login/context/useAuth';
 
 
@@ -16,8 +16,6 @@ type Props = {
 
 
 const DetailOrderCard = ({order}: Props) => {
-  //const allItemsReady = order.items.every(item => item.isReady === true);
-  //const {TotalProducts} = order.items.reduce((acc,item) => acc + item.quantity, 0);
 
   const { userId, name, role, isAuthenticated, logout } = useAuth();
   
@@ -63,13 +61,13 @@ const DetailOrderCard = ({order}: Props) => {
         </Text>
       </View>
 
-      {/* ✅ FlatList se encarga del scroll */}
+      
       <ItemOrdersComponent
         pedidoItems={order.items.map(item => ({
           id: item.id,
           nombre: item.productName,
           marcado: item.isReady,
-          embalaje: item.packaging, // ✅ NUEVO
+          embalaje: item.packaging, 
           cantidad: item.quantity,
         }))}
         operatorUserId={user.id}
@@ -82,4 +80,3 @@ const DetailOrderCard = ({order}: Props) => {
 }
 
 export default DetailOrderCard;
-// This component displays the details of an order, including the customer information and a checklist of products.

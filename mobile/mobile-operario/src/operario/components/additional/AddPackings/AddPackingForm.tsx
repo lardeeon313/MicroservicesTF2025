@@ -15,7 +15,7 @@ const AddPackingForm: React.FC<Props> = ({ depotOrderItemId, onSuccess, pedidoSt
   const [packagingType, setPackagingType] = useState('');
   const { addPackagings, loading, error, success } = useAddPackagings();
 
-  // Se desactiva si está en estos estados
+  
   const isDisabled = [
     DepotOrderStatus.Assigned,
     DepotOrderStatus.MissingProduct,

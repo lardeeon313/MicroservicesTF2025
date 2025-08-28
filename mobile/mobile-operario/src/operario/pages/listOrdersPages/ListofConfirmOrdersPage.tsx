@@ -8,24 +8,24 @@ import { useConfirmedOrders } from '../../hocks/useConfirmedOrders';
 import type { DepotOrderDTO } from '../../types/OrderDTO';
 import { OrderStatusMap, DepotOrderStatus } from '../../types/OrderDTO';
 import NavbarOperator from '../../components/Navbar/NavbarOperator';
-import { useAuth } from '../../../Login/context/useAuth'; // 👈 usamos auth real
+import { useAuth } from '../../../Login/context/useAuth'; 
 
 
 const ListOfConfirmedOrdersPage = () => {
   const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
   const { confirmedOrders: orders, loading, error } = useConfirmedOrders();
 
-  // 👇 traemos todo desde el contexto de auth
+  
   const { userId, name, role, isAuthenticated, logout } = useAuth();
 
-  // armamos el objeto user solo si existe
+  
   const user = userId && name && role ? { id: userId, name, role } : null;
 
   const handleSeeDetail = (order: DepotOrderDTO) => {
-    if (!user) return; // seguridad extra
+    if (!user) return; 
     navigation.navigate('DetailOrder', {
       orderId: order.depotOrderId,
-      operatorUserId: user.id, // 👈 ahora va el userId real del auth
+      operatorUserId: user.id, 
     });
   };
 
@@ -33,7 +33,7 @@ const ListOfConfirmedOrdersPage = () => {
     navigation.navigate('AcceptOrder', {
       order: {
         ...order,
-        // si tu backend separa nombre y apellido, lo ajustás acá
+        
         customerName: order.customerName.split(' ')[1] ?? '',
       },
     });

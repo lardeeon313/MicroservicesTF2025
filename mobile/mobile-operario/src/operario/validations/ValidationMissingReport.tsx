@@ -1,5 +1,4 @@
-//valida que el texto que ingrese el opeario para notificar el depotmanager no este vacio o sea
-//solo numeros etc. 
+ 
 import { Alert } from "react-native";
 import type { DepotOrderMissingDTO, ReportOrderMissingRequest } from "../types/Missing";
 import { reportOrderMissing } from "../services/GetMissingOrdersService";
@@ -27,21 +26,20 @@ export async function ValidationMissingReport(
     return;
   }
 
-  // ⚠️ Acá sí o sí actualizás el objeto
+  
   const updatedMissing: ReportOrderMissingRequest = {
     ...missing,
     missingDescription: trimmed, 
-    missingReason: missing.missingReason?.trim() || "Faltante detectado", // ← agregado
+    missingReason: missing.missingReason?.trim() || "Faltante detectado", 
   };
 
-  console.log("✅ Enviando descripción:", trimmed);
-  console.log("✅ Enviando objeto missing:", updatedMissing);
+
 
   try {
     const response = await reportOrderMissing(updatedMissing);
     onSuccess(response);
   } catch (error) {
-    console.log("❌ Error real del backend:", error);
+    
     Alert.alert("Error", "No se pudo enviar la notificación.");
   }
 }
