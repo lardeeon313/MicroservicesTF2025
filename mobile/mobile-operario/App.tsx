@@ -17,10 +17,10 @@ export default function App() {
 */
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { AuthProvider } from './src/Login/context/AuthProvider';
+import { AuthProvider } from './src/operario/Login/context/AuthProvider';
 import DepotNavigator from './src/operario/navigation/DepotNativagator';
-import LoginNavigator from './src/Login/LoginNavigator/LoginNavigator';
-import { useAuth } from './src/Login/context/useAuth';
+import LoginNavigator from './src/operario/Login/LoginNavigator/LoginNavigator';
+import { useAuth } from './src/operario/Login/context/useAuth';
 import { View, ActivityIndicator, Text } from 'react-native';
 
 const AppContent = () => {
