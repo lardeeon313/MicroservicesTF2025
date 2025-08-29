@@ -7,7 +7,7 @@ import { register } from '../services/AuthService';
 import { RegisterRequest } from '../types/AuthType';
 import { useNavigation } from '@react-navigation/native';
 
-const logoVerona = require('../../assetsImages/LogoVerona.png');
+const logoVerona = require('../../../assetsImages/LogoVerona.png');
 
 const RegisterForm = () => {
   const navigation = useNavigation();

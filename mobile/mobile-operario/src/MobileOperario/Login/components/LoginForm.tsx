@@ -9,7 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../context/useAuth';
 import { getRoleFromToken } from '../Utils/jwlUtils';
 
-const logoVerona = require('../../assetsImages/LogoVerona.png');
+const logoVerona = require('../../../assetsImages/LogoVerona.png');
 
 const LoginForm = () => {
   const navigation = useNavigation();
