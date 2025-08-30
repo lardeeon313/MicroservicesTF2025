@@ -1,20 +1,4 @@
-/*import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-//import { AuthProvider } from './src/operario/components/login/AuthContext';
-import { AuthProvider } from './src/Login/context/AuthProvider';
-import DepotNavigator from './src/operario/navigation/DepotNativagator';
 
-export default function App() {
-  return (
-    <AuthProvider>
-      <NavigationContainer>
-        <DepotNavigator />
-      </NavigationContainer>
-    </AuthProvider>
-  );
-}
-
-*/
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider } from './src/MobileOperario/Login/context/AuthProvider';

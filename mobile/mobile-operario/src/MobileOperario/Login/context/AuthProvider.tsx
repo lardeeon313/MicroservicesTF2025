@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthContext } from './AuthContext';
-import { getUserIdFromToken, getTokenPayload, getRoleFromToken,getNameFromToken } from '../Utils/jwlUtils';
+import { AuthContext } from './AuthContext'; // Tu import existente
+import { getUserIdFromToken, getRoleFromToken, getNameFromToken } from '../Utils/jwlUtils';
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true); // Nuevo estado
+  const [loading, setLoading] = useState<boolean>(true);
+  //
+  const [updateKey, setUpdateKey] = useState(0);
 
   useEffect(() => {
     const loadToken = async () => {
@@ -18,18 +20,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setToken(storedToken);
           setUserId(getUserIdFromToken(storedToken));
           setRole(getRoleFromToken(storedToken));
-          const payload = getTokenPayload(storedToken);
           setName(getNameFromToken(storedToken));
-          console.log('Token payload:', payload);
-          
         }
       } catch (error) {
         console.error('Error loading token:', error);
       } finally {
-        setLoading(false); // Importante
+        setLoading(false);
       }
     };
-
     loadToken();
   }, []);
 
@@ -39,10 +37,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setToken(newToken);
       setUserId(getUserIdFromToken(newToken));
       setRole(getRoleFromToken(newToken));
-      const payload = getTokenPayload(newToken);
-      setName(payload?.name || null);
+      setName(getNameFromToken(newToken));
+      //
+      setUpdateKey(prevKey => prevKey + 1);
     } catch (error) {
       console.error('Error saving token:', error);
+      throw error;
     }
   };
 
@@ -55,13 +55,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setName(null);
     } catch (error) {
       console.error('Error removing token:', error);
+      throw error;
     }
   };
 
   const isAuthenticated = !!token;
 
   return (
-    <AuthContext.Provider value={{ token, userId, name, role, isAuthenticated, login, logout, loading }}>
+    <AuthContext.Provider
+      value={{
+        token,
+        userId,
+        name,
+        role,
+        isAuthenticated,
+        loading,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

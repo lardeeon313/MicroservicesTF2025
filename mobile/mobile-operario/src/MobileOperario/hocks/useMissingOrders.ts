@@ -27,6 +27,10 @@ export const useMissingOrders = (operatorUserId:string) => {
                 setLoading(false);
             }
         };
+        //
+        if (operatorUserId) {
+            fetchArmOrders();
+        }
         fetchArmOrders();
     }, [operatorUserId]); 
 

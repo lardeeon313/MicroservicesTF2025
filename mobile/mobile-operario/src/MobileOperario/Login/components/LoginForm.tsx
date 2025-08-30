@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../context/useAuth';
 import { getRoleFromToken } from '../Utils/jwlUtils';
+import { StackActions } from '@react-navigation/native';
 
 const logoVerona = require('../../../assetsImages/LogoVerona.png');
 
@@ -16,46 +17,53 @@ const LoginForm = () => {
   const { login: loginContext } = useAuth();
 
   const handleSubmit = async (values: LoginRequest) => {
-    try {
-      const result = await login(values);
-      await AsyncStorage.setItem('token', result.token);
-      loginContext(result.token);
+      try {
+    // 1. Llamada al servicio de login
+    const result = await login(values);
 
-      const role = getRoleFromToken(result.token);
-      if (!role) {
-        Alert.alert("Error", "Rol no encontrado en el token");
-        return;
-      }
+    // 2. Guardar token en storage
+    await AsyncStorage.setItem('token', result.token);
 
-      Alert.alert("Éxito", "Inicio de sesión exitoso!");
+    // 3. Actualizar el contexto y esperar que se complete
+    await loginContext(result.token);
 
-      switch (role) {
-        case "Admin":
-          navigation.navigate('AdminDashboard' as never);
-          break;
-        case "SalesStaff":
-          navigation.navigate('SalesHome' as never);
-          break;
-        case "DepotManager":
-          navigation.navigate('Depot' as never);
-          break;
-        case "DepotOperator":
-          navigation.navigate('Operator' as never);
-          break;
-        case "Delivery":
-          navigation.navigate('Delivery' as never);
-          break;
-        case "VerificationStaff":
-          navigation.navigate('Verification' as never);
-          break;
-        default:
-          navigation.navigate('Home' as never);
-          break;
-      }
-
-    } catch (error: any) {
-      Alert.alert("Error", error?.message || "Ocurrió un error inesperado");
+    // 4. Extraer rol del token
+    const role = getRoleFromToken(result.token);
+    if (!role) {
+      Alert.alert("Error", "Rol no encontrado en el token");
+      return;
     }
+
+    Alert.alert("Éxito", "Inicio de sesión exitoso!");
+
+    // 5. Navegar según rol (con replace)
+    switch (role) {
+      case "Admin":
+        navigation.dispatch(StackActions.replace('AdminDashboard'));
+        break;
+      case "SalesStaff":
+        navigation.dispatch(StackActions.replace('SalesHome'));
+        break;
+      case "DepotManager":
+        navigation.dispatch(StackActions.replace('Depot'));
+        break;
+      case "DepotOperator":
+        navigation.dispatch(StackActions.replace('Operator')); // 👈 tu dashboard de operario
+        break;
+      case "Delivery":
+        navigation.dispatch(StackActions.replace('Delivery'));
+        break;
+      case "VerificationStaff":
+        navigation.dispatch(StackActions.replace('Verification'));
+        break;
+      default:
+        navigation.dispatch(StackActions.replace('Home'));
+        break;
+    }
+
+  } catch (error: any) {
+    Alert.alert("Error", error?.message || "Ocurrió un error inesperado");
+  }
   };
 
   return (
