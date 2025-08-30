@@ -55,3 +55,19 @@ export const getInvoicedOrdersByCustomer = async (customerName: string): Promise
 export const updateInvoicedItemPrice = async (payload: { billingOrderId: number; itemId: number; newUnitPrice: number }): Promise<void> => {
   await axios.put('/depot/billingmanager/update-invoiced-item-price', payload);
 }; 
+
+//: Service para exportar pdf , excel y word: 
+
+export const exportInvoice = async (billingOrderId: number, type: number) => {
+  try{
+      const response = await axios.get('/depot/billingmanager/export-invoice', {
+      params: { billingOrderId, type },
+      responseType: "blob",
+    });
+
+    return new Blob([response.data]);
+  }catch (error){
+    console.error("Error al exportar la factura:", error);
+    throw error;
+  }
+}
