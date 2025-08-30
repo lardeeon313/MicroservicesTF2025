@@ -21,6 +21,15 @@ function InvoicedOrderDetailsPage() {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
+
+    //Bloquea la accion de modificar otra vez el precio de algun producto de dicho pedido
+    const locked = localStorage.getItem(`order-${id}-locked`);
+    if (locked === "true") {
+      setEditDisabled(true);
+    }
+    //
+
+
     getInvoicedOrderById(Number(id))
       .then(data => {
         setOrder(data);
@@ -59,10 +68,18 @@ function InvoicedOrderDetailsPage() {
       }
       const refreshedOrder = await getInvoicedOrderById(Number(order.depotOrderId));
       setOrder(refreshedOrder);
+
+
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 1500);
+
+
       setEditing(false);
       setEditDisabled(true);
+
+      localStorage.setItem(`order-${order.depotOrderId}-locked`, "true");
+
+
     } catch (err) {
       setSaveError('Error al actualizar los precios.');
     } finally {
@@ -152,6 +169,12 @@ function InvoicedOrderDetailsPage() {
                       )}
                       {editing && (
                         <span className="text-xs text-gray-500 italic">Editando...</span>
+                      )}
+                      {/* Mensaje de bloqueo */}
+                      {editDisabled && (
+                        <div className="text-center text-sm text-gray-700 bg-yellow-100 border border-yellow-300 rounded-md py-2 mb-4">
+                          ⚠️ Solo se puede modificar esta orden una vez. No se pueden volver a editar los precios.
+                        </div>
                       )}
                     </td>
                   </tr>
