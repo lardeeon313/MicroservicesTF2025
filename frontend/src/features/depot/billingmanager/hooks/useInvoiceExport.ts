@@ -5,8 +5,8 @@ import { exportInvoice } from "../services/OrderService";
 const getExtension = (type: number) => {
   switch (type) {
     case 0: return "pdf";
-    case 1: return "docx";
-    case 2: return "xlsx";
+    case 1: return "xlsx";
+    case 2: return "docx";
     default: return "bin";
   }
 };

@@ -269,24 +269,6 @@ const InvoiceOneDetailPage = () => {
               <button
                 disabled={exporting}
                 onClick={() => handleExport(invoice.billingOrderId, 1)}
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {exporting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Exportando...
-                  </>
-                ) : (
-                  <>
-                    <span className="mr-2">📝</span>
-                    Exportar DOCX
-                  </>
-                )}
-              </button>
-              
-              <button
-                disabled={exporting}
-                onClick={() => handleExport(invoice.billingOrderId, 2)}
                 className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {exporting ? (
@@ -298,6 +280,24 @@ const InvoiceOneDetailPage = () => {
                   <>
                     <span className="mr-2">📊</span>
                     Exportar XLSX
+                  </>
+                )}
+              </button>
+              
+              <button
+                disabled={exporting}
+                onClick={() => handleExport(invoice.billingOrderId, 2)}
+                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {exporting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Exportando...
+                  </>
+                ) : (
+                  <>
+                    <span className="mr-2">📝</span>
+                    Exportar DOCX
                   </>
                 )}
               </button>

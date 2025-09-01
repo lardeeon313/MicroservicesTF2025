@@ -1,87 +1,152 @@
 ﻿using DepotService.Domain.Entities;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Xceed.Words.NET;
-using Xceed.Document.NET;
+using System.Linq;
 
 namespace DepotService.Infraestructure.Documents.Word
 {
-    public class InvoiceWordGenerator : IInvoiceDocumentGenerator
+    public class InvoiceWordGenerator : IInvoiceWordGenerator
     {
         public byte[] Generate(DepotOrderEntity order)
         {
-            if (order is null)
+            if (order == null)
                 throw new ArgumentNullException(nameof(order));
 
-            var items = order.Items ?? new List<DepotOrderItemEntity>();
+            // Asegúrate de que items no sea null y conviértelo a una lista
+            var items = order.Items?.ToList() ?? new List<DepotOrderItemEntity>();
 
-            using var ms = new MemoryStream();
-            using (var doc = DocX.Create(ms)) // no toca disco
+            using (MemoryStream ms = new MemoryStream())
             {
-                // Título
-                doc.InsertParagraph("Factura")
-                   .FontSize(20)
-                   .Bold()
-                   .Alignment = Alignment.center;
-
-                // Datos básicos
-                doc.InsertParagraph($"Invoice ID: {order.DepotOrderId}");
-                doc.InsertParagraph($"Customer: {order.CustomerName ?? "-"}");
-                doc.InsertParagraph($"Date: {DateTime.Now:dd/MM/yyyy}");
-                doc.InsertParagraph("");
-
-                // Siempre al menos 1 fila de ítems para no romper índices
-                int itemRows = Math.Max(items.Count, 1);
-                var table = doc.AddTable(itemRows + 2, 6); // header + items + total
-                table.Design = TableDesign.TableGrid;
-
-                // Encabezados
-                table.Rows[0].Cells[0].Paragraphs[0].Append("Item ID");
-                table.Rows[0].Cells[1].Paragraphs[0].Append("Product Name");
-                table.Rows[0].Cells[2].Paragraphs[0].Append("Brand");
-                table.Rows[0].Cells[3].Paragraphs[0].Append("Quantity");
-                table.Rows[0].Cells[4].Paragraphs[0].Append("Unit Price");
-                table.Rows[0].Cells[5].Paragraphs[0].Append("Total");
-
-                // Filas
-                int r = 1;
-                if (items.Count == 0)
+                // Crea el documento Word
+                using (WordprocessingDocument doc = WordprocessingDocument.Create(ms, WordprocessingDocumentType.Document))
                 {
-                    // Fila vacía para que Word no se ponga histérico
-                    for (int c = 0; c < 6; c++)
-                        table.Rows[r].Cells[c].Paragraphs[0].Append("-");
-                    r++;
-                }
-                else
-                {
-                    foreach (var it in items)
-                    {
-                        var qty = it?.Quantity ?? 0;
-                        var unit = (decimal)(it?.UnitPrice ?? 0m);
-                        var total = qty * unit;
+                    // Agrega el contenido principal del documento
+                    MainDocumentPart mainPart = doc.AddMainDocumentPart();
+                    mainPart.Document = new Document();
+                    Body body = mainPart.Document.AppendChild(new Body());
 
-                        table.Rows[r].Cells[0].Paragraphs[0].Append(it?.Id.ToString() ?? "-");
-                        table.Rows[r].Cells[1].Paragraphs[0].Append(it?.ProductName ?? "-");
-                        table.Rows[r].Cells[2].Paragraphs[0].Append(it?.ProductBrand ?? "-");
-                        table.Rows[r].Cells[3].Paragraphs[0].Append(qty.ToString());
-                        table.Rows[r].Cells[4].Paragraphs[0].Append(unit.ToString("C"));
-                        table.Rows[r].Cells[5].Paragraphs[0].Append(total.ToString("C"));
-                        r++;
-                    }
+                    // --- Título ---
+                    Paragraph titlePara = body.AppendChild(new Paragraph());
+                    Run titleRun = titlePara.AppendChild(new Run());
+                    titleRun.AppendChild(new Text("Factura"));
+                    titlePara.ParagraphProperties = new ParagraphProperties(
+                        new Justification() { Val = JustificationValues.Center }
+                    );
+                    titleRun.RunProperties = new RunProperties(
+                        new FontSize() { Val = "36" },
+                        new Bold()
+                    );
+
+                    // --- Datos básicos ---
+                    body.AppendChild(CreateParagraph($"Invoice ID: {order.DepotOrderId}"));
+                    body.AppendChild(CreateParagraph($"Cliente: {order.CustomerName ?? "-"}"));
+                    body.AppendChild(CreateParagraph($"Fecha: {DateTime.Now:dd/MM/yyyy}"));
+
+                    // --- Tabla de items ---
+                    Table table = CreateInvoiceTable(order, items);
+                    body.AppendChild(table);
+
+                    // Guarda los cambios en el documento
+                    mainPart.Document.Save();
                 }
 
-                // Total
-                table.Rows[itemRows + 1].Cells[4].Paragraphs[0].Append("Total Amount $:");
-                table.Rows[itemRows + 1].Cells[5].Paragraphs[0].Append((order.TotalAmount).ToString("C"));
+                return ms.ToArray();
+            }
+        }
 
-                doc.InsertTable(table);
+        // Método auxiliar para crear un párrafo con texto
+        private static Paragraph CreateParagraph(string text)
+        {
+            return new Paragraph(new Run(new Text(text)));
+        }
 
-                // Guardar al stream
-                doc.Save();
+        // Método auxiliar para crear la tabla de la factura
+        private static Table CreateInvoiceTable(DepotOrderEntity order, List<DepotOrderItemEntity> items)
+        {
+            Table table = new Table();
+
+            // --- Encabezados de la tabla ---
+            TableRow headerRow = new TableRow();
+            headerRow.Append(
+                CreateTableCell("Item ID", true),
+                CreateTableCell("Producto", true),
+                CreateTableCell("Marca", true),
+                CreateTableCell("Cantidad", true),
+                CreateTableCell("Precio unitario", true),
+                CreateTableCell("Total", true)
+            );
+            table.AppendChild(headerRow);
+
+            // --- Filas de la tabla (items) ---
+            if (!items.Any())
+            {
+                TableRow emptyRow = new TableRow();
+                for (int i = 0; i < 6; i++)
+                {
+                    emptyRow.AppendChild(CreateTableCell("-"));
+                }
+                table.AppendChild(emptyRow);
+            }
+            else
+            {
+                foreach (var item in items)
+                {
+                    var qty = item?.Quantity ?? 0;
+                    var unitPrice = item != null ? (decimal)(item.UnitPrice ?? 0m) : 0m;
+                    var total = qty * unitPrice;
+
+                    TableRow itemRow = new TableRow();
+                    itemRow.Append(
+                        CreateTableCell(item?.Id.ToString() ?? "-"),
+                        CreateTableCell(item?.ProductName ?? "-"),
+                        CreateTableCell(item?.ProductBrand ?? "-"),
+                        CreateTableCell(qty.ToString()),
+                        CreateTableCell(unitPrice.ToString("C")),
+                        CreateTableCell(total.ToString("C"))
+                    );
+                    table.AppendChild(itemRow);
+                }
             }
 
-            return ms.ToArray(); // byte[] listo para mandar
+            // --- Fila del total ---
+            TableRow totalRow = new TableRow();
+            for (int i = 0; i < 4; i++)
+            {
+                totalRow.AppendChild(CreateTableCell(""));
+            }
+            totalRow.Append(
+                CreateTableCell("Monto Total $:", true),
+                CreateTableCell(order.TotalAmount.ToString("C"), true)
+            );
+            table.AppendChild(totalRow);
+
+            return table;
+        }
+
+        // Método auxiliar para crear una celda de tabla
+        private static TableCell CreateTableCell(string text, bool isHeader = false)
+        {
+            TableCell cell = new TableCell(
+                new Paragraph(
+                    new Run(
+                        new Text(text)
+                    )
+                )
+            );
+
+            if (isHeader)
+            {
+                cell.TableCellProperties = new TableCellProperties(
+                    new TableCellVerticalAlignment { Val = TableVerticalAlignmentValues.Center },
+                    new Shading { Val = ShadingPatternValues.Clear, Fill = "auto" }
+                );
+            }
+
+            return cell;
         }
     }
 }
