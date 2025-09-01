@@ -59,14 +59,14 @@ export const updateInvoicedItemPrice = async (payload: { billingOrderId: number;
 //: Service para exportar pdf , excel y word: 
 
 export const exportInvoice = async (billingOrderId: number, type: number) => {
-  try{
-      const response = await axios.get('/depot/billingmanager/export-invoice', {
+  try {
+    const response = await axios.get('/depot/billingmanager/export-invoice', {
       params: { billingOrderId, type },
       responseType: "blob",
     });
 
-    return new Blob([response.data]);
-  }catch (error){
+    return response.data; // 👈 YA es un Blob
+  } catch (error) {
     console.error("Error al exportar la factura:", error);
     throw error;
   }

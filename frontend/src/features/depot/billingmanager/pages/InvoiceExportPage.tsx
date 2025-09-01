@@ -12,17 +12,27 @@ type InvoicedOrder = {
 
 const InvoicedOrdersPage = () => {
   const [orders, setOrders] = useState<InvoicedOrder[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    getAllInvoicedOrders()
+  getAllInvoicedOrders()
     .then((data) => {
       console.log("Datos API crudos:", data);
-      setOrders(data);
+
+      // Mapeo para usar los campos correctos
+      const mappedOrders = data.map((item) => ({
+        billingOrderId: item.depotOrderId,  // Ajuste de nombre
+        customerName: item.customerName,
+        date: item.orderDate,
+        totalAmount: item.totalAmount
+      }));
+
+      setOrders(mappedOrders);
     })
     .catch((err) => console.error("Error cargando pedidos:", err));
-  }, []);
+    }, []);
+
 
   if (loading) {
     return (
@@ -44,6 +54,16 @@ const InvoicedOrdersPage = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
+        {/* Back Button */}
+        <div className="mb-6">
+          <button
+            onClick={() => navigate("/depot/billingmanager")}
+            className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-red-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+          >
+            <span className="mr-2">←</span>
+            Volver atrás
+          </button>
+        </div>
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
             Facturas Emitidas
           </h1>
@@ -149,7 +169,7 @@ const InvoicedOrdersPage = () => {
                     
                   {orders.map((order, index) => (
                     <tr 
-                      key={order.billingOrderId} 
+                      key={order.billingOrderId || index} 
                       className={`hover:bg-slate-50 transition-colors duration-150 ${
                         index % 2 === 0 ? 'bg-white' : 'bg-slate-25'
                       }`}
