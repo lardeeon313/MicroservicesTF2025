@@ -23,73 +23,283 @@ namespace DepotService.Infraestructure.Documents.Pdf
             {
                 container.Page(page =>
                 {
-                    page.Margin(50);
-                    page.Header().Text($"Factura #{order.DepotOrderId}").FontSize(20).Bold().AlignCenter();
+                    page.Margin(40);
+                    page.Size(PageSizes.A4);
 
-                    page.Content().Element(c =>
-                    {
-                        c.Column(column =>
-                        {
-                            column.Spacing(10);
-                            column.Item().Text($"Cliente: {order.CustomerName ?? "N/D"}");
-                            column.Item().Text($"Email: {order.CustomerEmail ?? "N/D"}");
-                            column.Item().Text($"Fecha de Pedido: {order.OrderDate:dd/MM/yyyy}");
-                            column.Item().Text($"Teléfono: {order.PhoneNumber ?? "N/D"}");
+                    // Header con diseño profesional
+                    page.Header().Element(HeaderSection);
 
-                            column.Item().LineHorizontal(1);
+                    // Contenido principal
+                    page.Content().Element(content => ContentSection(content, order));
 
-                            column.Item().Table(table =>
-                            {
-                                table.ColumnsDefinition(cols =>
-                                {
-                                    cols.RelativeColumn(3); // Producto
-                                    cols.RelativeColumn(2); // Marca
-                                    cols.RelativeColumn(1); // Cantidad
-                                    cols.RelativeColumn(2); // Precio Unitario
-                                    cols.RelativeColumn(2); // Subtotal
-                                });
-
-                                table.Header(header =>
-                                {
-                                    header.Cell().Text("Producto").Bold();
-                                    header.Cell().Text("Marca").Bold();
-                                    header.Cell().Text("Cantidad").Bold();
-                                    header.Cell().Text("P. Unitario").Bold();
-                                    header.Cell().Text("Subtotal").Bold();
-                                });
-
-                                if (order.Items != null && order.Items.Any())
-                                {
-                                    foreach (var item in order.Items)
-                                    {
-                                        table.Cell().Text(item?.ProductName ?? "N/D");
-                                        table.Cell().Text(item?.ProductBrand ?? "N/D");
-                                        table.Cell().Text(item?.Quantity.ToString() ?? "0");
-                                        table.Cell().Text($"${(item?.UnitPrice ?? 0):N2}");
-                                        table.Cell().Text($"${((item?.UnitPrice ?? 0) * (item?.Quantity ?? 0)):N2}");
-                                    }
-                                }
-                                else
-                                {
-                                    table.Cell().ColumnSpan(5).Text("No hay productos en esta orden.").Bold();
-                                }
-                            });
-
-                            column.Item().PaddingTop(15).AlignRight().Text($"TOTAL: ${(order.TotalAmount > 0 ? order.TotalAmount : 0):N2}").FontSize(14).Bold();
-                        });
-                    });
-
-                    page.Footer().AlignCenter().Text(txt =>
-                    {
-                        txt.Span("Documento generado automáticamente - ");
-                        txt.CurrentPageNumber();
-                        txt.Span(" de ");
-                        txt.TotalPages();
-                        txt.Span($" - {DateTime.Now:dd/MM/yyyy HH:mm}");
-                    });
+                    // Footer mejorado
+                    page.Footer().Element(FooterSection);
                 });
             }).GeneratePdf();
         }
-    }
-}
 
+        private void HeaderSection(IContainer container)
+        {
+            container.Background(Colors.Grey.Lighten4)
+                    .Padding(20)
+                    .Column(column =>
+                    {
+                        // Título principal
+                        column.Item()
+                              .AlignCenter()
+                              .Text("FACTURA")
+                              .FontSize(28)
+                              .Bold()
+                              .FontColor(Colors.Red.Darken2);
+
+                        // Línea decorativa
+                        column.Item()
+                              .PaddingTop(5)
+                              .Height(3)
+                              .Background(Colors.Red.Darken2);
+                    });
+        }
+
+        private void ContentSection(IContainer container, DepotOrderEntity order)
+        {
+            container.PaddingVertical(20)
+                    .Column(column =>
+                    {
+                        column.Spacing(15);
+
+                        // Información de la factura y cliente
+                        column.Item().Element(content => InvoiceInfoSection(content, order));
+
+                        // Separador
+                        column.Item().PaddingVertical(10).LineHorizontal(2).LineColor(Colors.Grey.Medium);
+
+                        // Tabla de productos
+                        column.Item().Element(content => ProductsTable(content, order));
+
+                        // Total
+                        column.Item().Element(content => TotalSection(content, order));
+                    });
+        }
+
+        private void InvoiceInfoSection(IContainer container, DepotOrderEntity order)
+        {
+            container.Row(row =>
+            {
+                // Información de la factura (lado izquierdo)
+                row.RelativeItem()
+                   .Background(Colors.Red.Lighten4)
+                   .Padding(15)
+                   .Column(column =>
+                   {
+                       column.Item().Text("INFORMACIÓN DE FACTURA")
+                             .FontSize(12)
+                             .Bold()
+                             .FontColor(Colors.Red.Darken2);
+
+                       column.Item().PaddingTop(8).Text($"Factura N°: {order.DepotOrderId}")
+                             .FontSize(11)
+                             .Bold();
+
+                       column.Item().Text($"Fecha: {order.OrderDate:dd/MM/yyyy}")
+                             .FontSize(10);
+                   });
+
+                row.ConstantItem(20); // Espacio entre columnas
+
+                // Información del cliente (lado derecho)
+                row.RelativeItem()
+                   .Background(Colors.Grey.Lighten4)
+                   .Padding(15)
+                   .Column(column =>
+                   {
+                       column.Item().Text("INFORMACIÓN DEL CLIENTE")
+                             .FontSize(12)
+                             .Bold()
+                             .FontColor(Colors.Grey.Darken2);
+
+                       column.Item().PaddingTop(8).Text($"Cliente: {order.CustomerName ?? "N/D"}")
+                             .FontSize(10)
+                             .Bold();
+
+                       column.Item().Text($"Email: {order.CustomerEmail ?? "N/D"}")
+                             .FontSize(10);
+
+                       column.Item().Text($"Teléfono: {order.PhoneNumber ?? "N/D"}")
+                             .FontSize(10);
+                   });
+            });
+        }
+
+        private void ProductsTable(IContainer container, DepotOrderEntity order)
+        {
+            container.Table(table =>
+            {
+                table.ColumnsDefinition(cols =>
+                {
+                    cols.RelativeColumn(3); // Producto
+                    cols.RelativeColumn(2); // Marca
+                    cols.RelativeColumn(1); // Cantidad
+                    cols.RelativeColumn(2); // Precio Unitario
+                    cols.RelativeColumn(2); // Subtotal
+                });
+
+                // Header de la tabla con estilo
+                table.Header(header =>
+                {
+                    header.Cell()
+                          .Background(Colors.Green.Darken1)
+                          .Padding(10)
+                          .Text("Producto")
+                          .FontColor(Colors.White)
+                          .FontSize(11)
+                          .Bold();
+
+                    header.Cell()
+                          .Background(Colors.Green.Darken1)
+                          .Padding(10)
+                          .Text("Marca")
+                          .FontColor(Colors.White)
+                          .FontSize(11)
+                          .Bold();
+
+                    header.Cell()
+                          .Background(Colors.Green.Darken1)
+                          .Padding(10)
+                          .AlignCenter()
+                          .Text("Cant.")
+                          .FontColor(Colors.White)
+                          .FontSize(11)
+                          .Bold();
+
+                    header.Cell()
+                          .Background(Colors.Green.Darken1)
+                          .Padding(10)
+                          .AlignRight()
+                          .Text("P. Unitario")
+                          .FontColor(Colors.White)
+                          .FontSize(11)
+                          .Bold();
+
+                    header.Cell()
+                          .Background(Colors.Green.Darken1)
+                          .Padding(10)
+                          .AlignRight()
+                          .Text("Subtotal")
+                          .FontColor(Colors.White)
+                          .FontSize(11)
+                          .Bold();
+                });
+
+                // Filas de productos con alternancia de colores
+                if (order.Items != null && order.Items.Any())
+                {
+                    var items = order.Items.ToArray();
+                    for (int i = 0; i < items.Length; i++)
+                    {
+                        var item = items[i];
+                        var backgroundColor = i % 2 == 0 ? Colors.White : Colors.Grey.Lighten5;
+
+                        table.Cell()
+                             .Background(backgroundColor)
+                             .Padding(8)
+                             .Text(item?.ProductName ?? "N/D")
+                             .FontSize(10);
+
+                        table.Cell()
+                             .Background(backgroundColor)
+                             .Padding(8)
+                             .Text(item?.ProductBrand ?? "N/D")
+                             .FontSize(10);
+
+                        table.Cell()
+                             .Background(backgroundColor)
+                             .Padding(8)
+                             .AlignCenter()
+                             .Text(item?.Quantity.ToString() ?? "0")
+                             .FontSize(10);
+
+                        table.Cell()
+                             .Background(backgroundColor)
+                             .Padding(8)
+                             .AlignRight()
+                             .Text($"${(item?.UnitPrice ?? 0):N2}")
+                             .FontSize(10);
+
+                        table.Cell()
+                             .Background(backgroundColor)
+                             .Padding(8)
+                             .AlignRight()
+                             .Text($"${((item?.UnitPrice ?? 0) * (item?.Quantity ?? 0)):N2}")
+                             .FontSize(10)
+                             .Bold();
+                    }
+                }
+                else
+                {
+                    table.Cell()
+                         .ColumnSpan(5)
+                         .Background(Colors.Red.Lighten4)
+                         .Padding(20)
+                         .AlignCenter()
+                         .Text("No hay productos en esta orden")
+                         .FontSize(12)
+                         .Italic()
+                         .FontColor(Colors.Red.Darken2);
+                }
+            });
+        }
+
+        private void TotalSection(IContainer container, DepotOrderEntity order)
+        {
+            container.PaddingTop(20)
+                    .AlignRight()
+                    .Width(200)
+                    .Background(Colors.Red.Darken1)
+                    .Padding(15)
+                    .Column(column =>
+                    {
+                        column.Item()
+                              .Text("TOTAL A PAGAR")
+                              .FontColor(Colors.White)
+                              .FontSize(12)
+                              .Bold()
+                              .AlignCenter();
+
+                        column.Item()
+                              .PaddingTop(5)
+                              .Text($"${(order.TotalAmount > 0 ? order.TotalAmount : 0):N2}")
+                              .FontColor(Colors.White)
+                              .FontSize(20)
+                              .Bold()
+                              .AlignCenter();
+                    });
+        }
+
+        private void FooterSection(IContainer container)
+        {
+            container.Background(Colors.Grey.Lighten4)
+                    .Padding(10)
+                    .Row(row =>
+                    {
+                        row.RelativeItem()
+                           .Text("Documento generado automáticamente")
+                           .FontSize(8)
+                           .FontColor(Colors.Grey.Darken1);
+
+                        row.RelativeItem()
+                           .AlignRight()
+                           .Text(text =>
+                           {
+                               text.DefaultTextStyle(TextStyle.Default.FontSize(8).FontColor(Colors.Grey.Darken1));
+                               text.Span("Página ");
+                               text.CurrentPageNumber();
+                               text.Span(" de ");
+                               text.TotalPages();
+                               text.Span($" - {DateTime.Now:dd/MM/yyyy HH:mm}");
+                           });
+                    });
+
+        }
+    }
+
+}
