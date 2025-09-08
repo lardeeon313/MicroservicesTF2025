@@ -1,20 +1,33 @@
-//Represta cada uno de los items para agregar: 
-export interface AddPackingRequest {
-    depotOrderItemId: number; 
-    packagingType: string;  
+// Tipos para agregar empaque a los items de pedido
+export interface AddPackagingRequest {
+    depotOrderItemId: number;
+    packagingType: string;
 }
 
-export interface AddPackingCommand {
-    packagingItems : AddPackingRequest[];
+// Comando para agregar múltiples empaques (según el backend)
+export interface AddPackagingCommand {
+    packagingItems: AddPackagingRequest[];
 }
 
-//Para marcar un producto del pedido como check
 export interface MarkItemCommand {
-    OrderItemId: number; 
-    OperatorUserId: string; 
+    orderItemId: number; // Corregido: debe ser OrderItemId según el backend
+    operatorUserId: string; // Corregido: debe ser OperatorUserId según el backend
 }
 
-//para desmarcar un producto dentro del pedido
 export interface UnMarkItemReadyCommand {
-    OrderItemId: number;
+    orderItemId: number; // Corregido: debe ser OrderItemId según el backend
 }
+
+// Interfaz para la respuesta del servicio
+export interface AddPackagingResponse {
+    success: boolean;
+    message: string;
+    orderItemId?: number;
+}
+
+// Comando para rechazar pedidos (movido a RejectOrder.ts)
+// export interface RejectOrderCommand {
+//     depotOrderId: number;
+//     operatorUserId: string;
+//     rejectionReason: string;
+// }

@@ -8,7 +8,7 @@ export interface DepotOrderItemsReportedDto {
     orderItemId: number; 
     productName: string;
     productBrand: string; 
-    packaning?: string | null; 
+    packaging?: string | null;
     quantity: number;
 }
 //ESTE ES EL REQUEST QUE SE COMUNICA CON EL ENDPOINT PARA EMITIR FALTANTE: 
@@ -22,21 +22,22 @@ export interface ReportOrderMissingRequest {
 }
 
 export interface DepotOrderMissingItem {
-    orderItemId: number;
+    id: number;
+    depotOrderItemId: number;
     productName: string;
     productBrand: string;
     packaging?: string | null;
-    quantity: number;
+    missingQuantity: number; // Corresponde a MissingQuantity en el backend
 }
 
 export interface DepotOrderMissingDTO {
     missingId: number;
-    SalesOrderId: number;
+    salesOrderId: number; // Corregido: SalesOrderId -> salesOrderId
     missingReason?: string | null;
     missingDescription?: string | null;
     descriptionResolution?: string | null;
     missingItems: DepotOrderMissingItem[];
     missingDate: string; // o Date
-    DepotOrderId: number;
-    DepotOrder: DepotOrderDTO;
+    depotOrderId: number; // Corregido: DepotOrderId -> depotOrderId
+    depotOrder: DepotOrderDTO; // Corregido: DepotOrder -> depotOrder
 }

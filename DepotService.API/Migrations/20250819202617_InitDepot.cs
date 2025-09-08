@@ -50,6 +50,7 @@ namespace DepotService.API.Migrations
                     DeliveryDetail = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     OrderDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    DeliveryDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
                     AssignedOperatorId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
@@ -114,6 +115,30 @@ namespace DepotService.API.Migrations
                     table.ForeignKey(
                         name: "FK_DepotOrderMissings_DepotOrders_DepotOrderId",
                         column: x => x.DepotOrderId,
+                        principalTable: "DepotOrders",
+                        principalColumn: "DepotOrderId",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "OrderStatusHistories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    OldStatus = table.Column<int>(type: "int", nullable: false),
+                    NewStatus = table.Column<int>(type: "int", nullable: false),
+                    ChangedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    AverageDuration = table.Column<double>(type: "double", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderStatusHistories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderStatusHistories_DepotOrders_OrderId",
+                        column: x => x.OrderId,
                         principalTable: "DepotOrders",
                         principalColumn: "DepotOrderId",
                         onDelete: ReferentialAction.Cascade);
@@ -222,6 +247,11 @@ namespace DepotService.API.Migrations
                 column: "AssignedDepotTeamId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_OrderStatusHistories_OrderId",
+                table: "OrderStatusHistories",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TeamAssignments_DepotTeamId",
                 table: "TeamAssignments",
                 column: "DepotTeamId");
@@ -232,6 +262,9 @@ namespace DepotService.API.Migrations
         {
             migrationBuilder.DropTable(
                 name: "DepotOrderMissingItem");
+
+            migrationBuilder.DropTable(
+                name: "OrderStatusHistories");
 
             migrationBuilder.DropTable(
                 name: "TeamAssignments");

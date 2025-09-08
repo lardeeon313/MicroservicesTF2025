@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getInvoicedOrderById, updateInvoicedItemPrice } from '../services/OrderService';
+import { getInvoicedOrderById, updateInvoicedItemPrice, exportInvoiceToPdf } from '../services/OrderService';
 import BackButton from '../components/BackButton';
 import { Pencil } from "lucide-react"; // ícono moderno de lápiz
 
 //MEJORAS APLICADAS : 
+
 
 function InvoicedOrderDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -70,6 +71,24 @@ function InvoicedOrderDetailsPage() {
     }
   };
 
+  // Descargar PDF de la factura
+  const handleDownloadPdf = async () => {
+    if (!order) return;
+    try {
+      const blob = await exportInvoiceToPdf(order.depotOrderId, 'Pdf');
+      const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Invoice_${order.depotOrderId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('No se pudo descargar el PDF de la factura.');
+    }
+  };
+
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-6">
@@ -82,6 +101,19 @@ function InvoicedOrderDetailsPage() {
 
       {!loading && !error && order && (
         <div className="space-y-6 mt-10 w-full">
+          {/* Botón para descargar PDF de la factura */}
+          <div className="flex justify-end mb-2">
+            <button
+              className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg shadow font-bold transition flex items-center gap-2"
+              onClick={handleDownloadPdf}
+              type="button"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5v-9m0 9l-3.75-3.75M12 16.5l3.75-3.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Descargar PDF
+            </button>
+          </div>
           {/* Datos del cliente */}
           <div className="grid grid-cols-2 gap-6">
             <div>
@@ -137,7 +169,11 @@ function InvoicedOrderDetailsPage() {
                       )}
                     </td>
                     <td className="px-4 py-3 font-semibold text-gray-900">
-                      ${(editing ? editPrices[item.id] : item.unitPrice) * item.quantity}
+                      {(() => {
+                        const price = editing ? editPrices[item.id] : item.unitPrice;
+                        const subtotal = (!isNaN(price) ? price : 0) * item.quantity;
+                        return `$${subtotal.toFixed(2)}`;
+                      })()}
                     </td>
                     <td className="px-4 py-3 text-center">
                       {!editing && !editDisabled && (
@@ -178,10 +214,13 @@ function InvoicedOrderDetailsPage() {
           <div className="flex justify-end items-center gap-4 mt-4">
             <span className="text-lg font-bold">Total:</span>
             <span className="text-2xl font-bold text-green-700">
-              ${order.items.reduce((acc: number, i: any) => {
-                const price = editing ? editPrices[i.id] : i.unitPrice;
-                return acc + (isNaN(price) ? 0 : price) * i.quantity;
-              }, 0).toFixed(2)}
+              {(() => {
+                const total = order.items.reduce((acc: number, i: any) => {
+                  const price = editing ? editPrices[i.id] : i.unitPrice;
+                  return acc + (!isNaN(price) ? price : 0) * i.quantity;
+                }, 0);
+                return `$${total.toFixed(2)}`;
+              })()}
             </span>
           </div>
 

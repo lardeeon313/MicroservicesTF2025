@@ -9,23 +9,23 @@ import { useMissingOrders } from "../../hocks/useMissingOrders";
 import type { DepotOrderDTO, DepotOrderStatus } from "../../types/OrderDTO";
 import ListOfMissingOrders from "../../components/listOrders/ListofMissingOrders";
 import { ValidationToMissingToPreparation } from "../../validations/ValidationToMissingToPreparation";
+import { useAuth } from "../../../Login/context/useAuth";
 
-const user = {
-  name: "Juan Pérez",
-  role: "Operario",
-  id: "aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-};
-
-const isAuthenticated = true;
-
-const MissingAndPreparationOrdersPage = () => {
+export default function ListofMissingOrdersPage() {
+  const { userId, name, role } = useAuth();
   const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
-  const { missingOrders: orders, loading, error } = useMissingOrders(user.id);
+  
+  // Validar que userId no sea null
+  if (!userId) {
+    return <Text style={{ padding: 16, color: 'red' }}>Usuario no autenticado</Text>;
+  }
+  
+  const { missingOrders: orders, loading, error } = useMissingOrders(userId);
 
   const goToDetalle = (order: DepotOrderDTO) => {
     navigation.navigate("DetailOrder", {
       orderId: order.depotOrderId,
-      operatorUserId: user.id,
+      operatorUserId: userId,
     });
   };
 
@@ -71,8 +71,8 @@ const MissingAndPreparationOrdersPage = () => {
   return (
     <View style={{ flex: 1 }}>
       <NavbarOperator
-        user={user}
-        isAuthenticated={isAuthenticated}
+        user={{ name: name || 'Operario', role: role || 'Operario' }}
+        isAuthenticated={true}
         logout={() => console.log("Cerrar sesión")}
       />
 
@@ -95,5 +95,3 @@ const MissingAndPreparationOrdersPage = () => {
     </View>
   );
 };
-
-export default MissingAndPreparationOrdersPage;

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DepotService.API.Migrations
 {
     [DbContext(typeof(DepotDbContext))]
-    [Migration("20250725023805_OrderStatusHistories")]
-    partial class OrderStatusHistories
+    [Migration("20250819202617_InitDepot")]
+    partial class InitDepot
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -99,6 +99,6 @@
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "http://localhost:5000"
+    "BaseUrl": "http://0.0.0.0:5000"
   }
 }

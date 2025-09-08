@@ -1,35 +1,34 @@
 import { useEffect,useState } from "react";
-//services 
 import { GetOrderById } from "../services/GetOneOrderService";
 import type { DepotOrderDTO } from "../types/OrderDTO";
 
-
-export const useGetOneOrder = (orderId: number | null,userId: string | null) => {
+export const useGetOneOrder = (orderId: number | null, userId: string | null) => {
     const [order,setOrder] = useState<DepotOrderDTO | null>(null);
     const [loading,setLoading] = useState(true);
     const [error,setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!orderId || !userId) return;
+        if (!orderId || !userId) {
+            setLoading(false);
+            return;
+        }
 
         const fetchOrder = async() => {
             setLoading(true);
             setError(null);
-            try{
-                const result = await GetOrderById(orderId,userId);
+            try {
+                const result = await GetOrderById(orderId, userId);
                 setOrder(result);
-            }catch(err:any)
-            {
+            } catch(err:any) {
                 setError(err.message || "Error al obtener el pedido");
-                setOrder(null); //NO RETORNA NINGUN PEDIDO 
-            }finally
-            {
+                setOrder(null);
+            } finally {
                 setLoading(false);
             }
         }; 
 
         fetchOrder();
-    }, [orderId,userId]);
+    }, [orderId, userId]);
 
-    return {order,loading,error};
+    return {order, loading, error};
 }

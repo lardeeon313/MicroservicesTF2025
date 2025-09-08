@@ -5,37 +5,34 @@ import DetailOrderCard from "../../components/detail/DetailOrderCard";
 import NavbarOperator from "../../components/Navbar/NavbarOperator";
 import { View, ActivityIndicator, Text } from "react-native";
 import { useGetOneOrder } from "../../hocks/useGetOneOrder";
-
-const user = { name: "Juan Pérez", role: "Operario", id: "aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa" };
-const isAuthenticated = true;
+import { useAuth } from "../../../Login/context/useAuth";
 
 type DetailOrderPageProps = RouteProp<DepotStackParamList, "DetailOrder">;
 type Props = {
   route: DetailOrderPageProps;
 };
 
-const DetailOrderPage = ({ route }: Props) => {
-  const { orderId,operatorUserId} = route.params;
-  //const {user} = useAuth();
-  //const {orderId} = route.params;
+export default function DetailOrderPage({ route }: Props) {
+  const { userId, name, role } = useAuth();
+  const { orderId, operatorUserId } = route.params;
 
-  //if (!user) return <Text style={{ padding: 16 }}>Cargando usuario...</Text>;
+  // Validar que userId no sea null
+  if (!userId) {
+    return <Text style={{ padding: 16, color: 'red' }}>Usuario no autenticado</Text>;
+  }
 
-  //const operatorUserId = user.id;
-
-  console.log("orderId:", orderId);
-  console.log("operatorUserId:", user?.id);
-
-  const { order, loading, error } = useGetOneOrder(orderId,operatorUserId);
+  const { order, loading, error } = useGetOneOrder(orderId, userId);
 
   return (
     <View style={{ flex: 1 }}>
-      <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log("Cerrar sesión")} />
+      <NavbarOperator 
+        user={{ name: name || 'Operario', role: role || 'Operario' }} 
+        isAuthenticated={true} 
+        logout={() => console.log("Cerrar sesión")} 
+      />
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
       {error && <Text style={{ color: "red", padding: 16 }}>{error}</Text>}
-      {order && <DetailOrderCard order={order} operatorUserId={user.id} />}
+      {order && <DetailOrderCard order={order} operatorUserId={userId} />}
     </View>
   );
-};
-
-export default DetailOrderPage;
+}

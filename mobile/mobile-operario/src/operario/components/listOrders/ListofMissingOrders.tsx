@@ -7,6 +7,7 @@ import { MissingCountContainer } from "./MissingCount";
 import type { DepotOrderItemsReportedDto, DepotOrderMissingDTO } from "../../types/Missing";
 import { OrderStatus } from "../../../otherTypes/OrderType";
 import { DepotOrderDTO, DepotOrderStatus } from "../../types/OrderDTO";
+import { useAuth } from "../../../Login/context/useAuth";
 
 type Props = {
   order: DepotOrderDTO;
@@ -17,21 +18,23 @@ type Props = {
   onSeccionNotificaciones: () => void;
 };
 
-
-const user = {
-  name: "Juan Pérez",
-  role: "Operario",
-  id: "aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-};
-
-const ListOfMissingOrders = ({
+export default function ListofMissingOrders({
   order,
+  missings,
   onVerDetalle,
   onEmitirFaltante,
   onMarcarArmado,
   onSeccionNotificaciones
-}: Props) => {
-  const { depotOrderId, customerName, status, } = order;
+}: Props) {
+  const { userId } = useAuth();
+  
+  // Validar que userId no sea null
+  if (!userId) {
+    return <Text style={{ padding: 16, color: 'red' }}>Usuario no autenticado</Text>;
+  }
+
+  const { depotOrderId, customerName, status } = order;
+  
   return(
     <View style={{backgroundColor: '#fff',padding: 16,borderRadius: 12,shadowColor: '#000',shadowOffset: { width: 0, height: 2 },shadowOpacity: 0.1,elevation: 2,marginBottom: 16}}>
       <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
@@ -52,11 +55,11 @@ const ListOfMissingOrders = ({
 
       {/**SEGUNDA FILA DE BOTONES */}
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10 }}>
-        {/*{onMarcarArmado && DepotOrderStatus.InPreparation && (
+        {onMarcarArmado && status === DepotOrderStatus.InPreparation && (
         <TouchableOpacity style={{marginTop: 10,padding: 8,backgroundColor: '#10B981',borderRadius: 10,}}onPress={onMarcarArmado}>
           <Text style={{ color: '#fff', textAlign: 'center',fontWeight:'bold' }}>Pasar A PREPARACION</Text>
         </TouchableOpacity>
-        )}*/}
+        )}
 
         {onSeccionNotificaciones && (
           <TouchableOpacity style={{marginTop: 10,padding: 8,backgroundColor: '#ff8000',borderRadius: 10,}}onPress={onSeccionNotificaciones}>
@@ -73,11 +76,8 @@ const ListOfMissingOrders = ({
         Total de faltantes: 
       </Text>
 
-      {/*<MissingCount missings={missings} />*/}
-      <MissingCountContainer depotOrderId={order.depotOrderId} operatorUserId={user.id} />
+      <MissingCountContainer depotOrderId={order.depotOrderId} operatorUserId={userId} />
 
     </View> 
   )
-}; 
-
-export default ListOfMissingOrders;
+}

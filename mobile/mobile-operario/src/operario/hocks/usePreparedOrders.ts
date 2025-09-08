@@ -9,32 +9,32 @@ export const usePreparedOrders = (operatorUserId:string) => {
     const [error,setError] = useState<Error | null>(null);
 
     useEffect(() => {
+        if (!operatorUserId) {
+            setError(new Error('ID de operador no válido'));
+            setLoading(false);
+            return;
+        }
+
         const fetchPreparedOrders = async() => {
             setLoading(true);
             setError(null);
-            try
-            {
-                const data = await  GetPreparedOrdersService(operatorUserId);
-                console.log("Pedidos con status de Prepared y SentToBilling recibidos");
+            try {
+                const data = await GetPreparedOrdersService(operatorUserId);
                 setPreparedOrders(
-                      data.map(order => ({
-                    ...order,
-                    status: OrderStatusMap[order.status]
-                }))
+                    data.map(order => ({
+                        ...order,
+                        status: OrderStatusMap[order.status]
+                    }))
                 );
-            }
-            catch(err: any)
-            {
+            } catch(err: any) {
                 setError(err);
                 setPreparedOrders([]);
-            }
-            finally
-            {
+            } finally {
                 setLoading(false);
             }
         };
         fetchPreparedOrders();
     },[operatorUserId]);
 
-    return {preparedOrders,loading,error}
+    return {preparedOrders, loading, error}
 }

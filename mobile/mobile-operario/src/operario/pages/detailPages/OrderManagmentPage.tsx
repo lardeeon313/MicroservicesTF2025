@@ -29,34 +29,19 @@ export function useOrderManagment(initialOrder: DepotOrderDTO, operatorID:string
                 const UpdateStatus = OrderStatusMap[DepotOrderStatus.InPreparation];
                 const UpdatedOrder = {...order, status: UpdateStatus}
 
-                console.log("Pedido ACEPTADO desde front:", {
-                    depotOrderId: order.depotOrderId,
-                    operatorID,
-                    nuevoEstado: UpdateStatus
-                });
-
-
-
                 setOrder(UpdatedOrder);
-
 
                 await actualizarEstadoPedido(UpdatedOrder, "aceptado");
 
                 const response = await ConfirmedOrder(order.depotOrderId, operatorID)
 
-                console.log("Respuesta que se obtuvo del backend: ",response);
+                console.log("Pedido confirmado exitosamente:", response);
             }catch(error){
                 console.error("Error al aceptar el pedido:", error);
             };
-
         })
     }
 
-    /*const rejectOrder = () => {
-        showmeRejectOrderAlert(() => {
-            actualizarEstadoPedido(order, "rechazado");
-        });
-    };*/
     const rejectOrder = ()=> {
         setShowMeRejectModal(true);
     }
@@ -67,7 +52,6 @@ export function useOrderManagment(initialOrder: DepotOrderDTO, operatorID:string
 
     return{
         order,
-        //setOrder,
         acceptOrder,
         rejectOrder,
         showMeRejectModal,

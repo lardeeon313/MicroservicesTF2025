@@ -120,7 +120,7 @@ export default function OrderCompletedDayPage() {
 
       {/* Gráfico */}
       <div className="bg-white rounded-xl shadow p-4">
-        <GraphOrderCompletedDay data={data} />
+  <GraphOrderCompletedDay data={data.map(order => ({ orderId: order.depotOrderId, finishDate: order.orderDate }))} />
       </div>
     </div>
   );

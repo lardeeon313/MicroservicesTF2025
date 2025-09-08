@@ -8,16 +8,15 @@ export interface DepotOrderDTO{
     customerName: string; 
     customerEmail: string;
     phoneNumber: string; 
-    deliveryDetail: string; 
+    deliveryDetail?: string | null;
     orderDate: string;
     status: number;
-    //NUEVO CAMPO: 
-    //operatorUserId: string; 
-    assignedOperatorId: string; //NUEVO CAMPO 
-    assignedDepotTeamId: number | null; //NUEVO CAMPO
-    rejectionReason?:string | null; 
-    items : any[];
+    totalAmount: number;
+    items: DepotOrderItemDTO[];
     missings: DepotOrderMissingDTO[];
+    assignedOperatorId?: string | null;
+    assignedDepotTeam?: any | null; // DepotTeamEntity
+    assignedDepotTeamId?: number | null;
 }
 
 //NUEVO STATUS SIMILAR AL ESTADO DE LOS PEDIDOS DENTRO DEL BACK 
@@ -53,6 +52,18 @@ export interface OperatorDTO {
     assignedAt: string;
 }
 
+
+// Interfaz para los items de la orden
+export interface DepotOrderItemDTO {
+    id: number;
+    productName: string;
+    productBrand: string;
+    packaging?: string | null; // Corresponde a PackagingType en el backend
+    unitPrice?: number | null;
+    quantity: number;
+    total?: number | null;
+    isReady: boolean; // Campo requerido según el backend
+}
 
 export interface DepotTeamAssigment{
     id: number; 

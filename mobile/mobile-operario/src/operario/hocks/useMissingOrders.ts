@@ -8,26 +8,26 @@ export const useMissingOrders = (operatorUserId:string) => {
     const [error,setError] = useState<Error | null>(null);
 
     useEffect(() => {
-        const fetchArmOrders = async() => {
+        const fetchMissingOrders = async() => {
+            if (!operatorUserId) {
+                setError(new Error('ID de operador no válido'));
+                setLoading(false);
+                return;
+            }
+
             setLoading(true);
             setError(null);
-            try
-            {
+            try {
                 const data = await GetMissingOrdersService(operatorUserId);
-                console.log('Pedidos con faltantes recibidos:', data);
                 setMissingOrders(data);
-            }
-            catch(error:any)
-            {
+            } catch(error:any) {
                 setError(error);
                 setMissingOrders([]);
-            }
-            finally
-            {
+            } finally {
                 setLoading(false);
             }
         };
-        fetchArmOrders();
+        fetchMissingOrders();
     }, [operatorUserId]); 
 
     return {missingOrders,loading,error}

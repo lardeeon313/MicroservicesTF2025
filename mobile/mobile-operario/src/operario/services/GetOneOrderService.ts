@@ -1,26 +1,26 @@
 //services para traer un solo pedido , en caso de querer ver un detalle o emitir un faltante: 
-import { api } from "../../services/axios";
+import API from "../../services/axios";
 //import type { Order } from "../../otherTypes/OrderType";
 import type { DepotOrderDTO } from "../types/OrderDTO";
 //Ejemplo de la api:
 import { DepotTeamAssigment } from "../types/OrderDTO";
 
 
-export const GetOrderById = async (orderId:number,userId: string) : Promise<DepotOrderDTO> => {
+export const GetOrderById = async (orderId: number, userId: string): Promise<DepotOrderDTO> => {
     if (!orderId || !userId) {
         throw new Error("Faltan parámetros: orderId o userId");
     }
     
-    try{
-        const response = await api.get<DepotOrderDTO>('/depotoperator/get-order-by-id',{
+    try {
+        const response = await API.get<DepotOrderDTO>('/depot/depotoperator/get-order-by-id', {
             params: {
-                DepotOrderId: orderId,
-                OperatorUserId: userId,
+                depotOrderId: orderId, // Corregido: debe coincidir con el backend
+                operatorUserId: userId, // Corregido: debe coincidir con el backend
             }
         });
         return response.data;
-    } catch(error){
-        console.error(`No se pudo obtener el pedido ${orderId} para el operador ${userId}`, error)
+    } catch (error) {
+        console.error(`No se pudo obtener el pedido ${orderId} para el operador ${userId}`, error);
         throw error;
     }
 };

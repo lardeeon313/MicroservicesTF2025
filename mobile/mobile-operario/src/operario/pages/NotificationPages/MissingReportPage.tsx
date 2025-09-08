@@ -1,78 +1,95 @@
 // MissingReportPage.tsx
 import React, { useState } from 'react';
-import { Alert, View } from 'react-native';
-import MissingReport from '../../components/Notification/MissingReport';
-import { useRoute, type RouteProp } from '@react-navigation/native';
+import { View, Text, Alert, ScrollView } from 'react-native';
+import { useRoute, RouteProp } from '@react-navigation/native';
 import type { DepotStackParamList } from '../../types/DepotStackType';
-import type { ReportOrderMissingRequest } from '../../types/Missing';
 import type { DepotOrderDTO } from '../../types/OrderDTO';
-import { ValidationMissingReport } from '../../validations/ValidationMissingReport';
+import type { ReportOrderMissingRequest } from '../../types/Missing';
 import NavbarOperator from '../../components/Navbar/NavbarOperator';
 import { actualizarEstadoPedidoFaltante } from '../../hocks/actions/updateStatusOrder';
-
-const user = { name: 'Juan Pérez', role: 'Operario', id: 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa' };
-const isAuthenticated = true;
+import { useAuth } from "../../../Login/context/useAuth";
 
 type MissingRouteProp = RouteProp<DepotStackParamList, 'MissingReport'>;
 
-const MissingPage = () => {
+export default function MissingReportPage() {
+  const { userId, name, role } = useAuth();
   const { params } = useRoute<MissingRouteProp>();
   const order: DepotOrderDTO = params.order;
 
-  const [description, setDescription] = useState('');
+  // Validar que userId no sea null
+  if (!userId) {
+    return <Text style={{ padding: 16, color: 'red' }}>Usuario no autenticado</Text>;
+  }
 
-  // Armamos el objeto para enviar, al enviar usamos la descripción actualizada
-  const onSubmit = () => {
-    if (!description.trim()) {
-      Alert.alert('Error', 'La descripción no puede estar vacía');
-      return;
-    }
+  const handleReportMissing = async () => {
+    try {
+      // Validar que haya items para reportar
+      if (!order.items || order.items.length === 0) {
+        Alert.alert('Información', 'No hay items en este pedido para reportar');
+        return;
+      }
 
-    const missingRequest: ReportOrderMissingRequest = {
-      depotOrderId: order.depotOrderId,
-      operatorUserId: user.id, // necesario para el backend
-      salesOrderId: order.salesOrderId,
-      missingReason: 'Faltante detectado',  // o lo que quieras, también podés agregar UI para editarlo
-      missingDescription: description.trim(),
-      missingItems: order.items.map(item => ({
-        orderItemId: item.id,
-        productName: item.productName,
-        productBrand: item.productBrand,
-        packaging: item.packagingType ?? 'No hay producto', //error default 
-        quantity: item.quantity,
-      })),
-    };
+      // Validar campos requeridos según el DTO del backend
+      if (!order.depotOrderId || !userId || !order.salesOrderId) {
+        Alert.alert('Error', 'Faltan datos requeridos para el reporte');
+        return;
+      }
 
-    // Enviamos y validamos
-    ValidationMissingReport(description, missingRequest, (response) => {
-      //actualiza el status del pedido en caso de presentarse un faltante: 
-      //const updateOrder = actualizarEstadoPedidoFaltante(missingRequest)
+      const missingRequest: ReportOrderMissingRequest = {
+        depotOrderId: order.depotOrderId,
+        operatorUserId: userId,
+        salesOrderId: order.salesOrderId,
+        missingReason: 'Faltante detectado', // Campo requerido según el DTO
+        missingDescription: 'Producto no disponible en stock', // Campo requerido según el DTO
+        missingItems: order.items.map(item => ({
+          orderItemId: item.id,
+          productName: item.productName,
+          productBrand: item.productBrand,
+          packaging: item.packaging || null,
+          quantity: item.quantity
+        }))
+      };
+
+      // TODO: Implementar el servicio real de reporte de faltantes
+      console.log('Reporte de faltante:', missingRequest);
+      
       Alert.alert(
-        'Notificación Enviada',
-        `Descripción: ${description ?? 'Sin descripción'}`
+        'Información', 
+        `Pedido #${order.depotOrderId} - ${order.items.length} item(s) listo(s) para reportar`
       );
-      setDescription(description ?? '');
-    });
-  };
-
-  const onNotifyMissing = (desc: string) => {
-    setDescription(desc);
+      
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo procesar la solicitud');
+    }
   };
 
   return (
     <View style={{ flex: 1 }}>
-      <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log('Cerrar sesión')} />
-      <MissingReport
-        description={description}
-        onNotifyMissing={onNotifyMissing}
-        onSubmit={onSubmit}
-        missing={order} // ojo: aquí pasamos el pedido completo porque el componente puede necesitar datos
+      <NavbarOperator 
+        user={{ name: name || 'Operario', role: role || 'Operario' }} 
+        isAuthenticated={true} 
+        logout={() => console.log("Cerrar sesión")} 
       />
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 16 }}>
+          Reportar Faltante - Pedido #{order.depotOrderId}
+        </Text>
+        <Text style={{ marginBottom: 16 }}>
+          Cliente: {order.customerName}
+        </Text>
+        <Text style={{ marginBottom: 16 }}>
+          Estado: {order.status}
+        </Text>
+        <Text style={{ marginBottom: 20 }}>
+          ¿Deseas reportar este pedido como faltante?
+        </Text>
+        <View style={{ padding: 20, backgroundColor: '#f0f0f0', borderRadius: 8 }}>
+          <Text style={{ fontWeight: 'bold', marginBottom: 8 }}>Acciones disponibles:</Text>
+          <Text style={{ marginBottom: 4 }}>• Reportar como faltante</Text>
+          <Text style={{ marginBottom: 4 }}>• Actualizar estado del pedido</Text>
+          <Text>• Notificar al sistema</Text>
+        </View>
+      </ScrollView>
     </View>
   );
-};
-
-export default MissingPage;
-
-
-// Este componente MissingReportPage se encarga de manejar la lógica de negocio relacionada con la notificación de faltantes.
+}

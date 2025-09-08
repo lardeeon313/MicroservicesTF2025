@@ -11,31 +11,35 @@ import { useSendOrderToBilled } from "../../hocks/useSendOrderToBilled";
 import ListPreparedOrders from "../../components/listOrders/ListOfPreparedOrders";
 import NavbarOperator from "../../components/Navbar/NavbarOperator";
 import { OrderStatusMap } from "../../types/OrderDTO";
+import { useAuth } from "../../../Login/context/useAuth";
 
 
-const user = { name: 'Juan Pérez', role: 'Operario', id: 'aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa' };
-const isAuthenticated = true;
-
-const ListOfPreparedOrdersPage = () => {
+export default function ListOfPreparedOrdersPage() {
+  const { userId, name, role } = useAuth();
   const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
-  const { preparedOrders: orders, loading, error } = usePreparedOrders(user.id);
+  
+  // Validar que userId no sea null
+  if (!userId) {
+    return <Text style={{ padding: 16, color: 'red' }}>Usuario no autenticado</Text>;
+  }
+  
+  const { preparedOrders: orders, loading, error } = usePreparedOrders(userId);
   const { SendOrder } = useSendOrderToBilled();
   const [localOrders, setLocalOrders] = useState<DepotOrderDTO[]>([]);
 
   useEffect(() => {
-    console.log("Pedidos cargados:", orders.map(o => ({ id: o.depotOrderId, status: o.status })));
     setLocalOrders(orders);
   }, [orders]);
 
-    const filteredOrders = localOrders.filter(order => {
-        const status = OrderStatusMap[order.status];
-        return status === DepotOrderStatus.Prepared || status === DepotOrderStatus.SentToBilling;
-    });
+  const filteredOrders = localOrders.filter(order => {
+      const status = OrderStatusMap[order.status];
+      return status === DepotOrderStatus.Prepared || status === DepotOrderStatus.SentToBilling;
+  });
 
   const handleSeeDetail = (order: DepotOrderDTO) => {
     navigation.navigate("DetailOrder", {
       orderId: order.depotOrderId,
-      operatorUserId: user.id,
+      operatorUserId: userId,
     });
   };
 
@@ -65,7 +69,11 @@ const ListOfPreparedOrdersPage = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={() => console.log("Cerrar sesión")} />
+      <NavbarOperator 
+        user={{ name: name || 'Operario', role: role || 'Operario' }} 
+        isAuthenticated={true} 
+        logout={() => console.log("Cerrar sesión")} 
+      />
       <Text style={{ fontSize: 22, fontWeight: '600', marginTop: 20, marginBottom: 20, color: '#333', textAlign: 'center' }}>
         Pedidos preparados
       </Text>
@@ -87,6 +95,4 @@ const ListOfPreparedOrdersPage = () => {
       </ScrollView>
     </View>
   );
-};
-
-export default ListOfPreparedOrdersPage;
+}

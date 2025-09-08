@@ -2,6 +2,7 @@ import React from "react";
 import { AlertTriangle, Package } from "lucide-react";
 
 export type DailyMissing = {
+  MissingHour?: number;
   orderID: number;
   ItemID: number;
   MissingDate: string; // viene como string (ej: "2025-08-20T14:35:00")

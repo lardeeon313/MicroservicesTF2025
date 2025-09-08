@@ -17,8 +17,14 @@ const DailyMissingPage : React.FC = () => {
 
   const {data,loading,error, totalPages} = useDailyMissing(page,pageSize);
 
+  // Ensure all items have MissingHour for graphing
+  const dataWithHour = data.map(d => ({
+    ...d,
+    MissingHour: typeof d.MissingHour === 'number' ? d.MissingHour : new Date(d.MissingDate).getHours()
+  }));
+
   const filteredData =
-    selectedHour === "" ? data : data.filter((d) => d.MissingHour === selectedHour);
+    selectedHour === "" ? dataWithHour : dataWithHour.filter((d) => d.MissingHour === Number(selectedHour));
 
   if(loading) {
     return <LoadingSpinner message="Cargando los datos..." height="h-screen" />;

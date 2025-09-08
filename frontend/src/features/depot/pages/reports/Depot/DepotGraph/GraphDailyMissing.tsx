@@ -6,7 +6,7 @@ import type { OrderItem } from "../../../../../sales/types/OrderTypes";
 type DailyMissing = {
   orderID: Order["id"];
   ItemID: OrderItem["id"];
-  MissingHour: number;
+  MissingHour?: number;
 };
 
 type Props = {
@@ -29,9 +29,12 @@ const GraphDailyMissing: React.FC<Props> = ({ data }) => {
 
   const hourCountMap: { [key: string]: number } = {};
 
+
   data.forEach((item) => {
-    const hour = item.MissingHour;
-    hourCountMap[hour] = (hourCountMap[hour] || 0) + 1;
+    if (typeof item.MissingHour === 'number') {
+      const hour = item.MissingHour;
+      hourCountMap[hour] = (hourCountMap[hour] || 0) + 1;
+    }
   });
 
   const chartData = Object.entries(hourCountMap).map(([hour, count]) => ({

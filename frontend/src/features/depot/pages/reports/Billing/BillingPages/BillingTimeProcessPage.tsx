@@ -68,7 +68,7 @@ const BillingTimeProcessPage: React.FC = () => {
                 <p className="text-red-600 text-center">{error}</p>
                 ): (
                 <>
-                <BillingTimeProcessTable data={filteredData}/>
+                <BillingTimeProcessTable data={{ items: filteredData.map(item => ({ orderId: item.id, durationMinutes: item.TotalIncome })) }} />
                 <Pagination currentPage={page} totalPages={totalpages} onPageChange={setPage} />
                 <GraphBillingTimeProcess data={
                     filteredData.map(item => ({

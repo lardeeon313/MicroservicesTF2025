@@ -6,7 +6,7 @@ import { OperatorDTO } from "../types/OrderDTO"
 
 export const GetOperatorById = async(id:string): Promise<OperatorDTO> => {
     try{
-        const response = await API.get('depot/depotoperator/get-operator-by-id', {
+        const response = await API.get('/depot/depotoperator/get-operator-by-id', {
             params: {id}
         });
 

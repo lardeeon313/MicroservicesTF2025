@@ -11,17 +11,13 @@ export const useConfirmedOrders = () => {
         const fetchConfirmedOrders = async() => {
             setLoading(true);
             setError(null);
-            try
-            {
+            try {
                 const orders = await GetConfirmedOrdersService();
                 setConfirmedOrders(orders);
-            }
-            catch(error:any)
-            {
+            } catch(error:any) {
                 setError(error);
-                //setConfirmedOrders([]);
-
-            }finally{
+                setConfirmedOrders([]);
+            } finally {
                 setLoading(false);
             }
         }
@@ -29,5 +25,5 @@ export const useConfirmedOrders = () => {
         fetchConfirmedOrders();
     },[])
 
-    return {confirmedOrders,loading,error}
+    return {confirmedOrders, loading, error}
 }

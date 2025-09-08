@@ -9,6 +9,7 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { useMissingOrders } from "../hocks/useMissingOrders";
 import { number } from "yup";
+import { useAuth } from "../../Login/context/useAuth";
 
 type CardItem = {
   title: string;
@@ -44,8 +45,9 @@ const cards: CardItem[] = [
   },
 ];
 
-const OperatorDashboardComponent = () => {
-  const user = { id: "aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa" }; // tu operador real
+export default function OperatorDashboard() {
+  const { userId } = useAuth();
+  const user = { id: userId }; // Usar el ID real del usuario autenticado
   const { missingOrders, loading } = useMissingOrders(user.id);
   const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
 
@@ -95,5 +97,3 @@ const OperatorDashboardComponent = () => {
     </View>
   )
 }
-
-export default OperatorDashboardComponent;
