@@ -13,6 +13,7 @@ using SharedKernel.IntegrationEvents.DepotEvents;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using SalesService.Domain.Enums;
+using SalesService.Domain.Entities.OrderEntity;
 
 namespace SalesService.Infraestructure.Messaging.Consumer
 {
@@ -68,6 +69,17 @@ namespace SalesService.Infraestructure.Messaging.Consumer
                         await context.SaveChangesAsync();
                         _logger.LogInformation("✅ Orden {SalesOrderId} confirmada a las {ConfirmedAt}",
                             order.Id, evento.ConfirmedAt);
+
+                        // Guardar el historial de estado
+                        var statusHistory = new OrderStatusHistory
+                        {
+                            OrderId = order.Id,
+                            OldStatus = OrderStatus.Issued,
+                            NewStatus = OrderStatus.Confirmed,
+                            ChangedAt = evento.ConfirmedAt
+                        };
+                        await context.OrderStatusHistories.AddAsync(statusHistory);
+                        await context.SaveChangesAsync();
                     }
                     else
                     {

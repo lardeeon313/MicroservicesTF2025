@@ -247,7 +247,7 @@ function PendingOrdersPage() {
                     : activeTab === 'assigned'
                     ? 'Asignado a Operario'
                     : 'Re-emitida'}} />
-                {activeTab === 'pending' && (
+                {(activeTab === 'pending' || activeTab === 'rereceived')  && (
                   <div className="mt-6 flex justify-end">
                     <button
                       onClick={() => {

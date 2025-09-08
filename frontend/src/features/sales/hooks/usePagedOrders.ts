@@ -15,6 +15,7 @@ export function usePagedOrders(page: number, pageSize: number) {
         const result = await getPagedOrders(page, pageSize);
         setOrders(result.orders);
         setTotalPages(result.totalPages);
+        console.log("Orders fetched:", result.orders);
     } catch (error) {
       handleFormikError({
         error,

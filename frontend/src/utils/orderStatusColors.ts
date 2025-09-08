@@ -2,47 +2,59 @@ import { OrderStatus } from "../features/sales/types/OrderTypes";
 
 export const orderStatusStyles: Record<OrderStatus, { text: string; bg: string }> = {
   [OrderStatus.Pending]: {
-    text: "text-yellow-600",
-    bg: "bg-yellow-100",
+    text: "text-gray-700",
+    bg: "bg-gray-200", // gris = en espera
+  },
+  [OrderStatus.PendingResolution]: {
+    text: "text-orange-700",
+    bg: "bg-orange-100", // naranja = requiere atención
+  },
+  [OrderStatus.PendingReissued]: {
+    text: "text-amber-700",
+    bg: "bg-amber-100", // ámbar = pendiente de acción extra
+  },
+  [OrderStatus.ReIssued]: {
+    text: "text-purple-700",
+    bg: "bg-purple-100", // púrpura = proceso administrativo
   },
   [OrderStatus.Issued]: {
     text: "text-blue-700",
-    bg: "bg-blue-100",
+    bg: "bg-blue-100", // azul = emitido/documentado
   },
   [OrderStatus.Confirmed]: {
     text: "text-indigo-700",
-    bg: "bg-indigo-100",
+    bg: "bg-indigo-100", // índigo = confirmado/verificado
   },
   [OrderStatus.InPreparation]: {
-    text: "text-purple-700",
-    bg: "bg-purple-100",
+    text: "text-teal-700",
+    bg: "bg-teal-100", // teal = en preparación (activo)
   },
   [OrderStatus.Prepared]: {
     text: "text-sky-700",
-    bg: "bg-sky-100",
+    bg: "bg-sky-100", // celeste = listo para enviar
   },
   [OrderStatus.Invoiced]: {
     text: "text-emerald-700",
-    bg: "bg-emerald-100",
+    bg: "bg-emerald-100", // verde fuerte = facturado
   },
   [OrderStatus.Verify]: {
     text: "text-cyan-700",
-    bg: "bg-cyan-100",
+    bg: "bg-cyan-100", // celeste brillante = requiere verificación
   },
   [OrderStatus.OnTheWay]: {
-    text: "text-orange-700",
-    bg: "bg-orange-100",
+    text: "text-yellow-800",
+    bg: "bg-yellow-100", // amarillo = en tránsito
   },
   [OrderStatus.Delivered]: {
     text: "text-green-700",
-    bg: "bg-green-100",
+    bg: "bg-green-100", // verde = entregado con éxito
   },
   [OrderStatus.Canceled]: {
     text: "text-red-700",
-    bg: "bg-red-100",
+    bg: "bg-red-100", // rojo = cancelado
   },
   [OrderStatus.Modified]: {
-    text: "text-amber-700",
-    bg: "bg-amber-100",
+    text: "text-pink-700",
+    bg: "bg-pink-100", // rosado = modificado/alterado
   },
 }

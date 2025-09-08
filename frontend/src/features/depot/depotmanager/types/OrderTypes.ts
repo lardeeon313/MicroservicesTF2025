@@ -52,7 +52,8 @@ export interface DepotOrderMissingDto {
 }
 
 export interface DepotOrderMissingItem {
-    id: number;
+    depotOrderItemMissingId: number;
+    salesOrderItemId: number,
     orderMissingId: number;
     depotOrderMissing: DepotOrderMissing;
     depotOrderItemId: number;

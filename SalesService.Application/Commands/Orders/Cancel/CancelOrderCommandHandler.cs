@@ -30,7 +30,7 @@ namespace SalesService.Application.Commands.Orders.Cancel
                 throw new InvalidOperationException("No se puede cancelar una orden que ya ha sido emitida.");
 
             // Cambiamos el estado de la orden a cancelada
-            orderExist.Status = Domain.Enums.OrderStatus.Canceled;
+            orderExist.Status = OrderStatus.Canceled;
 
             // Guardamos los cambios en la base de datos    
             await _orderRepository.UpdateAsync(orderExist);

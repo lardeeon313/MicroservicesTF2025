@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { OrderTableData } from "../../types/OrderTypes";
+import { OrderStatusBadge } from "./OrderStatusBadge";
 
 type Props = {
   order: OrderTableData | null;
@@ -33,7 +34,7 @@ export default function OrderDetails({ order }: Props) {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">Estado:</label> 
-              <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{order.status}</p>
+              <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300"><OrderStatusBadge status={order.status}></OrderStatusBadge></p>
             </div>
             <div className="space-y-4 pt-2">
                 <table className="table-fixed w-full border-separate">

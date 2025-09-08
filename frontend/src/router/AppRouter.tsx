@@ -53,6 +53,7 @@ import OrderBilledPage from "../features/depot/pages/reports/Billing/BillingPage
 // Otros roles
 import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
 import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
+import MissingOrdersSalesPage from "../features/sales/pages/orders/MissingOrderSalesPage";
 
 
 
@@ -80,6 +81,7 @@ const AppRouter = () => {
             <Route path="orders/view/:id" element={<ViewOrderPage />} />
             <Route path="orders/registerOrder" element={<RegisterOrderPage />} />
             <Route path="orders/update/:id" element={<EditOrderPage />} />
+            <Route path="missing-orders" element={<MissingOrdersSalesPage/>} />
             <Route path="customer/registerCustomer" element={<RegisterCustomerPage />} />
             <Route path="customer/viewCustomer/:id" element={<ViewCustomerPage />} />
             <Route path="customers" element={<CustomersPage />} />

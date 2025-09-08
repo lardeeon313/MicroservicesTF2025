@@ -6,10 +6,12 @@ using SalesService.Application.Commands.Orders.Delete;
 using SalesService.Application.Commands.Orders.OrderReissued;
 using SalesService.Application.Commands.Orders.Register;
 using SalesService.Application.Commands.Orders.Update;
+using SalesService.Application.Commands.Orders.UpdateMissingOrder;
 using SalesService.Application.Commands.Orders.UpdateStatus;
 using SalesService.Application.DTOs.Order;
 using SalesService.Application.DTOs.Order.Request;
 using SalesService.Application.Queries.Orders.GetAll;
+using SalesService.Application.Queries.Orders.GetAllMissingOrders;
 using SalesService.Application.Queries.Orders.GetById;
 using SalesService.Application.Queries.Orders.GetByIdCustomer;
 using SalesService.Application.Queries.Orders.GetByStatus;
@@ -40,9 +42,15 @@ namespace SalesService.API.Controllers
         IValidator<RegisterOrderItemRequest> registerOrderItemValidator,
         IValidator<UpdateOrderRequest> updateOrderValidator,
         IValidator<OrderReissuedRequest> orderReissuedValidator,
-        IOrderReissuedCommandHandler orderReissuedCommandHandler
+        IOrderReissuedCommandHandler orderReissuedCommandHandler,
+        IUpdateMissingOrderCommandHandler updateMissingOrderCommandHandler,
+        IValidator<UpdateOrderMissingRequest> updateOrderMissingValidator,
+        IGetAllMissingOrdersQueryHandler getAllMissingOrdersQueryHandler
         ) : ControllerBase
     {
+        private readonly IGetAllMissingOrdersQueryHandler _getAllMissingOrdersQueryHandler = getAllMissingOrdersQueryHandler;
+        private readonly IValidator<UpdateOrderMissingRequest> _updateOrderMissingValidator = updateOrderMissingValidator;
+        private readonly IUpdateMissingOrderCommandHandler _updateMissingOrderCommandHandler = updateMissingOrderCommandHandler;
         private readonly IValidator<OrderReissuedRequest> _orderReissuedValidator = orderReissuedValidator;
         private readonly IOrderReissuedCommandHandler _orderReissuedCommandHandler = orderReissuedCommandHandler;
         private readonly IRegisterOrderCommandHandler _registerOrderCommandHandler = registerOrderCommandHandler;
@@ -233,7 +241,7 @@ namespace SalesService.API.Controllers
         }
 
         /// <summary> Reemite una orden de pedido</summary>
-        [HttpGet("reissued")]
+        [HttpPut("reissued")]
         [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -262,6 +270,50 @@ namespace SalesService.API.Controllers
             {
                 return BadRequest(new { error = "Failed to reissue order." });
             }
+        }
+
+
+        /// <summary>
+        /// Actualiza una orden de pedido que se reportó como faltante.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPut("update/missingOrder/{id:int}")]
+        [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateMissingOrder(int id, [FromBody] UpdateOrderMissingRequest request)
+        {
+            if (id != request.OrderId)
+                return BadRequest(new { error = "Order ID in the URL does not match the Order ID in the request body." });
+
+            var validation = await _updateOrderMissingValidator.ValidateAsync(request);
+            if (!validation.IsValid)
+            {
+                var errors = validation.Errors.Select(e => new { field = e.PropertyName, error = e.ErrorMessage });
+                return BadRequest(errors);
+            }
+
+            var command = new UpdateMissingOrderCommand(id, request);
+            var result = await _updateMissingOrderCommandHandler.HandleAsync(command);
+            return Ok(result);
+        }
+
+
+        /// <summary>
+        /// Obtiene todas las ordenes con faltantes. 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("missings")]
+        [ProducesResponseType(typeof(IEnumerable<OrderDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetAllMissings()
+        {
+            var result = await _getAllMissingOrdersQueryHandler.GetAllMissingOrdersAsync();
+            return Ok(result);
         }
     }
 }

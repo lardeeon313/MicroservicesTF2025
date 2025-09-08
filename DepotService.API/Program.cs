@@ -236,7 +236,6 @@ builder.Services.AddHttpClient("IdentityService", client =>
     client.BaseAddress = new Uri("http://identityservice:8080/api/auth/");
 });
 
-
 var app = builder.Build();
 
 // Migrar automaticamente, cada vez que levante el servicio.

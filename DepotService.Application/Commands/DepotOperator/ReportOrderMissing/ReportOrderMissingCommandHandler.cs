@@ -54,6 +54,7 @@ namespace DepotService.Application.Commands.DepotOperator.ReportOrderMissing
                 MissingItems = command.MissingItems.Select(item => new DepotOrderMissingItem
                 {
                     DepotOrderItemId = item.OrderItemId,
+                    SalesOrderItemId = order.Items.Select(i => i.SalesOrderItemId).FirstOrDefault(),
                     MissingQuantity = item.Quantity,
                     ProductName = item.ProductName,
                     ProductBrand = item.ProductBrand,

@@ -51,6 +51,13 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 
         }
 
+        public async Task<DepotTeamEntity?> GetTeamByOperatorAsync(Guid operatorUserId)
+        {
+            return await _context.DepotTeams
+                .Include(t => t.Assignments)
+                .FirstOrDefaultAsync(t => t.Assignments.Any(a => a.OperatorUserId == operatorUserId));
+        }
+
         public Task UpdateAsync(DepotTeamEntity team)
         {
             _context.DepotTeams.Update(team);

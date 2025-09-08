@@ -10,12 +10,16 @@ namespace SalesService.Domain.Entities.OrderEntity
     {
         public int Id { get; set; }
 
+        public int DepotOrderMissingItemId { get; set; }
         public int OrderMissingId { get; set; }
         public OrderMissing OrderMissing { get; set; } = null!;
 
         public int OrderItemId { get; set; }
-        public OrderItem OrderItem { get; set; } = null!;
+        public OrderItem SalesOrderItem { get; set; } = null!;
 
+        public string ProductName { get; set; } = null!;
+        public string ProductBrand { get; set; } = null!;
+        public string? Packaging { get; set; }
         public int MissingQuantity { get; set; }
     }
 }
