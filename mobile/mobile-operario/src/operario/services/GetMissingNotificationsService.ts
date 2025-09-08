@@ -1,4 +1,5 @@
-import { api } from "../../services/axios";
+
+import API from "../../services/axios";
 import type { DepotOrderDTO } from "../types/OrderDTO";
 
 
@@ -7,7 +8,7 @@ export const GetMissingNotifications = async (orderId: number,userID: string) : 
 {  
     //sin condicional 
     try {
-        const response = await api.get<DepotOrderDTO>('/depotoperator/get-order-by-id', {
+        const response = await API.get<DepotOrderDTO>('depot/depotoperator/get-order-by-id', {
             params: { 
                 DepotOrderId: orderId,
                 OperatorUserId: userID,

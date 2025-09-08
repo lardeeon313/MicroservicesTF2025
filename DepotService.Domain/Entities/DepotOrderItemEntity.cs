@@ -25,8 +25,6 @@ namespace DepotService.Domain.Entities
         public bool IsReady { get; set; } = false; // Indica si el item está listo para ser entregado
         public decimal? Total { get; set; }
 
-        // Si es item reportado como missing
-        public int? DepotOrderMissingId { get; set; }
-        public DepotOrderMissing? DepotOrderMissing { get; set; }
+        public DepotOrderMissingItem? DepotOrderMissingItem { get; set; }
     }
 }

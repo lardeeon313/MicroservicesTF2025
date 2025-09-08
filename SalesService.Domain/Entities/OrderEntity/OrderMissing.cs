@@ -8,14 +8,15 @@ namespace SalesService.Domain.Entities.OrderEntity
 {
     public class OrderMissing
     {
-        public int MissingId { get; set; }
+        public int Id { get; set; }
+        public int DepotOrderId { get; set; }
+        public int DepotOrderMissingId { get; set; }
         public string? MissingReason { get; set; }
         public string? MissingDescription { get; set; }
         public List<OrderMissingItem> MissingItems { get; set; } = [];
         public DateTime MissingDate { get; set; } = DateTime.UtcNow;
-
         public string? DescriptionResolution { get; set; }
-        public Order Order { get; set; } = new();
+        public Order Order { get; set; } = null!;
         public int OrderId { get; set; }
 
     }

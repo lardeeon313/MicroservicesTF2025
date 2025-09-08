@@ -15,7 +15,6 @@ namespace DepotService.Domain.IRepositories
         Task AddAsync(DepotTeamEntity team);
         Task UpdateAsync(DepotTeamEntity team);
         Task DeleteAsync(int teamId);
-
-
+        Task<DepotTeamEntity?> GetTeamByOperatorAsync(Guid operatorUserId);
     }
 }

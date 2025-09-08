@@ -24,7 +24,7 @@ namespace SalesService.Domain.IRepositories
         Task<(List<Order> Orders, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
         Task<DateTime?> GetLastOrderDateByCustomerId(Guid customerId);
         Task<IEnumerable<Order>> GetAllWithItemsAsync();
-
+        Task<IEnumerable<OrderMissing>> GetMissingOrdersAsync();
 
     }
 }

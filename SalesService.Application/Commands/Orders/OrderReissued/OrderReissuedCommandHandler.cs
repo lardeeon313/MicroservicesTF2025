@@ -44,22 +44,32 @@ namespace SalesService.Application.Commands.Orders.OrderReissued
             if (orderMissing == null)
                 throw new Exception($"Order with ID {command.SalesOrderId} does not have a missing report.");
 
-            orderMissing.MissingDescription = command.DescriptionResolution;
+            orderMissing.DescriptionResolution = command.DescriptionResolution; // Se guarda la descripción de la resolución
 
+            // 🔹 Eliminar los ítems previos asociados a la orden
+            _context.OrderItems.RemoveRange(orderExists.Items);
+
+            // 🔹 Crear los nuevos ítems a partir del comando
             orderExists.Items = command.UpdateItems.Select(i => new OrderItem
             {
-                Id = i.Id,
                 ProductName = i.ProductName,
                 ProductBrand = i.ProductBrand,
-                Quantity = i.Quantity
+                Quantity = i.Quantity,
+                OrderId = orderExists.Id
             }).ToList();
 
-            if (orderExists.Status == OrderStatus.ReIssued)
+            if (orderExists.Status == OrderStatus.PendingReissued)
             {
+                // Modificamos el estado de la orden a Reissued
+                orderExists.Status = OrderStatus.ReIssued;
+                await _repository.UpdateAsync(orderExists);
+                await _context.SaveChangesAsync();
+
                 // Creamos el evento Reissued
                 var integrationEvent = new OrderReissuedIntegrationEvent
                 {
                     SalesOrderId = command.SalesOrderId,
+                    DepotOrderId = orderMissing.DepotOrderId,
                     ResolutionDescription = command.DescriptionResolution,
                     ReissuedAt = DateTime.UtcNow,
                     DeliveryDate = orderExists.DeliveryDate,
@@ -73,6 +83,14 @@ namespace SalesService.Application.Commands.Orders.OrderReissued
                 };
 
                 await _publisher.PublishAsync(integrationEvent, "order_reissued_queue");
+
+                var statusHistory = new OrderStatusHistory
+                {
+                    OrderId = orderExists.Id,
+                    OldStatus = OrderStatus.PendingReissued,
+                    NewStatus = OrderStatus.ReIssued,
+                    ChangedAt = DateTime.UtcNow
+                };
 
                 var htmlBody = EmailTemplateGenerator.BuildReissuedOrderTemplate(
                     customerName: orderExists.Customer.FirstName + " " + orderExists.Customer.LastName,

@@ -41,6 +41,9 @@ using SalesService.Application.Services.IdentityServiceClient;
 using SalesService.Domain.Common.Interfaces;
 using SalesService.Infraestructure.Email;
 using SalesService.Application.Commands.Orders.OrderReissued;
+using SalesService.Application.Commands.Orders.UpdateMissingOrder;
+using SalesService.Application.Queries.Orders.GetAllMissingOrders;
+using SalesService.Infraestructure.Messaging.Consumer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,7 +84,8 @@ builder.Services.AddScoped<IValidator<RegisterOrderItemRequest>, RegisterOrderIt
 builder.Services.AddScoped<IValidator<RegisterOrderRequest>, RegisterOrderValidator>();
 builder.Services.AddScoped<IValidator<UpdateOrderStatusRequest>, UpdateOrderStatusValidator>();
 builder.Services.AddScoped<IValidator<OrderReissuedRequest>, OrderReissuedValidator>();
-    
+builder.Services.AddScoped<IValidator<UpdateOrderMissingRequest>, UpdateOrderMissingValidator>();
+
 
 // Add services Command Handlers / Customer
 builder.Services.AddScoped<ICustomerDeleteCommandHandler, CustomerDeleteCommandHandler>();
@@ -105,6 +109,8 @@ builder.Services.AddScoped<IGetOrderByIdCustomerQueryHandler, GetOrderByIdCustom
 builder.Services.AddScoped<IGetAllOrdersQueryHandler, GetAllOrdersQueryHandler>();
 builder.Services.AddScoped<IGetSalesPerfomanceReportQueryHandler,  GetSalesPerfomanceReportQueryHandler>();
 builder.Services.AddScoped<IOrderReissuedCommandHandler, OrderReissuedCommandHandler>();
+builder.Services.AddScoped<IUpdateMissingOrderCommandHandler, UpdateMissingOrderCommandHandler>();
+builder.Services.AddScoped<IGetAllMissingOrdersQueryHandler, GetAllMissingOrdersQueryHandler>();
 
 // Add EmailService
 builder.Services.AddScoped<IEmailService, MailgunEmailService>();
@@ -119,6 +125,14 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 // Add RabbitMQ
 builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
+
+// Add Consumers
+builder.Services.AddHostedService<OrderMissingConsumer>();
+builder.Services.AddHostedService<OrderConfirmedConsumer>();
+builder.Services.AddHostedService<OrderInPreparationConsumer>();
+builder.Services.AddHostedService<OrderInvoicedConsumer>();
+builder.Services.AddHostedService<OrderPreparedConsumer>();
+builder.Services.AddHostedService<OrderSentToBillingConsumer>();
 
 // Obtener la cadena de conexión del appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

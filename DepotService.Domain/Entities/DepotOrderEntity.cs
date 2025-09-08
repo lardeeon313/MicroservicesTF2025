@@ -31,12 +31,18 @@ namespace DepotService.Domain.Entities
         public int? AssignedDepotTeamId { get; private set; }
         public string? RejectionReason { get; set; }
         public ICollection<OrderStatusHistory> StatusHistory { get; set; } = [];
-        public void AssignToOperator(Guid operatorId)
+        public void AssignToOperator(Guid operatorId, DepotTeamEntity team)
         {
             if (Status != OrderStatus.Received && Status != OrderStatus.ReReceived)
                 throw new InvalidOperationException("Cannot assign employee to an order that is not confirmed to sales.");
 
+            // Validar que el operador pertenezca al equipo
+            if (!team.Assignments.Any(a => a.OperatorUserId == operatorId))
+                throw new InvalidOperationException("El operador no pertenece al equipo proporcionado.");
+
             AssignedOperatorId = operatorId;
+            AssignedDepotTeam = team;
+            AssignedDepotTeamId = team.Id;
             Status = OrderStatus.Assigned;
         }
 

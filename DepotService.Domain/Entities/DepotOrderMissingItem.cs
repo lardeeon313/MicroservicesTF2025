@@ -15,6 +15,7 @@ namespace DepotService.Domain.Entities
 
         public int DepotOrderItemId { get; set; }
         public DepotOrderItemEntity DepotOrderItem { get; set; } = null!;
+        public int SalesOrderItemId { get; set; }
 
         public string ProductName { get; set; } = null!;
         public string ProductBrand { get; set; } = null!;

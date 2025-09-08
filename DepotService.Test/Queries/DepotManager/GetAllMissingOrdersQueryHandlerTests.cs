@@ -28,8 +28,7 @@ namespace DepotService.Test.Queries.DepotManager
 
             _handler = new GetAllMissingOrdersQueryHandler(
                 _repositoryMock.Object,
-                _loggerMock.Object,
-                _contextMock.Object
+                _loggerMock.Object
             );
         }
 

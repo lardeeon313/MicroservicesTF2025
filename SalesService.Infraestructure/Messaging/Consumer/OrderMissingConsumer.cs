@@ -43,7 +43,7 @@ namespace SalesService.Infraestructure.Messaging.Consumer
             var channel = await connection.CreateChannelAsync();
 
             await channel.QueueDeclareAsync(
-                queue: "order_missing_queue",
+                queue: "order_missing_reported_queue",
                 durable: true,
                 exclusive: false,
                 autoDelete: false
@@ -66,19 +66,34 @@ namespace SalesService.Infraestructure.Messaging.Consumer
                     {
                         var orderMissing = new OrderMissing
                         {
-                            MissingId = evento.MissingId,
                             OrderId = evento.SalesOrderId,
                             MissingReason = evento.MissingReason,
                             MissingDescription = evento.MissingDescription,
                             MissingDate = evento.ReportedAt,
                             MissingItems = evento.MissingItems.Select(item => new OrderMissingItem
                             {
-                                OrderItemId = item.OrderItemId,
-                                MissingQuantity = item.Quantity,
-                            }).ToList(),
-                        };
+                                OrderItemId = item.SalesOrderItemId,
+                                DepotOrderMissingItemId = evento.DepotOrderMissingId,
+                                ProductName = item.ProductName,
+                                ProductBrand = item.ProductBrand,
+                                Packaging = item.Packaging,
+                                MissingQuantity = item.MissingQuantity,
+                                }).ToList(),
+                            };
 
                         await context.OrderMissings.AddAsync(orderMissing);
+
+                        // Guardar el historial de estado
+                        var statusHistory = new OrderStatusHistory
+                        {
+                            OrderId = order.Id,
+                            OldStatus = OrderStatus.Confirmed,
+                            NewStatus = OrderStatus.PendingResolution,
+                            ChangedAt = DateTime.UtcNow
+                        };
+
+                        await context.OrderStatusHistories.AddAsync(statusHistory);
+                        await context.SaveChangesAsync();
 
                         order.Status = OrderStatus.PendingResolution;
                         await context.SaveChangesAsync(stoppingToken);
@@ -98,7 +113,7 @@ namespace SalesService.Infraestructure.Messaging.Consumer
 
             };
 
-            await channel.BasicConsumeAsync(queue: "order_missing_queue", autoAck: true, consumer: consumer);
+            await channel.BasicConsumeAsync(queue: "order_missing_reported_queue", autoAck: true, consumer: consumer);
 
             await Task.CompletedTask;
 
