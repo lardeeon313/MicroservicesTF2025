@@ -2,6 +2,7 @@ import { OrderStatus } from "../types/OrderTypes";
 
 export const OrderStatusLabels: Record<OrderStatus, string> = {
   [OrderStatus.Pending]: "Pendiente",
+  [OrderStatus.SentToBilling]: "Enviado a facturación",
   [OrderStatus.PendingResolution]: "Pendiente resolución",
   [OrderStatus.PendingReissued]: "Pendiente reemisión",
   [OrderStatus.Issued]: "Emitido",
