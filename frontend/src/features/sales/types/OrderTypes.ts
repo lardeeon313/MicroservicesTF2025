@@ -2,7 +2,6 @@ import { Customer, CustomerResponse } from "./CustomerTypes";
 
 export enum OrderStatus {
     Pending = "pending",
-    SentToBilling = "sentToBilling",
     PendingResolution = 'pendingResolution',
     PendingReissued = 'pendingReissued',
     Issued = "issued",

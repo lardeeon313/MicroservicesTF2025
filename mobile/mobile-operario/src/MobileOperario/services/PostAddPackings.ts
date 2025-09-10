@@ -1,4 +1,5 @@
- 
+//service que se comunica con el endpoint para agregar empaques a un pedido del deposito
+//por parte del operator 
 import API from "../../services/axios";
 import { AddPackingCommand } from "../types/AddPackings";
 import { MarkItemCommand } from "../types/AddPackings";
@@ -17,7 +18,7 @@ export const AddPackanings = async (data: AddPackingCommand) => {
     }
 }
 
- 
+//service que se comunica con el endpoint para marcar un item dentro del pedido: 
 export const MarkItemIsReady = async (data: MarkItemCommand) => {
     try{
         const response = await API.post('depot/depotoperator/mark-item-is-ready',data);
@@ -27,7 +28,7 @@ export const MarkItemIsReady = async (data: MarkItemCommand) => {
     }
 };
 
- 
+//service que se comunica con el endpoint para desmarcar un item dentro del pedido: 
 export const UnMarkItemIsReady = async (data: UnMarkItemReadyCommand) => {
     try{
         const response = await API.post('depot/depotoperator/unmark-item-ready',data);

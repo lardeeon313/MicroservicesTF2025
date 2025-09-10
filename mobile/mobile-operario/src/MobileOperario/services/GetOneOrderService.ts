@@ -1,5 +1,8 @@
+//import type { Order } from "../../otherTypes/OrderType";
 import API from "../../services/axios";
 import type { DepotOrderDTO } from "../types/OrderDTO";
+//Ejemplo de la api:
+import { DepotTeamAssigment } from "../types/OrderDTO";
 
 
 export const GetOrderById = async (orderId:number,userId: string) : Promise<DepotOrderDTO> => {

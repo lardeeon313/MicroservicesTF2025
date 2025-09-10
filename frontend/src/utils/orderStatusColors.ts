@@ -5,10 +5,6 @@ export const orderStatusStyles: Record<OrderStatus, { text: string; bg: string }
     text: "text-gray-700",
     bg: "bg-gray-200", // gris = en espera
   },
-  [OrderStatus.SentToBilling]: {
-  text: "text-violet-700",
-  bg: "bg-violet-100", // violeta = enviado a facturación
-  },
   [OrderStatus.PendingResolution]: {
     text: "text-orange-700",
     bg: "bg-orange-100", // naranja = requiere atención
