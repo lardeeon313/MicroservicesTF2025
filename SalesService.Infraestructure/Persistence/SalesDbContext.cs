@@ -16,6 +16,8 @@ namespace SalesService.Infraestructure
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<OrderMissing> OrderMissings { get; set; }
         public DbSet<OrderMissingItem> OrderMissingItems { get; set; }
+        public DbSet<OrderStatusHistory> OrderStatusHistories { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -46,7 +48,7 @@ namespace SalesService.Infraestructure
                 .HasForeignKey(o => o.CustomerId);
 
             modelBuilder.Entity<OrderMissing>()
-                .HasKey(om => om.MissingId);
+                .HasKey(om => om.Id);
 
             modelBuilder.Entity<OrderMissing>()
                 .HasOne(om => om.Order)
@@ -62,7 +64,7 @@ namespace SalesService.Infraestructure
                 .HasForeignKey(mi => mi.OrderMissingId);
 
             modelBuilder.Entity<OrderMissingItem>()
-                .HasOne(mi => mi.OrderItem)
+                .HasOne(mi => mi.SalesOrderItem)
                 .WithMany()
                 .HasForeignKey(mi => mi.OrderItemId);
         }

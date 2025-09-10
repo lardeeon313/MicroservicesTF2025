@@ -9,9 +9,10 @@ namespace DepotService.Application.DTOs.DepotManager
     /// <summary>
     /// Represents an operator in a depot team.
     /// </summary>
+
     public class OperatorsInTeamDto
     {
-        public Guid OperatorByUserId { get; set; } 
+        public Guid OperatorByUserId { get; set; }
         public string RoleInTeam { get; set; } = "Operator";
         public string? FirstName { get; set; }
         public string? LastName { get; set; }

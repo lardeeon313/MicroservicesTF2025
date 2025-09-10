@@ -1,45 +1,49 @@
 import { useEffect, useState } from "react";
-import type { DepotTeam } from "../../../../depotmanager/types/DepotTeamTypes";
 import API from "../../../../../../api/axios";
 
+type ProductivityProps = {
+  depotTeamId: number;
+  teamName: string;
+  ordersHandled: number;
+};
 
-type ProdictivityProps = {
-    teamId: DepotTeam['id'];
-    completedOrders: number; 
-}
+export const useTeamProductivity = (from: string, to: string) => {
+  const [data, setData] = useState<ProductivityProps[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-export const useTeamProdictivity = (page: number, pageSize: number) => {
-    const [data,setData] = useState<ProdictivityProps[]>([]);
-    const [loading,setLoading] = useState(true);
-    const [error,setError] = useState<string | null>(null);
-    const [totalpages,setTotalPages] = useState<number>(1);
+  useEffect(() => {
+    if (!from || !to) {
+      console.log("⏩ No se hace request porque faltan fechas:", { from, to });
+      return;
+    }
 
-    useEffect(() => {
-        const fetchTeamProdictivity = async () => {
-            setLoading(true);
-            setError(null);
-            try{
-                const response = await API.get<ProdictivityProps[]>(
-                    "/teams",
-                    {
-                        params: {page, pageSize},
-                    }
-                );
+    const fetchTeamProductivity = async () => {
+      setLoading(true);
+      setError(null);
+      console.log("📤 Fetching team productivity...", { from, to });
 
-                
-                const totalCount = Number(response.headers["x-total-count"]);
-                setTotalPages(Math.ceil(totalCount / pageSize));
-                setData(response.data);
-            }catch(error){
-                console.error("Error al obtener la productividad de los equipos:", error);
-                setError("Error al obtener los datos.");
-            }finally{
-                setLoading(false);
-            }
-        };
+      try {
+        const response = await API.get<ProductivityProps[]>(
+          "/depot/depotreports/reports/depot-team-performance",
+          { params: { from, to } }
+        );
 
-        fetchTeamProdictivity();
-    }, [page,pageSize]); 
+        console.log("✅ Respuesta cruda del backend:", response.data);
 
-    return {data,loading,error,totalpages}
+        setData(response.data);
+
+        console.log("📊 Data seteada en el hook:", response.data);
+      } catch (error) {
+        console.error("❌ Error al obtener la productividad de los equipos:", error);
+        setError("Error al obtener los datos.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeamProductivity();
+  }, [from, to]);
+
+  return { data, loading, error };
 };

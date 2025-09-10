@@ -179,6 +179,9 @@ namespace DepotService.API.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int>("SalesOrderItemId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DepotOrderItemId");
@@ -262,6 +265,34 @@ namespace DepotService.API.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("OrderStatusHistories", (string)null);
+                });
+
+            modelBuilder.Entity("DepotService.Domain.Entities.OrderStatusHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<double>("AverageDuration")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("NewStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OldStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderStatusHistories");
                 });
 
             modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderEntity", b =>

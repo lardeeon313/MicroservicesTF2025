@@ -41,6 +41,7 @@ namespace DepotService.Application.Commands.BillingManager.UpdateInvoicedItemPri
 
             // Recalcular el total
             item.Total = item.UnitPrice.HasValue ? item.UnitPrice.Value * item.Quantity : 0;
+            order.TotalAmount = order.Items.Sum(i => i.Total ?? 0);
             await _repository.UpdateOrderAsync(order);
             await _context.SaveChangesAsync();
 

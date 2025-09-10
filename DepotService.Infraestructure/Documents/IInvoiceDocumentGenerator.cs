@@ -17,4 +17,15 @@ namespace DepotService.Infraestructure.Documents
         byte[] Generate(DepotOrderEntity order);
 
     }
+
+    public interface IInvoiceWordGenerator
+    {
+        byte[] Generate(DepotOrderEntity order);
+    }
+
+    public interface IInvoiceExcelGenerator
+    {
+        byte[] Generate(DepotOrderEntity order);
+    }
+
 }

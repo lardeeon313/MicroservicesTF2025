@@ -15,11 +15,11 @@ namespace SalesService.Application.DTOs.Order.Request
 
         [MaxLength(200)]
         public string? DeliveryDetail { get; set; }
+        public OrderStatus Status { get; set; }
 
         public List<UpdateOrderItemRequest> Items { get; set; } = new();
         public string? PaymentReceipt { get; set; }
         public PaymentType? PaymentType { get; set; }
-        public OrderStatus Status { get; set; }
         public string? ModifiedByUserId { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 import axios from '../../../../api/axios';
 import { DepotOrderDto } from '../types/OrderTypes';
 
-// Eliminar todas las referencias a los mocks y dejar solo la lógica real de la API
+
 
 // Obtener todas las órdenes pendientes de facturación
 export const getPendingBillingOrders = async (): Promise<DepotOrderDto[]> => {
@@ -11,7 +11,7 @@ export const getPendingBillingOrders = async (): Promise<DepotOrderDto[]> => {
 
 // Obtener detalles de una orden pendiente por ID
 export const getPendingOrderDetails = async (depotOrderId: number): Promise<DepotOrderDto> => {
-  const { data } = await axios.get<DepotOrderDto>('/depot/billingmanager/orders-pending-billing', {
+  const { data } = await axios.get<DepotOrderDto>('/depot/billingmanager/pending-billing-orders', {
     params: { depotOrderId },
   });
   return data;
@@ -27,7 +27,7 @@ export const setItemUnitPrices = async (payload: {
 
 // Facturar una orden
 export const invoiceOrder = async (depotOrderId: number): Promise<void> => {
-  await axios.post('/depot/billingmanager/invoice-order', { depotOrderId }, {
+  await axios.post('/depot/billingmanager/invoice-order', depotOrderId, {
     headers: { 'Content-Type': 'application/json' },
   });
 };
@@ -55,3 +55,19 @@ export const getInvoicedOrdersByCustomer = async (customerName: string): Promise
 export const updateInvoicedItemPrice = async (payload: { billingOrderId: number; itemId: number; newUnitPrice: number }): Promise<void> => {
   await axios.put('/depot/billingmanager/update-invoiced-item-price', payload);
 }; 
+
+//: Service para exportar pdf , excel y word: 
+
+export const exportInvoice = async (billingOrderId: number, type: number) => {
+  try {
+    const response = await axios.get('/depot/billingmanager/export-invoice', {
+      params: { billingOrderId, type },
+      responseType: "blob",
+    });
+
+    return response.data; // 👈 YA es un Blob
+  } catch (error) {
+    console.error("Error al exportar la factura:", error);
+    throw error;
+  }
+}

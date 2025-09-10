@@ -23,6 +23,6 @@ namespace DepotService.Application.DTOs.DepotManager.Request
         [Required, StringLength(1000, ErrorMessage = "The description must be at most 1000 characters long.")]
         public string MissingDescription { get; set; } = string.Empty;
 
-        public List<DepotOrderItemsReportedDto> MissingItems { get; set; } = new List<DepotOrderItemsReportedDto>();
+        public List<DepotOrderItemsReportedDto> MissingItems { get; set; } = [];
     }
 }

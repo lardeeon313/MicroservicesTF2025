@@ -6,17 +6,22 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.BillingManager.GetInvoicedOrdersByCustomer
 {
-
     /// <summary>
     /// Query to retrieve all invoiced orders for a specific customer.
     /// </summary>
     public class GetInvoicedOrdersByCustomerQuery
     {
-        public Guid CustomerId { get; set; }
+        //public Guid? CustomerId { get; set; }
+        public string? CustomerName { get; set; }
 
-        public GetInvoicedOrdersByCustomerQuery(Guid customerId)
+        public GetInvoicedOrdersByCustomerQuery()
         {
-            CustomerId = customerId;
+        }
+
+        public GetInvoicedOrdersByCustomerQuery( string? customerName = null)
+        {
+            //CustomerId = customerId;
+            CustomerName = customerName;
         }
     }
 }

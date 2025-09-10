@@ -270,7 +270,7 @@ namespace DepotService.API.Controllers
             {
                 return BadRequest("Failed to send order to billing. Order not found or not in preparation status.");
             }
-            return Ok("Order sent to billing successfully.");
+            return Ok(new { message = "Order sent to billing successfully." });
         }
 
         /// <summary>

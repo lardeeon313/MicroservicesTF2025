@@ -15,8 +15,8 @@ export interface DepotOrderItemDto {
     id: number;
     productBrand: string;
     productName: string;
-    packaging?: string;
-    unitPrice?: number;
+    packaging?: string | null;
+    unitPrice?: number | null;
     quantity: number;
     total: number;
 }
@@ -27,9 +27,9 @@ export interface DepotOrderDto {
     customerName: string;
     customerEmail: string;
     phoneNumber: string;
-    deliveryDetail?: string;
+    deliveryDetail?: string | null;
     orderDate: string; // ISO string
-    status: OrderStatus | string;
+    status: OrderStatus | string | number;
     items: DepotOrderItemDto[];
     totalAmount: number;
 }

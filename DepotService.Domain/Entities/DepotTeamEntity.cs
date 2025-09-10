@@ -20,7 +20,7 @@ namespace DepotService.Domain.Entities
         }
 
         // Constructor protegido para EF Core
-        public  DepotTeamEntity(int id, string teamName) 
+        public DepotTeamEntity(int id, string teamName)
         {
             Id = id;
             TeamName = teamName;

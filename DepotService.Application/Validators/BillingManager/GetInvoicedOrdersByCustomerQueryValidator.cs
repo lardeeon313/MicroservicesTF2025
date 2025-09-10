@@ -8,13 +8,16 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Validators.BillingManager
 {
-    public class GetInvoicedOrdersByCustomerQueryValidator : AbstractValidator<GetInvoicedOrdersByCustomerQuery>
+    public class GetInvoicedOrdersByCustomerQueryValidator
+    : AbstractValidator<GetInvoicedOrdersByCustomerQuery>
     {
         public GetInvoicedOrdersByCustomerQueryValidator()
         {
-            RuleFor(query => query.CustomerId)
-                .NotEmpty().WithMessage("Customer ID is required.")
-                .Must(id => id != Guid.Empty).WithMessage("Customer ID must be a valid GUID.");
+            RuleFor(query => query.CustomerName)
+                .NotEmpty()
+                .WithMessage("Customer name is required.")
+                .MinimumLength(2)
+                .WithMessage("Customer name must be at least 2 characters long.");
         }
     }
 }

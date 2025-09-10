@@ -1,29 +1,39 @@
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Platform } from "react-native";
 
+// Detecta la URL base según plataforma
+const API_BASE_URL =
+  Platform.OS === "web"
+    ? "http://localhost:5000/"       // Para navegador / pruebas en PC
+    : "http://192.168.100.10:5000/";  // Para Expo Go en celular (poné la IP de tu PC)
+
+// Crear instancia de axios
 const API = axios.create({
-    baseURL: "http://localhost:5000/",
-    headers: {"Content-Type": "application/json"},
+  baseURL: API_BASE_URL,
+  headers: { "Content-Type": "application/json" },
 });
 
-API.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
+// Interceptor request para enviar token automáticamente
+API.interceptors.request.use(async (config) => {
+  const token = await AsyncStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization =  `Bearer ${token}`;
+  }
+  return config;
 });
 
+// Interceptor response para manejar 401
 API.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            if (!window.location.pathname.includes('/login')) {
-                localStorage.removeItem("token");
-                window.location.href = "/login";
-            }
-        }
-        return Promise.reject(error);
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      await AsyncStorage.removeItem("token");
+      console.log("Sesión expirada. Redirigir a Login usando React Navigation");
+      // Ejemplo: navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
     }
+    return Promise.reject(error);
+  }
 );
 
-export default API; 
+export default API;

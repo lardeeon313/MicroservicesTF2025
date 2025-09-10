@@ -1,4 +1,4 @@
-import { ShoppingCart, User, FilePlus2, Users, BarChart2 } from "lucide-react";
+import { ShoppingCart, User, FilePlus2, Users, BarChart2, FileMinus2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const cards = [
@@ -9,16 +9,22 @@ const cards = [
     link: "/sales/orders",
   },
   {
-    title: "Lista de Clientes",
-    description: "Accedé al listado de clientes registrados.",
-    icon: <Users className="h-10 w-10 text-red-600" />,
-    link: "/sales/customers",
+    title: "Pedidos con Faltantes",
+    description: "Visualizá y gestioná los pedidos reportados con faltantes.",
+    icon: <FileMinus2 className="h-10 w-10 text-red-600" />,
+    link: "/sales/missing-orders",
   },
   {
     title: "Crear Pedido",
     description: "Generá un nuevo pedido para un cliente.",
     icon: <FilePlus2 className="h-10 w-10 text-red-600" />,
     link: "/sales/orders/registerOrder",
+  },
+  {
+    title: "Lista de Clientes",
+    description: "Accedé al listado de clientes registrados.",
+    icon: <Users className="h-10 w-10 text-red-600" />,
+    link: "/sales/customers",
   },
   {
     title: "Crear Cliente",

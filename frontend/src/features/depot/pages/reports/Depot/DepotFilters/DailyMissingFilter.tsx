@@ -1,36 +1,52 @@
 import React from "react";
 
-type Props = {
-  selectedHour: number | "";
-  onHourChange: (value: number | "") => void;
-};
+interface DailyMissingFilterProps {
+  selectedTime: string;
+  onHourChange: (val: string) => void;
+  onSearch: () => void;
+  onClear: () => void;
+}
 
-const DailyMissingFilter: React.FC<Props> = ({ selectedHour, onHourChange }) => {
-  const hours = Array.from({ length: 24 }, (_, i) => i);
-
+const DailyMissingFilter: React.FC<DailyMissingFilterProps> = ({
+  selectedTime,
+  onHourChange,
+  onSearch,
+  onClear,
+}) => {
   return (
-    <div className="flex flex-col items-start gap-1 mb-6">
-      <label htmlFor="hour-filter" className="text-sm font-medium text-gray-700">
-        Filtro por hora del faltante
-      </label>
-      <select
-        id="hour-filter"
-        className="w-64 rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm text-gray-800 shadow-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
-        value={selectedHour}
-        onChange={(e) =>
-          onHourChange(e.target.value === "" ? "" : parseInt(e.target.value))
-        }
-      >
-        <option value="">Todas las horas</option>
-        {hours.map((hour) => (
-          <option key={hour} value={hour}>
-            {hour.toString().padStart(2, "0")}:00 hs
-          </option>
-        ))}
-      </select>
+    <div className="flex items-center gap-4 mb-6 bg-white shadow-md p-4 rounded-xl">
+      {/* Input de hora */}
+      <div className="flex flex-col">
+        <label className="text-sm text-gray-600 mb-1">Seleccione una hora</label>
+        <input
+          type="time"
+          value={selectedTime}
+          onChange={(e) => onHourChange(e.target.value)}
+          className="border border-gray-300 px-3 py-2 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
+        />
+      </div>
+
+      {/* Botones */}
+      <div className="flex gap-3 mt-5">
+        <button
+          onClick={onSearch}
+          className="bg-red-500 hover:bg-red-600 transition-colors text-white px-5 py-2 rounded-lg shadow"
+        >
+          Buscar
+        </button>
+        <button
+          onClick={onClear}
+          className="bg-gray-400 hover:bg-gray-500 transition-colors text-white px-5 py-2 rounded-lg shadow"
+        >
+          Limpiar
+        </button>
+      </div>
     </div>
   );
 };
 
 export default DailyMissingFilter;
+
+
+
 

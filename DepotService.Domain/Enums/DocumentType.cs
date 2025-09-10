@@ -8,8 +8,8 @@ namespace DepotService.Domain.Enums
 {
     public enum DocumentType
     {
-        Pdf,
-        Excel,
-        Word
+        Pdf = 0,
+        Excel = 1,
+        Word = 2
     }
 }

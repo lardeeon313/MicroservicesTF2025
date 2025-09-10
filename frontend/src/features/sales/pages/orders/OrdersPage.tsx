@@ -31,8 +31,11 @@ export default function OrdersPage() {
       const order = orders.find((o) => o.id === id);
       if (!order) return;
 
-      if (order.status === OrderStatus.Confirmed) {
-        return Swal.fire("Acción no permitida", "No se puede eliminar una orden ya fue confirmada por Deposito.", "warning");
+      if (order.status === OrderStatus.Confirmed || order.status === OrderStatus.InPreparation || order.status === OrderStatus.SentToBilling
+        || order.status === OrderStatus.Invoiced || order.status === OrderStatus.Prepared || order.status === OrderStatus.OnTheWay 
+        || order.status === OrderStatus.Delivered
+      ) {
+        return Swal.fire("Acción no permitida", `No se puede eliminar una orden si se encuentra en "${order.status}" .`, "warning");
       }
 
       const confirmResult = await Swal.fire({
@@ -150,10 +153,11 @@ export default function OrdersPage() {
         const order = orders.find((o) => o.id === id);
         if (!order) return;
 
-        if (order.status === OrderStatus.Issued) {
-          return Swal.fire("Acción no permitida", "No se puede editar una orden ya emitida.", "warning");
+        if (order.status === OrderStatus.Confirmed || order.status === OrderStatus.InPreparation || order.status === OrderStatus.SentToBilling
+        || order.status === OrderStatus.Invoiced || order.status === OrderStatus.Prepared || order.status === OrderStatus.OnTheWay 
+        || order.status === OrderStatus.Delivered) {
+          return Swal.fire("Acción no permitida", `No se puede editar una orden si se encuentra en "${order.status}`, "warning");
         }
-
         navigate(`/sales/orders/update/${id}`);
       };
 
@@ -205,7 +209,6 @@ export default function OrdersPage() {
         <div className="flex justify-center mt-6 gap-4 ">
           <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage}/>
         </div>
-
       </div>
     </div>
   );

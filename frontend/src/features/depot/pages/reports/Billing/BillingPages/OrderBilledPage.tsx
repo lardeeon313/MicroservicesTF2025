@@ -1,84 +1,52 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useOrderBilled } from "../BillingHocks/useOrderBilled";
-
-import LoadingSpinner from "../../../../../../components/LoadingSpinner";
-import { Pagination } from "../../../../../../components/Pagination";
-import OrderBilledTable from "../BillingComponents/OrderBilledTable";
+import { useInvoicedOrdersByCustomer } from "../BillingHocks/useOrderBilled";
+import InvoicedOrdersFilter from "../BillingFilters/OrderBilledFilter";
+import InvoicedOrdersTable from "../BillingComponents/OrderBilledTable";
 import OrderBilledGraph from "../BillingGraphs/GraphOrderBilled";
-import OrderBilledFilter from "../BillingFilters/OrderBilledFilter"; // IMPORTANTE
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
-const OrderBilledPage: React.FC = () => {
-    const [page, setPage] = useState(1);
-    const pageSize = 10;
+export default function InvoicedOrdersPage() {
+  const { data, loading, error, fetchOrders } = useInvoicedOrdersByCustomer();
+  const navigate = useNavigate();
 
-    const { data, loading, error, totalpages } = useOrderBilled(page, pageSize);
+  const handleSearch = (filters: { customerName?: string }) => {
+    fetchOrders(filters);
+  };
 
-    const [idFilter, setIdFilter] = useState("");
-    const [orderDateFilter, setOrderDateFilter] = useState("");
-    const [billingDateFilter, setBillingDateFilter] = useState("");
+  return (
+    <div className="p-6 space-y-6">
+      {/* Encabezado con botón volver */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-red-600">
+          Pedidos facturados por cliente
+        </h1>
+        <button
+          onClick={() => navigate("/depot/billingmanager/reports")}
+          className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-lg shadow transition"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          Volver
+        </button>
+      </div>
 
-    if (loading) {
-        return <LoadingSpinner message="cargando los datos..." height="h-screen" />;
-    }
+      {/* Filtro */}
+      <InvoicedOrdersFilter onSearch={handleSearch} />
 
-    const filteredData = data.filter((item) => {
-        const matchesId = idFilter === "" || item.OrderId.toString().includes(idFilter);
-        const matchesOrderDate = orderDateFilter === "" || item.dateOrder.includes(orderDateFilter);
-        const matchesBillingDate = billingDateFilter === "" || item.dateBilling.includes(billingDateFilter);
-        return matchesId && matchesOrderDate && matchesBillingDate;
-    });
+      {/* Estado de carga / error */}
+      {loading && (
+        <p className="text-blue-600 font-medium animate-pulse">Cargando...</p>
+      )}
+      {error && (
+        <p className="text-red-600 font-semibold">Error: {error}</p>
+      )}
 
-    return (
-        <div className="container m-0 pt-10 min-w-full min-h-full">
-            <div className="flex items-center justify-between mb-6">
-                <Link to={"/depot/depotmanager/reports/Dashboard"} className="text-red-600 hover:underline pl-10">
-                    ← Volver atrás
-                </Link>
-            </div>
+      {/* Tabla */}
+      <div className="bg-white shadow-md rounded-lg p-4">
+        <InvoicedOrdersTable data={data} />
+      </div>
 
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-                    Totalidad de pedidos facturados:
-                </h1>
-                <p className="text-center text-lg text-gray-700 mb-12">
-                    Aquí vas a poder visualizar todos los pedidos que ya han sido facturados por el encargado de facturación
-                </p>
-
-                <div className="w-full mb-6">
-                    <div className="bg-white rounded-lg shadow-md p-6 flex flex-col gap-6 items-center">
-                    {/* Input centrado */}
-                        <input
-                            type="text"
-                            placeholder="🔍 Filtrar por ID de pedido"
-                            className="w-full md:w-1/3 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-400 transition duration-200 text-center"
-                            value={idFilter}
-                            onChange={(e) => setIdFilter(e.target.value)}
-                        />
-
-                    {/* Componente de filtros por fechas */}
-                    <OrderBilledFilter
-                        orderDate={orderDateFilter}
-                        billingDate={billingDateFilter}
-                        onOrderDateChange={setOrderDateFilter}
-                        onBillingDateChange={setBillingDateFilter}
-                    />
-                    </div>
-                </div>
-
-
-                {error ? (
-                    <p className="text-red-600 text-center">{error}</p>
-                ) : (
-                    <>
-                        <OrderBilledTable data={filteredData} />
-                        <OrderBilledGraph data={filteredData} />
-                        <Pagination currentPage={page} totalPages={totalpages} onPageChange={setPage} />
-                    </>
-                )}
-            </div>
-        </div>
-    );
-};
-
-export default OrderBilledPage;
+      {/* Gráfico */}
+      <OrderBilledGraph data={data} />
+    </div>
+  );
+}

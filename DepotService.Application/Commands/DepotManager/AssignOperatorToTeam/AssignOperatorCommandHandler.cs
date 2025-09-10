@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DepotService.Application.Commands.DepotManager.AssignOperator
@@ -22,28 +21,29 @@ namespace DepotService.Application.Commands.DepotManager.AssignOperator
         /// <summary>
         /// Asigna un operador a un equipo existente.
         /// </summary>
-        /// <param name="command">Datos para la asignación.</param>
-        /// <exception cref="KeyNotFoundException">Si el equipo no existe.</exception>
         public async Task<AssignOperatorResponse> AssignOperatorAsync(AssignOperatorCommand command)
         {
             var team = await _repository.GetByIdAsync(command.TeamId);
             if (team == null)
             {
-                _logger.LogError($"The team with ID {command.TeamId} not found.");
-                throw new InvalidOperationException($"The team with ID{command.TeamId} not found.");
+                _logger.LogError("❌ The team with ID {TeamId} not found.", command.TeamId);
+                throw new InvalidOperationException($"The team with ID {command.TeamId} not found.");
             }
 
-            if(team.Assignments.Any(a => a.OperatorUserId == command.OperatorUserId))
+            // ✅ Comparación Guid con Guid
+            if (team.Assignments.Any(a => a.OperatorUserId == command.OperatorUserId))
             {
-                _logger.LogError($"The operator with UserId {command.OperatorUserId} is already assigned to team {command.TeamId}.");
+                _logger.LogError("⚠️ The operator with UserId {OperatorUserId} is already assigned to team {TeamId}.", command.OperatorUserId, command.TeamId);
                 throw new InvalidOperationException($"The operator with UserId {command.OperatorUserId} is already assigned to team {command.TeamId}.");
             }
 
+            // Agregar operador
             team.AssignOperator(command.OperatorUserId);
 
             await _repository.UpdateAsync(team);
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("✅ Operator {OperatorUserId} assigned to team {TeamId}.", command.OperatorUserId, command.TeamId);
 
             return new AssignOperatorResponse
             {
@@ -54,3 +54,4 @@ namespace DepotService.Application.Commands.DepotManager.AssignOperator
         }
     }
 }
+

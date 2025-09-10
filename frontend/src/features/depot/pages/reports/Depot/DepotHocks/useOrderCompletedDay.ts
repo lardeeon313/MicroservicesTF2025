@@ -1,43 +1,104 @@
-
-import { useEffect,useState } from "react";
+import { useState } from "react";
 import API from "../../../../../../api/axios";
-import type { Order } from "../../../../../sales/types/OrderTypes";
 
-type OrderCompleted = {
-    OrderId: Order['id'];
-    finishdate: Order['finishDate']
+/**
+ * Convierte una fecha de formato "DD/MM/YYYY" a "YYYY-MM-DD".
+ * Si la fecha es inválida o vacía, devuelve un string vacío.
+ */
+const convertirFechaA_YYYYMMDD = (fechaDDMMYYYY: string): string => {
+  if (!fechaDDMMYYYY) return "";
+  const partes = fechaDDMMYYYY.split('/');
+  if (partes.length !== 3) return ""; // Formato inválido
+  const [dia, mes, anio] = partes;
+  return `${anio}-${mes}-${dia}`;
+};
+
+export interface Order {
+  depotOrderId: number;
+  salesOrderId: number;
+  customerName: string;
+  customerEmail: string;
+  orderDate: string;
+  deliveryDate: string;
 }
 
-export const useOrderCompletedDay = (page: number, pageSize: number) => {
-    const [data,setData] = useState<OrderCompleted[]>([]);
-    const [loading,setLoading] = useState<boolean>(true);
-    const [error,setError] = useState<string | null>(null);
-    const [totalpages,setTotalPages] = useState<number>(1);
+export const useOrderCompletedDay = () => {
+  const [data, setData] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            setError(null);
-            try{
-                //Cambiar la ruta de la api:
-                const response = await API.get<OrderCompleted[]>("/orders", {
-                    params: { page, pageSize },
-                });
+  const fetchData = async (startDate: string, endDate: string, pageNum: number) => {
+    try {
+      setLoading(true);
 
-                const totalCount = Number(response.headers["x-total-count"]);
-                    setTotalPages(Math.ceil(totalCount / pageSize));
-                    setData(response.data);
-                
-            }catch(error){
-                console.error("Error al obtener los pedidos completos. " , error);
-                setError("No se pudieron obtener los datos.");
-            }finally{
-                setLoading(false);
-            }
-        }
+      // 1. Convertimos las fechas del formato UI (DD/MM/YYYY) al formato API (YYYY-MM-DD)
+      const fechaConvertidaInicio = convertirFechaA_YYYYMMDD(startDate);
+      const fechaConvertidaFin = convertirFechaA_YYYYMMDD(endDate);
 
-        fetchData();
-    },[page,pageSize] );
+      // 2. Añadimos la hora para crear un rango de tiempo completo y válido
+      const formattedStartDate = fechaConvertidaInicio ? `${fechaConvertidaInicio}T00:00:00` : "";
+      const formattedEndDate = fechaConvertidaFin ? `${fechaConvertidaFin}T23:59:59` : "";
 
-    return {data,loading,error,totalpages}
-}
+      console.log("📤 Fetching Orders with final params:", {
+        startDate: formattedStartDate,
+        endDate: formattedEndDate,
+        page: pageNum,
+      });
+
+      const response = await API.get("depot/depotreports/reports/orders-completed", {
+        params: {
+          startDate: formattedStartDate,
+          endDate: formattedEndDate,
+          page: pageNum,
+        },
+      });
+
+      console.log("📥 Response from API:", response.data);
+
+      const items: Order[] = response.data.items || [];
+      setData(items);
+      setTotalPages(response.data.totalPages || 1);
+
+    } catch (error) {
+      setError("Error al cargar los datos");
+      console.error("❌ Error en fetchData:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onSearch = () => {
+    fetchData(startDate, endDate, 1);
+  };
+
+  const clearFilters = () => {
+    setStartDate("");
+    setEndDate("");
+    setPage(1);
+    console.log("🧹 Limpiando filtros, cargando todos los datos");
+    fetchData("", "", 1); // Cargar todos los datos sin filtro
+  };
+
+  return {
+    data,
+    loading,
+    error,
+    page,
+    setPage,
+    totalPages,
+    startDate,
+    setStartDate,
+    endDate,
+    setEndDate,
+    onSearch,
+    fetchData,
+    clearFilters,
+  };
+};
+
+
+///depot/depotreports/reports/orders-completed

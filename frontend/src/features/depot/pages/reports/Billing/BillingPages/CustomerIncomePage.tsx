@@ -1,102 +1,145 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useCustomerIncome } from "../BillingHocks/useCustomerIncome";
-
+import { useNavigate } from "react-router-dom";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import { Pagination } from "../../../../../../components/Pagination";
-import CustomerIncomeTable from "../BillingComponents/CustomerIncomeTable";
+import CustomerIncomeTable, {
+  CustomerIncomeBillingItem,
+} from "../BillingComponents/CustomerIncomeTable";
 import GraphCustomerIncome from "../BillingGraphs/GraphCustomerIncome";
-
-// filtros:
+import type { Billing } from "../../../../billingmanager/types/BillingType";
+import { useCustomerIncome } from "../BillingHocks/useCustomerIncome";
 import CustomerIncomeFilter from "../BillingFilters/CustomerIncomeFilter";
 
+/** Normaliza a YYYY-MM-DD para comparar sin problemas de locale/timezone */
+const toYMD = (value: string | Date): string => {
+  const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
+
+/** Para mostrar en la tabla como dd/mm/aaaa */
+const toDMY = (value: string | Date): string => {
+  const ymd = toYMD(value);
+  if (!ymd) return "";
+  const [y, m, d] = ymd.split("-");
+  return `${d}/${m}/${y}`;
+};
+
 const CustomerIncomePage: React.FC = () => {
-    const [page, setPage] = useState(1);
-    const pageSize = 10;
+  const navigate = useNavigate();
+  const { orders, loading, error } = useCustomerIncome();
 
-    const { data, loading, error, totalPages } = useCustomerIncome(page, pageSize);
+  // filtros (fecha única)
+  const [filters, setFilters] = useState<{
+    customerName: string;
+    date: string;          // YYYY-MM-DD (tal como lo emite el input date)
+    totalAmount?: string;  // string para permitir limpiar
+  }>({
+    customerName: "",
+    date: "",
+    totalAmount: "",
+  });
 
-    const [idfilter, setIdfilter] = useState("");
-    const [ageFilter, setAgeFilter] = useState("");
+  // paginación
+  const [page, setPage] = useState<number>(1);
+  const [pageSize] = useState<number>(10);
 
-    // 🔍 Aplica ambos filtros: ID de pedido y antigüedad desde la fecha de facturación
-    const filteredData = data.filter((item) => {
-        const matchesId = item.orderID.toString().includes(idfilter);
+  // aplicar filtros (comparando YYYY-MM-DD)
+  const filteredOrders = orders.filter((o) => {
+    let ok = true;
 
-        const billingYear = new Date(item.billingDate).getFullYear();
-        const currentYear = new Date().getFullYear();
-        const yearsSinceBilling = currentYear - billingYear;
-
-        const matchesAge = ageFilter ? yearsSinceBilling >= Number(ageFilter) : true;
-
-        return matchesId && matchesAge;
-    });
-
-    if (loading) {
-        return <LoadingSpinner message="cargando los datos..." height="h-screen" />
+    if (filters.customerName.trim()) {
+      ok =
+        ok &&
+        o.customerName
+          .toLowerCase()
+          .includes(filters.customerName.trim().toLowerCase());
     }
 
-    return (
-        <div className="container m-0 pt-10 min-w-full min-h-full">
-            <div className="flex items-center justify-between mb-6">
-                <Link to={"/depot/depotmanager/reports/Dashboard"} className="text-red-600 hover:underline pl-10">
-                    ← Volver atrás
-                </Link>
-            </div>
+    if (filters.date) {
+      ok = ok && toYMD(o.orderDate) === filters.date;
+    }
 
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-                    Ingresos generados por los clientes:
-                </h1>
-                <p className="text-center text-lg text-gray-700 mb-12">
-                    Aqui podras ver todos los ingresos que fueron generados por los distintos clientes
-                    luego de hacer la facturacion.
-                </p>
+    if (filters.totalAmount && filters.totalAmount !== "") {
+      ok = ok && Number(o.totalAmount) === Number(filters.totalAmount);
+    }
 
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6 w-full max-w-4xl mx-auto">
-                    <div className="w-full md:w-1/2">
-                        <label className="flex items-center gap-2 border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus-within:ring-2 focus-within:ring-red-500 transition-all">
-                            <input
-                                type="text"
-                                placeholder="Filtrar por ID de pedido"
-                                className="w-full bg-transparent outline-none text-sm placeholder-gray-500"
-                                value={idfilter}
-                                onChange={(e) => setIdfilter(e.target.value)}
-                            />
-                        </label>
-                    </div>
+    return ok;
+  });
 
-                    <div className="w-full md:w-1/2">
-                        <CustomerIncomeFilter
-                        ageFilter={ageFilter}
-                        onAgeFilterChange={setAgeFilter}
-                        />
-                    </div>
-                </div>
+  // paginados
+  const totalPages = Math.ceil(filteredOrders.length / pageSize);
+  const paginatedOrders = filteredOrders.slice(
+    (page - 1) * pageSize,
+    page * pageSize
+  );
 
-                {error ? (
-                    <p className="text-red-600 text-center">{error}</p>
-                ) : (
-                    <>
-                        <CustomerIncomeTable data={
-                            filteredData.map(item => ({
-                                orderid: item.orderID,
-                                billingDate: item.billingDate,
-                                totalAmount: item.totalAmount
-                            }))
-                        } />
-                        <GraphCustomerIncome data={
-                            filteredData.map(item => ({
-                                BillingDate: item.billingDate,
-                                TotalAmount: item.totalAmount
-                            }))
-                        } />
-                        <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
-                    </>
-                )}
-            </div>
-        </div>
-    );
+  return (
+    <div className="p-6 space-y-6">
+      {/* Botón volver atrás */}
+      <button
+        onClick={() => navigate("/depot/billingmanager/reports")}
+        className="text-red-600 font-semibold hover:text-red-800 hover:border-b-2 hover:border-red-600"
+      >
+        ← Volver atrás
+      </button>
+
+      <h1 className="text-2xl font-bold text-red-600 text-center">
+        Ingresos por Cliente
+      </h1>
+
+      {/* Filtros */}
+      <CustomerIncomeFilter
+        filters={filters}
+        onChange={setFilters}
+        onSearch={() => setPage(1)}
+        onClear={() => {
+          setFilters({ customerName: "", date: "", totalAmount: "" });
+          setPage(1);
+        }}
+      />
+
+      {/* estados */}
+      {loading && <LoadingSpinner />}
+      {error && <p className="text-red-500">{error}</p>}
+
+      {/* tabla */}
+      <div className="bg-white p-4 shadow-md">
+        <CustomerIncomeTable
+          data={paginatedOrders.map(
+            (item: Billing): CustomerIncomeBillingItem => ({
+              customerName: item.customerName,
+              customerEmail: item.customerEmail,
+              billingDate: toDMY(item.orderDate), // dd/mm/aaaa
+              totalAmount: item.totalAmount,
+            })
+          )}
+        />
+      </div>
+
+      {/* gráfico */}
+      <div className="bg-white p-4 shadow-md">
+        <GraphCustomerIncome
+          data={filteredOrders.map((item: Billing) => ({
+            BillingDate: toDMY(item.orderDate), // dd/mm/aaaa
+            TotalAmount: item.totalAmount,
+          }))}
+        />
+      </div>
+
+      {/* paginación */}
+      <div className="flex justify-center">
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      </div>
+    </div>
+  );
 };
 
 export default CustomerIncomePage;

@@ -13,6 +13,7 @@ using SharedKernel.IntegrationEvents.DepotEvents.DTOs.Order;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -56,11 +57,11 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
                 NewStatus = OrderStatus.PendingResolution,
                 ChangedAt = DateTime.UtcNow,
             };
+
             // Agregar el historial de estado a la base de datos
             await _context.OrderStatusHistories.AddAsync(statusHistory);
             await _context.SaveChangesAsync();
             _logger.LogInformation($"Depot order with ID {command.DepotOrderId} status updated to PendingResolution.");
-
 
             // Antes de crear el DepotOrderMissing, validar si ya existe
             var existingMissing = await _context.DepotOrderMissings
@@ -75,6 +76,7 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
                     MissingDescription = command.MissingDescription,
                     MissingItems = command.MissingItems.Select(item => new DepotOrderMissingItem
                     {
+                        SalesOrderItemId = depotOrder.Items.Select(i => i.SalesOrderItemId).FirstOrDefault(),
                         MissingQuantity = item.Quantity,
                         ProductBrand = item.ProductBrand,
                         ProductName = item.ProductName,
@@ -93,20 +95,26 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
                 _logger.LogInformation($"Depot order with ID {command.DepotOrderId} already has a missing order. Skipping creation.");
             }
 
+
             _logger.LogInformation($"Depot order with ID {command.DepotOrderId} status updated to PendingResolution.");
 
             var integrationEvent = new OrderMissingReportedIntegrationEvent
             {
                 SalesOrderId = depotOrder.SalesOrderId,
+                DepotOrderId = depotOrder.DepotOrderId,
+                DepotOrderMissingId = depotOrder.Missings.Select(m => m.MissingId).FirstOrDefault(),
                 MissingReason = command.MissingReason,
                 MissingDescription = command.MissingDescription,
                 ReportedAt = DateTime.UtcNow,
                 MissingItems = command.MissingItems.Select(item => new MissingItemDto
                 {
-                    OrderItemId = item.OrderItemId,
-                    Quantity = item.Quantity,
+                    DepotOrderMissingId = depotOrder.Missings.Select(i => i.MissingItems.Select(o => o.Id).FirstOrDefault()).FirstOrDefault(),
+                    DepotOrderItemId = depotOrder.Items.Select(i => i.Id).FirstOrDefault(),
+                    SalesOrderItemId = depotOrder.Missings.Select(i => i.MissingItems.Select(o => o.SalesOrderItemId).FirstOrDefault()).FirstOrDefault(),
+                    MissingQuantity = item.Quantity,
                     ProductBrand = item.ProductBrand,
                     ProductName = item.ProductName,
+                    Packaging = item.Packaging,
                 }).ToList(),
             };
 

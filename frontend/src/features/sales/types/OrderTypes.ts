@@ -2,7 +2,11 @@ import { Customer, CustomerResponse } from "./CustomerTypes";
 
 export enum OrderStatus {
     Pending = "pending",
+    SentToBilling = "sentToBilling",
+    PendingResolution = 'pendingResolution',
+    PendingReissued = 'pendingReissued',
     Issued = "issued",
+    ReIssued = "reIssued",
     Confirmed = "confirmed",
     InPreparation = "inPreparation",
     Prepared = "prepared",
@@ -11,7 +15,6 @@ export enum OrderStatus {
     OnTheWay = "onTheWay",   
     Delivered = "delivered",  
     Canceled = "canceled",
-    //SE LO TUVO QUE CAMBIAR PARA EL REPORTE: 
     Modified = "modified"
 }
 
@@ -149,4 +152,38 @@ export interface SalesPerfomanceDto {
   totalOrders: number;
   totalUnitsSold: number;
   lastOrderDate: string;
+}
+
+export interface OrderMissingItemDto {
+  id: number;
+  orderItemId: number;
+  productName: string;
+  productBrand: string;
+  packaging?: string;
+  missingQuantity: number;
+}
+
+export interface OrderMissingDto {
+  missingId: number;
+  depotOrderId: number;
+  salesOrderId: number;
+  missingReason: string;
+  missingDescription?: string;
+  descriptionResolution?: string;
+  missingDate: string;
+  salesOrder: Order;
+  missingItems: OrderMissingItemDto[];
+}
+
+export interface OrderItemDto {
+  id: number;
+  productName: string;
+  productBrand: string;
+  quantity: number;
+}
+
+export interface OrderReissuedRequest {
+  salesOrderId: number;
+  updateItems: OrderItemDto[];
+  descriptionResolution: string;
 }

@@ -22,7 +22,7 @@ namespace DepotService.Application.Queries.DepotManager.GetMissingOrderById
         /// <param name="id"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<DepotOrderMissingDto> GetMissingOrderByIdAsync(int id)
+        public async Task<DepotOrderMissingDto?> GetMissingOrderByIdAsync(int id)
         {
             var orderExist = await _repository.GetMissingOrderByIdAsync(id);
             if (orderExist == null)

@@ -14,12 +14,14 @@ namespace DepotService.Application.Commands.BillingManager.UpdateInvoicedItemPri
         public int BillingOrderId { get; set; }
         public int ItemId { get; set; }
         public decimal NewUnitPrice { get; set; }
+        public bool IsEdited { get; set; }
 
-        public UpdateInvoicedItemPriceCommand(int billingOrderId, int itemId, decimal newUnitPrice)
+        public UpdateInvoicedItemPriceCommand(int billingOrderId, int itemId, decimal newUnitPrice, bool isEdited)
         {
             BillingOrderId = billingOrderId;
             ItemId = itemId;
             NewUnitPrice = newUnitPrice;
+            IsEdited = isEdited;
         }
     }
 }

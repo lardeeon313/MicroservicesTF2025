@@ -85,6 +85,16 @@ namespace SalesService.Infraestructure.Persistence.Repositories
 
         }
 
+        public async Task<IEnumerable<OrderMissing>> GetMissingOrdersAsync()
+        {
+            return await _context.OrderMissings
+                .Include(om => om.Order) // Carga la entidad 'Order'
+                    .ThenInclude(o => o.Items) // Luego, carga la entidad 'Customer'
+                .Include(om => om.Order.Customer) // Carga la entidad 'Customer' relacionada con 'Order'
+                .Include(om => om.MissingItems) // También cargas los 'MissingItems'
+                .ToListAsync();
+        }
+
         public async Task<(List<Order> Orders, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var query = _context.Orders
