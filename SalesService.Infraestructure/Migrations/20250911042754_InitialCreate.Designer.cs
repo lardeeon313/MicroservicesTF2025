@@ -8,11 +8,11 @@ using SalesService.Infraestructure;
 
 #nullable disable
 
-namespace SalesService.API.Migrations
+namespace SalesService.Infraestructure.Migrations
 {
     [DbContext(typeof(SalesDbContext))]
-    [Migration("20250617024109_AddMissingEntities")]
-    partial class AddMissingEntities
+    [Migration("20250911042754_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -146,8 +146,14 @@ namespace SalesService.API.Migrations
 
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderMissing", b =>
                 {
-                    b.Property<int>("MissingId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("DepotOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DepotOrderMissingId")
                         .HasColumnType("int");
 
                     b.Property<string>("DescriptionResolution")
@@ -165,7 +171,7 @@ namespace SalesService.API.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
-                    b.HasKey("MissingId");
+                    b.HasKey("Id");
 
                     b.HasIndex("OrderId");
 
@@ -178,6 +184,9 @@ namespace SalesService.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<int>("DepotOrderMissingItemId")
+                        .HasColumnType("int");
+
                     b.Property<int>("MissingQuantity")
                         .HasColumnType("int");
 
@@ -187,6 +196,17 @@ namespace SalesService.API.Migrations
                     b.Property<int>("OrderMissingId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Packaging")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ProductBrand")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.HasKey("Id");
 
                     b.HasIndex("OrderItemId");
@@ -194,6 +214,34 @@ namespace SalesService.API.Migrations
                     b.HasIndex("OrderMissingId");
 
                     b.ToTable("OrderMissingItems");
+                });
+
+            modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderStatusHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<double>("AverageDuration")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("NewStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OldStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderStatusHistories");
                 });
 
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.Order", b =>
@@ -231,7 +279,7 @@ namespace SalesService.API.Migrations
 
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderMissingItem", b =>
                 {
-                    b.HasOne("SalesService.Domain.Entities.OrderEntity.OrderItem", "OrderItem")
+                    b.HasOne("SalesService.Domain.Entities.OrderEntity.OrderItem", "SalesOrderItem")
                         .WithMany()
                         .HasForeignKey("OrderItemId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -243,9 +291,20 @@ namespace SalesService.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("OrderItem");
-
                     b.Navigation("OrderMissing");
+
+                    b.Navigation("SalesOrderItem");
+                });
+
+            modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderStatusHistory", b =>
+                {
+                    b.HasOne("SalesService.Domain.Entities.OrderEntity.Order", "OrderEntity")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OrderEntity");
                 });
 
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.Order", b =>

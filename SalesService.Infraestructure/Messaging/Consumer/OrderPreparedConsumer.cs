@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
 using SharedKernel.IntegrationEvents.DepotEvents;
@@ -70,6 +71,16 @@ namespace SalesService.Infraestructure.Messaging.Consumer
                         await repository.UpdateAsync(salesOrder);
                         await context.SaveChangesAsync();
                         _logger.LogInformation($"Order {salesOrder.Id} has been marked as prepared.");
+
+                        var statusHistory = new OrderStatusHistory
+                        {
+                            OrderId = salesOrder.Id,
+                            OldStatus = OrderStatus.InPreparation,
+                            NewStatus = OrderStatus.Prepared,
+                            ChangedAt = DateTime.UtcNow,
+                        };
+                        await context.OrderStatusHistories.AddAsync(statusHistory);
+                        await context.SaveChangesAsync();
                     }
                     else
                     {

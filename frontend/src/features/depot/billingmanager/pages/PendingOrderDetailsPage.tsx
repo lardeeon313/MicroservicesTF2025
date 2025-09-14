@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { getPendingOrderDetails, setItemUnitPrices, invoiceOrder, getPendingBillingOrders } from '../services/OrderService';
 import { DepotOrderDto } from '../types/OrderTypes';
 import BackButton from '../components/BackButton';
+import OrderDetailsInformation from '../../../../components/OrderDetailsInformation';
 
 
 
@@ -129,46 +130,41 @@ function PendingOrderDetailsPage() {
       {error && <div className="text-center text-red-500">{error}</div>}
       {!loading && !error && order && (
         <div className="space-y-6 mt-10 w-3xl">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Cliente:</label>
-            <p className="block w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 shadow-sm">{order.customerName}</p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Fecha Pedido:</label>
-            <p className="block w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 shadow-sm">{new Date(order.orderDate).toLocaleDateString("es-AR")}</p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Detalles de entrega:</label>
-            <p className="block w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 shadow-sm">{order.deliveryDetail || "No especificado"}</p>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Estado:</label>
-            <p className="block w-full rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 shadow-sm">Pendiente de facturar</p>
-          </div>
+          <OrderDetailsInformation 
+            customerName={order.customerName}
+            orderDate={order.orderDate}
+            deliveryDetail={new Date(order.orderDate).toLocaleDateString("es-AR")}
+            status={Number(order.status)}
+          />
+
           <div className="space-y-6 pt-4">
             <form onSubmit={handleSave} className="space-y-6">
               {/* Tabla de productos */}
-                <div className="overflow-x-auto rounded-lg shadow">
-                  <table className="table-fixed w-full border-collapse">
-                    <thead className="bg-gray-100">
+                <div className="overflow-x-auto rounded-lg shadow border border-gray-200">
+                  <table className="w-full text-sm text-left border-collapse">
+                    <thead className="bg-gray-100 text-gray-700 uppercase text-xs tracking-wider">
                       <tr>
-                        <th className="w-1/3 text-left px-4 py-3 font-semibold text-gray-700">Producto</th>
-                        <th className="w-1/3 text-left px-4 py-3 font-semibold text-gray-700">Marca</th>
-                        <th className="w-1/3 text-left px-4 py-3 font-semibold text-gray-700">Cantidad</th>
-                        <th className="w-1/3 text-left px-4 py-3 font-semibold text-gray-700">Precio Unitario</th>
-                        <th className="w-1/3 text-left px-4 py-3 font-semibold text-gray-700">Subtotal</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marca</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio Unitario</th>
+                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
                       </tr>
                     </thead>
-                  <tbody>
+                  <tbody className='divide-y divide-gray-200'>
                 {order.items.map((item, idx) => (
                 <tr
                   key={item.id}
-                  className="odd:bg-white even:bg-gray-50 hover:bg-gray-100 transition-colors"
+                  className="hover:bg-gray-50 transition-colors duration-150"
                 >
-                  <td className="px-4 py-3">{item.productName}</td>
-                  <td className="px-4 py-3">{item.productBrand}</td>
-                  <td className="px-4 py-3">{item.quantity}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-6 py-4 text-sm text-gray-900">{item.productName}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900">{item.productBrand}</td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                      {item.quantity}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
                     <input
                       type="number"
                         min={0.01}
@@ -184,7 +180,7 @@ function PendingOrderDetailsPage() {
                         required
                       />
                   </td>
-                  <td className="px-4 py-3 font-medium text-gray-800">
+                  <td className="px-6 py-4 text-sm text-gray-900">
                     {prices[idx]?.unitPrice > 0
                       ? `$${(prices[idx].unitPrice * item.quantity).toFixed(2)}`
                       : '-'}

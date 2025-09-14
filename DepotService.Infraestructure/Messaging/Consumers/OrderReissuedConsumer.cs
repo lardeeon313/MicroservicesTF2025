@@ -65,27 +65,82 @@ namespace DepotService.Infraestructure.Messaging.Consumers
                     var repository = scope.ServiceProvider.GetRequiredService<IDepotOrderRepository>();
 
                     var order = await context.DepotOrders
+                        .Include(o => o.Items)
                         .FirstOrDefaultAsync(o => o.SalesOrderId == evento.SalesOrderId);
 
+
                     var missingOrder = await context.DepotOrderMissings
+                        .Include(o => o.MissingItems)
                         .FirstOrDefaultAsync(o => o.SalesOrderId == evento.SalesOrderId);
 
                     if (order is not null && missingOrder is not null)
-                    { 
+                    {
+                        // Actualizar la descripción de la resolución en el reporte de faltantes.
                         missingOrder.DescriptionResolution = evento.ResolutionDescription;
                         await repository.UpdateMissingOrderAsync(missingOrder);
-                        
-                        order.Status = OrderStatus.ReReceived;
-                        order.DeliveryDate = evento.DeliveryDate;
-                        order.Items = evento.UpdateItems.Select(item => new DepotOrderItemEntity
-                        {
-                            Id = item.Id,
-                            ProductName = item.ProductName,
-                            Quantity = item.Quantity,
-                            ProductBrand = item.ProductBrand,
-                        }).ToList();
-                        await repository.UpdateOrderAsync(order);
 
+                        // --- LÓGICA DE ACTUALIZACIÓN DE ÍTEMS CORREGIDA ---
+                        var existingItems = order.Items.ToList();
+                        var updatedItems = new List<DepotOrderItemEntity>();
+
+                        foreach (var itemDto in evento.UpdateItems)
+                        {
+                            // 1. Buscamos el ítem por su SalesOrderItemId.
+                            // Asumo que el SalesOrderItemId es la clave que vincula los ítems entre ambos servicios.
+                            var existingItem = existingItems
+                                .FirstOrDefault(i => i.SalesOrderItemId == itemDto.Id);
+
+                            if (existingItem != null)
+                            {
+                                // 2. Si el ítem existe, lo actualizamos.
+                                existingItem.ProductName = itemDto.ProductName;
+                                existingItem.ProductBrand = itemDto.ProductBrand;
+                                existingItem.Quantity = itemDto.Quantity;
+                                updatedItems.Add(existingItem);
+                                existingItems.Remove(existingItem); // Removemos el ítem para luego identificar los eliminados
+                            }
+                            else
+                            {
+                                // 3. Si el ítem no existe, creamos uno nuevo.
+                                var newItem = new DepotOrderItemEntity
+                                {
+                                    SalesOrderItemId = itemDto.Id, // Usamos el ID de SalesService como referencia
+                                    ProductName = itemDto.ProductName,
+                                    ProductBrand = itemDto.ProductBrand,
+                                    Quantity = itemDto.Quantity,
+                                    DepotOrderEntityId = order.DepotOrderId
+                                };
+                                updatedItems.Add(newItem);
+                            }
+                        }
+
+                        // 4. Eliminamos los ítems que ya no están en la lista del evento
+                        // Los ítems restantes en 'existingItems' son los que deben ser eliminados.
+                        foreach (var itemToDelete in existingItems)
+                        {
+                            context.DepotOrderItems.Remove(itemToDelete);
+                        }
+
+                        // 5. Actualizamos la lista de ítems de la orden con la lista corregida.
+                        order.Items = updatedItems;
+                        // --- FIN DE LA LÓGICA DE ACTUALIZACIÓN DE ÍTEMS ---
+
+                        order.Status = OrderStatus.ReReceived;
+                        order.AssignedOperatorId = null; // Limpiamos la asignación
+                        order.DeliveryDate = evento.DeliveryDate;
+
+                        await repository.UpdateOrderAsync(order);
+                        await context.SaveChangesAsync();
+
+                        // Guardar el historial de estado
+                        var statusHistory = new OrderStatusHistory
+                        {
+                            OrderId = order.DepotOrderId,
+                            OldStatus = OrderStatus.PendingResolution,
+                            NewStatus = OrderStatus.ReReceived,
+                            ChangedAt = DateTime.UtcNow
+                        };
+                        await context.OrderStatusHistories.AddAsync(statusHistory);
 
                         await context.SaveChangesAsync();
                         _logger.LogInformation($"Order reissued successfully for SalesOrderId: {evento.SalesOrderId}.");

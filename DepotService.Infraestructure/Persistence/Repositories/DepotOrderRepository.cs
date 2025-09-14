@@ -27,9 +27,6 @@ namespace DepotService.Infraestructure.Persistence.Repositories
 
         public async Task<DepotOrderEntity?> GetByIdAsync(int depotOrderId)
         {
-            //MODIFICADO PARA TRAER LOS PRODUCTOS DENTRO DEL DETAILORDER 
-            /*return await _context.DepotOrders
-                .FirstOrDefaultAsync(o => o.DepotOrderId == depotOrderId);*/
             return await _context.DepotOrders
                 .Include(o => o.Items)
                 .Include(o => o.Missings)
@@ -95,7 +92,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 .Include(o => o.Items)
                 .Include(o => o.Missings)
                 .Where(o => o.AssignedOperatorId == operatorId &&
-                        //(o.Status == OrderStatus.Assigned || o.Status == OrderStatus.ReReceived))
+                        
                         (o.Status == OrderStatus.InPreparation))
                 .ToListAsync();
         }

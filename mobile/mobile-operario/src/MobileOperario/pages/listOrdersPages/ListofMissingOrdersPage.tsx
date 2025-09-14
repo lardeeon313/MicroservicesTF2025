@@ -16,7 +16,7 @@ const MissingAndPreparationOrdersPage = () => {
   const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
 
   
-  const {userId, name, role, isAuthenticated, logout} = useAuth();
+  const {userId, name, role, isAuthenticated, logout, team} = useAuth();
 
   if (!isAuthenticated || !userId || !name || !role) {
     return (
@@ -26,14 +26,16 @@ const MissingAndPreparationOrdersPage = () => {
     );
   }
 
-  const user = { id: userId, name, role };
+  const user = userId && name && role 
+    ? { id: userId, name, role, team }  // 👈 ahora incluye el team
+    : null;
 
   const { missingOrders: orders, loading, error } = useMissingOrders(user?.id ?? "");
 
   const goToDetalle = (order: DepotOrderDTO) => {
     navigation.navigate("DetailOrder", {
       orderId: order.depotOrderId,
-      operatorUserId: user.id,
+      operatorUserId: userId,
     });
   };
 

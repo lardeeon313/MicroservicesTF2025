@@ -39,5 +39,6 @@ namespace DepotService.Domain.IRepositories
         Task<List<DepotOrderEntity>> GetAllInvoicedOrdersAsync();
         Task<List<DepotOrderEntity>> GetInvoicedOrdersByDateRangeAsync(DateTime startDate, DateTime endDate);
         Task<List<DepotOrderEntity>> GetInvoicedOrdersByCustomerAsync(Guid customerId);
+
     }
 }

@@ -16,10 +16,12 @@ import { useAuth } from "../../Login/context/useAuth";
 const ListOfPreparedOrdersPage = () => {
   const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
 
-  const { userId, name, role, isAuthenticated, logout } = useAuth();
+  const { userId, name, role, isAuthenticated, logout,team } = useAuth();
 
 
-  const user = userId && name && role ? { id: userId, name, role } : null;
+    const user = userId && name && role 
+    ? { id: userId, name, role, team }  // 👈 ahora incluye el team
+    : null;
 
   const { preparedOrders: orders, loading, error } = usePreparedOrders(user?.id ?? "");
 

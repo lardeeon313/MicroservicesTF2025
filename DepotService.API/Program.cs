@@ -183,7 +183,7 @@ builder.Services.AddScoped<InvoiceWordGenerator>();
 builder.Services.AddScoped<InvoiceExcelGenerator>();
 
 // Obtener la cadena de conexión del appsettings.json
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("DepotDb");
 
 // Registrar los repositorios
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
@@ -235,7 +235,6 @@ builder.Services.AddHttpClient("IdentityService", client =>
 {
     client.BaseAddress = new Uri("http://identityservice:8080/api/auth/");
 });
-
 
 var app = builder.Build();
 

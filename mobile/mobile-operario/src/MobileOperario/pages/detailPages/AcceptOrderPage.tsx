@@ -14,8 +14,11 @@ type AcceptOrderPageProp = RouteProp<DepotStackParamList, "AcceptOrder">;
 const AcceptOrderPage = () => {
   const { params } = useRoute<AcceptOrderPageProp>();
 
-  const { userId, name, role, isAuthenticated, logout } = useAuth();
-  const user = userId && name && role ? { id: userId, name, role } : null;
+  const { userId, name, role, isAuthenticated, logout, team } = useAuth();
+
+  const user = userId && name && role 
+    ? { id: userId, name, role, team }  
+    : null;
 
   
   const { order: fetchedOrder, loading, error } = useGetOneOrder(

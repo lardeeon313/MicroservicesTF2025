@@ -13,6 +13,7 @@ using SharedKernel.IntegrationEvents.DepotEvents.DTOs.Order;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -75,6 +76,7 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
                     MissingDescription = command.MissingDescription,
                     MissingItems = command.MissingItems.Select(item => new DepotOrderMissingItem
                     {
+                        SalesOrderItemId = depotOrder.Items.Select(i => i.SalesOrderItemId).FirstOrDefault(),
                         MissingQuantity = item.Quantity,
                         ProductBrand = item.ProductBrand,
                         ProductName = item.ProductName,
@@ -99,15 +101,20 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
             var integrationEvent = new OrderMissingReportedIntegrationEvent
             {
                 SalesOrderId = depotOrder.SalesOrderId,
+                DepotOrderId = depotOrder.DepotOrderId,
+                DepotOrderMissingId = depotOrder.Missings.Select(m => m.MissingId).FirstOrDefault(),
                 MissingReason = command.MissingReason,
                 MissingDescription = command.MissingDescription,
                 ReportedAt = DateTime.UtcNow,
                 MissingItems = command.MissingItems.Select(item => new MissingItemDto
                 {
-                    OrderItemId = item.OrderItemId,
-                    Quantity = item.Quantity,
+                    DepotOrderMissingId = depotOrder.Missings.Select(i => i.MissingItems.Select(o => o.Id).FirstOrDefault()).FirstOrDefault(),
+                    DepotOrderItemId = depotOrder.Items.Select(i => i.Id).FirstOrDefault(),
+                    SalesOrderItemId = depotOrder.Missings.Select(i => i.MissingItems.Select(o => o.SalesOrderItemId).FirstOrDefault()).FirstOrDefault(),
+                    MissingQuantity = item.Quantity,
                     ProductBrand = item.ProductBrand,
                     ProductName = item.ProductName,
+                    Packaging = item.Packaging,
                 }).ToList(),
             };
 

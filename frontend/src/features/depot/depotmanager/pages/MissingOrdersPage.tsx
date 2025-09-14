@@ -11,7 +11,8 @@ function MissingOrdersPage() {
   const {
     missingOrders,
     loading,
-    error
+    error,
+    fetchMissingOrders
   } = useOrders();
 
 
@@ -44,7 +45,7 @@ function MissingOrdersPage() {
       await reportMissingOrder({
         depotOrderId: orderToReport.depotOrderId,
         missingItems: orderToReport.missingItems.map(item => ({
-          orderItemId: item.depotOrderItemId,
+          orderItemId: item.salesOrderItemId,
           productName: item.productName,
           productBrand: item.productBrand,
           packaging: item.packaging,
@@ -56,7 +57,7 @@ function MissingOrdersPage() {
       toast.success('Faltante reportado a ventas exitosamente');
       setShowReportModal(false);
       setOrderToReport(null);
-      // Recargar datos si es necesario
+      await fetchMissingOrders();
     } catch (error) {
       console.error('Error reportando faltante:', error);
       toast.error('Error al reportar faltante a ventas');
@@ -91,7 +92,7 @@ function MissingOrdersPage() {
   }
 
   return (
-    <div className="container m-0 pt-10 min-w-full min-h-full py-20 pt-20">
+    <div className="container m-0  min-w-full min-h-full py-20 pt-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <div className="flex items-center justify-between">
@@ -195,9 +196,18 @@ function MissingOrdersPage() {
                                 Faltante #{missingOrder.missingId}
                               </p>
                             </div>
-                          <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
-                            Faltante
-                          </span>
+                            <span
+                              className={`
+                                px-2 py-1 text-xs font-medium rounded-full
+                                ${
+                                  missingOrder.depotOrder.status === OrderStatus.PendingResolution
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : "bg-red-100 text-red-800"
+                                }
+                              `}
+                            >
+                              {missingOrder.depotOrder.status === OrderStatus.PendingResolution ? "Pendiente de Resolución" : "Faltante"}
+                            </span>
                         </div>
 
                         <div className="space-y-2 mb-4">
@@ -268,12 +278,12 @@ function MissingOrdersPage() {
         {/* Diálogo de detalles de orden faltante */}
         {selectedMissingOrder && selectedMissingOrder.missingId && (
           <div className="fixed inset-0 backdrop-blur-sm bg-black/30 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-lg p-10 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Detalles del Faltante D-{selectedMissingOrder.depotOrderId}</h2>
                 <button
                   onClick={() => setSelectedMissingOrder(null)}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="text-gray-500 hover:text-gray-200 hover:bg-red-500 rounded-full pr-2 pl-2 transition-colors"
                 >
                   ✕
                 </button>
@@ -365,14 +375,16 @@ function MissingOrdersPage() {
                   </div>
                 )}
 
-                <div className="flex justify-end space-x-3 pt-4 border-t">
-                  <button
-                    onClick={() => handleReportToSales(selectedMissingOrder)}
-                    className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors"
-                  >
-                    Reportar Faltante a Ventas
-                  </button>
-                </div>
+                {selectedMissingOrder.depotOrder.status !== OrderStatus.PendingResolution && (
+                  <div className="flex justify-end space-x-3 pt-4 border-t">
+                    <button
+                      onClick={() => handleReportToSales(selectedMissingOrder)}
+                      className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors"
+                    >
+                      Reportar Faltante a Ventas
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

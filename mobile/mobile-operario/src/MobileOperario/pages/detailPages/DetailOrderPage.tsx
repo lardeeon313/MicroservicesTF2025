@@ -16,8 +16,11 @@ type Props = {
 const DetailOrderPage = ({ route }: Props) => {
   const { orderId, operatorUserId } = route.params;
 
-  const { userId, name, role, isAuthenticated, logout } = useAuth();
-  const user = userId && name && role ? { id: userId, name, role } : null;
+  const { userId, name, role, isAuthenticated, logout,team } = useAuth();
+
+  const user = userId && name && role 
+    ? { id: userId, name, role, team }  
+    : null;
 
   console.log("orderId:", orderId, operatorUserId, user?.id);
   

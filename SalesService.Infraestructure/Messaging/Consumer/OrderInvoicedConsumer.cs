@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
 using SharedKernel.IntegrationEvents.DepotEvents;
@@ -73,6 +74,17 @@ namespace SalesService.Infraestructure.Messaging.Consumer
                         await repository.UpdateAsync(salesOrder);
                         await context.SaveChangesAsync();
                         _logger.LogInformation($"Order {salesOrder.Id} is now in Invoiced.");
+
+                        // Guardar el historial de estado
+                        var statusHistory = new OrderStatusHistory
+                        {
+                            OrderId = salesOrder.Id,
+                            OldStatus = OrderStatus.SentToBilling,
+                            NewStatus = OrderStatus.Invoiced,
+                            ChangedAt = evento.InvoicedDate
+                        };
+                        await context.OrderStatusHistories.AddAsync(statusHistory);
+                        await context.SaveChangesAsync();
                     }
                     else
                     {

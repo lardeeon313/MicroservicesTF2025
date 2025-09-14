@@ -18,6 +18,5 @@ namespace DepotService.Application.DTOs.DepotOrder
         public int DepotOrderId { get; set; }
         public List<DepotOrderMissingItemDto> MissingItems { get; set; } = new List<DepotOrderMissingItemDto>();
         public DepotOrderDto DepotOrder { get; set; } = null!;
-
     }
 }

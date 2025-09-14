@@ -11,11 +11,10 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.DepotManager.GetAllMissingOrders
 {
-    public class GetAllMissingOrdersQueryHandler(IDepotOrderRepository repository, ILogger<GetAllMissingOrdersQueryHandler> logger, DepotDbContext context) : IGetAllMissingOrdersQueryHandler
+    public class GetAllMissingOrdersQueryHandler(IDepotOrderRepository repository, ILogger<GetAllMissingOrdersQueryHandler> logger) : IGetAllMissingOrdersQueryHandler
     {
         private readonly IDepotOrderRepository _repository = repository;
         private readonly ILogger<GetAllMissingOrdersQueryHandler> _logger = logger;
-        private readonly DepotDbContext _context = context;
 
         /// <summary>
         /// Handler para devolver todas las órdenes faltantes en el depósito.

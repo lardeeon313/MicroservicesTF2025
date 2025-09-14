@@ -10,11 +10,13 @@ namespace SharedKernel.IntegrationEvents.DepotEvents
 {
     public class OrderMissingReportedIntegrationEvent
     {
-        public int MissingId { get; set; }
+        public int DepotOrderMissingId { get; set; }
         public int SalesOrderId { get; set; }
+        public int DepotOrderId { get; set; }
         public string MissingReason { get; set; } = string.Empty;
         public string MissingDescription { get; set; } = string.Empty;
         public List<MissingItemDto> MissingItems { get; set; } = [];
         public DateTime ReportedAt { get; set; } = DateTime.UtcNow;
     }
 }
+    

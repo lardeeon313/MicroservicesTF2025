@@ -29,12 +29,7 @@
 
   <ItemGroup>
 	  <ProjectReference Include="..\DepotService.Application\DepotService.Application.csproj" />
-	  <ProjectReference Include="..\DepotService.Domain\DepotService.Domain.csproj" />
-	  <ProjectReference Include="..\SharedKernel\SharedKernel.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
+	  <ProjectReference Include="..\SalesService.Infraestructure\SalesService.Infraestructure.csproj" />
   </ItemGroup>
 
 </Project>

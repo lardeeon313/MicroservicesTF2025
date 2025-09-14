@@ -5,9 +5,11 @@ import OperatorDashboardComponent from "../../navigation/OperatorDashboard";
 import { useAuth } from "../../Login/context/useAuth";
 
 const OperatorDashboardPage = () => {
-  const { name, role, isAuthenticated, logout } = useAuth();
+  const { userId, name, role, isAuthenticated, logout, team } = useAuth();
 
-  const user = name && role ? { name, role } : null;
+  const user = userId && name && role 
+    ? { id: userId, name, role, team }  
+    : null;
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
