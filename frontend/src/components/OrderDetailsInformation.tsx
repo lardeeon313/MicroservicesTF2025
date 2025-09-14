@@ -1,11 +1,11 @@
 import React from "react";
-import { OrderStatus } from "../features/depot/billingmanager/types/OrderTypes";
+//import { OrderStatus } from "../features/depot/billingmanager/types/OrderTypes";
 
 interface OrderDetailsCardProps {
   customerName: string;
   orderDate: string | Date;
   deliveryDetail?: string;
-  status?: OrderStatus | string;
+  status?: number | string;
 }
 
 // Map de labels

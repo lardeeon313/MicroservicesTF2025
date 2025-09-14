@@ -75,13 +75,13 @@ const NavbarOperator = ({ user, isAuthenticated, logout }: NavbarProps) => {
                 <View
                   style={{
                   backgroundColor: '#c8c8cfff', // Gris oscuro (puedes ajustar el tono)
-                  padding: 12,
+                  padding: 6,
                   borderRadius: 8,
-                  marginTop: 4,
+                  marginTop: 2,
                   width: 'auto',
                   }}
                 >
-                <Text style={{ color: '#161718ff', fontSize: 12, fontWeight: '600' }}>
+                <Text style={{ color: '#161718ff', fontSize: 10, fontWeight: '600' }}>
                   Equipo:
                 </Text>
                 <Text style={{ color: '#9e0f0fff', fontSize: 10 , fontWeight: '800'}}>
