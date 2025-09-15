@@ -9,5 +9,6 @@ export const AuthContext = createContext<authContextType>({
   isAuthenticated: false,
   login: () => {},
   logout: () => {},
-  loading: true
+  loading: true,
+  team: null,
 });

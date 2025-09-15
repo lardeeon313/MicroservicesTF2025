@@ -2,7 +2,7 @@
 //decir armado
 import API from "../../services/axios";
 import type { DepotOrderDTO } from "../types/OrderDTO";
-import { DepotOrderStatus } from "../types/OrderDTO";
+
 
 export const GetArmOrdersService = async(operatorUserId:string) : Promise<DepotOrderDTO[]> => {
     try{
@@ -16,10 +16,6 @@ export const GetArmOrdersService = async(operatorUserId:string) : Promise<DepotO
         );
         const AllOrders : DepotOrderDTO[] = response.data; 
 
-        //filtra 
-        /*return AllOrders.filter(order => {
-            order.status === DepotOrderStatus.InPreparation
-        })*/
        return AllOrders;
 
     }catch(error){

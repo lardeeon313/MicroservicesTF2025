@@ -1,5 +1,5 @@
 import { JSX } from "react/jsx-dev-runtime";
-
+import { TeamDepotType } from "../../types/TeamType";
 
 export interface LoginRequest {
     email: string;
@@ -35,6 +35,7 @@ export interface authContextType {
     login: (token: string) => void;
     logout: () => void;
     loading: boolean;
+    team?: TeamDepotType | null;
 }
 
 export interface JwtPayload {

@@ -15,11 +15,11 @@ const ListOfConfirmedOrdersPage = () => {
   const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
   const { confirmedOrders: orders, loading, error } = useConfirmedOrders();
 
-  
-  const { userId, name, role, isAuthenticated, logout } = useAuth();
+  const { userId, name, role, isAuthenticated, logout, team } = useAuth();
 
-  
-  const user = userId && name && role ? { id: userId, name, role } : null;
+  const user = userId && name && role 
+    ? { id: userId, name, role, team }  // 👈 ahora incluye el team
+    : null;
 
   const handleSeeDetail = (order: DepotOrderDTO) => {
     if (!user) return; 

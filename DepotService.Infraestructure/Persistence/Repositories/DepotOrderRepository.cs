@@ -92,7 +92,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 .Include(o => o.Items)
                 .Include(o => o.Missings)
                 .Where(o => o.AssignedOperatorId == operatorId &&
-                        //(o.Status == OrderStatus.Assigned || o.Status == OrderStatus.ReReceived))
+                        
                         (o.Status == OrderStatus.InPreparation))
                 .ToListAsync();
         }

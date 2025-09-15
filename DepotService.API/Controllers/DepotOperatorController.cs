@@ -14,6 +14,7 @@ using DepotService.Application.Queries.Operator.GetOrdersPreparedOrSentToBilling
 using DepotService.Application.Queries.Operator.IGetOrdersMissingOrPreparing;
 using DepotService.Application.Validators.DepotManager;
 using DepotService.Application.Validators.DepotOperator;
+using DepotService.Domain.IRepositories;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -42,8 +43,9 @@ namespace DepotService.API.Controllers
         MarkItemIsReadyCommandValidator markItemIsReadyCommandValidator,
         UnmarkItemReadyValidator unmarkItemReadyValidator,
         IUnmarkItemReadyCommandHandler unmarkItemReadyCommandHandler,
-        IGetAssignedPendingOrdersQueryHandler getAssignedPendingOrdersQueryHandler
-        
+        IGetAssignedPendingOrdersQueryHandler getAssignedPendingOrdersQueryHandler,
+        ITeamRepository teamRepository
+
         ) : ControllerBase
     {
         private readonly IGetAssignedPendingOrdersQueryHandler _getAssignedPendingOrdersQueryHandler = getAssignedPendingOrdersQueryHandler;
@@ -66,6 +68,9 @@ namespace DepotService.API.Controllers
         //
         private readonly IGetOrderByIdQueryHandler _getOrderByIdQueryHandler = getOrderByIdQueryHandler;
         private readonly IReportOrderMissingCommandHandler _reportOrderMissingCommandHandler = reportOrderMissingCommandHandler;
+        //Obtiene el nombre: 
+        private readonly ITeamRepository _teamRepository = teamRepository;
+
 
         /// <summary>
         /// Endpoint para obtener las órdenes asignadas a un operador específico.
@@ -372,6 +377,20 @@ namespace DepotService.API.Controllers
             }
             return Ok(orders);
         }
+
+        //Endpoint para obtener el nombre del equipo en el cual se encuentra el operario: 
+
+        [HttpGet("teams/by-operator/{operatorId}")]
+        public async Task<IActionResult> GetTeamByOperator(Guid operatorId)
+        {
+            var team = await _teamRepository.GetTeamByOperatorAsync(operatorId);
+
+            if (team == null)
+                return NotFound(new { message = "El operador no tiene equipo asignado." });
+
+            return Ok(new { teamName = team.TeamName });
+        }
+
 
 
     }
