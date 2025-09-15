@@ -20,7 +20,7 @@ const CustomerIncomeFilter: React.FC<Props> = ({
   onClear,
 }) => {
   return (
-    <div className="bg-gray-100 p-4 shadow-md flex flex-wrap items-end gap-4 rounded-lg">
+    <div className="p-4 bg-white shadow-md rounded-xl mb-6 flex flex-wrap items-end  justify-around gap-6">
       {/* Nombre */}
       <div className="flex flex-col">
         <label className="text-sm font-medium text-gray-700 mb-1">

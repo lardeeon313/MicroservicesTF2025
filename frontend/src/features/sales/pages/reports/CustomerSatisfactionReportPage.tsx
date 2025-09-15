@@ -4,8 +4,8 @@ import { useCustomerSatisfaction } from "../../hooks/useCustomerSatisfaction";
 import { CustomerSatisfactionTable } from "../../components/Reports/CustomerSatisfactionReport/CustomerSatisfactionTable";
 import { GraphSatisfactionCustomer } from "../../components/Reports/CustomerSatisfactionReport/GraphCustomerSatisfaction";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
-import { Link } from "react-router-dom";
 import CustomerSatisfactionFilter from "./SalesFilters/CustomerSatisfactionFilter";
+import BackButton from "../../../../components/BackButton";
 
 const CustomerSatisfactionReportPage: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -39,10 +39,8 @@ const CustomerSatisfactionReportPage: React.FC = () => {
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
-      <div className="flex items-center justify-between mb-6">
-        <Link to="/sales/reports/dashboard" className="text-red-600 hover:underline pl-10">
-          ← Volver atrás
-        </Link>
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+        <BackButton to="/sales/reports/dashboard"></BackButton>
       </div>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Clientes y Pedidos</h1>

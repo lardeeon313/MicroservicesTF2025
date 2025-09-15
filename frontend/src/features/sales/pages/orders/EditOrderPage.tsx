@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import EditOrderForm from "../../components/Forms/EditOrderForm";
 import { UpdateOrderRequest } from "../../types/OrderTypes";
 import { handleFormikError } from "../../../../components/ErrorHandler";
@@ -6,6 +6,7 @@ import { getOrderById, updateOrder } from "../../services/OrderService";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
+import BackButton from "../../../../components/BackButton";
 
 const EditOrderPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -68,9 +69,7 @@ const EditOrderPage = () => {
   return (
     <div className="container m-0 pt-10 min-w-full">
       <div className="flex items-center justify-between mb-6">
-        <Link to="/sales/orders" className="text-red-600 hover:underline pl-10">
-          ← Volver al listado
-        </Link>
+        <BackButton to="/sales/orders"></BackButton>
       </div>
       <div className="sm:mx-auto sm:w-full sm:max-w-3xl justify-center">
         <h2 className="text-center text-4xl font-bold text-red-600 mb-12">

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../../../../components/LoadingSpinner';
 
 import { Eye, Pencil, Ban } from 'lucide-react';
@@ -10,6 +10,7 @@ import { Pagination } from '../../../../components/Pagination';
 import ModifyOrderModal from '../../components/Orders/ModifyOrderModal';
 import ReissueOrderModal from '../../components/Orders/ReissueOrderModal';
 import OrderDetailsModal from '../../components/Orders/OrderDetailsModal';
+import BackButton from '../../../../components/BackButton';
 
 function MissingOrdersSalesPage() {
   const navigate = useNavigate();
@@ -93,12 +94,10 @@ function MissingOrdersSalesPage() {
 
   return (
     <div className='container m-0 pt-10 min-w-full min-h-full'>
-      <div className="flex items-center justify-between mb-6">
-        <Link to="/sales/orders" className="text-red-600 hover:underline pl-10">
-          ← Volver al listado
-        </Link>
+      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
+        <BackButton to="/sales/home"></BackButton>
       </div>
-        <div className="container mx-auto sm:p-6 lg:p-8 mt-10">
+        <div className="container mx-auto sm:p-6 lg:p-8 mt-5">
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Órdenes con Faltantes</h1>

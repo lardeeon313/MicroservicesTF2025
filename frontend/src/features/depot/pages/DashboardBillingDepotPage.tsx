@@ -1,7 +1,8 @@
 // dashboard de reportes de Billing:
 
 import { User, FileText, PieChart } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import BackButton from "../../../components/BackButton";
 
 const BillingCards = [
   {
@@ -27,21 +28,13 @@ const BillingCards = [
 ];
 
 export const DashboardBillingReportsPage = () => {
-  const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gray-50 py-20">
+    <div className="container m-0 pt-10 min-w-full min-h-full ">
+      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+        <BackButton to="/depot/billingmanager"></BackButton>
+      </div>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Botón Volver */}
-        <div className="flex justify-between items-center mb-4">
-            <button
-                onClick={() => navigate('/depot/billingmanager')}
-                className="text-red-600 hover:underline font-medium"
-            >
-            ← Volver atrás
-            </button>
-        </div>
-
         {/* Título */}
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
           Panel de reportes de Facturación

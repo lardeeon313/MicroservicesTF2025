@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { CustomerResponse } from "../../types/CustomerTypes";
 import { getCustomerById } from "../../services/CustomerService";
 import toast from "react-hot-toast";
 import CustomerDetail from "../../components/Customers/CustomerDetail";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
+import BackButton from "../../../../components/BackButton";
 
 const ViewCustomerPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -33,12 +34,8 @@ const ViewCustomerPage = () => {
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
-      <div className="flex items-center justify-between mb-6">
-        <Link to="/sales/customers" className="text-red-600 hover:underline pl-10">
-          ← Volver al listado
-        </Link>
-      </div>
-      <div className="sm:mx-auto sm:w-full sm:max-w-3xl justify-center">
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+        <BackButton to="/sales/Customers"></BackButton>
         <h2 className="text-center text-4xl font-bold text-red-600 mb-12">
           Detalles del Cliente
         </h2>

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import TeamProductivityTable from "../DepotComponents/TeamProdictivityTable";
 import TeamProdictivityGraph from "../DepotGraph/GraphTeamProdictivity";
 import { useTeamProductivity } from "../DepotHocks/useTeamProdictivity";
 import TeamProductivityDateFilter from "../DepotFilters/TeamProdictivityFilter";
+import BackButton from "../../../../../../components/BackButton";
 
 // 🔹 Tipo que devuelve el back (según API real)
 type DepotTeamPerformance = {
@@ -50,41 +50,34 @@ const TeamProductivityPage: React.FC = () => {
   }
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <Link
-          to="/depot/reports"
-          className="text-red-600 hover:underline font-medium"
-        >
-          ← Volver atrás
-        </Link>
-      </div>
+    <div className="container m-0 pt-10 min-w-full min-h-full">
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+        <BackButton to="/depot/reports"></BackButton>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-          Productividad de los equipos de depósito
-        </h1>
-        <h2 className="text-center text-lg text-gray-700 mb-12">
-          Aquí podés gestionar qué tanto se desempeñaron los equipos asignados.
-        </h2>
-
-        <div className="flex justify-center mb-8">
-          <TeamProductivityDateFilter
-            from={from}
-            to={to}
-            onFromChange={setFrom}
-            onToChange={setTo}
-          />
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
+            Productividad de los equipos de depósito
+          </h1>
+          <h2 className="text-center text-lg text-gray-700 mb-12">
+            Aquí podés gestionar qué tanto se desempeñaron los equipos asignados.
+          </h2>
         </div>
+        <TeamProductivityDateFilter
+              from={from}
+              to={to}
+              onFromChange={setFrom}
+              onToChange={setTo}
+        />
 
-        {error ? (
-          <p className="text-red-600 text-center">{error}</p>
-        ) : (
-          <>
-            <TeamProductivityTable data={data} />
-            <TeamProdictivityGraph data={GraphData} />
-          </>
-        )}
+
+          {error ? (
+            <p className="text-red-600 text-center">{error}</p>
+          ) : (
+            <>
+              <TeamProductivityTable data={data} />
+              <TeamProdictivityGraph data={GraphData} />
+            </>
+          )}
       </div>
     </div>
   );

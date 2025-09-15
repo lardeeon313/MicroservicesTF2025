@@ -16,9 +16,9 @@ type Props = {
 };
 
 const GraphCustomerReport: React.FC<Props> = ({ data }) => (
-  <div className="max-w-full mt-20 mb-14">
+  <div className="max-w-full mt-20 mb-20">
     {/* Header con gradiente y línea decorativa */}
-    <div className="text-center mb-8">
+    <div className="text-center mb-10">
       <h1 className="text-3xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-rose-400 bg-clip-text text-transparent mb-3">
         Cantidad de Pedidos por Cliente
       </h1>

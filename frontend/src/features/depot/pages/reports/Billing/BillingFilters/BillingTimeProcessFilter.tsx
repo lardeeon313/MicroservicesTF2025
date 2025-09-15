@@ -23,7 +23,7 @@ const ProcessingTimeOrderFilter: React.FC<Props> = ({ onFilter, onClear }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-wrap gap-4 items-end mb-4 bg-gray-100 p-4 rounded-lg shadow"
+      className="p-4 bg-white shadow-md rounded-xl mb-6 flex flex-wrap items-end  justify-around gap-6"
     >
       <div>
         <label className="block text-sm font-medium text-gray-700">Desde:</label>

@@ -25,7 +25,7 @@ const RegisterOrderForm = ({
       onSubmit={onSubmit}
     >
       {({ values }) => (
-        <Form className="space-y-6 mt-10 w-3xl">
+        <Form className="space-y-6 container mx-auto py-10 px-16 sm:max-w-6xl">
           {/* Cliente */}
           <div className="flex items-center justify-between m-0 mb-1">
             <label htmlFor="customerId" className="block text-sm font-medium text-gray-900">

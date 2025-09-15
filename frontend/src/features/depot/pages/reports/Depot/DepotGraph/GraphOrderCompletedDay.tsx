@@ -32,7 +32,7 @@ const GraphOrderByClient: React.FC<DataProps> = ({ data }) => {
       return (
         <div className="bg-white p-3 rounded-xl shadow-lg border border-gray-100 backdrop-blur-sm">
           <p className="text-gray-700 font-medium">{`Cliente: ${label}`}</p>
-          <p className="text-blue-600 font-semibold">
+          <p className="text-red-600 font-semibold">
             {`Pedidos: ${payload[0].value}`}
           </p>
         </div>
@@ -45,10 +45,10 @@ const GraphOrderByClient: React.FC<DataProps> = ({ data }) => {
     <div className="w-full h-96 bg-gradient-to-br from-white via-blue-50/30 to-purple-50/20 rounded-2xl shadow-lg border border-gray-100/50 p-6 mt-6 backdrop-blur-sm">
       {/* Header con gradiente */}
       <div className="mb-6">
-        <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-800 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+        <h3 className="text-2xl font-bold bg-gradient-to-r from-red-500 via-red-800 to-red-600 bg-clip-text text-transparent mb-2">
           Pedidos Completados por Cliente
         </h3>
-        <div className="h-1 w-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+        <div className="h-1 w-16 bg-gradient-to-r from-red-500 to-red-800 rounded-full"></div>
       </div>
 
       <ResponsiveContainer width="100%" height="100%">

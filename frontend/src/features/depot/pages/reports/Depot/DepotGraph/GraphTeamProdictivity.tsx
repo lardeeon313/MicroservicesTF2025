@@ -46,8 +46,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 const GraphTeamProdictivity: React.FC<Props> = ({ data }) => {
   return (
-    <div className="w-full h-[450px] bg-white rounded-2xl shadow-lg p-6">
-      <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
+    <div className="w-full h-[450px] bg-white rounded-2xl shadow-lg p-6 mb-8">
+      <h2 className="text-xl font-bold text-gray-600   mb-4 text-center">
         📊 Productividad de los Equipos
       </h2>
       <ResponsiveContainer width="100%" height="100%">

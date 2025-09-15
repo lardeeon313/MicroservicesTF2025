@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getInvoicedOrderById, updateInvoicedItemPrice } from '../services/OrderService';
-import BackButton from '../components/BackButton';
+import BackButton from '../../../../components/BackButton';
 import { Pencil } from "lucide-react"; // ícono moderno de lápiz
 
 //MEJORAS APLICADAS : 

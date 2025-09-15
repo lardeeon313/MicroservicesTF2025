@@ -1,11 +1,11 @@
 import React , { useEffect, useState } from "react";
-import Header from "../../../components/Header";
+import Header from "../../../../../components/Header";
 import InactiveCustomerTable from "../SalesComponents/IndividualComponentsSales/InactiveCustomerTable";
 import type { Customer } from "../../../types/CustomerTypes";
 import { CustomerStatus } from "../../../types/CustomerTypes";
 import GraphInactiveCustomer from "../SalesGraph/GraphInactiveCustomer";
 import API from "../../../../../api/axios";
-import Footer from "../../../components/Footer";
+import Footer from "../../../../../components/Footer";
 
 
 const InactiveCustomerPage: React.FC = () => {

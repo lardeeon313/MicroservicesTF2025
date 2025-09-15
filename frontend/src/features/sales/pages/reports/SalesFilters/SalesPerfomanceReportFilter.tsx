@@ -22,7 +22,7 @@ const SalesPerfomanceReportFilter: React.FC<Props> = ({
   return (
     <div className="bg-white rounded-xl shadow-md p-4 mb-6">
       <h2 className="text-lg font-semibold text-gray-700 mb-4">
-        📊 Filtros de Reporte
+        Filtros de Reporte
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

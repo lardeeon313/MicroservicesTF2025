@@ -1,5 +1,6 @@
 import { User, FilePlus2, FileText, PieChart } from "lucide-react";
 import { Link } from "react-router-dom";
+import BackButton from "../../../components/BackButton";
 
 const cards = [
     //reportes de deposito
@@ -32,7 +33,10 @@ const cards = [
 export const DashboardDepotReportsPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <BackButton to="/depot"></BackButton>
+      </div>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">      
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Panel de reportes de Deposito</h1>
         <p className="text-center text-lg text-gray-700 mb-12">
           Todos los reportes para la toma de decisiones

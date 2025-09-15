@@ -1,5 +1,6 @@
 import { User, FilePlus2, BarChart2, FileText, PieChart } from "lucide-react";
 import { Link } from "react-router-dom";
+import BackButton from "../../../components/BackButton";
 
 const cards = [
   {
@@ -37,10 +38,8 @@ const cards = [
 export const DashboardReportsPage = () => {
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
-      <div className="flex items-center justify-between mb-6">
-            <Link to="/sales/home" className="text-red-600 hover:underline pl-10">
-            ← Volver atras 
-            </Link>
+      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+        <BackButton to="/sales/home"></BackButton>
       </div>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Panel de reportes de Ventas</h1>

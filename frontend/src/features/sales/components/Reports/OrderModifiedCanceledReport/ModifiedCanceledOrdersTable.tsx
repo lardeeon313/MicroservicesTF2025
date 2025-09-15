@@ -1,6 +1,6 @@
 import formatDate from "../../../../../utils/formateDate";
 import { Order, OrderStatus } from "../../../types/OrderTypes";
-import { OrderStatusBadge } from "../../Orders/OrderStatusBadge";
+import { OrderStatusBadge } from "../../../../../components/OrderStatusBadge";
 
 
 type Props = {

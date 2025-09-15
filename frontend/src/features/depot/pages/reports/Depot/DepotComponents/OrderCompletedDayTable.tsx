@@ -24,7 +24,7 @@ export default function OrderCompletedDayTable({ data }: Props) {
       <div className="overflow-x-auto">
         <table className="min-w-full">
           <thead>
-            <tr className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+            <tr className="bg-gradient-to-r from-red-400 to-red-600 text-white">
               <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">ID Pedido</th>
               <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Sales Order</th>
               <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Cliente</th>

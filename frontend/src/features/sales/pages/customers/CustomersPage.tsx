@@ -6,6 +6,7 @@ import { deleteCustomer } from "../../services/CustomerService";
 import { usePagedCustomers } from "../../hooks/usePagedCustomers";
 import CustomerTable from "../../components/Customers/CustomersTable";
 import { Pagination } from "../../../../components/Pagination";
+import BackButton from "../../../../components/BackButton";
 
 
 export default function CustomersPage() {
@@ -66,12 +67,8 @@ export default function CustomersPage() {
 
 return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
-      <div className="flex items-center justify-between mb-6">
-        <Link to="/sales/home" className="text-red-600 hover:underline pl-10">
-          ← Volver al menú principal
-        </Link>
-      </div>
-      <div className="container mx-auto py-10 px-16 sm:max-w-7xl">
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+        <BackButton to="/sales/home"></BackButton>
         <h1 className="text-center text-4xl font-bold text-red-600 mb-12">Gestión de Clientes</h1>
         <div className="flex flex-col md:flex-row mb-4 w-full justify-between">
           <input

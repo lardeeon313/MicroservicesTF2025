@@ -49,6 +49,7 @@ import InvoicedOrderDetailsPage from "../features/depot/billingmanager/pages/Inv
 import BillingTimeProcessPage from "../features/depot/pages/reports/Billing/BillingPages/BillingTimeProcessPage";
 import CustomerIncomePage from "../features/depot/pages/reports/Billing/BillingPages/CustomerIncomePage";
 import OrderBilledPage from "../features/depot/pages/reports/Billing/BillingPages/OrderBilledPage";
+import {DashboardBillingReportsPage} from "../features/depot/pages/DashboardBillingDepotPage";
 
 // Otros roles
 import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
@@ -133,6 +134,7 @@ const AppRouter = () => {
             <Route path="reports/billingTimeProcess" element={<BillingTimeProcessPage />} />
             <Route path="reports/customerIncome" element={<CustomerIncomePage />} />
             <Route path="reports/orderBilled" element={<OrderBilledPage />} />
+            <Route path="reports" element={<DashboardBillingReportsPage />} />
         </Route>
 
         {/* Delivery */}

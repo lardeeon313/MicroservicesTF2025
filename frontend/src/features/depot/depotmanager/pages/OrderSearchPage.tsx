@@ -1,9 +1,9 @@
 import { OrderSearch } from '../components/OrderSearch';
-import BackButton from '../components/BackButton';
+import BackButton from '../../../../components/BackButton';
 
 const OrderSearchPage = () => {
   return (
-    <div className="container m-0 pt-10 min-w-full min-h-full py-20 pt-20">
+    <div className="container m-0 min-w-full min-h-full py-20 pt-20">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <div className="flex items-center justify-between">

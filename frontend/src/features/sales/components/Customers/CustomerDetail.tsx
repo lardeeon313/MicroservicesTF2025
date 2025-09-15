@@ -7,7 +7,7 @@ interface Props {
 
 const CustomerDetail = ({ customer }: Props) => {
   return (
-    <div className="space-y-6 mt-10 w-3x1">
+    <div className="space-y-6 container mx-auto py-10 px-16 sm:max-w-6xl">
       <label className="block text-sm font-medium text-gray-900 mb-1">Nombre</label>
       <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">
         {customer.firstName} {customer.lastName}

@@ -18,7 +18,7 @@ const TeamProductivityTable: React.FC<Props> = ({ data }) => {
       <div className="overflow-x-auto">
         <table className="min-w-full">
           <thead>
-            <tr className="bg-gray-900 text-white">
+            <tr className="bg-red-500 text-white backdrop-opacity-90">
               <th className="px-6 py-4 text-left text-sm font-medium uppercase tracking-wide">
                 ID Equipo
               </th>
@@ -40,7 +40,7 @@ const TeamProductivityTable: React.FC<Props> = ({ data }) => {
                   }`}
                 >
                   <td className="px-6 py-4">
-                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-800 font-semibold text-sm">
+                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100 text-red-800 font-semibold text-sm">
                       {item.depotTeamId}
                     </span>
                   </td>

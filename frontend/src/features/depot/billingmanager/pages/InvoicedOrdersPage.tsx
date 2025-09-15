@@ -5,7 +5,7 @@ import {
   getInvoicedOrdersByCustomer
 } from '../services/OrderService';
 import OrderTable from '../components/OrderTable';
-import BackButton from '../components/BackButton';
+import BackButton from '../../../../components/BackButton';
 
 const PAGE_SIZE = 5;
 
@@ -62,9 +62,19 @@ const InvoicedOrdersPage: React.FC = () => {
   };
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-4">
-        <BackButton to="/depot/billingmanager" />
+    <div className="container m-0 min-w-full min-h-full py-20 pt-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Órdenes Facturadas</h1>
+              <p className="mt-2 text-gray-600">
+                Visualiza y gestioná todas las órdenes que ya han sido facturadas.
+              </p>
+            </div>
+            <BackButton to="/depot/billingmanager" />
+          </div>
+        </div>
         <input
           type="text"
           placeholder="Buscar por cliente..."
