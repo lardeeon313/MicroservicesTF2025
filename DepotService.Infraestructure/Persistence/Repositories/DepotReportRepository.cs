@@ -82,31 +82,36 @@ namespace DepotService.Infraestructure.Persistence.Repositories
             if (to.HasValue)
                 query = query.Where(h => h.ChangedAt <= to.Value);
 
-            var grouped = await query
-                .GroupBy(h => h.NewStatus)
-                .Select(g => new
-                {
-                    Status = g.Key,
-                    AvgDuration = g
-                        .Select(h => new
-                        {
-                            Start = h.ChangedAt,
-                            End = _context.OrderStatusHistories
-                                .Where(next => next.OrderId == h.OrderId && next.ChangedAt > h.ChangedAt)
-                                .OrderBy(next => next.ChangedAt)
-                                .Select(next => next.ChangedAt)
-                                .FirstOrDefault()
-                        })
-                        .Where(x => x.End != default)
-                        .Average(x => EF.Functions.DateDiffMinute(x.Start, x.End))
-                })
-                .ToListAsync();
+            var histories = await query
+    .OrderBy(h => h.OrderId)
+    .ThenBy(h => h.ChangedAt)
+    .ToListAsync();
 
-            return grouped.Select(x => new OrderStatusAverage
+            var result = new List<OrderStatusAverage>();
+
+            foreach (var history in histories)
             {
-                Status = x.Status,
-                AverageDuration = x.AvgDuration
-            }).ToList();
+                var next = histories
+                    .Where(n => n.OrderId == history.OrderId && n.ChangedAt > history.ChangedAt)
+                    .OrderBy(n => n.ChangedAt)
+                    .FirstOrDefault();
+
+                var duration = next != null
+                    ? (next.ChangedAt - history.ChangedAt).TotalMinutes
+                    : 0;
+
+                result.Add(new OrderStatusAverage
+                {
+                    Id = history.Id,
+                    OrderId = history.OrderId,
+                    OldStatus = history.OldStatus,
+                    NewStatus = history.NewStatus,
+                    ChangedAt = history.ChangedAt,
+                    AverageDuration = duration
+                });
+            }
+
+            return result;
         }
 
         public async Task<PaginatedResult<CompletedOrdersReport>> GetCompletedOrdersAsync(DateTime? from, DateTime? to, int page, int pageSize)

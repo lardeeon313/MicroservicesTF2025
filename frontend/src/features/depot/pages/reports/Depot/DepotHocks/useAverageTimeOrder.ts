@@ -2,7 +2,12 @@ import { useState, useEffect } from "react";
 import API from "../../../../../../api/axios";
 import type { ArmTime } from "../DepotComponents/AverageTimeOrderTable";
 
-export const useAverageTimeOrder = (page: number, pageSize: number) => {
+export const useAverageTimeOrder = (
+  page: number,
+  pageSize: number,
+  from?: string,
+  to?: string
+) => {
   const [data, setData] = useState<ArmTime[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -12,38 +17,53 @@ export const useAverageTimeOrder = (page: number, pageSize: number) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        console.log("📡 Fetching average-time-per-status...");
-        console.log("🔗 URL:", "/api/depotreports/reports/average-time-per-status");
-        console.log("📌 Params:", { from: "2025-01-01", to: "2025-08-19" });
+        const params: Record<string, string> = {};
+        if (from && from.trim() !== "") params.from = from;
+        if (to && to.trim() !== "") params.to = to;
 
-        const response = await API.get<ArmTime[]>(
-          "/depot/depotreports/reports/average-time-per-status",
-          { params: { from: "2025-01-01", to: "2025-08-19" } }
-        );
+        const response = await API.get("/depot/depotreports/reports/average-time-per-status", { params });
+        console.log("📦 Respuesta cruda del back:", response.data)
+        const raw: any[] = response.data ?? [];
 
-        console.log("✅ Response completa:", response);
-        console.log("📊 Datos crudos:", response.data);
+        // Normalizamos cada item al tipo ArmTime
+        const normalized: ArmTime[] = raw.map((item: any, index: number) => {
+          const base: ArmTime = {
+            id: item.id ?? index,
+            orderId: Number(item.orderId),
+            averageDuration: Number(item.averageDuration ?? 0),
+          };
 
-        // 👉 paginación local
+          if (item.status) base.status = String(item.status);
+          if (item.oldStatus !== undefined) base.oldStatus = Number(item.oldStatus);
+          if (item.newStatus !== undefined) base.newStatus = Number(item.newStatus);
+          if (item.changedAt) {
+            try {
+              base.changedAt = new Date(item.changedAt).toISOString();
+            } catch {
+              base.changedAt = undefined;
+            }
+          }
+
+          return base;
+        });
+
+        // paginación local
         const start = (page - 1) * pageSize;
         const end = start + pageSize;
-        const paginatedData = response.data.slice(start, end);
+        const paginated = normalized.slice(start, end);
 
-        console.log("📑 Datos paginados:", paginatedData);
-
-        setData(paginatedData);
-        setTotalPages(Math.ceil(response.data.length / pageSize));
-      } catch (error) {
-        console.error("❌ Error en fetchData:", error);
+        setData(paginated);
+        setTotalPages(Math.max(1, Math.ceil(normalized.length / pageSize)));
+      } catch (err) {
+        console.error("❌ Error en fetchData:", err);
         setError("Hubo un error al cargar los datos");
       } finally {
         setLoading(false);
-        console.log("⏳ fetchData finalizado");
       }
     };
 
     fetchData();
-  }, [page, pageSize]);
+  }, [page, pageSize, from, to]);
 
   return { data, loading, error, totalPages };
 };
