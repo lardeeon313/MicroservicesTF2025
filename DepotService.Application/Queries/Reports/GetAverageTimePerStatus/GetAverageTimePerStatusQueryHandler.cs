@@ -26,7 +26,10 @@ namespace DepotService.Application.Queries.Reports.GetAverageTimePerStatus
 
             return averages.Select(avg => new StatusAverageTimeDto
             {
-                Status = avg.Status.ToString(),
+                Id = avg.Id,
+                OrderId = avg.OrderId,
+                Status = $"{avg.OldStatus} → {avg.NewStatus}",
+                ChangedAt = avg.ChangedAt,
                 AverageDuration = avg.AverageDuration
             }).ToList();
 
