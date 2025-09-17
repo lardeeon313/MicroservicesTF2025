@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import OrderTable from "../../components/Orders/OrderTable";
 import { useState } from "react";
 import Swal from "sweetalert2";
@@ -196,10 +196,8 @@ export default function OrdersPage() {
           onActionChange={handleActionChange}
         />
 
-        <div className="flex items-center justify-end py-4 px-6">
-          <Link to="/sales/orders/registerOrder" className="text-red-600 hover:underline">
-            Registrar Nuevo Pedido
-          </Link>
+        <div className="flex items-center justify-end py-4 ">
+          <BackButton to="/sales/orders/registerOrder" label="Registrar Nuevo Pedido"></BackButton>
         </div>
 
         {/* Paginación */}

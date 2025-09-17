@@ -43,7 +43,7 @@ export default function ViewOrderPage() {
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
-        <BackButton to="/sales/home"></BackButton>
+        <BackButton to="/sales/orders"></BackButton>
         <h2 className="text-center text-4xl font-bold text-red-600 mb-12">
               Detalles de la Órden {order?.id}
         </h2>

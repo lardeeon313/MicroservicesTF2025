@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { OrderTableData } from "../../types/OrderTypes";
+import { OrderStatusBadge } from "../../../../components/OrderStatusBadge";
+import { OrderItemsTable } from "../../../../components/OrderItemsTable";
 
 type Props = {
   order: OrderTableData | null;

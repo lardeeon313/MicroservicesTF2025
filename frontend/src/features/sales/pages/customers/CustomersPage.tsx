@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { handleFormikError } from "../../../../components/ErrorHandler";
 import { deleteCustomer } from "../../services/CustomerService";
@@ -97,10 +97,8 @@ return (
           onDelete={handleDelete}
         />
 
-        <div className="flex items-center justify-end py-4 px-6">
-          <Link to="/sales/customer/registerCustomer" className="text-red-600 hover:underline">
-            Registrar Nuevo Cliente
-          </Link>
+        <div className="flex items-center justify-end py-4">
+          <BackButton to="/sales/customer/registerCustomer" label="Registrar Nuevo Cliente"></BackButton>
         </div>
 
         <div className="flex justify-center mt-6 gap-4">

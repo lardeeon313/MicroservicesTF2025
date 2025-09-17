@@ -23,12 +23,12 @@ const ModifiedCanceledOrdersFilter: React.FC<Props> = ({
   onLimpiar,
 }) => {
   return (
-    <div className="mb-6 p-6 border border-gray-200 rounded-2xl shadow-md bg-white">
-      <h2 className="text-lg font-semibold mb-6 text-gray-800">
+    <div className="bg-gray-50 border border-gray-200 shadow-sm rounded-xl p-6 w-full mb-6">
+      <h2 className="text-lg font-semibold text-gray-800 mb-4">
         Filtros de Órdenes Modificadas/Canceladas
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Nombre */}
         <div className="flex flex-col">
           <label className="text-sm font-medium text-gray-700 mb-1">
@@ -39,7 +39,7 @@ const ModifiedCanceledOrdersFilter: React.FC<Props> = ({
             placeholder="Ej: Juan Pérez"
             value={nameDraft}
             onChange={(e) => onNameDraftChange(e.target.value)}
-            className="border rounded-lg p-2 w-full focus:ring-2 focus:ring-red-500 focus:outline-none"
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400 focus:outline-none transition"
           />
         </div>
 
@@ -52,7 +52,7 @@ const ModifiedCanceledOrdersFilter: React.FC<Props> = ({
             type="date"
             value={dateDraft}
             onChange={(e) => onDateDraftChange(e.target.value)}
-            className="border rounded-lg p-2 w-full focus:ring-2 focus:ring-red-500 focus:outline-none"
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400 focus:outline-none transition"
           />
         </div>
 
@@ -66,7 +66,7 @@ const ModifiedCanceledOrdersFilter: React.FC<Props> = ({
             onChange={(e) =>
               onStatusDraftChange(e.target.value as FilterStatus)
             }
-            className="border rounded-lg p-2 w-full focus:ring-2 focus:ring-red-500 focus:outline-none"
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400 focus:outline-none transition"
           >
             <option value="Todos">Todos</option>
             <option value="pending">Pendiente</option>
@@ -77,7 +77,7 @@ const ModifiedCanceledOrdersFilter: React.FC<Props> = ({
       </div>
 
       {/* Botones */}
-      <div className="flex justify-end gap-3">
+      <div className="flex justify-end gap-3 mt-6">
         <button
           onClick={onLimpiar}
           className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition"
@@ -94,6 +94,5 @@ const ModifiedCanceledOrdersFilter: React.FC<Props> = ({
     </div>
   );
 };
-
 export default ModifiedCanceledOrdersFilter;
 

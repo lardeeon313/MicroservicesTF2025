@@ -2,9 +2,9 @@ import React from 'react';
 import { View, Image, Text, TouchableOpacity, Animated } from 'react-native';
 import { useState, useRef } from "react";
 import { useNavigation } from '@react-navigation/native';
+import { TeamDepotType } from '../../types/TeamType';
 
 interface NavbarProps {
-  user: { name: string; role: string } | null;
   isAuthenticated: boolean;
   logout: () => void;
 }
@@ -67,6 +67,22 @@ const NavbarOperator = ({ user, isAuthenticated, logout }: NavbarProps) => {
             <View>
               <Text style={{ color: '#ffffff', fontSize: 14, fontWeight: '600' }}>{user.name}</Text>
               <Text style={{ color: '#9ca3af', fontSize: 12 }}>{user.role}</Text>
+                <View
+                  style={{
+                  backgroundColor: '#c8c8cfff', // Gris oscuro (puedes ajustar el tono)
+                  padding: 6,
+                  borderRadius: 8,
+                  marginTop: 2,
+                  width: 'auto',
+                  }}
+                >
+                <Text style={{ color: '#161718ff', fontSize: 10, fontWeight: '600' }}>
+                  Equipo:
+                </Text>
+                <Text style={{ color: '#9e0f0fff', fontSize: 10 , fontWeight: '800'}}>
+                  {user.team?.teamName ?? "N/A"}
+                </Text>
+              </View>
             </View>
           </TouchableOpacity>
 

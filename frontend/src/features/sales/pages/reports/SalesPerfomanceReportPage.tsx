@@ -22,7 +22,7 @@ export const SalesPerfomanceReportPage = () => {
         <BackButton to="/sales/reports/dashboard"></BackButton>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-36">
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
           Rendimiento de Ventas
         </h1>

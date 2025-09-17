@@ -54,12 +54,6 @@ export default function ModifiedCanceledOrdersPage() {
   const normalize = (s: string) =>
     s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-  console.log("ORDER SAMPLE:", orders[0]);
-  console.log("FULL NAME BUILT:", orders.map((o: any) =>
-    o.customerInfo?.fullName ??
-      `${o.customerInfo?.firstName ?? ""} ${o.customerInfo?.lastName ?? ""}`.trim()
-    ));
-
   const filteredOrders = orders.filter((o: any) => {
     // Nombre
       const fullName = `${o.customerFirstName ?? ""} ${o.customerLastName ?? ""}`.trim();
@@ -110,10 +104,10 @@ export default function ModifiedCanceledOrdersPage() {
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-          Clientes y Pedidos
+          Pedidos Cancelados y Modificados
         </h1>
         <p className="text-center text-lg text-gray-700 mb-12">
-          Pedidos cancelados y modificados
+          Todo lo que necesitas para evaluar los Pedidos cancelados y modificados
         </p>
 
         {/* Filtros con Buscar y Limpiar */}

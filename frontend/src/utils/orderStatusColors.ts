@@ -5,21 +5,17 @@ export const orderStatusStyles: Record<OrderStatus, { text: string; bg: string }
     text: "text-gray-700",
     bg: "bg-gray-200", // gris = en espera
   },
-  [OrderStatus.SentToBilling]: {
-    text: "text-violet-700",
-    bg: "bg-violet-100", // violeta = enviado a facturación
+  [OrderStatus.ReIssued]: {
+    text: "text-yellow-700",
+    bg: "bg-yellow-100", // amarillo = reemitido
   },
   [OrderStatus.PendingResolution]: {
-    text: "text-orange-700",
-    bg: "bg-orange-100", // naranja = requiere atención
+    text: "text-yellow-700",
+    bg: "bg-yellow-100", // amarillo claro = pendiente de resolución
   },
-  [OrderStatus.PendingReissued]: {
-    text: "text-amber-700",
-    bg: "bg-amber-100", // ámbar = pendiente de acción extra
-  },
-  [OrderStatus.ReIssued]: {
+  [OrderStatus.SentToBilling]: {
     text: "text-purple-700",
-    bg: "bg-purple-100", // púrpura = proceso administrativo
+    bg: "bg-purple-100", // morado = enviado a facturación
   },
   [OrderStatus.Issued]: {
     text: "text-blue-700",

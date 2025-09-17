@@ -30,8 +30,8 @@ const BillingCards = [
 export const DashboardBillingReportsPage = () => {
 
   return (
-    <div className="container m-0 pt-10 min-w-full min-h-full ">
-      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+    <div className="container m-0 pt-10 min-w-full min-h-full">
+      <div className="container mx-auto py-8 px-16 sm:max-w-8xl">
         <BackButton to="/depot/billingmanager"></BackButton>
       </div>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

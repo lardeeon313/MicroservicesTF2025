@@ -51,7 +51,7 @@ const EditOrderPage = () => {
     setIsSubmitting(true);
     try {
       await updateOrder(values.orderId, values);
-      toast.success("Cliente actualizado correctamente");
+      toast.success("Órden actualizada correctamente");
       navigate("/sales/orders");
     } catch (error) {
       handleFormikError({
@@ -67,23 +67,21 @@ const EditOrderPage = () => {
   };
 
   return (
-    <div className="container m-0 pt-10 min-w-full">
-      <div className="flex items-center justify-between mb-6">
+    <div className="container m-0 pt-10 min-w-full min-h-full">
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
         <BackButton to="/sales/orders"></BackButton>
-      </div>
-      <div className="sm:mx-auto sm:w-full sm:max-w-3xl justify-center">
-        <h2 className="text-center text-4xl font-bold text-red-600 mb-12">
-          Editar Orden
-        </h2>
-        {initialValues ? (
-                  <EditOrderForm 
-          initialValues={initialValues}
-          onSubmit={handleSubmit}
-          isSubmitting = {isSubmitting} 
-        />
-        ) : (
-          <LoadingSpinner message="Cargando datos de la órden" height="h-screen" />
-        )}
+          <h2 className="text-center text-4xl font-bold text-red-600 mb-12">
+            Editar Orden
+          </h2>
+          {initialValues ? (
+                    <EditOrderForm 
+            initialValues={initialValues}
+            onSubmit={handleSubmit}
+            isSubmitting = {isSubmitting} 
+          />
+          ) : (
+            <LoadingSpinner message="Cargando datos de la órden" height="h-screen" />
+          )}          
       </div>
     </div>
   )

@@ -10,6 +10,9 @@ import {
   RawOrderHistory,
 } from "../../../../billingmanager/types/BillingTimeProcessType";
 import BackButton from "../../../../../../components/BackButton";
+import { AlertTriangle, Calendar, Search } from "lucide-react";
+import EmptyState from "../../../../../../components/EmptyState";
+import Pagination from "../../../../depotmanager/components/Pagination";
 
 const ProcessingTimeOrderPage: React.FC = () => {
   const [from, setFrom] = useState("");
@@ -66,26 +69,38 @@ const ProcessingTimeOrderPage: React.FC = () => {
         {/* Título principal */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-            Tiempo promedio para el proceso de facturación:
+            Tiempo promedio <br></br>para el proceso de facturación
           </h1>
           <p className="text-center text-lg text-gray-700 mb-12">
-            Aquí podrás ver cuánto le toma al encargado de facturación facturar
+            Aquí podrás ver cuánto le toma al encargado de facturación
             cada uno de los pedidos ya armados.
           </p>
 
+          <div className="flex flex-col md:flex-row mb-4 w-full justify-between gap-2">
           {/* Filtro */}
           <ProcessingTimeOrderFilter onFilter={handleFilter} onClear={handleClear} />
-
+          </div>
+          
           {/* Tabla + Gráfico */}
-          <div className="mt-6">
+          <div className="mt-12">
             {!from || !to ? (
-              <p className="text-gray-500 mt-4">
-                Selecciona un rango de fechas para ver resultados.
-              </p>
+              <EmptyState
+                icon={Calendar}
+                title="Selecciona un rango de fechas"
+                description="Para visualizar el tiempo promedio de facturación, utiliza el filtro superior y elige un rango de fechas."
+                actionLabel="Ir a filtros"
+                onAction={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              />
             ) : (
               <>
                 {loading && <p className="text-gray-500">Cargando datos...</p>}
-                {error && <p className="text-red-500">{error}</p>}
+                {error && <EmptyState
+                  icon={AlertTriangle}
+                  title="Rango de fechas inválido"
+                  description="Verifica que la fecha de inicio sea anterior a la fecha de fin para poder mostrar los resultados."
+                  actionLabel="Corregir rango"
+                  onAction={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                />}
 
                 {!loading && !error && tableData.length > 0 && (
                   <>
@@ -103,9 +118,13 @@ const ProcessingTimeOrderPage: React.FC = () => {
                 )}
 
                 {!loading && !error && tableData.length === 0 && (
-                  <p className="text-gray-500 mt-4">
-                    No se encontraron resultados para las fechas seleccionadas.
-                  </p>
+                  <EmptyState
+                    icon={Search}
+                    title="Sin resultados"
+                    description="No se encontraron pedidos dentro del rango de fechas seleccionado. Prueba con un periodo diferente."
+                    actionLabel="Reintentar con otros filtros"
+                    onAction={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                  />
                 )}
               </>
             )}
@@ -113,26 +132,14 @@ const ProcessingTimeOrderPage: React.FC = () => {
 
           {/* Paginación */}
           {!loading && totalPages > 1 && (
-            <div className="flex items-center justify-center mt-6 gap-4">
-              <button
-                onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                disabled={page === 1}
-                className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-100"
-              >
-                Anterior
-              </button>
-
-              <span className="text-sm text-gray-600">
-                Página {page} de {totalPages}
-              </span>
-
-              <button
-                onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                disabled={page === totalPages}
-                className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-100"
-              >
-                Siguiente
-              </button>
+            <div className="mt-6 flex justify-center">
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={(newPage) => setPage(newPage)}
+                totalItems={0} // 👈 Added totalItems
+                itemsPerPage={pageSize} // 👈 Added itemsPerPage
+              />
             </div>
           )}
           

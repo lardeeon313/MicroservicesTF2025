@@ -9,6 +9,8 @@ import type { Billing } from "../../../../billingmanager/types/BillingType";
 import { useCustomerIncome } from "../BillingHocks/useCustomerIncome";
 import CustomerIncomeFilter from "../BillingFilters/CustomerIncomeFilter";
 import BackButton from "../../../../../../components/BackButton";
+import EmptyState from "../../../../../../components/EmptyState";
+import { AlertCircle, Calendar } from "lucide-react";
 
 /** Normaliza a YYYY-MM-DD para comparar sin problemas de locale/timezone */
 const toYMD = (value: string | Date): string => {
@@ -83,10 +85,14 @@ const CustomerIncomePage: React.FC = () => {
         <BackButton to="/depot/billingmanager/reports"></BackButton>
       
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-6">
-          <h1 className="text-center text-4xl font-bold text-red-600 mb-8">
+          <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
             Ingresos por Cliente
           </h1>
+          <p className="text-center text-lg text-gray-700 mb-12">
+            Aquí podrás ver los ingresos generados por cada cliente en una fecha especifica.
+          </p>
 
+          <div className="flex flex-col md:flex-row mb-4 w-full justify-between gap-2">
           {/* Filtros */}
           <CustomerIncomeFilter
             filters={filters}
@@ -97,42 +103,81 @@ const CustomerIncomePage: React.FC = () => {
               setPage(1);
             }}
           />
-
-          {/* estados */}
-          {loading && <LoadingSpinner />}
-          {error && <p className="text-red-500">{error}</p>}
-
-          {/* tabla */}
-          <div className="bg-white p-4 shadow-md">
-            <CustomerIncomeTable
-              data={paginatedOrders.map(
-                (item: Billing): CustomerIncomeBillingItem => ({
-                  customerName: item.customerName,
-                  customerEmail: item.customerEmail,
-                  billingDate: toDMY(item.orderDate), // dd/mm/aaaa
-                  totalAmount: item.totalAmount,
-                })
-              )}
-            />
           </div>
 
-          {/* gráfico */}
-          <div className="bg-white p-4 shadow-md">
-            <GraphCustomerIncome
-              data={filteredOrders.map((item: Billing) => ({
-                BillingDate: toDMY(item.orderDate), // dd/mm/aaaa
-                TotalAmount: item.totalAmount,
-              }))}
-            />
-          </div>
+          {/* Estados de tabla */}
+          <div className="mt-12">
+            {/* 1️⃣ Si no hay fecha seleccionada */}
+            {!filters.date ? (
+              <EmptyState
+                icon={Calendar}
+                title="Aplica algun filtro para ver resultados"
+                description="Para visualizar los ingresos por cliente, utiliza los filtros superiores y elige una fecha."
+                actionLabel="Ir a filtros"
+                onAction={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              />
+            ) : (
+              <>
+                {/* 2️⃣ Loading */}
+                {loading && <LoadingSpinner />}
 
-          {/* paginación */}
-          <div className="flex justify-center">
-            <Pagination
-              currentPage={page}
-              totalPages={totalPages}
-              onPageChange={setPage}
-            />
+                {/* 3️⃣ Error */}
+                {error && (
+                  <EmptyState
+                    icon={AlertCircle}
+                    title="Ha habido un problema"
+                    description={error}
+                  />
+                )}
+
+                {/* 4️⃣ Tabla + Gráfico si hay datos */}
+                {!loading && !error && filteredOrders.length > 0 && (
+                  <>
+                    <div className="bg-white p-4 shadow-md mb-6">
+                      <CustomerIncomeTable
+                        data={paginatedOrders.map(
+                          (item: Billing): CustomerIncomeBillingItem => ({
+                            customerName: item.customerName,
+                            customerEmail: item.customerEmail,
+                            billingDate: toDMY(item.orderDate),
+                            totalAmount: item.totalAmount,
+                          })
+                        )}
+                      />
+                    </div>
+
+                    <div className="bg-white p-4 shadow-md mb-6">
+                      <GraphCustomerIncome
+                        data={filteredOrders.map((item: Billing) => ({
+                          BillingDate: toDMY(item.orderDate),
+                          TotalAmount: item.totalAmount,
+                        }))}
+                      />
+                    </div>
+
+                    {/* 5️⃣ Paginación */}
+                    {totalPages > 1 && (
+                      <div className="flex justify-center mt-8">
+                        <Pagination
+                          currentPage={page}
+                          totalPages={totalPages}
+                          onPageChange={setPage}
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {/* 6️⃣ EmptyState si no hay resultados */}
+                {!loading && !error && filteredOrders.length === 0 && (
+                  <EmptyState
+                    icon={AlertCircle}
+                    title="Sin resultados"
+                    description="No se encontraron ingresos para los filtros seleccionados. Intenta con otro cliente o fecha."
+                  />
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>

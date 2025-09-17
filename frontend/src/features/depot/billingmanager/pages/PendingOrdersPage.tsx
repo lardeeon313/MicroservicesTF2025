@@ -4,6 +4,7 @@ import { getPendingBillingOrders } from '../services/OrderService';
 import { DepotOrderDto } from '../types/OrderTypes';
 import OrderTable from '../components/OrderTable';
 import BackButton from '../../../../components/BackButton';
+import Pagination from '../../depotmanager/components/Pagination';
 
 const PAGE_SIZE = 5;
 
@@ -11,7 +12,8 @@ const PendingOrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<DepotOrderDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState('');
+  const [searchName, setSearchName] = useState('');
+  const [searchEmail, setSearchEmail] = useState('');
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -44,10 +46,22 @@ const PendingOrdersPage: React.FC = () => {
     }
   }, [searchParams, location.pathname, navigate]);
 
-  // Buscador por nombre de cliente
-  const filteredOrders = orders.filter(order =>
-    order.customerName.toLowerCase().includes(search.toLowerCase())
-  );
+  // Filtrado por nombre o email
+  const filteredOrders = orders.filter(order => {
+    const nameMatch = order.customerName
+      .toLowerCase()
+      .includes(searchName.toLowerCase());
+
+    const emailMatch = order.customerEmail
+      .toLowerCase()
+      .includes(searchEmail.toLowerCase());
+
+    // Si alguno está vacío, no restringe el filtro
+    return (
+      (searchName === '' || nameMatch) &&
+      (searchEmail === '' || emailMatch)
+    );
+  });
 
   // Paginación
   const totalPages = Math.ceil(filteredOrders.length / PAGE_SIZE);
@@ -59,54 +73,71 @@ const PendingOrdersPage: React.FC = () => {
   };
 
   return (
-    <div className="container m-0 min-w-full min-h-full py-20 pt-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Pendientes de Facturar</h1>
-              <p className="mt-2 text-gray-600">
-                Visualiza y gestiona las órdenes que están listas para ser facturadas.
-              </p>
+    <div className="container m-0 pt-10 min-w-full min-h-full">
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+        <BackButton to="/depot/billingmanager" />
+        
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Pendientes de Facturar</h1>
+          <p className="text-center text-lg text-gray-700 mb-12">
+            Visualiza y gestiona las órdenes que están listas para ser facturadas.
+          </p>
+
+          {/* Buscador */}
+          <div className="bg-gray-50 border border-gray-200 shadow-sm rounded-xl p-2 w-auto mb-8">
+            <div className="flex justify-center mb-6 mt-6">
+              <div className="flex flex-col md:flex-row gap-24 w-full max-w-3xl">
+                {/* Cliente */}
+                <div className="flex flex-col flex-1">
+                  <label className="text-sm font-medium text-gray-600 mb-1">Cliente:</label>
+                  <input
+                    type="text"
+                    placeholder="Buscar por cliente..."
+                    value={searchName}
+                    onChange={e => { setSearchName(e.target.value); setPage(1); }}
+                    className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 w-full focus:ring-red-400 focus:outline-none transition"
+                  />
+                </div>
+                {/* Correo Electrónico */}
+                <div className="flex flex-col flex-1">
+                  <label className="text-sm font-medium text-gray-600 mb-1">Correo Electrónico:</label>
+                  <input
+                    type="text"
+                    placeholder="Buscar por correo electrónico..."
+                    value={searchEmail}
+                    onChange={e => { setSearchEmail(e.target.value); setPage(1); }}
+                    className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 w-full focus:ring-red-400 focus:outline-none transition"
+                  />
+                </div>
+              </div>
             </div>
-          <BackButton to="/depot/billingmanager" />
           </div>
+
+          <OrderTable
+            orders={paginatedOrders.map(order => ({
+              id: order.depotOrderId,
+              customerFirstName: order.customerName,
+              orderDate: order.orderDate,
+              deliveryDetail: order.deliveryDetail,
+              status: order.status,
+              items: order.items,
+              total: order.totalAmount,
+            }))}
+            loading={loading}
+            error={error}
+            onRefetch={fetchOrders}
+            onView={handleViewDetail}
+            activeTab={'sentToBilling'}
+          />
+
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            totalItems={filteredOrders.length}
+            itemsPerPage={PAGE_SIZE}
+            onPageChange={(newPage) => setPage(newPage)}
+          />
         </div>
-        <input
-          type="text"
-          placeholder="Buscar por cliente..."
-          value={search}
-          onChange={e => { setSearch(e.target.value); setPage(1); }}
-          className="border px-3 py-1 rounded w-64"
-        />
-      </div>
-      <OrderTable
-        orders={paginatedOrders.map(order => ({
-          id: order.depotOrderId,
-          customerFirstName: order.customerName,
-          orderDate: order.orderDate,
-          deliveryDetail: order.deliveryDetail,
-          status: order.status,
-          items: order.items,
-          total: order.totalAmount,
-        }))}
-        loading={loading}
-        error={error}
-        onRefetch={fetchOrders}
-        onView={handleViewDetail}
-        activeTab={'sentToBilling'}
-      />
-      {/* Paginación */}
-      <div className="flex justify-center mt-4 space-x-2">
-        {Array.from({ length: totalPages }, (_, i) => (
-          <button
-            key={i + 1}
-            className={`px-3 py-1 rounded ${page === i + 1 ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`}
-            onClick={() => setPage(i + 1)}
-          >
-            {i + 1}
-          </button>
-        ))}
       </div>
     </div>
   );
