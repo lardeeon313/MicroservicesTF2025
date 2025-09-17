@@ -55,6 +55,14 @@ import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
 import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
 import MissingOrdersSalesPage from "../features/sales/pages/orders/MissingOrderSalesPage";
 
+import { DashboardBillingReportsPage } from "../features/depot/pages/DashboardBillingDepotPage";
+import InvoicePage from "../features/depot/billingmanager/pages/InvoiceExportPage";
+//import InvoiceDetailPage from "../features/depot/billingmanager/components/InvoiceListComponent";
+import InvoiceOneDetailPage from "../features/depot/billingmanager/pages/InvoiceDetailPage";
+
+import MissingOrdersSalesPage from "../features/sales/pages/orders/MissingOrderSalesPage";
+
+
 
 
 const AppRouter = () => {
@@ -133,9 +141,14 @@ const AppRouter = () => {
             <Route path="pending-billing-orders/:id" element={<PendingOrderDetailsPage />} />
             <Route path="invoiced-orders" element={<InvoicedOrdersPage />} />
             <Route path="invoiced-orders/:id" element={<InvoicedOrderDetailsPage />} />
+            {/**para exportar: */}
+            <Route path="exports" element={<InvoicePage/>}/>
+            <Route path="exports/:billingOrderId" element={<InvoiceOneDetailPage />} />
+            <Route path="reports" element={<DashboardBillingReportsPage/>} />
             <Route path="reports/billingTimeProcess" element={<BillingTimeProcessPage />} />
             <Route path="reports/customerIncome" element={<CustomerIncomePage />} />
             <Route path="reports/orderBilled" element={<OrderBilledPage />} />
+            
         </Route>
 
         {/* Delivery */}

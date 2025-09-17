@@ -11,7 +11,9 @@ namespace DepotService.Domain.Entities
         public int Id { get; set; }
         public int DepotTeamId { get; set; }
         public DepotTeamEntity depotTeamEntity { get; set; } = null!;
-        public Guid OperatorUserId { get; set; } 
+
+        public Guid OperatorUserId { get; set; }
+
         public string RoleInTeam { get; set; } = "Operator";
         public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
     }

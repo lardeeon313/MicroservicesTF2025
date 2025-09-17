@@ -289,12 +289,23 @@ namespace DepotService.API.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ExportInvoiceToPdf(int billingOrderId, [FromQuery] DocumentType type)
         {
-            var fileBytes = await _exportInvoiceToPdfCommandHandler.ExportInvoiceHandleAsync(new ExportInvoiceDocumentCommand(billingOrderId, type));
+            try
+            {
+                var fileBytes = await _exportInvoiceToPdfCommandHandler.ExportInvoiceHandleAsync(
+                    new ExportInvoiceDocumentCommand(billingOrderId, type)
+                );
 
-            var fileName = $"Invoice_{billingOrderId}.{DocumentHelper.GetExtension(type)}";
-            var contentType = DocumentHelper.GetContentType(type);
+                var fileName = $"Invoice_{billingOrderId}.{DocumentHelper.GetExtension(type)}";
+                var contentType = DocumentHelper.GetContentType(type);
 
-            return File(fileBytes, contentType, fileName);
+                return File(fileBytes, contentType, fileName);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ ERROR en ExportInvoiceToPdf: {ex.GetType().Name} - {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+                return StatusCode(500, $"Error interno: {ex.Message}");
+            }
         }
 
 

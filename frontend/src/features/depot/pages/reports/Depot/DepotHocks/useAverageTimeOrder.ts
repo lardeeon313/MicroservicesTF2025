@@ -1,35 +1,69 @@
-import { useState,useEffect } from "react";
-import type { Order } from "../../../../../sales/types/OrderTypes";
+import { useState, useEffect } from "react";
 import API from "../../../../../../api/axios";
+import type { ArmTime } from "../DepotComponents/AverageTimeOrderTable";
 
-export const useAverageTimeOrder = (page:number,pageSize: number) => {
-    const [data,setData] = useState<Order[]>([]);
-    const [loading,setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [totalPages, setTotalPages] = useState(1);
+export const useAverageTimeOrder = (
+  page: number,
+  pageSize: number,
+  from?: string,
+  to?: string
+) => {
+  const [data, setData] = useState<ArmTime[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [totalPages, setTotalPages] = useState(1);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            try{
-                const response = await API.get<Order[]>("/orders") //Modificar ruta
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const params: Record<string, string> = {};
+        if (from && from.trim() !== "") params.from = from;
+        if (to && to.trim() !== "") params.to = to;
 
-                const start = (page - 1) * pageSize;
-                const end = start + pageSize;
-                const paginatedData = response.data.slice(start, end);
+        const response = await API.get("/depot/depotreports/reports/average-time-per-status", { params });
+        console.log("📦 Respuesta cruda del back:", response.data)
+        const raw: any[] = response.data ?? [];
 
-                setData(paginatedData);
-                setTotalPages(Math.ceil(response.data.length / pageSize));
-            }catch(error){
-                console.error(error);
-                setError("Hubo un error al cargar los datos");
-            }finally{
-                setLoading(false);
+        // Normalizamos cada item al tipo ArmTime
+        const normalized: ArmTime[] = raw.map((item: any, index: number) => {
+          const base: ArmTime = {
+            id: item.id ?? index,
+            orderId: Number(item.orderId),
+            averageDuration: Number(item.averageDuration ?? 0),
+          };
+
+          if (item.status) base.status = String(item.status);
+          if (item.oldStatus !== undefined) base.oldStatus = Number(item.oldStatus);
+          if (item.newStatus !== undefined) base.newStatus = Number(item.newStatus);
+          if (item.changedAt) {
+            try {
+              base.changedAt = new Date(item.changedAt).toISOString();
+            } catch {
+              base.changedAt = undefined;
             }
-        };
+          }
 
-        fetchData();
-    },[page,pageSize]);
+          return base;
+        });
 
-    return {data,loading,error,totalPages}
-}
+        // paginación local
+        const start = (page - 1) * pageSize;
+        const end = start + pageSize;
+        const paginated = normalized.slice(start, end);
+
+        setData(paginated);
+        setTotalPages(Math.max(1, Math.ceil(normalized.length / pageSize)));
+      } catch (err) {
+        console.error("❌ Error en fetchData:", err);
+        setError("Hubo un error al cargar los datos");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [page, pageSize, from, to]);
+
+  return { data, loading, error, totalPages };
+};

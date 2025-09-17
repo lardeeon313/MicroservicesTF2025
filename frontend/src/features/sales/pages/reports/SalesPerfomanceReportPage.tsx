@@ -18,6 +18,7 @@ export const SalesPerfomanceReportPage = () => {
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
+      {/* Volver atrás */}
       <div className="flex items-center justify-between mb-6">
         <Link to="/sales/reports/dashboard" className="text-red-600 hover:underline pl-10">
           ← Volver atrás
@@ -32,27 +33,17 @@ export const SalesPerfomanceReportPage = () => {
           Se visualiza el rendimiento de todos los encargados de ventas
         </p>
 
-        <div className="flex flex-col md:flex-row gap-6 mb-6">
-          {/* Filtro Desde */}
-          <input
-            type="date"
-            className="border rounded px-3 py-2 w-full md:w-1/3"
-            value={dateFrom}
-            onChange={(e) => setDateFrom(e.target.value)}
-          />
+        {/* 🔹 Filtros (componente separado) */}
+        <SalesPerfomanceReportFilter
+          salesRange={salesRange}
+          setSalesRange={setSalesRange}
+          dateFrom={dateFrom}
+          setDateFrom={setDateFrom}
+          dateTo={dateTo}
+          setDateTo={setDateTo}
+        />
 
-          {/* Filtro Hasta */}
-          <input
-            type="date"
-            className="border rounded px-3 py-2 w-full md:w-1/3"
-            value={dateTo}
-            onChange={(e) => setDateTo(e.target.value)}
-          />
-
-          {/* Filtro por antigüedad */}
-          <SalesPerfomanceReportFilter selectedRange={salesRange} onChange={setSalesRange} />
-        </div>
-
+        {/* Tabla y gráfico */}
         <SalesPerfomanceReportTable data={data} loading={loading} />
         <GraphSalesPerfomanceReport data={data} />
       </div>

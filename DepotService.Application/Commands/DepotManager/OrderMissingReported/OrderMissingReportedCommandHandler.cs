@@ -57,11 +57,11 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
                 NewStatus = OrderStatus.PendingResolution,
                 ChangedAt = DateTime.UtcNow,
             };
+
             // Agregar el historial de estado a la base de datos
             await _context.OrderStatusHistories.AddAsync(statusHistory);
             await _context.SaveChangesAsync();
             _logger.LogInformation($"Depot order with ID {command.DepotOrderId} status updated to PendingResolution.");
-
 
             // Antes de crear el DepotOrderMissing, validar si ya existe
             var existingMissing = await _context.DepotOrderMissings
@@ -94,6 +94,7 @@ namespace DepotService.Application.Commands.DepotManager.OrderMissingReported
             {
                 _logger.LogInformation($"Depot order with ID {command.DepotOrderId} already has a missing order. Skipping creation.");
             }
+
 
             _logger.LogInformation($"Depot order with ID {command.DepotOrderId} status updated to PendingResolution.");
 

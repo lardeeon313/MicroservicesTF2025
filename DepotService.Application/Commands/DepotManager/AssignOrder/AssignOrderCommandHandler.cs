@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Commands.DepotManager.AssignOrder
 {
-    public class AssignOrderCommandHandler(IRabbitMQPublisher publisher,IDepotOrderRepository repository, ITeamRepository teamRepository, DepotDbContext context, ILogger<AssignOrderCommandHandler> logger) : IAssignOrderCommandHandler
+    public class AssignOrderCommandHandler(IRabbitMQPublisher publisher, IDepotOrderRepository repository, ITeamRepository teamRepository, DepotDbContext context, ILogger<AssignOrderCommandHandler> logger) : IAssignOrderCommandHandler
     {
         private readonly IDepotOrderRepository _repository = repository;
         private readonly ITeamRepository _teamRepository = teamRepository;
@@ -69,4 +69,6 @@ namespace DepotService.Application.Commands.DepotManager.AssignOrder
             _logger.LogInformation("✅ Evento OrderConfirmedIntegrationEvent publicado para la orden {DepotOrderId}", command.DepotOrderId);
         }
     }
+
+
 }

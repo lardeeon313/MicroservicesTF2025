@@ -1,38 +1,68 @@
-import React from "react";
+import React, { useState } from "react";
 
 type Props = {
-  minIncome: number | "";
-  maxIncome: number | "";
-  onMinChange: (value: number | "") => void;
-  onMaxChange: (value: number | "") => void;
+  onFilter: (from: string, to: string) => void;
+  onClear: () => void;
 };
 
-const BillingTimeProcessFilter: React.FC<Props> = ({ minIncome, maxIncome, onMinChange, onMaxChange }) => {
+const ProcessingTimeOrderFilter: React.FC<Props> = ({ onFilter, onClear }) => {
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onFilter(from, to);
+  };
+
+  const handleClear = () => {
+    setFrom("");
+    setTo("");
+    onClear();
+  };
+
   return (
-    <div className="flex gap-4 items-end mb-4 bg-gray-100 p-4 rounded-lg shadow">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-wrap gap-4 items-end mb-4 bg-gray-100 p-4 rounded-lg shadow"
+    >
       <div>
-        <label className="block text-sm font-medium text-gray-700">Ingreso mínimo:</label>
+        <label className="block text-sm font-medium text-gray-700">Desde:</label>
         <input
-          type="number"
-          value={minIncome}
-          onChange={e => onMinChange(e.target.value === "" ? "" : Number(e.target.value))}
+          type="date"
+          value={from}
+          onChange={(e) => setFrom(e.target.value)}
           className="border rounded px-2 py-1"
-          placeholder="Mínimo"
         />
       </div>
+
       <div>
-        <label className="block text-sm font-medium text-gray-700">Ingreso máximo:</label>
+        <label className="block text-sm font-medium text-gray-700">Hasta:</label>
         <input
-          type="number"
-          value={maxIncome}
-          onChange={e => onMaxChange(e.target.value === "" ? "" : Number(e.target.value))}
+          type="date"
+          value={to}
+          onChange={(e) => setTo(e.target.value)}
           className="border rounded px-2 py-1"
-          placeholder="Máximo"
         />
       </div>
-    </div>
+
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+        >
+          Filtrar
+        </button>
+        <button
+          type="button"
+          onClick={handleClear}
+          className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+        >
+          Limpiar
+        </button>
+      </div>
+    </form>
   );
 };
 
-export default BillingTimeProcessFilter;
+export default ProcessingTimeOrderFilter;
 

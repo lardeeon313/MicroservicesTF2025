@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
+using System.Net;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using FluentValidation;
@@ -127,5 +128,15 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Endpoint para obtener la IP local del servidor
+app.MapGet("/local-ip", () =>
+{
+    var host = Dns.GetHostEntry(Dns.GetHostName());
+    var ip = host.AddressList.FirstOrDefault(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
+    return Results.Json(new { ip = ip?.ToString() ?? "127.0.0.1" });
+});
+
+
 
 app.Run();

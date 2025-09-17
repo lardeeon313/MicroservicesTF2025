@@ -183,7 +183,7 @@ builder.Services.AddScoped<InvoiceWordGenerator>();
 builder.Services.AddScoped<InvoiceExcelGenerator>();
 
 // Obtener la cadena de conexión del appsettings.json
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("DepotDb");
 
 // Registrar los repositorios
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();

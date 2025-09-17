@@ -1,4 +1,4 @@
-import { ClipboardList, Clock, BarChart2 } from "lucide-react";
+import { ClipboardList, Clock, BarChart2, FileDown  } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const cards = [
@@ -20,6 +20,12 @@ const cards = [
     Icon: BarChart2,
     link: "/depot/billingmanager/reports",
   },  
+  {
+    title: "Exportaciones",
+    description: "Aqui podras exportar todos los pedidos facturados en pdf , word e inclusive en excel",
+    Icon: FileDown,
+    link: "/depot/billingmanager/exports",
+  },
 ];
 
 const BillingManagerDashboardPage = () => {

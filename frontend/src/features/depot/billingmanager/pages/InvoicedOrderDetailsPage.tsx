@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getInvoicedOrderById, updateInvoicedItemPrice, exportInvoiceToPdf } from '../services/OrderService';
+import { getInvoicedOrderById, updateInvoicedItemPrice } from '../services/OrderService';
 import BackButton from '../components/BackButton';
 import { Pencil } from "lucide-react"; // ícono moderno de lápiz
+import OrderDetailsInformation from '../../../../components/OrderDetailsInformation';
 
 //MEJORAS APLICADAS : 
-
 
 function InvoicedOrderDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -22,6 +22,15 @@ function InvoicedOrderDetailsPage() {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
+
+    //Bloquea la accion de modificar otra vez el precio de algun producto de dicho pedido
+    const locked = localStorage.getItem(`order-${id}-locked`);
+    if (locked === "true") {
+      setEditDisabled(true);
+    }
+    //
+
+
     getInvoicedOrderById(Number(id))
       .then(data => {
         setOrder(data);
@@ -60,32 +69,22 @@ function InvoicedOrderDetailsPage() {
       }
       const refreshedOrder = await getInvoicedOrderById(Number(order.depotOrderId));
       setOrder(refreshedOrder);
+
+
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 1500);
+
+
       setEditing(false);
       setEditDisabled(true);
+
+      localStorage.setItem(`order-${order.depotOrderId}-locked`, "true");
+
+
     } catch (err) {
       setSaveError('Error al actualizar los precios.');
     } finally {
       setSaving(false);
-    }
-  };
-
-  // Descargar PDF de la factura
-  const handleDownloadPdf = async () => {
-    if (!order) return;
-    try {
-      const blob = await exportInvoiceToPdf(order.depotOrderId, 'Pdf');
-      const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `Invoice_${order.depotOrderId}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      alert('No se pudo descargar el PDF de la factura.');
     }
   };
 
@@ -101,59 +100,38 @@ function InvoicedOrderDetailsPage() {
 
       {!loading && !error && order && (
         <div className="space-y-6 mt-10 w-full">
-          {/* Botón para descargar PDF de la factura */}
-          <div className="flex justify-end mb-2">
-            <button
-              className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg shadow font-bold transition flex items-center gap-2"
-              onClick={handleDownloadPdf}
-              type="button"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5v-9m0 9l-3.75-3.75M12 16.5l3.75-3.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Descargar PDF
-            </button>
-          </div>
           {/* Datos del cliente */}
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Cliente:</label>
-              <p className="rounded-md bg-gray-50 px-3 py-2 text-gray-900 shadow-sm">{order.customerName}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Fecha Pedido:</label>
-              <p className="rounded-md bg-gray-50 px-3 py-2 text-gray-900 shadow-sm">{new Date(order.orderDate).toLocaleDateString("es-AR")}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Detalles de entrega:</label>
-              <p className="rounded-md bg-gray-50 px-3 py-2 text-gray-900 shadow-sm">{order.deliveryDetail || "No especificado"}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">Estado:</label>
-              <span className="rounded-md bg-green-100 px-3 py-2 text-green-800 font-semibold shadow-sm">Facturado</span>
-            </div>
-          </div>
+          <OrderDetailsInformation
+            customerName={order.customerName}
+            orderDate={order.orderDate}
+            deliveryDetail={order.deliveryDetail}
+            status={order.status}
+          />
 
           {/* Tabla de productos */}
           <div className="overflow-x-auto rounded-lg shadow border border-gray-200">
             <table className="w-full text-sm text-left border-collapse">
               <thead className="bg-gray-100 text-gray-700 uppercase text-xs tracking-wider">
                 <tr>
-                  <th className="px-4 py-3">Producto</th>
-                  <th className="px-4 py-3">Marca</th>
-                  <th className="px-4 py-3">Cantidad</th>
-                  <th className="px-4 py-3">Precio Unitario</th>
-                  <th className="px-4 py-3">Subtotal</th>
-                  <th className="px-4 py-3 text-center">Acciones</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marca</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio Unitario</th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
+                  <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {order.items.map((item: any) => (
-                  <tr key={item.id} className="hover:bg-gray-50 transition">
-                    <td className="px-4 py-3">{item.productName}</td>
-                    <td className="px-4 py-3">{item.productBrand}</td>
-                    <td className="px-4 py-3">{item.quantity}</td>
-                    <td className="px-4 py-3">
+                  <tr key={item.id} className="hover:bg-gray-50 transition-colors duration-150">
+                    <td className="px-6 py-4 text-sm text-gray-900">{item.productName}</td>
+                    <td className="px-6 py-4 text-sm text-gray-900">{item.productBrand}</td>
+                    <td className="px-6 py-4 text-sm">
+                      <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                        {item.quantity}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
                       {editing ? (
                         <input
                           type="number"
@@ -165,17 +143,13 @@ function InvoicedOrderDetailsPage() {
                           required
                         />
                       ) : (
-                        <span className="font-medium text-gray-800">{item.unitPrice}</span>
+                        <span className="font-medium text-gray-800">${item.unitPrice}</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 font-semibold text-gray-900">
-                      {(() => {
-                        const price = editing ? editPrices[item.id] : item.unitPrice;
-                        const subtotal = (!isNaN(price) ? price : 0) * item.quantity;
-                        return `$${subtotal.toFixed(2)}`;
-                      })()}
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      ${(editing ? editPrices[item.id] : item.unitPrice) * item.quantity}
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-6 py-4 text-sm text-center">
                       {!editing && !editDisabled && (
                         <button
                           className="bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded-full shadow-md transition"
@@ -188,6 +162,12 @@ function InvoicedOrderDetailsPage() {
                       )}
                       {editing && (
                         <span className="text-xs text-gray-500 italic">Editando...</span>
+                      )}
+                      {/* Mensaje de bloqueo */}
+                      {editDisabled && (
+                        <div className="text-center text-sm text-gray-700 bg-yellow-100 border border-yellow-300 rounded-md py-2 mb-4">
+                          ⚠️ Solo se puede modificar esta orden una vez. No se pueden volver a editar los precios.
+                        </div>
                       )}
                     </td>
                   </tr>
@@ -214,13 +194,10 @@ function InvoicedOrderDetailsPage() {
           <div className="flex justify-end items-center gap-4 mt-4">
             <span className="text-lg font-bold">Total:</span>
             <span className="text-2xl font-bold text-green-700">
-              {(() => {
-                const total = order.items.reduce((acc: number, i: any) => {
-                  const price = editing ? editPrices[i.id] : i.unitPrice;
-                  return acc + (!isNaN(price) ? price : 0) * i.quantity;
-                }, 0);
-                return `$${total.toFixed(2)}`;
-              })()}
+              ${order.items.reduce((acc: number, i: any) => {
+                const price = editing ? editPrices[i.id] : i.unitPrice;
+                return acc + (isNaN(price) ? 0 : price) * i.quantity;
+              }, 0).toFixed(2)}
             </span>
           </div>
 
