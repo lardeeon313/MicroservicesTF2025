@@ -20,7 +20,7 @@ export default function EditOrderForm ({
       onSubmit={onSubmit}
     >
       {({ values }) => (
-        <Form className="space-y-6 mt-10 w-3xl">
+        <Form className="space-y-6 container mx-auto py-10 px-16 sm:max-w-6xl">
           {/* Fecha de entrega */}
           <div>
             <label htmlFor="deliveryDate" className="block text-sm font-medium text-gray-900 mb-1">

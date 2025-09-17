@@ -15,8 +15,8 @@ const OrderBilledGraph: React.FC<Props> = ({ data }) => {
   }));
 
   return (
-    <div className="h-72 mt-6 bg-white rounded shadow p-4">
-      <h2 className="text-lg font-semibold text-gray-700 mb-4">
+    <div className="h-82 bg-white rounded-2xl shadow-md p-6">
+      <h2 className="text-lg text-gray-600 font-semibold mb-4 text-center">
         Monto facturado por pedido
       </h2>
       <ResponsiveContainer width="100%" height="100%">
@@ -24,7 +24,7 @@ const OrderBilledGraph: React.FC<Props> = ({ data }) => {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
             dataKey="name"
-            angle={0}        // Se elimina inclinación, ya que ahora se parte en varias líneas
+            angle={0} 
             textAnchor="middle"
             interval={0}
             height={80}

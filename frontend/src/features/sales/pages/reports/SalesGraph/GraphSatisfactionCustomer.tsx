@@ -31,12 +31,12 @@ const GraphSatisfactionCustomer: React.FC<Props> = ({ customers }) => {
   ];
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4">
+    <div className="w-full h-96 p-4 bg-white rounded-xl shadow-md">
       <h3 className="text-lg font-semibold mb-4 text-blue-800">
         Clasificación de Comentarios
       </h3>
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data}>
+        <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
           <XAxis dataKey="tipo" />
           <YAxis allowDecimals={false} />
           <Tooltip />

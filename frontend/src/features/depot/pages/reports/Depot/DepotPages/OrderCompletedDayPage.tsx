@@ -1,13 +1,12 @@
 import { useEffect, useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { useOrderCompletedDay } from "../DepotHocks/useOrderCompletedDay";
 import OrderCompletedDayTable from "../DepotComponents/OrderCompletedDayTable";
 import GraphOrderCompletedDay from "../DepotGraph/GraphOrderCompletedDay";
 import OrderCompletedDayFilter from "../DepotFilters/OrderCompletedDayFilter";
+import BackButton from "../../../../../../components/BackButton";
+import Pagination from "../../../../depotmanager/components/Pagination";
 
 export default function OrderCompletedDayPage() {
-  const navigate = useNavigate();
-
   const {
     data,
     loading,
@@ -62,71 +61,60 @@ export default function OrderCompletedDayPage() {
   }, [startDate, endDate, page]);
 
   return (
-    <div className="p-8 space-y-6">
-      {/* Header */}
-      <div className="relative">
-        <button
-          onClick={() => navigate("/depot/reports")}
-          className="absolute left-0 top-0 bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg shadow transition"
-        >
-          ⬅️ Volver atrás
-        </button>
-            <div className="text-center bg-gradient-to-r from-red-50 to-rose-50 py-8 px-6 rounded-xl border border-red-200 shadow-sm">
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-red-600 to-rose-600 bg-clip-text text-transparent mb-3">
-                Pedidos Completados
-              </h1>
-              <p className="text-gray-600 text-lg leading-relaxed max-w-2xl mx-auto">
-                Aquí podrás gestionar todos los pedidos que hayan sido completados de los distintos clientes
-              </p>
-            </div>
+    <div className="container m-0 pt-10 min-w-full min-h-full">
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+        <BackButton to="/depot/reports"></BackButton>
+        <div>
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
+              Pedidos Completados
+            </h1>
+            <p className="text-center text-lg text-gray-700 mb-12">
+              Aquí podrás gestionar todos los pedidos que hayan sido completados de los distintos clientes
+            </p>
+          </div>
+
+
+          {/* Filtros */}
+          <OrderCompletedDayFilter
+            startDate={parsedStartDate}
+            endDate={parsedEndDate}
+            onStartDateChange={(date) =>
+              setStartDate(date ? date.toISOString().split("T")[0] : "")
+            }
+            onEndDateChange={(date) =>
+              setEndDate(date ? date.toISOString().split("T")[0] : "")
+            }
+            searchTerm={searchTerm}
+            onSearchTermChange={setSearchTerm}
+            onClear={() => {
+              setSearchTerm("");
+              clearFilters();
+            }}
+          />
+
+          {/* Estados */}
+          {loading && <p className="text-red-500">Cargando...</p>}
+          {error && <p className="text-red-500">{error}</p>}
+
+          {/* Tabla */}
+          <OrderCompletedDayTable data={filteredData} />
+
+          {/* Paginación */}
+          <div className="flex justify-center mt-6 gap-4">
+            <Pagination 
+              currentPage={page}
+              totalPages={totalPages}
+              totalItems={data.length}   // 👈 o el total real desde la API si lo tienes
+              itemsPerPage={10}          // 👈 número fijo o configurable
+              onPageChange={setPage}
+            />
+          </div>
+
+          {/* Gráfico */}
+          <GraphOrderCompletedDay data={filteredData} />
+        </div>
       </div>
-
-      {/* Filtros */}
-      <OrderCompletedDayFilter
-        startDate={parsedStartDate}
-        endDate={parsedEndDate}
-        onStartDateChange={(date) =>
-          setStartDate(date ? date.toISOString().split("T")[0] : "")
-        }
-        onEndDateChange={(date) =>
-          setEndDate(date ? date.toISOString().split("T")[0] : "")
-        }
-        searchTerm={searchTerm}
-        onSearchTermChange={setSearchTerm}
-        onClear={() => {
-          setSearchTerm("");
-          clearFilters();
-        }}
-      />
-
-      {/* Estados */}
-      {loading && <p className="text-blue-500">Cargando...</p>}
-      {error && <p className="text-red-500">{error}</p>}
-
-      {/* Tabla */}
-      <OrderCompletedDayTable data={filteredData} />
-
-      {/* Paginación */}
-      <div className="flex items-center justify-center gap-4">
-        <button
-          disabled={page <= 1}
-          onClick={() => setPage(page - 1)}
-          className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg shadow disabled:opacity-50 transition"
-        >
-          ⬅️ Anterior
-        </button>
-        <span>Página {page} de {totalPages}</span>
-        <button
-          disabled={page >= totalPages}
-          onClick={() => setPage(page + 1)}
-          className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg shadow disabled:opacity-50 transition"
-        >
-          Siguiente ➡️
-        </button>
-      </div>
-
-      {/* Gráfico */}
-      <GraphOrderCompletedDay data={filteredData} />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import OrderTable from "../../components/Orders/OrderTable";
 import { useState } from "react";
 import Swal from "sweetalert2";
@@ -8,6 +8,7 @@ import { deleteOrder, updateOrderStatus } from "../../services/OrderService";
 import { OrderStatus } from "../../types/OrderTypes";
 import { handleFormikError } from "../../../../components/ErrorHandler";
 import { Pagination } from "../../../../components/Pagination";
+import BackButton from "../../../../components/BackButton";
 
 export default function OrdersPage() {
     const [searchId, setSearchId]  = useState("");
@@ -31,8 +32,11 @@ export default function OrdersPage() {
       const order = orders.find((o) => o.id === id);
       if (!order) return;
 
-      if (order.status === OrderStatus.Confirmed) {
-        return Swal.fire("Acción no permitida", "No se puede eliminar una orden ya fue confirmada por Deposito.", "warning");
+      if (order.status === OrderStatus.Confirmed || order.status === OrderStatus.InPreparation || order.status === OrderStatus.SentToBilling
+        || order.status === OrderStatus.Invoiced || order.status === OrderStatus.Prepared || order.status === OrderStatus.OnTheWay 
+        || order.status === OrderStatus.Delivered
+      ) {
+        return Swal.fire("Acción no permitida", `No se puede eliminar una orden si se encuentra en "${order.status}" .`, "warning");
       }
 
       const confirmResult = await Swal.fire({
@@ -150,22 +154,19 @@ export default function OrdersPage() {
         const order = orders.find((o) => o.id === id);
         if (!order) return;
 
-        if (order.status === OrderStatus.Issued) {
-          return Swal.fire("Acción no permitida", "No se puede editar una orden ya emitida.", "warning");
+        if (order.status === OrderStatus.Confirmed || order.status === OrderStatus.InPreparation || order.status === OrderStatus.SentToBilling
+        || order.status === OrderStatus.Invoiced || order.status === OrderStatus.Prepared || order.status === OrderStatus.OnTheWay 
+        || order.status === OrderStatus.Delivered) {
+          return Swal.fire("Acción no permitida", `No se puede editar una orden si se encuentra en "${order.status}`, "warning");
         }
-
         navigate(`/sales/orders/update/${id}`);
       };
 
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
-      <div className="flex items-center justify-between mb-6">
-        <Link to="/sales/home" className="text-red-600 hover:underline pl-10">
-          ← Volver al menu principal
-        </Link>
-      </div>
-      <div className="container mx-auto py-10 px-16 sm:max-w-7xl">
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+        <BackButton to="/sales/home"></BackButton>
         <h1 className="text-center text-4xl font-bold text-red-600 mb-12">Gestión de Pedidos</h1>
         <div className="flex flex-col md:flex-row mb-4 w-full justify-between">
           <input
@@ -195,17 +196,14 @@ export default function OrdersPage() {
           onActionChange={handleActionChange}
         />
 
-        <div className="flex items-center justify-end py-4 px-6">
-          <Link to="/sales/orders/registerOrder" className="text-red-600 hover:underline">
-            Registrar Nuevo Pedido
-          </Link>
+        <div className="flex items-center justify-end py-4 ">
+          <BackButton to="/sales/orders/registerOrder" label="Registrar Nuevo Pedido"></BackButton>
         </div>
 
         {/* Paginación */}
         <div className="flex justify-center mt-6 gap-4 ">
           <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage}/>
         </div>
-
       </div>
     </div>
   );

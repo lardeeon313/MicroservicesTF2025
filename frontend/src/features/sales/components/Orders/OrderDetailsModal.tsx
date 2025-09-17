@@ -1,7 +1,7 @@
 import React from 'react';
 import { OrderMissingDto } from '../../types/OrderTypes';
 import formatDate from '../../../../utils/formateDate';
-import { OrderStatusBadge } from './OrderStatusBadge';
+import { OrderStatusBadge } from '../../../../components/OrderStatusBadge';
 
 interface Props {
   order: OrderMissingDto;

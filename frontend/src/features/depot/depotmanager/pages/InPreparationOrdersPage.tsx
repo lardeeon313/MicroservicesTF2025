@@ -4,7 +4,7 @@ import { DepotOrderDto } from '../types/OrderTypes';
 import OrderTable from '../../billingmanager/components/OrderTable';
 import OrderDetails from '../../billingmanager/components/OrderDetails';
 import LoadingSpinner from '../../../../components/LoadingSpinner';
-import BackButton from '../components/BackButton';
+import BackButton from '../../../../components/BackButton';
 import Pagination from '../components/Pagination';
 import { useNavigate } from 'react-router-dom';
 
@@ -62,7 +62,7 @@ function InPreparationOrdersPage() {
   }
 
   return (
-    <div className="container m-0 pt-10 min-w-full min-h-full py-20 pt-20">
+    <div className="container m-0 min-w-full min-h-full py-20 pt-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <div className="flex items-center justify-between">

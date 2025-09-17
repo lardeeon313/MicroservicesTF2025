@@ -1,12 +1,11 @@
 // src/features/admin/pages/CustomerPage.tsx
 import React, { useEffect, useState } from "react";
-import Header from "../../../components/Header";
-import Footer from "../../../components/Footer";
 import type { Customer } from "../../../types/CustomerTypes";
 import { Order } from "../../../types/OrderTypes";
 import CustomerReportTable, { CustomerWithCount } from "../SalesComponents/IndividualComponentsSales/CustomerReportTable";
 import GraphCustomerReport from "../SalesGraph/GraphCustomerReport";
 import API from "../../../../../api/axios";
+import BackButton from "../../../../../components/BackButton";
 
 
 const CustomerReportPage: React.FC = () => {
@@ -49,18 +48,19 @@ const CustomerReportPage: React.FC = () => {
 
 
   return (
-    <div>
-      <Header/>
+    <div className="container m-0 pt-10 min-w-full min-h-full">
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+        <BackButton to="/sales/home"></BackButton>
         <div className="p-8">
-        <h1 className="text-2xl font-bold mb-4 text-center text-blue-800">
-          Clientes y Pedidos
-        </h1>
-        <CustomerReportTable data={data} />
-        <GraphCustomerReport data={data} />
+          <h1 className="text-2xl font-bold mb-4 text-center text-blue-800">
+            Clientes y Pedidos
+          </h1>
+          <CustomerReportTable data={data} />
+          <GraphCustomerReport data={data} />
+        </div>
       </div>
-      <Footer/>
     </div>
   );
-};
+};  
 
 export default CustomerReportPage;

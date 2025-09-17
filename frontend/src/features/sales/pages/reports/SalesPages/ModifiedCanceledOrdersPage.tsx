@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Header from "../../../components/Header";
+import Header from "../../../../../components/Header";
 import type { Order } from "../../../types/OrderTypes";
 import ModifiedCanceledOrdersTable from "../SalesComponents/IndividualComponentsSales/ModifiedCanceledOrdersTable";
 import GraphModifiedCanceledOrders from "../SalesGraph/GraphModifiedCanceledOrders";
 import API from "../../../../../api/axios";
-import Footer from "../../../components/Footer";
+import Footer from "../../../../../components/Footer";
 
 const ModifiedCanceledOrdersPage: React.FC = () => {
     const [Orders,setOrders] = useState<Order[]>([]);

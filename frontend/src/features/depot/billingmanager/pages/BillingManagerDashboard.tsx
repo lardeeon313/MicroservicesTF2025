@@ -30,7 +30,7 @@ const cards = [
 
 const BillingManagerDashboardPage = () => {
   return (
-    <div className="min-h-screen bg-gray-50 py-20">
+    <div className="container m-0 pt-36 min-w-full min-h-full">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Panel de Facturación</h1>
         <p className="text-center text-lg text-gray-700 mb-12">

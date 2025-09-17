@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import Header from "../../../components/Header";
+import Header from "../../../../../components/Header";
 import type { EmployeeSales } from "../../../types/EmployeeSalesTypes";
 import SalesPerfomanceTable from "../SalesComponents/IndividualComponentsSales/SalesPerfomanceTable";
 import GraphSalesPerfomance from "../SalesGraph/GraphSalesPerfomance";
 import API from "../../../../../api/axios";
-import Footer from "../../../components/Footer";
+import Footer from "../../../../../components/Footer";
 
 const SalesPerfomancePage:React.FC = () => {
     const [empleados, setEmpleados] = useState<EmployeeSales[]>([]);

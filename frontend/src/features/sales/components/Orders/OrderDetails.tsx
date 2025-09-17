@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { OrderTableData } from "../../types/OrderTypes";
-import { OrderStatusBadge } from "./OrderStatusBadge";
+import { OrderStatusBadge } from "../../../../components/OrderStatusBadge";
 import { OrderItemsTable } from "../../../../components/OrderItemsTable";
 
 type Props = {
@@ -16,7 +16,7 @@ export default function OrderDetails({ order }: Props) {
   return (
     <div>
         {order && (
-          <div className="space-y-6 mt-10 w-3xl">
+          <div className="space-y-6 container mx-auto py-10 px-16 sm:max-w-6xl">
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">Cliente:</label> 
               <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{order.customerFirstName} {order.customerLastName}</p>

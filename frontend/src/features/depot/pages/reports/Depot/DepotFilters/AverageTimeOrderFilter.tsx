@@ -22,7 +22,7 @@ const AverageTimeOrderFilter: React.FC<Props> = ({
   onClear,
 }) => {
   return (
-    <div className="p-4 bg-white shadow-md rounded-xl mb-6 flex flex-wrap items-end gap-6">
+    <div className="p-4 bg-white shadow-md rounded-xl mb-6 flex flex-wrap items-end  justify-around gap-6">
       {/* Filtro por ID */}
       <div className="flex flex-col">
         <label className="text-sm font-medium text-gray-600 mb-1">Filtrar por ID</label>

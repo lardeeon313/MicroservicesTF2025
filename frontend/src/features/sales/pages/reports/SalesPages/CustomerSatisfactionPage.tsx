@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Header from "../../../components/Header";
 import CustomerSatisfactionTable from "../SalesComponents/IndividualComponentsSales/CustomerSatisfactionTable";
 import GraphSatisfactionCustomer from "../SalesGraph/GraphSatisfactionCustomer";
 import { Customer } from "../../../types/CustomerTypes";
 import type { Order } from "../../../types/OrderTypes";
 import API from "../../../../../api/axios";
-import Footer from "../../../components/Footer";
+import BackButton from "../../../../../components/BackButton";
 
 
 const CustomerSatisfacionPage: React.FC = () => {
@@ -43,16 +42,15 @@ const CustomerSatisfacionPage: React.FC = () => {
   if(error) return <p className="text-red-600">Error al obtener los datos...</p>
 
   return (
-    <div>
-      <Header/>
-      <div className="p-6 space-y-6">
+    <div className="container m-0 pt-10 min-w-full min-h-full">
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+        <BackButton to="/sales/home"></BackButton>
           <h2 className="text-2xl font-bold text-blue-800 text-center">
             Reporte: Satisfacción del Cliente
           </h2>
           <CustomerSatisfactionTable data={customers} />
           <GraphSatisfactionCustomer customers={customers} />
       </div>
-      <Footer/>
     </div>
   );
 };

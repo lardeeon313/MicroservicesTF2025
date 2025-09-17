@@ -17,18 +17,12 @@ const initialValues: RegisterCustomerRequest = {
 
 const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-3xl">
-        <h2 className="text-center text-4xl font-bold text-red-600 mb-12">
-          Registrar Cliente
-        </h2>
-
         <Formik
           initialValues={initialValues}
           validationSchema={registerCustomerSchema}
           onSubmit={onSubmit}
         >
-          <Form className="space-y-6 mt-10 w-3x1">
+          <Form className="space-y-6 container mx-auto py-10 px-16 sm:max-w-6xl">
             {/* Campos */}
             {["firstName", "lastName", "email", "phoneNumber", "address"].map((field) => (
               <div key={field}>
@@ -53,7 +47,7 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex w-full justify-center items-center rounded-md bg-red-700 px-3 py-1.5 text-3x1 font-semibold text-white shadow-sm hover:bg-red-600 transition duration-150 disabled:opacity-50"
+                className="flex w-full justify-center items-center rounded-md bg-red-700 px-3 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-red-600 transition duration-150 disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -67,8 +61,6 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
             </div>
           </Form>
         </Formik>
-      </div>
-    </div>
   );
 };
 

@@ -26,6 +26,7 @@ import CustomerSatisfactionPage from "../features/sales/pages/reports/CustomerSa
 import CustomerInactiveReportPage from "../features/sales/pages/reports/CustomerInactiveReportPage";
 import ModifiedCanceledOrdersPage from "../features/sales/pages/reports/ModifiedCanceledOrdersPage";
 import { SalesPerfomanceReportPage } from "../features/sales/pages/reports/SalesPerfomanceReportPage";
+import MissingOrdersSalesPage from "../features/sales/pages/orders/MissingOrderSalesPage";
 
 // Depósito - Manager
 import DepotManagerDashboard from "../features/depot/depotmanager/pages/DepotManagerDashboard";
@@ -49,18 +50,19 @@ import InvoicedOrderDetailsPage from "../features/depot/billingmanager/pages/Inv
 import BillingTimeProcessPage from "../features/depot/pages/reports/Billing/BillingPages/BillingTimeProcessPage";
 import CustomerIncomePage from "../features/depot/pages/reports/Billing/BillingPages/CustomerIncomePage";
 import OrderBilledPage from "../features/depot/pages/reports/Billing/BillingPages/OrderBilledPage";
+import {DashboardBillingReportsPage} from "../features/depot/pages/DashboardBillingDepotPage";
+import InvoicePage from "../features/depot/billingmanager/pages/InvoiceExportPage";
+import InvoiceOneDetailPage from "../features/depot/billingmanager/pages/InvoiceDetailPage";
 
 // Otros roles
 import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
 import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
 import MissingOrdersSalesPage from "../features/sales/pages/orders/MissingOrderSalesPage";
 
-import { DashboardBillingReportsPage } from "../features/depot/pages/DashboardBillingDepotPage";
-import InvoicePage from "../features/depot/billingmanager/pages/InvoiceExportPage";
-//import InvoiceDetailPage from "../features/depot/billingmanager/components/InvoiceListComponent";
-import InvoiceOneDetailPage from "../features/depot/billingmanager/pages/InvoiceDetailPage";
 
-import MissingOrdersSalesPage from "../features/sales/pages/orders/MissingOrderSalesPage";
+//import InvoiceDetailPage from "../features/depot/billingmanager/components/InvoiceListComponent";
+
+
 
 
 
@@ -148,7 +150,6 @@ const AppRouter = () => {
             <Route path="reports/billingTimeProcess" element={<BillingTimeProcessPage />} />
             <Route path="reports/customerIncome" element={<CustomerIncomePage />} />
             <Route path="reports/orderBilled" element={<OrderBilledPage />} />
-            
         </Route>
 
         {/* Delivery */}

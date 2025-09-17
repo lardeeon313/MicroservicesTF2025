@@ -22,10 +22,10 @@ export default function OrderCompletedDayFilter({
   onClear,
 }: Props) {
   return (
-    <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-6 p-4 bg-gray-100 rounded-xl shadow-inner">
+    <div className="flex items-center gap-4 mb-6 bg-white shadow-md p-4 rounded-xl">
       {/* Fecha desde */}
-      <div className="flex items-center space-x-2 w-full sm:w-auto">
-        <label className="text-sm font-medium text-gray-700">Desde:</label>
+      <div className="flex flex-col">
+        <label className="text-sm text-gray-600 mb-1">Desde:</label>
         <DatePicker
           selected={startDate}
           onChange={onStartDateChange}
@@ -33,13 +33,13 @@ export default function OrderCompletedDayFilter({
           startDate={startDate}
           endDate={endDate}
           dateFormat="dd/MM/yyyy"
-          className="rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+          className="border border-gray-300 px-3 py-2 rounded-lg shadow-sm focus:ring-2 focus:ring-red-400 focus:outline-none"
         />
       </div>
 
       {/* Fecha hasta */}
-      <div className="flex items-center space-x-2 w-full sm:w-auto">
-        <label className="text-sm font-medium text-gray-700">Hasta:</label>
+      <div className="flex flex-col">
+        <label className="text-sm text-gray-600 mb-1">Hasta:</label>
         <DatePicker
           selected={endDate}
           onChange={onEndDateChange}
@@ -47,28 +47,31 @@ export default function OrderCompletedDayFilter({
           startDate={startDate}
           endDate={endDate}
           dateFormat="dd/MM/yyyy"
-          className="rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+          className="border border-gray-300 px-3 py-2 rounded-lg shadow-sm focus:ring-2 focus:ring-red-400 focus:outline-none"
         />
       </div>
 
       {/* Buscador */}
-      <div className="w-full sm:w-auto">
-        <input
-          type="text"
-          placeholder="Buscar..."
-          value={searchTerm}
-          onChange={(e) => onSearchTermChange(e.target.value)}
-          className="rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm w-full"
-        />
+      <div className="flex flex-col w-full">
+        <label className="text-sm text-gray-600 mb-1">Buscar:</label>
+          <input
+            type="text"
+            placeholder="Buscar..."
+            value={searchTerm}
+            onChange={(e) => onSearchTermChange(e.target.value)}
+            className="border border-gray-300 px-3 py-2 rounded-lg shadow-sm focus:ring-2 focus:ring-red-400 focus:outline-none"
+          />
       </div>
 
       {/* Botón limpiar */}
-      <button
-        onClick={onClear}
-        className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg text-sm font-semibold hover:bg-gray-300 transition-colors w-full sm:w-auto"
-      >
-        Limpiar
-      </button>
+      <div className="flex flex-row items-center ">
+        <button
+          onClick={onClear}
+          className="bg-gray-400 hover:bg-gray-500 transition-colors text-white px-5 py-2 rounded-lg shadow"
+        >
+          Limpiar
+        </button>
+      </div>
     </div>
   );
 }
