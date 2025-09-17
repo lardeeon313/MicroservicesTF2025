@@ -18,7 +18,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({
 }) => {
   return (
     <div className="flex flex-col items-center justify-center p-24 bg-white rounded-xl shadow-md border border-dashed border-gray-300">
-      <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-gradient-to-br from-blue-100 to-indigo-200">
+      <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-gradient-to-br from-violet-100 to-indigo-200">
         <Icon className="h-8 w-8 text-red-600" />
       </div>
       <h3 className="text-lg font-semibold text-gray-800">{title}</h3>

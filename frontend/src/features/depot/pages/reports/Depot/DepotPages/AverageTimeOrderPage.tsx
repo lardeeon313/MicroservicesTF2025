@@ -1,7 +1,4 @@
-import React, { useState } from "react";
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-
 import { useAverageTimeOrder } from "../DepotHocks/useAverageTimeOrder";
 import AverageTimeOrderTable, { ArmTime } from "../DepotComponents/AverageTimeOrderTable";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
@@ -78,9 +75,6 @@ const AverageTimeOrderPage: React.FC = () => {
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
         <BackButton to="/depot/reports"></BackButton>
-          to="/depot/reports"
-          className="text-red-600 hover:underline pl-10"
-        >
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
           Tiempo promedio para el armado del pedido:
         </h1>
@@ -90,29 +84,23 @@ const AverageTimeOrderPage: React.FC = () => {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Tiempo promedio para el armado del pedido:</h1>
-        <p className="text-center text-lg text-gray-700 mb-12">Aquí podrás visualizar cuánto tiempo lleva armar los pedidos realizados por los clientes.</p>
-
         <AverageTimeOrderFilter
           idFilter={idFilter}
           startDateFilter={startDateFilter}
           endDateFilter={endDateFilter}
           onIdChange={setIdFilter}
           onStartDateChange={setStartDateFilter}
-        {/* ← Nota: ahora pasamos `data` y `loading` */}
-        <AverageTimeOrderTable data={filteredData} loading={loading} />
+          onEndDateChange={setEndDateFilter}
+          onSearch={handleSearch}
           onClear={handleClear}
-        {/* Paginación */}
         />
-
-        {/* Gráfico */}
-        {/* ← Nota: ahora pasamos `data` y `loading` */}
         <AverageTimeOrderTable data={filteredData} loading={loading} />
 
         <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
 
         <GraphAverageTimeOrder data={filteredData} />
       </div>
+    </div>
   );
 };
 
