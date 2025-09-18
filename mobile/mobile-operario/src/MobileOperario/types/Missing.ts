@@ -1,4 +1,3 @@
-
 import { DepotOrderDTO } from "./OrderDTO";
 
 
@@ -6,7 +5,7 @@ export interface DepotOrderItemsReportedDto {
     orderItemId: number; 
     productName: string;
     productBrand: string; 
-    packaging?: string | null;
+    packaning?: string | null; 
     quantity: number;
 }
  
@@ -20,22 +19,21 @@ export interface ReportOrderMissingRequest {
 }
 
 export interface DepotOrderMissingItem {
-    id: number;
-    depotOrderItemId: number;
+    orderItemId: number;
     productName: string;
     productBrand: string;
     packaging?: string | null;
-    missingQuantity: number; // Corresponde a MissingQuantity en el backend
+    quantity: number;
 }
 
 export interface DepotOrderMissingDTO {
     missingId: number;
-    salesOrderId: number; // Corregido: SalesOrderId -> salesOrderId
+    SalesOrderId: number;
     missingReason?: string | null;
     missingDescription?: string | null;
     descriptionResolution?: string | null;
     missingItems: DepotOrderMissingItem[];
     missingDate: string; // o Date
-    depotOrderId: number; // Corregido: DepotOrderId -> depotOrderId
-    depotOrder: DepotOrderDTO; // Corregido: DepotOrder -> depotOrder
+    DepotOrderId: number;
+    DepotOrder: DepotOrderDTO;
 }

@@ -5,7 +5,8 @@ import { DepotStackParamList } from "../types/DepotStackType";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { useMissingOrders } from "../hocks/useMissingOrders";
-import { number } from "yup";
+import { useAuth } from "../Login/context/useAuth";
+
 
 type CardItem = {
   title: string;
@@ -42,9 +43,37 @@ const cards: CardItem[] = [
 ];
 
 const OperatorDashboardComponent = () => {
-  const user = { id: "aaaaaaa1-aaaa-aaaa-aaaa-aaaaaaaaaaaa" }; // tu operador real
-  const { missingOrders, loading } = useMissingOrders(user.id);
+  const { userId, name, role, loading: authLoading, token, team } = useAuth();
+
+  const [reloadKey, setReloadKey] = useState(0);
   const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
+
+  // Forzar recarga cuando userId o token cambien
+  useEffect(() => {
+    if (userId && token) {
+      setReloadKey(prevKey => prevKey + 1);
+    }
+  }, [userId, token]);
+
+  if (authLoading) {
+    return <Text>Cargando sesión...</Text>;
+  }
+
+  if (!userId || !token) {
+    return <Text>Error: no se encontró usuario autenticado</Text>;
+  }
+
+  // ✅ A esta altura userId y token están garantizados
+  const user = { 
+    id: userId, 
+    token, 
+    name: name ?? "",   // si querés usar name/role después
+    role: role ?? "", 
+    team: team ?? null
+  };
+
+  const { missingOrders, loading, error } = useMissingOrders(user.id);
+  
 
   return(
     <View style={{ flex: 1, padding: 16, backgroundColor: '#ffffff' }}>

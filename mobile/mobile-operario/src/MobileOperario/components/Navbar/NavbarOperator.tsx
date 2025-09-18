@@ -5,6 +5,11 @@ import { useNavigation } from '@react-navigation/native';
 import { TeamDepotType } from '../../types/TeamType';
 
 interface NavbarProps {
+  user: { 
+    name: string; 
+    role: string; 
+    team?: TeamDepotType | null 
+  } | null;
   isAuthenticated: boolean;
   logout: () => void;
 }
