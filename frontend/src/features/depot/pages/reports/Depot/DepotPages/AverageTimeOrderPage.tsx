@@ -35,16 +35,34 @@ const AverageTimeOrderPage: React.FC = () => {
 
   const [filteredData, setFilteredData] = useState<ArmTime[]>([]);
 
-  // Actualizamos los datos filtrados cuando cambian los pedidos
+  // Filtramos solo estados entre Assigned y Prepared (incluyendo intermedios)
   useEffect(() => {
-    setFilteredData(adaptedOrders);
+    const filteredOrders = adaptedOrders.filter((o) => {
+      // si vienen como números (old/new status)
+      if (o.oldStatus !== undefined && o.newStatus !== undefined) {
+        return o.oldStatus >= 2 && o.newStatus <= 7;
+        // 2 = Assigned, 7 = Prepared (según tu enum del back)
+      }
+
+      // si vienen como string combinado
+      if (o.status) {
+        return (
+          o.status.includes("Assigned") ||
+          o.status.includes("InPreparation") ||
+          o.status.includes("MissingProduct") ||
+          o.status.includes("Prepared")
+        );
+      }
+
+      return false;
+    });
+
+    setFilteredData(filteredOrders);
   }, [orders]);
 
   // Buscar
   const handleSearch = () => {
     const filtered = adaptedOrders.filter((order) => {
-      
-
       const matchesStartDate = startDateFilter
         ? !!order.changedAt && new Date(order.changedAt) >= new Date(startDateFilter)
         : true;
@@ -105,4 +123,3 @@ const AverageTimeOrderPage: React.FC = () => {
 };
 
 export default AverageTimeOrderPage;
-
