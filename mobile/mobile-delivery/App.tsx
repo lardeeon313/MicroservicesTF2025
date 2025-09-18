@@ -8,7 +8,7 @@ export default function App() {
   return (
     <StyledView className="flex-1 items-center justify-center bg-gray-100">
       <StyledText className="text-3xl font-bold text-blue-600">
-        ¡NativeWind funcionando!
+        Aplicacion Movil del delivery funcionado
       </StyledText>
     </StyledView>
   );
