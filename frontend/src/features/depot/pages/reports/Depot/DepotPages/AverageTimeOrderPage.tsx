@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+
 import { useAverageTimeOrder } from "../DepotHocks/useAverageTimeOrder";
 import AverageTimeOrderTable, { ArmTime } from "../DepotComponents/AverageTimeOrderTable";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import { Pagination } from "../../../../../../components/Pagination";
 import AverageTimeOrderFilter from "../DepotFilters/AverageTimeOrderFilter";
 import GraphAverageTimeOrder from "../DepotGraph/GraphAverageTimeOrder";
-import BackButton from "../../../../../../components/BackButton";
 
 const AverageTimeOrderPage: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -35,16 +36,34 @@ const AverageTimeOrderPage: React.FC = () => {
 
   const [filteredData, setFilteredData] = useState<ArmTime[]>([]);
 
-  // Actualizamos los datos filtrados cuando cambian los pedidos
+  // Filtramos solo estados entre Assigned y Prepared (incluyendo intermedios)
   useEffect(() => {
-    setFilteredData(adaptedOrders);
+    const filteredOrders = adaptedOrders.filter((o) => {
+      // si vienen como números (old/new status)
+      if (o.oldStatus !== undefined && o.newStatus !== undefined) {
+        return o.oldStatus >= 2 && o.newStatus <= 7;
+        // 2 = Assigned, 7 = Prepared (según tu enum del back)
+      }
+
+      // si vienen como string combinado
+      if (o.status) {
+        return (
+          o.status.includes("Assigned") ||
+          o.status.includes("InPreparation") ||
+          o.status.includes("MissingProduct") ||
+          o.status.includes("Prepared")
+        );
+      }
+
+      return false;
+    });
+
+    setFilteredData(filteredOrders);
   }, [orders]);
 
   // Buscar
   const handleSearch = () => {
     const filtered = adaptedOrders.filter((order) => {
-      
-
       const matchesStartDate = startDateFilter
         ? !!order.changedAt && new Date(order.changedAt) >= new Date(startDateFilter)
         : true;
@@ -73,17 +92,20 @@ const AverageTimeOrderPage: React.FC = () => {
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
-      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
-        <BackButton to="/depot/reports"></BackButton>
+      <div className="flex items-center justify-between mb-6">
+        <Link to="/depot/reports" className="text-red-600 hover:underline pl-10">
+          ← Volver atrás
+        </Link>
+      </div>
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
           Tiempo promedio para el armado del pedido:
         </h1>
         <p className="text-center text-lg text-gray-700 mb-12">
           Aquí podrás visualizar cuánto tiempo lleva armar los pedidos realizados por los clientes.
         </p>
-      </div>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <AverageTimeOrderFilter
           idFilter={idFilter}
           startDateFilter={startDateFilter}
@@ -94,6 +116,7 @@ const AverageTimeOrderPage: React.FC = () => {
           onSearch={handleSearch}
           onClear={handleClear}
         />
+
         <AverageTimeOrderTable data={filteredData} loading={loading} />
 
         <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
@@ -105,4 +128,3 @@ const AverageTimeOrderPage: React.FC = () => {
 };
 
 export default AverageTimeOrderPage;
-
