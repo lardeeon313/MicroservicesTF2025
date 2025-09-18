@@ -5,7 +5,9 @@ import { CreateTeamDialog } from './CreateTeamDialog';
 import { UpdateTeamDialog } from './UpdateTeamDialog';
 import { DeleteTeamDialog } from './DeleteTeamDialog';
 import { DepotTeam } from '../types/DepotTeamTypes';
-import { Plus } from 'lucide-react';
+import { CircleAlert, Plus } from 'lucide-react';
+import LoadingSpinner from '../../../../components/LoadingSpinner';
+import EmptyState from '../../../../components/EmptyState';
 
 export const TeamList = () => {
     const { teams, loading, error, refetch } = useTeams();
@@ -49,17 +51,19 @@ export const TeamList = () => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
-            </div>
+            <LoadingSpinner message="Cargando equipos..." height='h-screen' />
         );
     }
 
     if (error) {
         return (
-            <div className="text-center text-red-600 p-4">
-                {error}
-            </div>
+            <EmptyState
+                icon={CircleAlert}
+                title="Error al cargar equipos"
+                description="Ocurrió un error al cargar los equipos. Intenta nuevamente."
+                actionLabel="Reintentar"
+                onAction={refetch}
+            />
         );
     }
 

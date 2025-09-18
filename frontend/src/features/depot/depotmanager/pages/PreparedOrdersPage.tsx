@@ -6,6 +6,7 @@ import OrderDetails from '../../billingmanager/components/OrderDetails';
 import LoadingSpinner from '../../../../components/LoadingSpinner';
 import BackButton from '../../../../components/BackButton';
 import Pagination from '../components/Pagination';
+import OrderTabs from '../../../../components/OrderTabs';
 
 function PreparedOrdersPage() {
   const {
@@ -16,7 +17,7 @@ function PreparedOrdersPage() {
   } = usePreparedOrders();
 
   const [selectedOrder, setSelectedOrder] = useState<DepotOrderDto | null>(null);
-  const [activeTab, setActiveTab] = useState<'prepared' | 'invoiced' | 'sentToBilling'>('prepared');
+  const [activeTab, setActiveTab] = useState<OrderStatus>(OrderStatus.Prepared);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -41,35 +42,10 @@ function PreparedOrdersPage() {
     })) : []
   });
 
-  // Filtrar órdenes por estado según la pestaña activa
-  const getFilteredOrders = () => {
-    if (activeTab === 'prepared') {
-      return orders.filter((order: any) => Number(order.status) === OrderStatus.Prepared);
-    } else if (activeTab === 'invoiced') {
-      return orders.filter((order: any) => Number(order.status) === OrderStatus.Invoiced);
-    } else {
-      return orders.filter((order: any) => Number(order.status) === OrderStatus.SentToBilling);
-    }
-  };
 
-
-  const emptyMessageTitle =
-  activeTab === "prepared"
-    ? "No hay órdenes preparadas"
-    : activeTab === "invoiced"
-    ? "No hay órdenes facturadas"
-    : "No hay órdenes enviadas a facturar";
-
-  const emptyMessageBody =
-    activeTab === "prepared"
-      ? "Aún no se ha terminado de preparar ninguna orden."
-      : activeTab === "invoiced"
-      ? "Aún no se ha facturado ninguna orden."
-      : "Aún no se ha enviado ninguna orden a facturación.";
-
-
-
-  const filteredOrders = getFilteredOrders();
+  const filteredOrders = useMemo(() => {
+    return orders.filter((order) => order.status === activeTab);
+  }, [orders, activeTab]);
   
   // Paginación
   const paginatedOrders = useMemo(() => {
@@ -80,9 +56,8 @@ function PreparedOrdersPage() {
   
   const tableData = paginatedOrders.map(convertToTableData);
   
-  // Resetear página cuando cambia la pestaña
-  const handleTabChange = (tab: 'prepared' | 'invoiced' | 'sentToBilling') => {
-    setActiveTab(tab);
+  const handleTabChange = (status: OrderStatus) => {
+    setActiveTab(status);
     setCurrentPage(1);
   };
 
@@ -91,115 +66,113 @@ function PreparedOrdersPage() {
     setSelectedOrder(order || null);
   };
 
+  const emptyMessageTitle =
+    activeTab === OrderStatus.Prepared
+      ? 'No hay órdenes preparadas'
+      : activeTab === OrderStatus.Invoiced
+      ? 'No hay órdenes facturadas'
+      : 'No hay órdenes enviadas a facturar';
+
+  const emptyMessageBody =
+    activeTab === OrderStatus.Prepared
+      ? 'Aún no se ha terminado de preparar ninguna orden.'
+      : activeTab === OrderStatus.Invoiced
+      ? 'Aún no se ha facturado ninguna orden.'
+      : 'Aún no se ha enviado ninguna orden a facturación.';
+
 
   if (loading) {
     return <LoadingSpinner message="Cargando órdenes armadas..." height='h-screen' />;
   }
 
   return (
-    <div className="container m-0 min-w-full min-h-full py-20 pt-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Órdenes Armadas</h1>
-              <p className="mt-2 text-gray-600">
-                Visualiza las órdenes que han sido preparadas y facturadas
-              </p>
-            </div>
-            <BackButton to="/depot" />
-          </div>
-        </div>
+    <div className="container m-0 pt-10 min-w-full min-h-full">
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+        <BackButton to="/depot" />
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Órdenes Preparadas</h1>
+          <p className="text-center text-lg text-gray-700 mb-12">
+            Visualiza las órdenes que han sido preparadas y facturadas
+          </p>
 
-        {/* Pestañas */}
-        <div className="mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8">
-              <button
-                onClick={() => handleTabChange('prepared')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'prepared'
-                    ? 'border-red-500 text-red-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Preparadas ({orders.filter((order: any) => Number(order.status) === 7).length})
-              </button>
-              <button
-                onClick={() => handleTabChange('invoiced')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'invoiced'
-                    ? 'border-red-500 text-red-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Facturadas ({orders.filter((order: any) => Number(order.status) === 8).length})
-              </button>
-
-               <button
-                onClick={() => handleTabChange('sentToBilling')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'sentToBilling'
-                    ? 'border-red-500 text-red-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                Enviadas a facturar ({orders.filter((order: any) => Number(order.status) === OrderStatus.SentToBilling).length})
-              </button>
-            </nav>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <OrderTable
-            orders={tableData}
-            loading={loading}
-            onRefetch={refetch}
-            onView={handleView}
-            error={error}
-            activeTab={activeTab}
-            emptyMessageTitle={emptyMessageTitle}
-            emptyMessageBody={emptyMessageBody}
+          {/* ✅ Pestañas usando OrderTabs */}
+          <OrderTabs
+            activeStatus={activeTab}
+            onChange={handleTabChange}
+            tabs={[
+              {
+                status: OrderStatus.Prepared,
+                label: "Preparadas",
+                count: orders.filter((order: any) => Number(order.status) === OrderStatus.Prepared).length,
+              },
+              {
+                status: OrderStatus.Invoiced,
+                label: "Facturadas",
+                count: orders.filter((order: any) => Number(order.status) === OrderStatus.Invoiced).length,
+              },
+              {
+                status: OrderStatus.SentToBilling,
+                label: "Enviadas a facturar",
+                count: orders.filter((order: any) => Number(order.status) === OrderStatus.SentToBilling).length,
+              },
+            ]}
           />
-          
-          {!loading && !error && filteredOrders.length > 0 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={Math.ceil(filteredOrders.length / itemsPerPage)}
-              onPageChange={setCurrentPage}
-              totalItems={filteredOrders.length}
-              itemsPerPage={itemsPerPage}
+
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <OrderTable
+              orders={tableData}
+              loading={loading}
+              onRefetch={refetch}
+              onView={handleView}
+              error={error}
+              activeTab={activeTab === OrderStatus.Prepared
+                ? "prepared"
+                : activeTab === OrderStatus.Invoiced
+                ? "invoiced"
+                : "sentToBilling"}
+              emptyMessageTitle={emptyMessageTitle}
+              emptyMessageBody={emptyMessageBody}
             />
+            
+            {!loading && !error && filteredOrders.length > 0 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={Math.ceil(filteredOrders.length / itemsPerPage)}
+                onPageChange={setCurrentPage}
+                totalItems={filteredOrders.length}
+                itemsPerPage={itemsPerPage}
+              />
+            )}
+          </div>
+
+          {/* Diálogo de detalles de orden */}
+          {selectedOrder && (
+            <>
+              <div className="fixed inset-0 backdrop-blur-sm bg-black/30 z-40" />
+              <div className="fixed inset-0 flex items-center justify-center z-50">
+                <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold">
+                      Detalles de la Orden {activeTab === OrderStatus.Prepared ? 'Preparada' : 'Facturada'}
+                    </h2>
+                    <button
+                      onClick={() => setSelectedOrder(null)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <OrderDetails 
+                    order={{
+                      ...convertToTableData(selectedOrder), 
+                      status: OrderStatus.Prepared ? 'Preparada' : 'Facturada'
+                    }} 
+                  />
+                </div>
+              </div>
+            </>
           )}
         </div>
-
-        {/* Diálogo de detalles de orden */}
-        {selectedOrder && (
-          <>
-            <div className="fixed inset-0 backdrop-blur-sm bg-black/30 z-40" />
-            <div className="fixed inset-0 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold">
-                    Detalles de la Orden {activeTab === 'prepared' ? 'Preparada' : 'Facturada'}
-                  </h2>
-                  <button
-                    onClick={() => setSelectedOrder(null)}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <OrderDetails 
-                  order={{
-                    ...convertToTableData(selectedOrder), 
-                    status: activeTab === 'prepared' ? 'Preparada' : 'Facturada'
-                  }} 
-                />
-              </div>
-            </div>
-          </>
-        )}
       </div>
     </div>
   );

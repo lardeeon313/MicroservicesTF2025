@@ -6,7 +6,6 @@ import OrderDetails from '../../billingmanager/components/OrderDetails';
 import LoadingSpinner from '../../../../components/LoadingSpinner';
 import BackButton from '../../../../components/BackButton';
 import Pagination from '../components/Pagination';
-import { useNavigate } from 'react-router-dom';
 
 function InPreparationOrdersPage() {
   const {
@@ -19,7 +18,6 @@ function InPreparationOrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<DepotOrderDto | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const navigate = useNavigate();
 
   // Convertir DepotOrderDto a OrderTableData para compatibilidad
   const convertToTableData = (order: DepotOrderDto) => ({
@@ -62,68 +60,61 @@ function InPreparationOrdersPage() {
   }
 
   return (
-    <div className="container m-0 min-w-full min-h-full py-20 pt-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Órdenes en Preparación</h1>
-              <p className="mt-2 text-gray-600">
-                Visualiza las órdenes que están siendo preparadas por operarios asignados.
-              </p>
-            </div>
-            <BackButton to="/depot" />
+    <div className="container m-0 pt-10 min-w-full min-h-full">
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+        <BackButton to="/depot" />
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Órdenes en Preparación</h1>
+          <p className="text-center text-lg text-gray-700 mb-12">
+            Visualiza las órdenes que están siendo preparadas por operarios asignados.
+          </p>
+
+
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <OrderTable
+              orders={tableData}
+              loading={loading}
+              error={error}
+              onRefetch={refetch}
+              onView={handleView}
+              activeTab="inPreparation"
+              emptyMessageTitle="No hay órdenes en preparación"
+              emptyMessageBody="Puedes asignar órdenes desde el módulo de órdenes pendientes."
+            />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(orders.length / itemsPerPage)}
+              onPageChange={setCurrentPage}
+              totalItems={orders.length}
+              itemsPerPage={itemsPerPage}
+            />
+          </div>
+
+
+          {/* Diálogo de detalles de orden */}
+          {selectedOrder && (
+            <>
+              <div className="fixed inset-0 backdrop-blur-sm bg-black/30 z-40" />
+              <div className="fixed inset-0 flex items-center justify-center z-50">
+                <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold">Detalles de la Orden en Preparación</h2>
+                    <button
+                      onClick={() => setSelectedOrder(null)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <OrderDetails order={{...convertToTableData(selectedOrder), status: 'En Preparación'}} />
+                </div>
+              </div>
+            </>
+          )}
+          <div className='mt-8'>
+            <BackButton to="/depot/pending-orders" label='Ir a Órdenes Pendientes' />
           </div>
         </div>
-
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <OrderTable
-            orders={tableData}
-            loading={loading}
-            error={error}
-            onRefetch={refetch}
-            onView={handleView}
-            activeTab="inPreparation"
-            emptyMessageTitle="No hay órdenes en preparación"
-            emptyMessageBody="Puedes asignar órdenes desde el módulo de órdenes pendientes."
-          />
-          <Pagination
-            currentPage={currentPage}
-            totalPages={Math.ceil(orders.length / itemsPerPage)}
-            onPageChange={setCurrentPage}
-            totalItems={orders.length}
-            itemsPerPage={itemsPerPage}
-          />
-        </div>
-
-
-        {/* Diálogo de detalles de orden */}
-        {selectedOrder && (
-          <>
-            <div className="fixed inset-0 backdrop-blur-sm bg-black/30 z-40" />
-            <div className="fixed inset-0 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold">Detalles de la Orden en Preparación</h2>
-                  <button
-                    onClick={() => setSelectedOrder(null)}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <OrderDetails order={{...convertToTableData(selectedOrder), status: 'En Preparación'}} />
-              </div>
-            </div>
-          </>
-        )}
-        <button
-        onClick={() => navigate('/depot/pending-orders')}
-        className="mt-4 ml-2 px-4 py-2 inline-block border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-        
-      >
-        Ir a Órdenes Pendientes
-      </button>
       </div>
     </div>
   );
