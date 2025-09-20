@@ -77,6 +77,9 @@ const OperatorDashboardComponent = () => {
 
   return(
     <View style={{ flex: 1, padding: 16, backgroundColor: '#ffffff' }}>
+      <Text style={{fontSize: 24,fontWeight: '800',marginBottom: 32,color: '#8b0000', letterSpacing: 0.5,lineHeight: 32,textAlign: 'center',textShadowColor: 'rgba(0,0,0,0.1)',textShadowOffset: { width: 1, height: 1 },textShadowRadius: 2,}}>
+        ¡Bienvenido {user.name}!
+      </Text>
       {cards.map((card,index) => (
         <TouchableOpacity key={index} style={{backgroundColor: '#FFFFFF',borderRadius: 12,padding: 20,marginBottom: 16,shadowColor: '#000',shadowOpacity: 0.08,shadowOffset: { width: 0, height: 4 },shadowRadius: 10,elevation: 3}}
         onPress={() => {
@@ -84,7 +87,7 @@ const OperatorDashboardComponent = () => {
             case 'ConfirmedOrders':
               navigation.navigate('ConfirmedOrders');
               break;
-            case 'MissingOrders':
+            case 'MissingOrders': 
               if (missingOrders.length > 0) {
                 const order = missingOrders[0]; 
                 navigation.navigate('MissingOrders', {
@@ -97,9 +100,7 @@ const OperatorDashboardComponent = () => {
                   onMarcarArmado: () => {}, 
                   onNotifySecction: () => {}, 
                   });
-                } else {
-                  Alert.alert("No hay pedidos con faltantes");
-                }
+              }
             break;
             case 'ArmOrders':
               navigation.navigate('ArmOrders');

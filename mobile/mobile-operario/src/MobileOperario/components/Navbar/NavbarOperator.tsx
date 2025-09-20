@@ -75,16 +75,16 @@ const NavbarOperator = ({ user, isAuthenticated, logout }: NavbarProps) => {
                 <View
                   style={{
                   backgroundColor: '#c8c8cfff', // Gris oscuro (puedes ajustar el tono)
-                  padding: 6,
+                  padding: 4,
                   borderRadius: 8,
                   marginTop: 2,
                   width: 'auto',
                   }}
                 >
-                <Text style={{ color: '#161718ff', fontSize: 10, fontWeight: '600' }}>
+                <Text style={{ color: '#161718ff', fontSize: 9, fontWeight: '600' }}>
                   Equipo:
                 </Text>
-                <Text style={{ color: '#9e0f0fff', fontSize: 10 , fontWeight: '800'}}>
+                <Text style={{ color: '#9e0f0fff', fontSize: 9 , fontWeight: '800'}}>
                   {user.team?.teamName ?? "N/A"}
                 </Text>
               </View>

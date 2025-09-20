@@ -18,8 +18,10 @@ const MissingPage = () => {
   const { params } = useRoute<MissingRouteProp>();
   const order: DepotOrderDTO = params.order;
 
-  const { userId, name, role, isAuthenticated, logout } = useAuth();
-  const user = { id: userId!, name:name!, role:role! };
+  const { userId, name, role, isAuthenticated, logout,team } = useAuth();
+  const user = userId && name && role 
+    ? { id: userId, name, role, team } 
+    : null;
 
   if (!userId) {
     
