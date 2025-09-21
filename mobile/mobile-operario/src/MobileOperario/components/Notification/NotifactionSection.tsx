@@ -105,6 +105,14 @@ const NotificacionSection: React.FC<Props> = ({ missingItems }) => {
                 }}>
                 : {item.productBrand}
                 </Text>
+                <Text style={{
+                  flex: 1.5,
+                  fontSize: 14,
+                  color: "#6B7280",
+                  textAlign: 'right'
+                }}>
+                : {item.packaging}
+                </Text>
               </View>
               );
             })}

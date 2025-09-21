@@ -24,71 +24,88 @@ const MissingPage = () => {
 
     const [description, setDescription] = useState('');
 
+    // --- 1. AÑADIMOS EL ESTADO PARA MANEJAR LA FALLA DE MARCA ---
     const [missingItemsState, setMissingItemsState] = useState(
         order.items.map(item => ({
             ...item,
             isMissing: false,
             missingQuantity: item.quantity,
             missingQuantityInput: String(item.quantity),
-            // Asegúrate de que maxQuantity exista en tus items, si no, usa quantity.
-            maxQuantity: item.quantity 
+            maxQuantity: item.quantity,
+            hasBrandIssue: false, // Para saber si el botón de "Falla Marca" está activo
+            brandIssueDescription: '', // Para guardar el texto del input de la marca
         }))
     );
     
-    // FUNCIÓN 1: Maneja el click en el checkbox
     const handleToggleCheckbox = (index: number) => {
         const updated = [...missingItemsState];
         const currentItem = updated[index];
         currentItem.isMissing = !currentItem.isMissing;
 
-        // Si se desmarca, resetea la cantidad al valor original
         if (!currentItem.isMissing) {
             currentItem.missingQuantity = currentItem.quantity;
             currentItem.missingQuantityInput = String(currentItem.quantity);
+            // También reseteamos el estado de la marca al desmarcar
+            currentItem.hasBrandIssue = false;
+            currentItem.brandIssueDescription = '';
         }
         setMissingItemsState(updated);
     };
 
-    // FUNCIÓN 2: Maneja la actualización del texto del input
     const handleQuantityTextChange = (index: number, text: string) => {
         const updated = [...missingItemsState];
-        // Solo permite caracteres numéricos para prevenir errores
         updated[index].missingQuantityInput = text.replace(/[^0-9]/g, '');
         setMissingItemsState(updated);
     };
 
-    // FUNCIÓN 3: Valida el número cuando el input pierde el foco
     const handleQuantityEndEditing = (index: number) => {
         const updated = [...missingItemsState];
         const currentItem = updated[index];
-
         let parsedQty = parseInt(currentItem.missingQuantityInput || '0', 10);
-
-        if (isNaN(parsedQty)) {
-            parsedQty = 0;
-        }
-
-        // Valida que la cantidad no supere el máximo del pedido
+        if (isNaN(parsedQty)) parsedQty = 0;
         const validQty = Math.min(parsedQty, currentItem.maxQuantity);
-
-        // Sincroniza tanto el valor numérico como el texto del input
         currentItem.missingQuantity = validQty;
         currentItem.missingQuantityInput = String(validQty);
-
+        setMissingItemsState(updated);
+    };
+    
+    // --- 2. AÑADIMOS LAS FUNCIONES PARA MANEJAR LA FALLA DE MARCA ---
+    const handleToggleBrandIssue = (index: number) => {
+        const updated = [...missingItemsState];
+        updated[index].hasBrandIssue = !updated[index].hasBrandIssue;
+        if (!updated[index].hasBrandIssue) {
+            updated[index].brandIssueDescription = ''; // Limpiar descripción si se desactiva
+        }
         setMissingItemsState(updated);
     };
 
+    const handleBrandIssueChange = (index: number, text: string) => {
+        const updated = [...missingItemsState];
+        updated[index].brandIssueDescription = text;
+        setMissingItemsState(updated);
+    };
 
     const onSubmit = () => {
         const selectedItems = missingItemsState
-            .filter(item => item.isMissing && item.missingQuantity > 0) // Añadido chequeo para no enviar faltantes con cantidad 0
-            .map(item => ({
-                orderItemId: item.id,
-                productName: item.productName,
-                productBrand: item.productBrand,
-                packaging: item.packagingType ?? 'Existen faltantes dentro del pedido',
-                quantity: item.missingQuantity,
-            }));
+            .filter(item => item.isMissing && item.missingQuantity > 0)
+            .map(item => {
+                // --- 3. ACTUALIZAMOS LA LÓGICA DE ENVÍO ---
+                let finalBrand = item.productBrand;
+
+                // Si se reportó una falla de marca y se escribió un detalle,
+                // ese detalle SOBREESCRIBE la marca original.
+                if (item.hasBrandIssue && item.brandIssueDescription.trim()) {
+                    finalBrand = item.brandIssueDescription.trim();
+                }
+
+                return {
+                    orderItemId: item.id,
+                    productName: item.productName,
+                    productBrand: finalBrand, // El campo correcto ahora recibe la descripción
+                    packaging: item.packagingType ?? 'No aplica',
+                    quantity: item.missingQuantity,
+                };
+            });
 
         if (!description.trim() && selectedItems.length === 0) {
             Alert.alert('Error', 'Debe ingresar una descripción o seleccionar al menos un producto con cantidad mayor a cero.');
@@ -114,27 +131,27 @@ const MissingPage = () => {
                 isMissing: false,
                 missingQuantity: item.quantity,
                 missingQuantityInput: String(item.quantity),
-                maxQuantity: item.quantity
+                maxQuantity: item.quantity,
+                hasBrandIssue: false,
+                brandIssueDescription: '',
             })));
         });
     };
 
     return (
         <View style={{ flex: 1 }}>
-            <NavbarOperator
-                user={user}
-                isAuthenticated={isAuthenticated}
-                logout={logout}
-            />
+            <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={logout} />
             <MissingReport
                 description={description}
                 onNotifyMissing={setDescription}
                 onSubmit={onSubmit}
                 missingItemsState={missingItemsState}
-                // Pasamos las nuevas funciones al componente hijo
                 onToggleCheckbox={handleToggleCheckbox}
                 onQuantityChange={handleQuantityTextChange}
                 onQuantityEndEditing={handleQuantityEndEditing}
+                // --- 4. PASAMOS LAS NUEVAS FUNCIONES AL COMPONENTE ---
+                onToggleBrandIssue={handleToggleBrandIssue}
+                onBrandIssueChange={handleBrandIssueChange}
             />
         </View>
     );
