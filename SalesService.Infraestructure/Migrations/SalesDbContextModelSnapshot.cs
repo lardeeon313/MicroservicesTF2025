@@ -7,7 +7,7 @@ using SalesService.Infraestructure;
 
 #nullable disable
 
-namespace SalesService.Infraestructure.Migrations
+namespace SalesService.API.Migrations
 {
     [DbContext(typeof(SalesDbContext))]
     partial class SalesDbContextModelSnapshot : ModelSnapshot
@@ -59,7 +59,7 @@ namespace SalesService.Infraestructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.Order", b =>
@@ -105,7 +105,7 @@ namespace SalesService.Infraestructure.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderItem", b =>
@@ -138,19 +138,16 @@ namespace SalesService.Infraestructure.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderMissing", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("MissingId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     b.Property<int>("DepotOrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DepotOrderMissingId")
                         .HasColumnType("int");
 
                     b.Property<string>("DescriptionResolution")
@@ -168,20 +165,17 @@ namespace SalesService.Infraestructure.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("MissingId");
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderMissings");
+                    b.ToTable("OrderMissings", (string)null);
                 });
 
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderMissingItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("DepotOrderMissingItemId")
                         .HasColumnType("int");
 
                     b.Property<int>("MissingQuantity")
@@ -210,7 +204,7 @@ namespace SalesService.Infraestructure.Migrations
 
                     b.HasIndex("OrderMissingId");
 
-                    b.ToTable("OrderMissingItems");
+                    b.ToTable("OrderMissingItems", (string)null);
                 });
 
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderStatusHistory", b =>
@@ -238,7 +232,7 @@ namespace SalesService.Infraestructure.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderStatusHistories");
+                    b.ToTable("OrderStatusHistories", (string)null);
                 });
 
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.Order", b =>

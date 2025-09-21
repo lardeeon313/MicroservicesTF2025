@@ -1,7 +1,7 @@
 import { CalendarDays, Package, User, BadgeCheck, Eye, Pencil, Trash } from "lucide-react"
 import { OrderTableData } from "../../types/OrderTypes";
 import formatDate from "../../../../utils/formateDate";
-import { OrderStatusBadge } from "./OrderStatusBadge";
+import { OrderStatusBadge } from "../../../../components/OrderStatusBadge";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
 
 interface Props {

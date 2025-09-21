@@ -76,6 +76,7 @@ namespace SalesService.Application.Commands.Orders.OrderReissued
                     UpdateItems = command.UpdateItems.Select(i => new OrderItemsDto
                     {
                         Id = i.Id,
+                        OrderId = orderExists.Id,
                         ProductName = i.ProductName,
                         ProductBrand = i.ProductBrand,
                         Quantity = i.Quantity

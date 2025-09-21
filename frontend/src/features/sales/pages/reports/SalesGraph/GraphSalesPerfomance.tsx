@@ -15,7 +15,7 @@ const GraphSalesPerfomance: React.FC<Props> = ({ data }) => {
   }));
 
   return (
-    <div className="w-full h-96 p-4 bg-white rounded-xl shadow-md">
+    <div className="w-full h-96 p-4 bg-white rounded-xl shadow-md mb-10">
       <h2 className="text-lg font-semibold mb-4 text-blue-800">Pedidos Emitidos por Empleado</h2>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>

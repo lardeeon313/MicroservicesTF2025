@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import RegisterOrderForm from "../../components/Forms/RegisterOrderForm";
 import { RegisterOrderRequest } from "../../types/OrderTypes";
@@ -9,6 +9,7 @@ import { getAllCustomers } from "../../services/CustomerService";
 import { handleFormikError } from "../../../../components/ErrorHandler";
 import { useAuth } from "../../../auth/context/useAuth";
 import { getUserIdFromToken } from "../../../../utils/jwtUtils";
+import BackButton from "../../../../components/BackButton";
 
 const initialValues: RegisterOrderRequest = {
   customerId: "",
@@ -65,12 +66,8 @@ export default function RegisterOrderPage() {
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
-      <div className="flex items-center justify-between mb-6">
-        <Link to="/sales/orders" className="text-red-600 hover:underline pl-10">
-          ← Volver al listado
-        </Link>
-      </div>
-      <div className="sm:mx-auto sm:w-full sm:max-w-3xl justify-center">
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+        <BackButton to="/sales/home"></BackButton>
         <h2 className="text-center text-4xl font-bold text-red-600 mb-12">
           Registrar Orden
         </h2>

@@ -3,16 +3,18 @@ import { useBillingTimeProcess } from "../BillingHocks/useBillingTimeProcess";
 import ProcessingTimeOrderTable from "../BillingComponents/BillingTimeProcessTable";
 import GraphProcessingTimeProcess from "../BillingGraphs/GraphBillingTimeProcess";
 import ProcessingTimeOrderFilter from "../BillingFilters/BillingTimeProcessFilter";
-import { useNavigate } from "react-router-dom";
 
 // importa tus tipos desde TU archivo de tipos
 import {
   ProcessingTimeOrder,
   RawOrderHistory,
 } from "../../../../billingmanager/types/BillingTimeProcessType";
+import BackButton from "../../../../../../components/BackButton";
+import { AlertTriangle, Calendar, Search } from "lucide-react";
+import EmptyState from "../../../../../../components/EmptyState";
+import Pagination from "../../../../depotmanager/components/Pagination";
 
 const ProcessingTimeOrderPage: React.FC = () => {
-  const navigate = useNavigate();
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [page, setPage] = useState(1);
@@ -61,89 +63,87 @@ const ProcessingTimeOrderPage: React.FC = () => {
   }));
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="max-w-6xl mx-auto bg-white p-6 rounded-lg shadow">
-        {/* Botón Volver */}
-        <div className="mb-4">
-          <button
-            onClick={() => navigate("/depot/billingmanager/reports")}
-            className="flex items-center gap-2 bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition"
-          >
-            ← Volver atrás
-          </button>
-        </div>
-
+    <div className="container m-0 pt-10 min-w-full min-h-full">
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+        <BackButton to="/depot/billingmanager/reports"></BackButton>
         {/* Título principal */}
-        <h1 className="text-2xl font-bold text-red-600 mb-2">
-          Tiempo promedio para el proceso de facturación:
-        </h1>
-        <p className="text-gray-600 mb-6">
-          Aquí podrás ver cuánto le toma al encargado de facturación facturar
-          cada uno de los pedidos ya armados.
-        </p>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
+            Tiempo promedio <br></br>para el proceso de facturación
+          </h1>
+          <p className="text-center text-lg text-gray-700 mb-12">
+            Aquí podrás ver cuánto le toma al encargado de facturación
+            cada uno de los pedidos ya armados.
+          </p>
 
-        {/* Filtro */}
-        <ProcessingTimeOrderFilter onFilter={handleFilter} onClear={handleClear} />
-
-        {/* Tabla + Gráfico */}
-        <div className="mt-6">
-          {!from || !to ? (
-            <p className="text-gray-500 mt-4">
-              Selecciona un rango de fechas para ver resultados.
-            </p>
-          ) : (
-            <>
-              {loading && <p className="text-gray-500">Cargando datos...</p>}
-              {error && <p className="text-red-500">{error}</p>}
-
-              {!loading && !error && tableData.length > 0 && (
-                <>
-                  {/* 👉 La tabla recibe ProcessingTimeOrder[] */}
-                  <ProcessingTimeOrderTable data={{ items: raw }} />
-
-                  <div className="mt-10">
-                    <h2 className="text-xl font-semibold text-gray-700 mb-4">
-                      Visualización gráfica:
-                    </h2>
-                    {/* 👉 El gráfico recibe { orderId, processingTime } */}
-                    <GraphProcessingTimeProcess data={graphData} />
-                  </div>
-                </>
-              )}
-
-              {!loading && !error && tableData.length === 0 && (
-                <p className="text-gray-500 mt-4">
-                  No se encontraron resultados para las fechas seleccionadas.
-                </p>
-              )}
-            </>
-          )}
-        </div>
-
-        {/* Paginación */}
-        {!loading && totalPages > 1 && (
-          <div className="flex items-center justify-center mt-6 gap-4">
-            <button
-              onClick={() => setPage((p) => Math.max(p - 1, 1))}
-              disabled={page === 1}
-              className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-100"
-            >
-              Anterior
-            </button>
-
-            <span className="text-sm text-gray-600">
-              Página {page} de {totalPages}
-            </span>
-
-            <button
-              onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-              disabled={page === totalPages}
-              className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-100"
-            >
-              Siguiente
-            </button>
+          <div className="flex flex-col md:flex-row mb-4 w-full justify-between gap-2">
+          {/* Filtro */}
+          <ProcessingTimeOrderFilter onFilter={handleFilter} onClear={handleClear} />
           </div>
-        )}
+          
+          {/* Tabla + Gráfico */}
+          <div className="mt-12">
+            {!from || !to ? (
+              <EmptyState
+                icon={Calendar}
+                title="Selecciona un rango de fechas"
+                description="Para visualizar el tiempo promedio de facturación, utiliza el filtro superior y elige un rango de fechas."
+                actionLabel="Ir a filtros"
+                onAction={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              />
+            ) : (
+              <>
+                {loading && <p className="text-gray-500">Cargando datos...</p>}
+                {error && <EmptyState
+                  icon={AlertTriangle}
+                  title="Rango de fechas inválido"
+                  description="Verifica que la fecha de inicio sea anterior a la fecha de fin para poder mostrar los resultados."
+                  actionLabel="Corregir rango"
+                  onAction={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                />}
+
+                {!loading && !error && tableData.length > 0 && (
+                  <>
+                    {/* 👉 La tabla recibe ProcessingTimeOrder[] */}
+                    <ProcessingTimeOrderTable data={{ items: raw }} />
+
+                    <div className="mt-10">
+                      <h2 className="text-xl font-semibold text-gray-700 mb-4">
+                        Visualización gráfica:
+                      </h2>
+                      {/* 👉 El gráfico recibe { orderId, processingTime } */}
+                      <GraphProcessingTimeProcess data={graphData} />
+                    </div>
+                  </>
+                )}
+
+                {!loading && !error && tableData.length === 0 && (
+                  <EmptyState
+                    icon={Search}
+                    title="Sin resultados"
+                    description="No se encontraron pedidos dentro del rango de fechas seleccionado. Prueba con un periodo diferente."
+                    actionLabel="Reintentar con otros filtros"
+                    onAction={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                  />
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Paginación */}
+          {!loading && totalPages > 1 && (
+            <div className="mt-6 flex justify-center">
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={(newPage) => setPage(newPage)}
+                totalItems={0} // 👈 Added totalItems
+                itemsPerPage={pageSize} // 👈 Added itemsPerPage
+              />
+            </div>
+          )}
+          
+        </div>
       </div>
     </div>
   );

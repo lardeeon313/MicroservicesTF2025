@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useCustomerReport } from "../../hooks/useCustomerReport";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
-import { Link } from "react-router-dom";
 import { Pagination } from "../../../../components/Pagination";
 import CustomerInactiveTable from "../../components/Reports/CustomerInactiveReport/CustomerInactiveTable";
 import GraphCustomerInactive from "../../components/Reports/CustomerInactiveReport/GraphCustomerInactive";
 import CustomerInactiveReportFilter from "./SalesFilters/CustomerInactiveReportFilter";
 import { CustomerStatus } from "../../types/CustomerTypes";
+import BackButton from "../../../../components/BackButton";
 
 export default function CustomerInactiveReportPage() {
   const [page, setPage] = useState(1);
@@ -36,10 +36,8 @@ export default function CustomerInactiveReportPage() {
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
-      <div className="flex items-center justify-between mb-6">
-        <Link to="/sales/reports/dashboard" className="text-red-600 hover:underline pl-10">
-          ← Volver atrás
-        </Link>
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+        <BackButton to="/sales/reports/dashboard"></BackButton>
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

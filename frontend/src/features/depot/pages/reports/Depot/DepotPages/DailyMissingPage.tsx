@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
 import { useDailyMissing } from "../DepotHocks/useDailiyMissing";
 import DailyMissingTable, { DailyMissing } from "../DepotComponents/DailyMissingTable";
 import GraphDailyMissing from "../DepotGraph/GraphDailyMissing";
 import { Pagination } from "../../../../../../components/Pagination";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import DailyMissingFilter from "../DepotFilters/DailyMissingFilter";
+import BackButton from "../../../../../../components/BackButton";
 
 const DailyMissingPage: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -38,13 +38,8 @@ const DailyMissingPage: React.FC = () => {
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
-      <div className="flex items-center justify-between mb-6">
-        <Link
-          to="/depot/reports"
-          className="text-red-600 hover:underline pl-10"
-        >
-          ← Volver atrás
-        </Link>
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+        <BackButton to="/depot/reports"></BackButton>
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

@@ -24,7 +24,7 @@ export interface DepotOrderMissingItem {
     productName: string;
     productBrand: string;
     packaging?: string | null;
-    quantity: number;
+    missingQuantity: number;
 }
 
 export interface DepotOrderMissingDTO {

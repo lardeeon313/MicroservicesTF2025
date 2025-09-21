@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import EditOrderForm from "../../components/Forms/EditOrderForm";
 import { UpdateOrderRequest } from "../../types/OrderTypes";
 import { handleFormikError } from "../../../../components/ErrorHandler";
@@ -6,6 +6,7 @@ import { getOrderById, updateOrder } from "../../services/OrderService";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
+import BackButton from "../../../../components/BackButton";
 
 const EditOrderPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -50,7 +51,7 @@ const EditOrderPage = () => {
     setIsSubmitting(true);
     try {
       await updateOrder(values.orderId, values);
-      toast.success("Cliente actualizado correctamente");
+      toast.success("Órden actualizada correctamente");
       navigate("/sales/orders");
     } catch (error) {
       handleFormikError({
@@ -66,25 +67,21 @@ const EditOrderPage = () => {
   };
 
   return (
-    <div className="container m-0 pt-10 min-w-full">
-      <div className="flex items-center justify-between mb-6">
-        <Link to="/sales/orders" className="text-red-600 hover:underline pl-10">
-          ← Volver al listado
-        </Link>
-      </div>
-      <div className="sm:mx-auto sm:w-full sm:max-w-3xl justify-center">
-        <h2 className="text-center text-4xl font-bold text-red-600 mb-12">
-          Editar Orden
-        </h2>
-        {initialValues ? (
-                  <EditOrderForm 
-          initialValues={initialValues}
-          onSubmit={handleSubmit}
-          isSubmitting = {isSubmitting} 
-        />
-        ) : (
-          <LoadingSpinner message="Cargando datos de la órden" height="h-screen" />
-        )}
+    <div className="container m-0 pt-10 min-w-full min-h-full">
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+        <BackButton to="/sales/orders"></BackButton>
+          <h2 className="text-center text-4xl font-bold text-red-600 mb-12">
+            Editar Orden
+          </h2>
+          {initialValues ? (
+                    <EditOrderForm 
+            initialValues={initialValues}
+            onSubmit={handleSubmit}
+            isSubmitting = {isSubmitting} 
+          />
+          ) : (
+            <LoadingSpinner message="Cargando datos de la órden" height="h-screen" />
+          )}          
       </div>
     </div>
   )

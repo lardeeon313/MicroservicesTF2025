@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { getPendingOrderDetails, setItemUnitPrices, invoiceOrder, getPendingBillingOrders } from '../services/OrderService';
 import { DepotOrderDto } from '../types/OrderTypes';
-import BackButton from '../components/BackButton';
-import OrderDetailsInformation from '../../../../components/OrderDetailsInformation';
+import BackButton from '../../../../components/BackButton';
+import BillingOrderTable from '../components/BillingOrderTable';
 
 
 
@@ -121,150 +121,84 @@ function PendingOrderDetailsPage() {
   };
 
   return (
-    <div className="p-8 max-w-2xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+    <div className="container m-0 pt-10 min-w-full min-h-full">
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
         <BackButton to="/depot/billingmanager/pending-orders" />
-        <h2 className="text-2xl font-bold text-red-600">Detalle de Orden Pendiente</h2>
-      </div>
-      {loading && <div className="text-center text-lg">Cargando...</div>}
-      {error && <div className="text-center text-red-500">{error}</div>}
-      {!loading && !error && order && (
-        <div className="space-y-6 mt-10 w-3xl">
-          <OrderDetailsInformation 
-            customerName={order.customerName}
-            orderDate={order.orderDate}
-            deliveryDetail={new Date(order.orderDate).toLocaleDateString("es-AR")}
-            status={Number(order.status)}
-          />
 
-          <div className="space-y-6 pt-4">
-            <form onSubmit={handleSave} className="space-y-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
+            Detalle de Orden Pendiente
+          </h1>
+          <p className="text-center text-lg text-gray-700 mb-12">
+            Revisa y gestiona la orden seleccionada antes de facturar.
+          </p>
+
+          {/* Loader y error */}
+          {loading && (
+            <div className="text-center text-lg text-gray-600 mt-10">
+              Cargando...
+            </div>
+          )}
+          {error && (
+            <div className="text-center text-red-500 mt-10">{error}</div>
+          )}
+
+          {!loading && !error && order && (
+            <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-8 space-y-10">
+              {/* Datos del pedido */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Cliente:</label>
+                  <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">{order.customerName}</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Fecha Pedido:</label>
+                  <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">{new Date(order.orderDate).toLocaleDateString("es-AR")}</p>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Detalles de Entrega:</label>
+                  <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">{order.deliveryDetail || "No especificado"}</p>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Estado:</label>
+                  <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 font-semibold text-gray-900 shadow-sm">Pendiente de facturar</p>
+                </div>
+
+              </div>
+
               {/* Tabla de productos */}
-                <div className="overflow-x-auto rounded-lg shadow border border-gray-200">
-                  <table className="w-full text-sm text-left border-collapse">
-                    <thead className="bg-gray-100 text-gray-700 uppercase text-xs tracking-wider">
-                      <tr>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marca</th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio Unitario</th>
-                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
-                      </tr>
-                    </thead>
-                  <tbody className='divide-y divide-gray-200'>
-                {order.items.map((item, idx) => (
-                <tr
-                  key={item.id}
-                  className="hover:bg-gray-50 transition-colors duration-150"
-                >
-                  <td className="px-6 py-4 text-sm text-gray-900">{item.productName}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">{item.productBrand}</td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
-                      {item.quantity}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    <input
-                      type="number"
-                        min={0.01}
-                        step={0.01}
-                        value={prices[idx]?.unitPrice === 0 ? '' : prices[idx]?.unitPrice}
-                        onChange={e => {
-                          const val = e.target.value === '' ? 0 : parseFloat(e.target.value);
-                          handlePriceChange(idx, val);
-                          setHasSavedPrices(false);
-                        }}
-                        className="border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 
-                             rounded-md px-2 py-1 w-28 text-right shadow-sm outline-none transition"
-                        required
-                      />
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    {prices[idx]?.unitPrice > 0
-                      ? `$${(prices[idx].unitPrice * item.quantity).toFixed(2)}`
-                      : '-'}
-                  </td>
-                </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Total */}
-          <div className="flex justify-end items-center gap-4 mt-6 border-t pt-4">
-            <span className="text-lg font-semibold text-gray-700">Total:</span>
-            <span className="text-2xl font-bold text-green-700">
-            {prices.every(p => Number.isFinite(p.unitPrice) && p.unitPrice > 0)
-              ? `$${prices
-                .reduce(
-                  (acc, p, idx) =>
-                    acc + p.unitPrice * (order?.items[idx].quantity ?? 0),
-                  0
-                )
-                .toFixed(2)}`
-              : '-'}
-            </span>
-          </div>
-
-          {/* Mensajes de estado */}
-          {!hasSavedPrices && (
-            <div className="text-yellow-600 bg-yellow-100 px-4 py-2 rounded-md shadow-sm text-center">
-              Recuerda guardar los precios antes de facturar.
+              <BillingOrderTable
+                items={order.items}
+                prices={prices}
+                onPriceChange={handlePriceChange}
+                onSave={handleSave}
+                onFacture={() => setShowConfirm(true)}
+                saving={saving}
+                facturing={facturing}
+                hasSavedPrices={hasSavedPrices}
+                saveError={saveError}
+                saveSuccess={saveSuccess}
+                factureError={factureError}
+                factureSuccess={factureSuccess}
+              />
+  
             </div>
           )}
-          {saveError && (
-            <div className="text-red-600 bg-red-100 px-4 py-2 rounded-md shadow-sm text-center">
-              {saveError}
-            </div>
-          )}
-          {saveSuccess && (
-          <div className="text-green-600 bg-green-100 px-4 py-2 rounded-md shadow-sm text-center">
-            Precios guardados correctamente.
-          </div>
-          )}
-          {factureError && (
-          <div className="text-red-600 bg-red-100 px-4 py-2 rounded-md shadow-sm text-center">
-            {factureError}
-          </div>
-          )}
-          {factureSuccess && (
-          <div className="text-green-600 bg-green-100 px-4 py-2 rounded-md shadow-sm text-center">
-            Orden facturada correctamente.
-          </div>
-        )}
-
-        {/* Botones */}
-        <div className="flex justify-end gap-4 mt-4">
-          <button
-            type="submit"
-              className="bg-blue-600 hover:bg-blue-700 active:scale-95
-                   text-white px-6 py-2 rounded-lg shadow-md 
-                   transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={saving}
-          >
-          {saving ? 'Guardando...' : 'Guardar precios'}
-          </button>
-          <button
-            type="button"
-              className="bg-green-600 hover:bg-green-700 active:scale-95
-                   text-white px-6 py-2 rounded-lg shadow-md 
-                   transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={facturing}
-            onClick={() => setShowConfirm(true)}
-          >
-            {facturing ? 'Facturando...' : 'Facturar'}
-          </button>
-        </div>
-      </form>
-    </div>
 
           {/* Modal de confirmación */}
           {showConfirm && (
             <div className="fixed inset-0 flex items-center justify-center bg-white/60 backdrop-blur z-50">
               <div className="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full">
-                <h3 className="text-lg font-bold mb-4">¿Confirmar facturación?</h3>
-                <p className="mb-6">¿Estás seguro que deseas facturar esta orden? Se guardarán los precios actuales.</p>
+                <h3 className="text-lg font-bold mb-4">
+                  ¿Confirmar facturación?
+                </h3>
+                <p className="mb-6">
+                  ¿Estás seguro que deseas facturar esta orden? Se guardarán los
+                  precios actuales.
+                </p>
                 <div className="flex justify-end gap-4">
                   <button
                     className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
@@ -277,16 +211,16 @@ function PendingOrderDetailsPage() {
                     onClick={handleFacture}
                     disabled={facturing}
                   >
-                    {facturing ? 'Facturando...' : 'Confirmar'}
+                    {facturing ? "Facturando..." : "Confirmar"}
                   </button>
                 </div>
               </div>
             </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
-}
+};
 
 export default PendingOrderDetailsPage; 

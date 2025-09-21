@@ -1,4 +1,4 @@
-ï»¿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SalesService.Infraestructure;
 using SalesService.Infraestructure.Messaging.Publisher;
@@ -6,6 +6,7 @@ using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Persistence.Repositories;
 using System.Reflection;
 using SalesService.Application.Commands.Customers.Delete;
+
 using SalesService.Application.Validators.Customer;
 using FluentValidation;
 using SalesService.Application.DTOs.Customer;
@@ -62,12 +63,12 @@ builder.Services.AddSwaggerGen(options =>
 
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Sales Service API",
+        Title = "Sales Service API",    
         Version = "v1",
         Description = "The microservice is responsible for capturing sales and issuing orders.",
         Contact = new OpenApiContact
         {
-            Name = "Milton Argï¿½ello, Bustos Santiago, Diego Aguirre"
+            Name = "Milton Argüello, Bustos Santiago, Diego Aguirre"
         }
     });
 });
@@ -83,9 +84,7 @@ builder.Services.AddScoped<IValidator<RegisterOrderItemRequest>, RegisterOrderIt
 builder.Services.AddScoped<IValidator<RegisterOrderRequest>, RegisterOrderValidator>();
 builder.Services.AddScoped<IValidator<UpdateOrderStatusRequest>, UpdateOrderStatusValidator>();
 builder.Services.AddScoped<IValidator<OrderReissuedRequest>, OrderReissuedValidator>();
-
 builder.Services.AddScoped<IValidator<UpdateOrderMissingRequest>, UpdateOrderMissingValidator>();
-
 
 
 // Add services Command Handlers / Customer
@@ -97,8 +96,8 @@ builder.Services.AddScoped<IGetCustomerByIdQueryHandler, GetCustomerByIdQueryHan
 builder.Services.AddScoped<IGetCustomerByEmailQueryHandler, GetCustomerByEmailQueryHandler>();
 
 // Add services Command Handlers / Order 
-builder.Services.AddScoped<IGetPagedCustomersQueryHandler, GetPagedCustomersQueryHandler>();
-builder.Services.AddScoped<IGetPagedOrdersQueryHandler, GetPagedOrdersQueryHandler>();
+builder.Services.AddScoped<IGetPagedCustomersQueryHandler,  GetPagedCustomersQueryHandler>();
+builder.Services.AddScoped<IGetPagedOrdersQueryHandler,  GetPagedOrdersQueryHandler>();
 builder.Services.AddScoped<IRegisterOrderCommandHandler, RegisterOrderCommandHandler>();
 builder.Services.AddScoped<IUpdateOrderCommandHandler, UpdateOrderCommandHandler>();
 builder.Services.AddScoped<ICancelOrderCommandHandler, CancelOrderCommandHandler>();
@@ -108,7 +107,7 @@ builder.Services.AddScoped<IGetOrderByIdQueryHandler, GetOrderByIdQueryHandler>(
 builder.Services.AddScoped<IGetOrderByStatusQueryHandler, GetOrderByStatusQueryHandler>();
 builder.Services.AddScoped<IGetOrderByIdCustomerQueryHandler, GetOrderByIdCustomerQueryHandler>();
 builder.Services.AddScoped<IGetAllOrdersQueryHandler, GetAllOrdersQueryHandler>();
-builder.Services.AddScoped<IGetSalesPerfomanceReportQueryHandler, GetSalesPerfomanceReportQueryHandler>();
+builder.Services.AddScoped<IGetSalesPerfomanceReportQueryHandler,  GetSalesPerfomanceReportQueryHandler>();
 builder.Services.AddScoped<IOrderReissuedCommandHandler, OrderReissuedCommandHandler>();
 builder.Services.AddScoped<IUpdateMissingOrderCommandHandler, UpdateMissingOrderCommandHandler>();
 builder.Services.AddScoped<IGetAllMissingOrdersQueryHandler, GetAllMissingOrdersQueryHandler>();
@@ -127,7 +126,6 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 // Add RabbitMQ
 builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
 
-
 // Add Consumers
 builder.Services.AddHostedService<OrderMissingConsumer>();
 builder.Services.AddHostedService<OrderConfirmedConsumer>();
@@ -136,19 +134,18 @@ builder.Services.AddHostedService<OrderInvoicedConsumer>();
 builder.Services.AddHostedService<OrderPreparedConsumer>();
 builder.Services.AddHostedService<OrderSentToBillingConsumer>();
 
-// Obtener la cadena de conexiï¿½n del appsettings.json
-
+// Obtener la cadena de conexión del appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Registrar el DbContext
 builder.Services.AddDbContext<SalesDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-        b => b.MigrationsAssembly("SalesService.Infraestructure")));
+        b => b.MigrationsAssembly("SalesService.API")));
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 
-// Configuraciï¿½n de autenticaciï¿½n JWT
+// Configuración de autenticación JWT
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
@@ -165,7 +162,7 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
-// Configuraciï¿½n de autorizaciï¿½n
+// Configuración de autorización
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("SalesOnly", policy =>
         policy.RequireClaim("role", "SalesStaff"));
@@ -176,7 +173,7 @@ builder.Services.AddHttpClient("IdentityService", client =>
     client.BaseAddress = new Uri("http://identityservice:8080/api/auth/");
 });
 
-var app = builder.Build();
+var app = builder.Build();  
 
 // Migrar automaticamente, cada vez que levante el servicio.
 using (var scope = app.Services.CreateScope())
@@ -191,7 +188,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Sales Service API V1");
-        c.RoutePrefix = string.Empty; // opcional: Swagger se verï¿½ en la raï¿½z
+        c.RoutePrefix = string.Empty; // opcional: Swagger se verá en la raíz
     });
 }
 

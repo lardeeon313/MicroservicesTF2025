@@ -58,6 +58,58 @@ const NotificacionSection: React.FC<Props> = ({ missingItems }) => {
               <PackageCheck size={16} color="green" /> Resuelto: {missing.descriptionResolution}
             </Text>
           )}
+          {missing.missingItems && missing.missingItems.length > 0 && (
+          <View style={{ marginTop: 8, paddingLeft: 8 }}>
+            <Text
+              style={{
+                fontSize: 15,
+                fontWeight: "600",
+                marginBottom: 4,
+                color: "#111827",
+              }}
+              >
+            🛒 Productos involucrados:
+            </Text>
+            {missing.missingItems.map((item, i) => {
+              console.log("Item faltante:", item);
+              return (
+                <View key={i} style={{
+                  flexDirection: 'row',
+                  paddingVertical: 8,
+                  paddingHorizontal: 12,
+                  backgroundColor: i % 2 === 0 ? '#F9FAFB' : '#FFFFFF',
+                  borderBottomWidth: 1,
+                  borderBottomColor: '#E5E7EB',
+                }}>
+                <Text style={{
+                  flex: 2,
+                  fontSize: 14,
+                  color: "#374151",
+                  fontWeight: '500'
+                }}>
+                {item.productName}
+                </Text>
+                <Text style={{
+                  flex: 1,
+                  fontSize: 14,
+                  color: "#6B7280",
+                  textAlign: 'center'
+                }}>
+                : {item.missingQuantity}
+                </Text>
+                <Text style={{
+                  flex: 1.5,
+                  fontSize: 14,
+                  color: "#6B7280",
+                  textAlign: 'right'
+                }}>
+                : {item.productBrand}
+                </Text>
+              </View>
+              );
+            })}
+          </View>
+          )}
         </View>
       ))}
     </ScrollView>

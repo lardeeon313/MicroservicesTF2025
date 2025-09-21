@@ -2,51 +2,112 @@ import { useInvoicedOrdersByCustomer } from "../BillingHocks/useOrderBilled";
 import InvoicedOrdersFilter from "../BillingFilters/OrderBilledFilter";
 import InvoicedOrdersTable from "../BillingComponents/OrderBilledTable";
 import OrderBilledGraph from "../BillingGraphs/GraphOrderBilled";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import BackButton from "../../../../../../components/BackButton";
+import LoadingSpinner from "../../../../../../components/LoadingSpinner";
+import EmptyState from "../../../../../../components/EmptyState";
+import { AlertCircle, Search } from "lucide-react";
+import { useState } from "react";
+import Pagination from "../../../../depotmanager/components/Pagination";
 
 export default function InvoicedOrdersPage() {
   const { data, loading, error, fetchOrders } = useInvoicedOrdersByCustomer();
-  const navigate = useNavigate();
 
-  const handleSearch = (filters: { customerName?: string }) => {
-    fetchOrders(filters);
+  // Paginación
+  const [page, setPage] = useState<number>(1);
+  const [pageSize] = useState<number>(10);
+
+  // Filtros
+  const [filters, setFilters] = useState({ customerName: "" });
+
+  const handleSearch = (newFilters: { customerName?: string }) => {
+    setFilters({ customerName: newFilters.customerName || "" });
+    fetchOrders(newFilters);
+    setPage(1);
   };
 
+  // Filtrado de datos en el cliente
+  const filteredData = data.filter((item) => {
+    if (filters.customerName.trim() === "") {
+      return true;
+    }
+    return item.customerName.toLowerCase().includes(filters.customerName.trim().toLowerCase());
+  });
+
+  // Paginación de los datos filtrados
+  const totalItems = filteredData.length;
+  const totalPages = Math.ceil(totalItems / pageSize);
+  const paginatedData = filteredData.slice(
+    (page - 1) * pageSize,
+    page * pageSize
+  );
+
+
+  
+
   return (
-    <div className="p-6 space-y-6">
-      {/* Encabezado con botón volver */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-red-600">
-          Pedidos facturados por cliente
-        </h1>
-        <button
-          onClick={() => navigate("/depot/billingmanager/reports")}
-          className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-lg shadow transition"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Volver
-        </button>
+    <div className="container m-0 pt-10 min-w-full min-h-full">
+      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+        <BackButton to="/depot/billingmanager/reports"></BackButton>
+      
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-6">
+          <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
+            Pedidos facturados por cliente
+          </h1>
+          <p className="text-center text-lg text-gray-700 mb-12">
+            Aqui podras ver los pedidos facturados agrupados por cliente.
+          </p>
+
+          <div className="flex flex-col md:flex-row mb-6 w-full justify-between gap-2">
+          {/* Filtro */}
+          <InvoicedOrdersFilter onSearch={handleSearch}/>
+          </div>
+          
+          <div className="mt-12">
+            {/* 1️⃣ Estado de carga */}
+            {loading && <LoadingSpinner message="Cargando pedidos facturados..." height="h-32" />}
+            
+            {/* 2️⃣ Estado de error */}
+            {error && (
+              <EmptyState
+                icon={AlertCircle}
+                title="Ha habido un problema"
+                description="Se ha detectado un problema al cargar los pedidos facturados. Por favor, intenta nuevamente más tarde."
+              />
+            )}
+
+            {/* 3️⃣ Tabla + Gráfico + Paginación si hay datos */}
+            {!loading && !error && filteredData.length > 0 && (
+              <>
+                <InvoicedOrdersTable data={paginatedData} />
+                <div className="mt-8">
+                  <OrderBilledGraph data={filteredData} />
+                </div>
+                
+                {totalPages > 1 && (
+                  <div className="flex justify-center mt-8">
+                    <Pagination
+                      currentPage={page}
+                      totalPages={totalPages}
+                      onPageChange={setPage}
+                      totalItems={totalItems}
+                      itemsPerPage={pageSize}
+                    />
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* 4️⃣ Estado de sin resultados */}
+            {!loading && !error && filteredData.length === 0 && (
+              <EmptyState
+                icon={Search}
+                title="Sin resultados"
+                description="No se encontraron pedidos para el cliente buscado. Intenta con un nombre diferente."
+              />
+            )}
+          </div>
+        </div>
       </div>
-
-      {/* Filtro */}
-      <InvoicedOrdersFilter onSearch={handleSearch} />
-
-      {/* Estado de carga / error */}
-      {loading && (
-        <p className="text-blue-600 font-medium animate-pulse">Cargando...</p>
-      )}
-      {error && (
-        <p className="text-red-600 font-semibold">Error: {error}</p>
-      )}
-
-      {/* Tabla */}
-      <div className="bg-white shadow-md rounded-lg p-4">
-        <InvoicedOrdersTable data={data} />
-      </div>
-
-      {/* Gráfico */}
-      <OrderBilledGraph data={data} />
     </div>
   );
 }
