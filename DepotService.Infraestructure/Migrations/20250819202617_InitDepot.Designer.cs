@@ -11,8 +11,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DepotService.Infraestructure.Migrations
 {
     [DbContext(typeof(DepotDbContext))]
+<<<<<<<< HEAD:DepotService.Infraestructure/Migrations/20250819202617_InitDepot.Designer.cs
+    [Migration("20250819202617_InitDepot")]
+    partial class InitDepot
+========
     [Migration("20250911041327_InitialCreate")]
     partial class InitialCreate
+>>>>>>>> origin/feature/diego-microservicestf2025:DepotService.Infraestructure/Migrations/20250911041327_InitialCreate.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

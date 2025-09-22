@@ -1,4 +1,4 @@
-import { DepotOrderItemsReportedDto } from "./Missing";
+import { DepotOrderItemsReportedDto, DepotOrderMissingDTO } from "./Missing";
 import { DepotOrderDTO, DepotOrderStatus } from "./OrderDTO";
 
 export type DepotStackParamList = {
@@ -28,7 +28,7 @@ export type DepotStackParamList = {
     onEmitirFaltante: () => void;
     onMarcarArmado: () => void;
     status?: (DepotOrderStatus.InPreparation | DepotOrderStatus.MissingProduct); 
-    missingCount: DepotOrderItemsReportedDto[];
+    missingCount: DepotOrderMissingDTO[];
     onNotifySecction: () => void;
   };
   PreparedOrders?:{

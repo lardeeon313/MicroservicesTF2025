@@ -154,6 +154,33 @@ namespace DepotService.Infraestructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "OrderStatusHistories",
+<<<<<<<< HEAD:DepotService.Infraestructure/Migrations/20250819202617_InitDepot.cs
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    OldStatus = table.Column<int>(type: "int", nullable: false),
+                    NewStatus = table.Column<int>(type: "int", nullable: false),
+                    ChangedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    AverageDuration = table.Column<double>(type: "double", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderStatusHistories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderStatusHistories_DepotOrders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "DepotOrders",
+                        principalColumn: "DepotOrderId",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "DepotOrderItems",
+========
+>>>>>>>> origin/feature/diego-microservicestf2025:DepotService.Infraestructure/Migrations/20250911041327_InitialCreate.cs
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)

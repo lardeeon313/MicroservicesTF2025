@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DepotService.Infraestructure.Migrations
+namespace DepotService.API.Migrations
 {
     [DbContext(typeof(DepotDbContext))]
     partial class DepotDbContextModelSnapshot : ModelSnapshot
@@ -179,6 +179,9 @@ namespace DepotService.Infraestructure.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int>("SalesOrderItemId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("DepotOrderItemId");
@@ -200,9 +203,8 @@ namespace DepotService.Infraestructure.Migrations
                     b.Property<int>("DepotTeamId")
                         .HasColumnType("int");
 
-                    b.Property<string>("OperatorUserId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<Guid>("OperatorUserId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("RoleInTeam")
                         .IsRequired()

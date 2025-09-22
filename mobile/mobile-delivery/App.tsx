@@ -1,15 +1,17 @@
 import { Text, View } from 'react-native';
-import { styled } from 'nativewind';
-
-const StyledView = styled(View);
-const StyledText = styled(Text);
+import { useEffect } from 'react';
+import { API_BASE_URL } from '@env';
 
 export default function App() {
+  useEffect(() => {
+    console.log('🔗 API_BASE_URL:', API_BASE_URL);
+  }, []);
+
   return (
-    <StyledView className="flex-1 items-center justify-center bg-gray-100">
-      <StyledText className="text-3xl font-bold text-blue-600">
-        ¡NativeWind funcionando!
-      </StyledText>
-    </StyledView>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f3f4f6' }}>
+      <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#2563eb' }}>
+        Mobile delivery funcionando!
+      </Text>
+    </View>
   );
 }

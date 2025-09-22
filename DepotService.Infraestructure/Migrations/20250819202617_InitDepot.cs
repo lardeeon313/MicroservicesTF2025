@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DepotService.Infraestructure.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateMissingTables : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -76,8 +76,7 @@ namespace DepotService.Infraestructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     DepotTeamId = table.Column<int>(type: "int", nullable: false),
-                    OperatorUserId = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    OperatorUserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     RoleInTeam = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     AssignedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
@@ -90,6 +89,37 @@ namespace DepotService.Infraestructure.Migrations
                         column: x => x.DepotTeamId,
                         principalTable: "DepotTeams",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "DepotOrderItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    DepotOrderEntityId = table.Column<int>(type: "int", nullable: false),
+                    SalesOrderItemId = table.Column<int>(type: "int", nullable: false),
+                    ProductName = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProductBrand = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    PackagingType = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UnitPrice = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    IsReady = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    Total = table.Column<decimal>(type: "decimal(65,30)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DepotOrderItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DepotOrderItems_DepotOrders_DepotOrderEntityId",
+                        column: x => x.DepotOrderEntityId,
+                        principalTable: "DepotOrders",
+                        principalColumn: "DepotOrderId",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -124,6 +154,7 @@ namespace DepotService.Infraestructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "OrderStatusHistories",
+<<<<<<<< HEAD:DepotService.Infraestructure/Migrations/20250819202617_InitDepot.cs
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -148,35 +179,24 @@ namespace DepotService.Infraestructure.Migrations
 
             migrationBuilder.CreateTable(
                 name: "DepotOrderItems",
+========
+>>>>>>>> origin/feature/diego-microservicestf2025:DepotService.Infraestructure/Migrations/20250911041327_InitialCreate.cs
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    DepotOrderEntityId = table.Column<int>(type: "int", nullable: false),
-                    SalesOrderItemId = table.Column<int>(type: "int", nullable: false),
-                    ProductName = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProductBrand = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    PackagingType = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    UnitPrice = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    IsReady = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    Total = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
-                    DepotOrderMissingId = table.Column<int>(type: "int", nullable: true)
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    OldStatus = table.Column<int>(type: "int", nullable: false),
+                    NewStatus = table.Column<int>(type: "int", nullable: false),
+                    ChangedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    AverageDuration = table.Column<double>(type: "double", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DepotOrderItems", x => x.Id);
+                    table.PrimaryKey("PK_OrderStatusHistories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DepotOrderItems_DepotOrderMissings_DepotOrderMissingId",
-                        column: x => x.DepotOrderMissingId,
-                        principalTable: "DepotOrderMissings",
-                        principalColumn: "MissingId");
-                    table.ForeignKey(
-                        name: "FK_DepotOrderItems_DepotOrders_DepotOrderEntityId",
-                        column: x => x.DepotOrderEntityId,
+                        name: "FK_OrderStatusHistories_DepotOrders_OrderId",
+                        column: x => x.OrderId,
                         principalTable: "DepotOrders",
                         principalColumn: "DepotOrderId",
                         onDelete: ReferentialAction.Cascade);
@@ -191,6 +211,7 @@ namespace DepotService.Infraestructure.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     OrderMissingId = table.Column<int>(type: "int", nullable: false),
                     DepotOrderItemId = table.Column<int>(type: "int", nullable: false),
+                    SalesOrderItemId = table.Column<int>(type: "int", nullable: false),
                     ProductName = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ProductBrand = table.Column<string>(type: "longtext", nullable: false)
@@ -223,14 +244,10 @@ namespace DepotService.Infraestructure.Migrations
                 column: "DepotOrderEntityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DepotOrderItems_DepotOrderMissingId",
-                table: "DepotOrderItems",
-                column: "DepotOrderMissingId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DepotOrderMissingItem_DepotOrderItemId",
                 table: "DepotOrderMissingItem",
-                column: "DepotOrderItemId");
+                column: "DepotOrderItemId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DepotOrderMissingItem_OrderMissingId",
