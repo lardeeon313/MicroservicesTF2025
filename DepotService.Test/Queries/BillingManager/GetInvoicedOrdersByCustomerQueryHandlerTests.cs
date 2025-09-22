@@ -39,7 +39,7 @@ namespace DepotService.Test.Queries.BillingManager
         {
             // Arrange
             var customerId = Guid.NewGuid();
-            var query = new GetInvoicedOrdersByCustomerQuery(customerId);
+            var query = new GetInvoicedOrdersByCustomerQuery(customerId.ToString());
 
             _repositoryMock.Setup(r => r.GetInvoicedOrdersByCustomerAsync(customerId))
                 .ReturnsAsync(new List<DepotOrderEntity>());
@@ -65,7 +65,7 @@ namespace DepotService.Test.Queries.BillingManager
         {
             // Arrange
             var customerId = Guid.NewGuid();
-            var query = new GetInvoicedOrdersByCustomerQuery(customerId);
+            var query = new GetInvoicedOrdersByCustomerQuery(customerId.ToString());
 
             var orders = new List<DepotOrderEntity>
         {

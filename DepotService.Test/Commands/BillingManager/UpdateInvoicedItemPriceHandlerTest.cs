@@ -55,7 +55,7 @@ namespace DepotService.Test.Commands.BillingManager
                 }
             };
 
-            var command = new UpdateInvoicedItemPriceCommand(orderId, itemId, newPrice);
+            var command = new UpdateInvoicedItemPriceCommand(orderId, itemId, newPrice, true); // O false, dependiendo de tu lógica
 
             _repositoryMock.Setup(r => r.GetByIdAsync(orderId)).ReturnsAsync(order);
             _repositoryMock.Setup(r => r.UpdateOrderAsync(order)).Returns(Task.CompletedTask);
@@ -82,7 +82,7 @@ namespace DepotService.Test.Commands.BillingManager
         public async Task Handle_ShouldThrow_WhenOrderNotFound()
         {
             // Arrange
-            var command = new UpdateInvoicedItemPriceCommand(99, 10, 200);
+            var command = new UpdateInvoicedItemPriceCommand(99, 10, 200, true);
 
             _repositoryMock.Setup(r => r.GetByIdAsync(99))
                 .ReturnsAsync((DepotOrderEntity?)null);
@@ -115,7 +115,7 @@ namespace DepotService.Test.Commands.BillingManager
                 }
             };
 
-            var command = new UpdateInvoicedItemPriceCommand(orderId, 99, 500); // Item 99 no existe
+            var command = new UpdateInvoicedItemPriceCommand(orderId, 99, 500, true); // Item 99 no existe
 
             _repositoryMock.Setup(r => r.GetByIdAsync(orderId))
                 .ReturnsAsync(order);

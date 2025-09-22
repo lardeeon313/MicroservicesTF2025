@@ -7,81 +7,154 @@ import type { ReportOrderMissingRequest } from '../../types/Missing';
 import type { DepotOrderDTO } from '../../types/OrderDTO';
 import { ValidationMissingReport } from '../../validations/ValidationMissingReport';
 import NavbarOperator from '../../components/Navbar/NavbarOperator';
-
- 
 import { useAuth } from '../../Login/context/useAuth';
-
 
 type MissingRouteProp = RouteProp<DepotStackParamList, 'MissingReport'>;
 
 const MissingPage = () => {
-  const { params } = useRoute<MissingRouteProp>();
-  const order: DepotOrderDTO = params.order;
+    const { params } = useRoute<MissingRouteProp>();
+    const order: DepotOrderDTO = params.order;
 
-  const { userId, name, role, isAuthenticated, logout,team } = useAuth();
-  const user = userId && name && role 
-    ? { id: userId, name, role, team } 
-    : null;
+    const { userId, name, role, isAuthenticated, logout, team } = useAuth();
+    const user = userId && name && role ? { id: userId, name, role, team } : null;
 
-  if (!userId) {
-    
-    throw new Error("El usuario no está autenticado");
-  }
-
-  const [description, setDescription] = useState('');
-
-  
-  const onSubmit = () => {
-    if (!description.trim()) {
-      Alert.alert('Error', 'La descripción no puede estar vacía');
-      return;
+    if (!userId) {
+        throw new Error("El usuario no está autenticado");
     }
 
-    const missingRequest: ReportOrderMissingRequest = {
-      depotOrderId: order.depotOrderId,
-      operatorUserId: userId, 
-      salesOrderId: order.salesOrderId,
-      missingReason: 'Faltante detectado',  
-      missingDescription: description.trim(),
-      missingItems: order.items.map(item => ({
-        orderItemId: item.id,
-        productName: item.productName,
-        productBrand: item.productBrand,
-        packaging: item.packagingType ?? 'Existen faltantes dentro del pedido', 
-        quantity: item.quantity,
-      })),
+    const [description, setDescription] = useState('');
+
+    // --- 1. AÑADIMOS EL ESTADO PARA MANEJAR LA FALLA DE MARCA ---
+    const [missingItemsState, setMissingItemsState] = useState(
+        order.items.map(item => ({
+            ...item,
+            isMissing: false,
+            missingQuantity: item.quantity,
+            missingQuantityInput: String(item.quantity),
+            maxQuantity: item.quantity,
+            hasBrandIssue: false, // Para saber si el botón de "Falla Marca" está activo
+            brandIssueDescription: '', // Para guardar el texto del input de la marca
+        }))
+    );
+    
+    const handleToggleCheckbox = (index: number) => {
+        const updated = [...missingItemsState];
+        const currentItem = updated[index];
+        currentItem.isMissing = !currentItem.isMissing;
+
+        if (!currentItem.isMissing) {
+            currentItem.missingQuantity = currentItem.quantity;
+            currentItem.missingQuantityInput = String(currentItem.quantity);
+            // También reseteamos el estado de la marca al desmarcar
+            currentItem.hasBrandIssue = false;
+            currentItem.brandIssueDescription = '';
+        }
+        setMissingItemsState(updated);
     };
 
+    const handleQuantityTextChange = (index: number, text: string) => {
+        const updated = [...missingItemsState];
+        updated[index].missingQuantityInput = text.replace(/[^0-9]/g, '');
+        setMissingItemsState(updated);
+    };
+
+    const handleQuantityEndEditing = (index: number) => {
+        const updated = [...missingItemsState];
+        const currentItem = updated[index];
+        let parsedQty = parseInt(currentItem.missingQuantityInput || '0', 10);
+        if (isNaN(parsedQty)) parsedQty = 0;
+        const validQty = Math.min(parsedQty, currentItem.maxQuantity);
+        currentItem.missingQuantity = validQty;
+        currentItem.missingQuantityInput = String(validQty);
+        setMissingItemsState(updated);
+    };
     
-    ValidationMissingReport(description, missingRequest, (response) => {
+    // --- 2. AÑADIMOS LAS FUNCIONES PARA MANEJAR LA FALLA DE MARCA ---
+    const handleToggleBrandIssue = (index: number) => {
+        const updated = [...missingItemsState];
+        updated[index].hasBrandIssue = !updated[index].hasBrandIssue;
+        if (!updated[index].hasBrandIssue) {
+            updated[index].brandIssueDescription = ''; // Limpiar descripción si se desactiva
+        }
+        setMissingItemsState(updated);
+    };
 
-      Alert.alert(
-        'Notificación Enviada',
-        `Descripción: ${description ?? 'Sin descripción'}`
-      );
-      setDescription(description ?? '');
-    });
-  };
+    const handleBrandIssueChange = (index: number, text: string) => {
+        const updated = [...missingItemsState];
+        updated[index].brandIssueDescription = text;
+        setMissingItemsState(updated);
+    };
 
-  const onNotifyMissing = (desc: string) => {
-    setDescription(desc);
-  };
+    const onSubmit = () => {
+        const selectedItems = missingItemsState
+            .filter(item => item.isMissing && item.missingQuantity > 0)
+            .map(item => {
+                // --- 3. ACTUALIZAMOS LA LÓGICA DE ENVÍO ---
+                let finalBrand = item.productBrand;
 
-  return (
-    <View style={{ flex: 1 }}>
-      <NavbarOperator 
-      user={user} 
-      isAuthenticated={isAuthenticated} 
-      logout={logout}
-      />
-      <MissingReport
-        description={description}
-        onNotifyMissing={onNotifyMissing}
-        onSubmit={onSubmit}
-        missing={order} 
-      />
-    </View>
-  );
+                // Si se reportó una falla de marca y se escribió un detalle,
+                // ese detalle SOBREESCRIBE la marca original.
+                if (item.hasBrandIssue && item.brandIssueDescription.trim()) {
+                    finalBrand = item.brandIssueDescription.trim();
+                }
+
+                return {
+                    orderItemId: item.id,
+                    productName: item.productName,
+                    productBrand: finalBrand, // El campo correcto ahora recibe la descripción
+                    packaging: item.packagingType ?? 'No aplica',
+                    quantity: item.missingQuantity,
+                };
+            });
+
+        if (!description.trim() && selectedItems.length === 0) {
+            Alert.alert('Error', 'Debe ingresar una descripción o seleccionar al menos un producto con cantidad mayor a cero.');
+            return;
+        }
+
+        const missingRequest: ReportOrderMissingRequest = {
+            depotOrderId: order.depotOrderId,
+            operatorUserId: userId,
+            salesOrderId: order.salesOrderId,
+            missingReason: 'Faltante detectado',
+            missingDescription: description.trim(),
+            missingItems: selectedItems,
+        };
+
+        console.log("missingRequest a enviar:", JSON.stringify(missingRequest, null, 2));
+
+        ValidationMissingReport(description, missingRequest, () => {
+            Alert.alert('Notificación Enviada', `Descripción: ${description || 'Sin descripción'}`);
+            setDescription('');
+            setMissingItemsState(order.items.map(item => ({
+                ...item,
+                isMissing: false,
+                missingQuantity: item.quantity,
+                missingQuantityInput: String(item.quantity),
+                maxQuantity: item.quantity,
+                hasBrandIssue: false,
+                brandIssueDescription: '',
+            })));
+        });
+    };
+
+    return (
+        <View style={{ flex: 1 }}>
+            <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={logout} />
+            <MissingReport
+                description={description}
+                onNotifyMissing={setDescription}
+                onSubmit={onSubmit}
+                missingItemsState={missingItemsState}
+                onToggleCheckbox={handleToggleCheckbox}
+                onQuantityChange={handleQuantityTextChange}
+                onQuantityEndEditing={handleQuantityEndEditing}
+                // --- 4. PASAMOS LAS NUEVAS FUNCIONES AL COMPONENTE ---
+                onToggleBrandIssue={handleToggleBrandIssue}
+                onBrandIssueChange={handleBrandIssueChange}
+            />
+        </View>
+    );
 };
 
 export default MissingPage;
