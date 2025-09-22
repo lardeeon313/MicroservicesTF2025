@@ -1,3 +1,7 @@
+import { useEffect, useState } from "react";
+import { getNameFromToken, getRoleFromToken, getUserIdFromToken } from "../Utils/jwlUtils";
+import { TeamDepotType } from "../../types/TeamType";
+import { AuthContext } from "./AuthContext";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
@@ -10,15 +14,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   // 🔹 Carga inicial de usuario + equipo
   useEffect(() => {
-      try {
-        if (storedToken) {
-          setToken(storedToken);
-        }
-      } catch (error) {
-      } finally {
-        setLoading(false);
+    try {
+      const storedToken = localStorage.getItem("token"); // o AsyncStorage en mobile
+      if (storedToken) {
+        setToken(storedToken);
+        setUserId(getUserIdFromToken(storedToken));
+        setRole(getRoleFromToken(storedToken));
+        setName(getNameFromToken(storedToken));
       }
-    };
+    } catch (error) {
+      console.error("Error loading stored token:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   // 🔹 Login
   const login = async (newToken: string) => {

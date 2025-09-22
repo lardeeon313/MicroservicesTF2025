@@ -26,6 +26,7 @@ services:
       - depotservice
       - verificationservice
       - identityservice
+      - logisticservice
     networks:
       - micro_net
 
@@ -89,13 +90,24 @@ services:
     networks:
       - micro_net
 
-
   verificationservice:
     build:
       context: .
       dockerfile: ./VerificationService.API/Dockerfile
     ports:
       - "5005:8080"
+    depends_on:
+      - mysql
+      - rabbitmq
+    networks:
+      - micro_net
+
+  logisticservice:
+    build:
+      context: .
+      dockerfile: ./LogisticService.API/Dockerfile
+    ports:
+      - "5007:8080"
     depends_on:
       - mysql
       - rabbitmq
