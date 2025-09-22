@@ -1,9 +1,12 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "skipLibCheck": true,
     "strict": true,
-    "jsx": "react-jsx"
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
-  "include": ["env.d.ts", "src", "**/*.tsx", "src/types/global.d.ts"]
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]
 }
