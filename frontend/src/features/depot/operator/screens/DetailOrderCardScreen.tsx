@@ -1,1 +1,0 @@
-//Se gestiona la parte de react native en caso de ser necesario 

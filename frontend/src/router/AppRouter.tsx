@@ -54,13 +54,13 @@ import {DashboardBillingReportsPage} from "../features/depot/pages/DashboardBill
 import InvoicePage from "../features/depot/billingmanager/pages/InvoiceExportPage";
 import InvoiceOneDetailPage from "../features/depot/billingmanager/pages/InvoiceDetailPage";
 
-// Otros roles
-import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
-import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
+// Verificación
+import VerificationManagerDashboardPage from "../features/verification/pages/VerificationManagerDashboard";
 
 
+//Administracion
 
-//import InvoiceDetailPage from "../features/depot/billingmanager/components/InvoiceListComponent";
+
 
 
 
@@ -152,25 +152,25 @@ const AppRouter = () => {
             <Route path="reports/orderBilled" element={<OrderBilledPage />} />
         </Route>
 
-        {/* Delivery */}
-        <Route
-            path="/delivery"
-            element={
-            <ProtectedRoute requiredRole="Delivery">
-                <DeliveryDashboard />
-            </ProtectedRoute>
-            }
-        />
 
         {/* Verificación */}
         <Route
             path="/verification"
             element={
             <ProtectedRoute requiredRole="VerificationStaff">
-                <VerificationDashboard />
+                <Outlet />
             </ProtectedRoute>
-            }
-        />
+            } 
+            >
+           <Route index element={<VerificationManagerDashboardPage/>} />
+           {/* <Route path="pending-orders" element={<PendingOrdersPageVerification />} />
+           <Route path="pending-orders/:id" element={<PendingOrderDetailsPageVerification />} />
+           <Route path="verified-orders" element={<VerifiedOrdersPageVerification />} />
+           <Route path="verified-orders/:id" element={<VerifiedOrderDetailsPageVerification />} />
+           <Route path="teams" element={<TeamsPageVerification />} />
+           <Route path="reports" element={<DashboardVerificationReportsPage />} /> */}
+
+           </Route>
 
         {/* Admin */}
         <Route
