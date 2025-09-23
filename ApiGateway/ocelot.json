@@ -21,7 +21,7 @@
           "Port": 8080
         }
       ],
-      "UpstreamPathTemplate": "/admin/{everything}",
+      "UpstreamPathTemplate": "/logistic/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "JwtBearer",
