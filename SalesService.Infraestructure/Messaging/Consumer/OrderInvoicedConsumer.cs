@@ -71,6 +71,7 @@ namespace SalesService.Infraestructure.Messaging.Consumer
                     if (salesOrder != null)
                     {
                         salesOrder.Status = OrderStatus.Invoiced;
+                        salesOrder.TotalAmount = evento.TotalAmount;
                         await repository.UpdateAsync(salesOrder);
                         await context.SaveChangesAsync();
                         _logger.LogInformation($"Order {salesOrder.Id} is now in Invoiced.");

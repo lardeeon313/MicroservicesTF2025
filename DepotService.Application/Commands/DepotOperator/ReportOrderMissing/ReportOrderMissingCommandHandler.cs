@@ -43,6 +43,24 @@ namespace DepotService.Application.Commands.DepotOperator.ReportOrderMissing
                 _logger.LogError($"Order with ID {command.DepotOrderId} is not in progress.");
                 throw new InvalidOperationException($"Order with ID {command.DepotOrderId} is not in progress.");
             }
+            //
+            foreach (var missingItem in command.MissingItems)
+            {
+                var orderItem = order.Items.FirstOrDefault(i => i.Id == missingItem.OrderItemId);
+                if (orderItem == null)
+                {
+                    throw new KeyNotFoundException($"Order item with ID {missingItem.OrderItemId} not found in the order.");
+                }
+
+                if (missingItem.Quantity > orderItem.Quantity)
+                {
+                    throw new InvalidOperationException(
+                        $"Cantidad reportada para '{orderItem.ProductName}' ({missingItem.Quantity}) " +
+                        $"no puede ser mayor a la cantidad pedida ({orderItem.Quantity})."
+                    );
+                }
+            }
+            //
 
             var missing = new DepotOrderMissing
             {
@@ -82,6 +100,16 @@ namespace DepotService.Application.Commands.DepotOperator.ReportOrderMissing
             // Agregar el historial de estado a la base de datos
             await _context.OrderStatusHistories.AddAsync(statusHistory);
             await _context.SaveChangesAsync();
+
+            //Construye el mensaje detallando los productos donde se produjo el faltante: 
+            var productList = string.Join(", ", missing.MissingItems
+                .Select(i => $"{i.ProductName.Trim()} ({i.ProductBrand.Trim()}) x{i.MissingQuantity}"));
+
+            var notificationMessage =
+                $"Faltante detectado en el pedido #{command.DepotOrderId}: {productList}";
+
+            // Log en consola
+            _logger.LogInformation(notificationMessage);
 
             _logger.LogInformation($"Order with ID {command.DepotOrderId} reported as missing by operator {command.OperatorUserId}.");
         }

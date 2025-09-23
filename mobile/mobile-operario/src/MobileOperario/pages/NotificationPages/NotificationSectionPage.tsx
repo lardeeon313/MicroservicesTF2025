@@ -14,13 +14,15 @@ const NotificationSectionPage = () => {
   const { params } = useRoute<RouteProp<DepotStackParamList, "NotificationPage">>();
   const { order } = params;
 
-  const { userId, name, role, isAuthenticated, logout } = useAuth();
+  const { userId, name, role, isAuthenticated, logout, team } = useAuth();
+  
+  const user = userId && name && role 
+    ? { id: userId, name, role, team } 
+    : null;
 
-  const user = {
-    id: userId!,
-    name: name!,
-    role: role!
-  };
+  if (!user) {
+    return <Text>No hay usuario autenticado.</Text>;
+  }
 
   const { order: fullOrder, loading, error } = useGetNotificationMissing(order.depotOrderId, user.id);
 

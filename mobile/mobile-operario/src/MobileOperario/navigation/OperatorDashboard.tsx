@@ -88,19 +88,7 @@ const OperatorDashboardComponent = () => {
               navigation.navigate('ConfirmedOrders');
               break;
             case 'MissingOrders': 
-              if (missingOrders.length > 0) {
-                const order = missingOrders[0]; 
-                navigation.navigate('MissingOrders', {
-                  id: order.depotOrderId,
-                  customer: order.customerName,
-                  status: order.status,
-                  missingCount: order.missings,
-                  onVerDetalle: () => {}, 
-                  onEmitirFaltante: () => {}, 
-                  onMarcarArmado: () => {}, 
-                  onNotifySecction: () => {}, 
-                  });
-              }
+              navigation.navigate('MissingOrders');
             break;
             case 'ArmOrders':
               navigation.navigate('ArmOrders');

@@ -25,7 +25,7 @@ const AcceptOrder = ({order, onAccept, onReject}: Props) => {
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <UserRound size={20} color="#555" style={{ marginRight: 8 }} />
         <Text style={{ fontSize: 18, color: '#555' }}>
-          Cliente: {order.customerName}
+          Cliente: {order.customerEmail}
         </Text>
     </View>
 
