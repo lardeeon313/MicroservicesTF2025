@@ -21,14 +21,14 @@ namespace DepotService.Test.Commands.DepotManager
     {
         private readonly Mock<ITeamRepository> _repositoryMock;
         private readonly Mock<DepotDbContext> _contextMock;
-        private readonly Mock<ILogger<RemoveOperatorCommand>> _loggerMock;
+        private readonly Mock<ILogger<RemoveOperatorCommandHandler>> _loggerMock;
         private readonly RemoveOperatorCommandHandler _handler;
 
         public RemoveOperatorHandlerTest()
         {
             _repositoryMock = new Mock<ITeamRepository>();
             _contextMock = new Mock<DepotDbContext>(new DbContextOptions<DepotDbContext>());
-            _loggerMock = new Mock<ILogger<RemoveOperatorCommand>>();
+            _loggerMock = new Mock<ILogger<RemoveOperatorCommandHandler>>();
 
             _handler = new RemoveOperatorCommandHandler(
                 _repositoryMock.Object,

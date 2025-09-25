@@ -40,7 +40,7 @@ export default function OrderTable({
         actionLabel="Actualizar"
         onAction={onRefetch}
       />
-    );
+    );  
 
   return (
       <div className="w-full overflow-hidden rounded-lg border border-gray-200 shadow">

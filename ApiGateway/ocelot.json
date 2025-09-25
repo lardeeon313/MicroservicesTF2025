@@ -17,6 +17,23 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
+          "Host": "logisticservice",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/logistic/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "JwtBearer",
+        "AllowedScopes": [],
+        "Authority": "http://identityservice:8080"
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
           "Host": "adminservice",
           "Port": 8080
         }

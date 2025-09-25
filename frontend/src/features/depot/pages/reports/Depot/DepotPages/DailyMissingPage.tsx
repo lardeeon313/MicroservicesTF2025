@@ -28,7 +28,7 @@ const DailyMissingPage: React.FC = () => {
       return (
         date.getHours() === hour &&
         (isNaN(minute) || date.getMinutes() === minute)
-      );
+      );  
     });
   }, [data, selectedTime]);
 

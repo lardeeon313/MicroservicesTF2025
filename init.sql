@@ -4,3 +4,4 @@ CREATE DATABASE depot_db;
 CREATE DATABASE sales_db;
 CREATE DATABASE verification_db;
 CREATE DATABASE identity_db;
+CREATE DATABASE logistic_db;

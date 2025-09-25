@@ -146,6 +146,7 @@ const AppRouter = () => {
             {/**para exportar: */}
             <Route path="exports" element={<InvoicePage/>}/>
             <Route path="exports/:billingOrderId" element={<InvoiceOneDetailPage />} />
+            {/**Reportes: */}
             <Route path="reports" element={<DashboardBillingReportsPage/>} />
             <Route path="reports/billingTimeProcess" element={<BillingTimeProcessPage />} />
             <Route path="reports/customerIncome" element={<CustomerIncomePage />} />
