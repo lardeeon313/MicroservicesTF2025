@@ -1,0 +1,125 @@
+import { DeliveryOrderTypeDto } from "../types/DeliveryOrderTypeDto";
+
+export const mockOrders: DeliveryOrderTypeDto[] = [
+  {
+    id: 1,
+    customer: "Juan Pérez",
+    address: "Av. Colón 1000, Córdoba",
+    location: { lat: -31.4065, lng: -64.191 },
+    status: "TO_DISTRIBUTE",
+    payment: "CASH",
+    priority: "HIGH",
+    rejectReason: "",
+    incidentCount: 0,
+  },
+  {
+    id: 2,
+    customer: "María López",
+    address: "Bv. San Juan 500, Córdoba",
+    location: { lat: -31.4225, lng: -64.188 },
+    status: "TO_DISTRIBUTE",
+    payment: "TRANSFER",
+    priority: "NORMAL",
+    rejectReason: "",
+    incidentCount: 0
+  },
+  {
+    id: 3,
+    customer: "Martin Gómez",
+    address: "Av. Vélez Sarsfield 1500, Córdoba",
+    location: { lat: -31.448, lng: -64.1945 },
+    status: "TO_DISTRIBUTE",
+    payment: "CASH",
+    priority: "HIGH",
+    rejectReason: "",
+    incidentCount: 0
+  },
+  {
+    id: 4,
+    customer: "Lucía Fernández",
+    address: "Av. Sabattini 2500, Córdoba",
+    location: { lat: -31.4501, lng: -64.1632 },
+    status: "DELIVERED",
+    payment: "CASH",
+    priority: "LOW",
+    rejectReason: "",
+    incidentCount: 0
+  },
+  {
+    id: 5,
+    customer: "Pedro Alvarez",
+    address: "Av. Rafael Núñez 3500, Córdoba",
+    location: { lat: -31.3568, lng: -64.2471 },
+    status: "DELIVERED",
+    payment: "ACCOUNT", // 👈 corregido, antes estaba "CARD"
+    priority: "NORMAL",
+    rejectReason: "",
+    incidentCount: 0
+  },
+  {
+    id: 6,
+    customer: "Sofía Castro",
+    address: "Duarte Quirós 1200, Córdoba",
+    location: { lat: -31.4209, lng: -64.2065 },
+    status: "DELIVERED",
+    payment: "CASH",
+    priority: "HIGH",
+    rejectReason: "",
+    incidentCount: 0
+  },
+  {
+    id: 7,
+    customer: "Martin El Martinez",
+    address: "Pasaje San Agustin 342",
+    location: { lat: -31.4201, lng: -64.2065 },
+    status: "PENDING_VERIFIED",
+    payment: "CASH",
+    priority: "HIGH",
+    rejectReason: "",
+    incidentCount: 0
+  },
+  {
+    id: 8,
+    customer: "Ana Torres",
+    address: "Av. Fuerza Aérea 2000, Córdoba",
+    location: { lat: -31.4312, lng: -64.2225 },
+    status: "VERIFIED",
+    payment: "CASH",
+    priority: "NORMAL",
+    rejectReason: "",
+    incidentCount: 0
+  },
+  {
+    id: 9,
+    customer: "Diego Mariani",
+    address: "Bv. Illia 800, Córdoba",
+    location: { lat: -31.4205, lng: -64.1951 },
+    status: "VERIFIED",
+    payment: "TRANSFER",
+    priority: "LOW",
+    rejectReason: "",
+    incidentCount: 0
+  },
+  {
+    id: 10,
+    customer: "Valentina Ríos",
+    address: "Av. Colón 1500, Córdoba",
+    location: { lat: -31.41, lng: -64.19 },
+    status: "INCIDENT",
+    payment: "TRANSFER",
+    priority: "HIGH",
+    incidentCount: 1,
+    rejectReason: "",
+  },
+  {
+    id: 11,
+    customer: "Lucas Herrera",
+    address: "Bv. San Juan 1200, Córdoba",
+    location: { lat: -31.425, lng: -64.185 },
+    status: "INCIDENT",
+    payment: "TRANSFER",
+    priority: "NORMAL",
+    incidentCount: 1,
+    rejectReason: "",
+  },
+];
