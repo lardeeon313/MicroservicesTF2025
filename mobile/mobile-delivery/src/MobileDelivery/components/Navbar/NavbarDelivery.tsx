@@ -1,27 +1,25 @@
+// components/NavbarDelivery.tsx
 import React, { useState, useRef } from "react";
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  Animated,
-} from "react-native";
+import { View, Image, Text, TouchableOpacity, Animated } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { DeliveryStackParamList } from "../../types/DeliveryStackType";
 
-interface NavbarDeliveryProps {
+type DeliveryNav = NativeStackNavigationProp<DeliveryStackParamList>;
+
+interface NavbarProps {
   user: {
     name: string;
     role: string;
-    team?: { teamName: string };
   } | null;
   isAuthenticated: boolean;
   logout: () => void;
 }
 
-const NavbarDelivery = ({ user, isAuthenticated, logout }: NavbarDeliveryProps) => {
+const NavbarDelivery = ({ user, isAuthenticated, logout }: NavbarProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const navigation = useNavigation();
+  const navigation = useNavigation<DeliveryNav>();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -45,16 +43,16 @@ const NavbarDelivery = ({ user, isAuthenticated, logout }: NavbarDeliveryProps) 
         borderBottomColor: "#374151",
       }}
     >
-      {/* Logo + título */}
+      {/* Logo y título */}
       <TouchableOpacity
-        style={{ flexDirection: "row", alignItems: "center" }}
-        onPress={() => navigation.navigate("Dashboard" as never)}
+        style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+        onPress={() => navigation.navigate("Dashboard")}
       >
         <Image
           source={require("../../../assetsImages/LogoVerona.png")}
           style={{
-            width: 36,
-            height: 36,
+            width: 40,
+            height: 40,
             marginRight: 8,
             resizeMode: "contain",
           }}
@@ -64,7 +62,7 @@ const NavbarDelivery = ({ user, isAuthenticated, logout }: NavbarDeliveryProps) 
         </Text>
       </TouchableOpacity>
 
-      {/* Perfil */}
+      {/* Perfil con logout */}
       {isAuthenticated && user && (
         <View style={{ position: "relative" }}>
           <TouchableOpacity
@@ -72,70 +70,34 @@ const NavbarDelivery = ({ user, isAuthenticated, logout }: NavbarDeliveryProps) 
             style={{
               flexDirection: "row",
               alignItems: "center",
-              paddingVertical: 6,
-              paddingHorizontal: 8,
+              gap: 10,
+              padding: 8,
               borderRadius: 8,
-              backgroundColor: isOpen ? "#a91c1c" : "transparent",
+              backgroundColor: isOpen ? "#374151" : "transparent",
             }}
           >
             <Image
               source={require("../../../assetsImages/icon-person.png")}
               style={{
-                width: 34,
-                height: 34,
-                borderRadius: 17,
-                marginRight: 8,
+                width: 36,
+                height: 36,
+                resizeMode: "contain",
+                borderRadius: 18,
               }}
             />
-
-            <View style={{ flexShrink: 1 }}>
+            <View>
               <Text
-                style={{
-                  color: "#ffffff",
-                  fontSize: 14,
-                  fontWeight: "600",
-                }}
+                style={{ color: "#ffffff", fontSize: 14, fontWeight: "600" }}
               >
                 {user.name}
               </Text>
-              <Text
-                style={{
-                  color: "#f3f4f6",
-                  fontSize: 12,
-                  marginBottom: user.team?.teamName ? 4 : 0,
-                }}
-              >
+              <Text style={{ color: "#9ca3af", fontSize: 12 }}>
                 {user.role}
               </Text>
-
-              {user.team?.teamName && (
-                <View
-                  style={{
-                    backgroundColor: "#611212ff",
-                    paddingVertical: 3,
-                    paddingHorizontal: 6,
-                    borderRadius: 6,
-                    alignSelf: "flex-start", // 👈 evita que estire todo
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "#9ca3af",
-                      fontSize: 10,
-                      fontWeight: "600",
-                    }}
-                  >
-                    Equipo: 
-                  </Text>
-                  <Text style={{ color: "#d1d5db", fontSize: 11 }}>
-                    {user.team.teamName}
-                  </Text>
-                </View>
-              )}
             </View>
           </TouchableOpacity>
 
-          {/* Menú */}
+          {/* Solo Logout */}
           {isOpen && (
             <Animated.View
               style={{
@@ -144,7 +106,7 @@ const NavbarDelivery = ({ user, isAuthenticated, logout }: NavbarDeliveryProps) 
                 top: 50,
                 backgroundColor: "#ffffff",
                 borderRadius: 8,
-                padding: 10,
+                padding: 8,
                 shadowColor: "#000",
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.2,
@@ -166,15 +128,20 @@ const NavbarDelivery = ({ user, isAuthenticated, logout }: NavbarDeliveryProps) 
                 onPress={() => {
                   logout();
                   setIsOpen(false);
+                  navigation.reset({
+                    index: 0,
+                    routes: [{ name: "Login" }],
+                  });
                 }}
                 style={{
-                  paddingVertical: 8,
-                  paddingHorizontal: 14,
+                  paddingVertical: 10,
+                  paddingHorizontal: 16,
                   borderRadius: 6,
-                  backgroundColor: "#fee2e2",
+                  marginVertical: 4,
+                  backgroundColor: "#fef2f2",
                 }}
               >
-                <Text style={{ color: "#dc2626", fontWeight: "600" }}>
+                <Text style={{ color: "#ef4444", fontWeight: "600" }}>
                   Cerrar sesión
                 </Text>
               </TouchableOpacity>
@@ -187,3 +154,5 @@ const NavbarDelivery = ({ user, isAuthenticated, logout }: NavbarDeliveryProps) 
 };
 
 export default NavbarDelivery;
+
+

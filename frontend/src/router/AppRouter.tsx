@@ -56,7 +56,8 @@ import InvoiceOneDetailPage from "../features/depot/billingmanager/pages/Invoice
 
 // Otros roles
 import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
-import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
+import VerificationManagerDashboardPage from "../features/verification/pages/VerificationManagerDashboard";
+import { DashboardLogisticReportsPage } from "../features/verification/pages/reports/DashboardLogisticReportsPage";
 
 
 //import InvoiceDetailPage from "../features/depot/billingmanager/components/InvoiceListComponent";
@@ -165,11 +166,16 @@ const AppRouter = () => {
         <Route
             path="/verification"
             element={
-            <ProtectedRoute requiredRole="VerificationStaff">
-                <VerificationDashboard />
-            </ProtectedRoute>
+                <ProtectedRoute requiredRole="VerificationStaff">
+                    <Outlet/>
+                </ProtectedRoute>
             }
-        />
+        >
+            <Route index element={<VerificationManagerDashboardPage/>} />
+            {/**reportes sector logistica*/}
+            <Route path="reports" element={<DashboardLogisticReportsPage/>} />
+        </Route>
+
 
         {/* Admin */}
         <Route

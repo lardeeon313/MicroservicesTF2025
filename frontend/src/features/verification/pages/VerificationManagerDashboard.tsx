@@ -32,9 +32,9 @@ const VerificationManagerDashboardPage = () => {
   return (
     <div className="container m-0 pt-36 min-w-full min-h-full">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Panel de Verficacion</h1>
+        <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Panel de Verificacion</h1>
         <p className="text-center text-lg text-gray-700 mb-12">
-          Todo lo que necesitás para gestionar las operaciones de Verficacion
+          Todo lo que necesitás para gestionar las operaciones de Verificacion
         </p>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {cards.map(({ title, description, Icon, link }, idx) => (

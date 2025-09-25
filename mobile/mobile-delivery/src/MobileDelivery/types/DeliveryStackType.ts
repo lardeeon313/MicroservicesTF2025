@@ -21,4 +21,6 @@ export type DeliveryStackParamList = {
   NotificationIncident: {
      orderId: number ;
   }
+  Login : undefined;
+  Register: undefined;
 };
