@@ -1,32 +1,40 @@
-export const mockOrders = [
+import { DeliveryOrderTypeDto } from "../types/DeliveryOrderTypeDto";
+
+export const mockOrders: DeliveryOrderTypeDto[] = [
   {
     id: 1,
     customer: "Juan Pérez",
     address: "Av. Colón 1000, Córdoba",
-    location: { lat: -31.4065, lng: -64.1910 }, // Av. Colón
+    location: { lat: -31.4065, lng: -64.191 },
     status: "TO_DISTRIBUTE",
     payment: "CASH",
     priority: "HIGH",
+    rejectReason: "",
+    incidentCount: 0,
   },
   {
     id: 2,
     customer: "María López",
     address: "Bv. San Juan 500, Córdoba",
-    location: { lat: -31.4225, lng: -64.1880 }, // Bv. San Juan
+    location: { lat: -31.4225, lng: -64.188 },
     status: "TO_DISTRIBUTE",
-    payment: "CARD",
+    payment: "TRANSFER",
     priority: "NORMAL",
+    rejectReason: "",
+    incidentCount: 0
   },
   {
     id: 3,
     customer: "Martin Gómez",
     address: "Av. Vélez Sarsfield 1500, Córdoba",
-    location: { lat: -31.4480, lng: -64.1945 }, // Vélez Sarsfield
+    location: { lat: -31.448, lng: -64.1945 },
     status: "TO_DISTRIBUTE",
     payment: "CASH",
-    priority: "CASI",
+    priority: "HIGH",
+    rejectReason: "",
+    incidentCount: 0
   },
-    {
+  {
     id: 4,
     customer: "Lucía Fernández",
     address: "Av. Sabattini 2500, Córdoba",
@@ -34,6 +42,8 @@ export const mockOrders = [
     status: "DELIVERED",
     payment: "CASH",
     priority: "LOW",
+    rejectReason: "",
+    incidentCount: 0
   },
   {
     id: 5,
@@ -41,8 +51,10 @@ export const mockOrders = [
     address: "Av. Rafael Núñez 3500, Córdoba",
     location: { lat: -31.3568, lng: -64.2471 },
     status: "DELIVERED",
-    payment: "CARD",
+    payment: "ACCOUNT", // 👈 corregido, antes estaba "CARD"
     priority: "NORMAL",
+    rejectReason: "",
+    incidentCount: 0
   },
   {
     id: 6,
@@ -52,15 +64,19 @@ export const mockOrders = [
     status: "DELIVERED",
     payment: "CASH",
     priority: "HIGH",
+    rejectReason: "",
+    incidentCount: 0
   },
   {
-    id:7,
-    customer: "Martin El martinez",
-    address:"Pasaje san agustin 342",
-    location : {lat:-31.4201, lng: -64.2065},
+    id: 7,
+    customer: "Martin El Martinez",
+    address: "Pasaje San Agustin 342",
+    location: { lat: -31.4201, lng: -64.2065 },
     status: "PENDING_VERIFIED",
     payment: "CASH",
     priority: "HIGH",
+    rejectReason: "",
+    incidentCount: 0
   },
   {
     id: 8,
@@ -70,6 +86,8 @@ export const mockOrders = [
     status: "VERIFIED",
     payment: "CASH",
     priority: "NORMAL",
+    rejectReason: "",
+    incidentCount: 0
   },
   {
     id: 9,
@@ -77,25 +95,31 @@ export const mockOrders = [
     address: "Bv. Illia 800, Córdoba",
     location: { lat: -31.4205, lng: -64.1951 },
     status: "VERIFIED",
-    payment: "CARD",
+    payment: "TRANSFER",
     priority: "LOW",
+    rejectReason: "",
+    incidentCount: 0
   },
   {
     id: 10,
     customer: "Valentina Ríos",
     address: "Av. Colón 1500, Córdoba",
-    location: { lat: -31.4100, lng: -64.1900 },
+    location: { lat: -31.41, lng: -64.19 },
     status: "INCIDENT",
-    payment: "CASH",
+    payment: "TRANSFER",
     priority: "HIGH",
+    incidentCount: 1,
+    rejectReason: "",
   },
   {
     id: 11,
     customer: "Lucas Herrera",
     address: "Bv. San Juan 1200, Córdoba",
-    location: { lat: -31.4250, lng: -64.1850 },
+    location: { lat: -31.425, lng: -64.185 },
     status: "INCIDENT",
-    payment: "CARD",
+    payment: "TRANSFER",
     priority: "NORMAL",
+    incidentCount: 1,
+    rejectReason: "",
   },
 ];

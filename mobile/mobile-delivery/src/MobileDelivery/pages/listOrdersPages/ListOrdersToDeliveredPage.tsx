@@ -10,12 +10,18 @@ import Footer from "../../../components/Footer";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { DeliveryStackParamList } from "../../types/DeliveryStackType";
+import { DeliveryOrderTypeDto } from "../../types/DeliveryOrderTypeDto";
+
+import ConfirmPaymentModal from "../../components/ConfirmPayment/ConfirmPaymentModal";
 
 type DeliveryNavigationProp = NativeStackNavigationProp<DeliveryStackParamList>;
 
 export default function ListOrdersToDeliveredPage() {
   const navigation = useNavigation<DeliveryNavigationProp>();
   const [orders, setOrders] = useState(initialOrders);
+
+  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const mockUser = {
     name: "Carlos",
@@ -25,8 +31,11 @@ export default function ListOrdersToDeliveredPage() {
 
   const handleLogout = () => console.log("🚪 Sesión cerrada");
 
-  // actualizar pedido desde PaymentTypeComponent
-  const updateOrderStatus = (orderId: number, newStatus: string) => {
+  // actualizar estado del pedido
+  const updateOrderStatus = (
+    orderId: number,
+    newStatus: DeliveryOrderTypeDto["status"]
+  ) => {
     setOrders((prev) =>
       prev.map((o) =>
         o.id === orderId ? { ...o, status: newStatus } : o
@@ -34,10 +43,24 @@ export default function ListOrdersToDeliveredPage() {
     );
   };
 
+  // abrir modal de confirmación de pago
+  const handleOpenPaymentModal = (orderId: number) => {
+    setSelectedOrderId(orderId);
+    setModalVisible(true);
+  };
+
+  // confirmar pago desde modal
+  const handleConfirmPayment = () => {
+    if (selectedOrderId !== null) {
+      updateOrderStatus(selectedOrderId, "PAYMENT_CONFIRMED");
+      console.log(`💰 Pago confirmado para pedido ${selectedOrderId}`);
+    }
+  };
+
   // confirmar rendición
   const handleRenderOrder = (orderId: number) => {
     console.log(`✅ Pedido ${orderId} rendido`);
-    updateOrderStatus(orderId, "RENDERED"); // 👈 nuevo estado
+    updateOrderStatus(orderId, "RENDERED");
   };
 
   return (
@@ -55,6 +78,7 @@ export default function ListOrdersToDeliveredPage() {
       <Text style={styles.title}>Pedidos Entregados</Text>
 
       <FlatList
+        contentContainerStyle={{ padding: 16 }}
         data={orders.filter(
           (o) => o.status === "DELIVERED" || o.status === "PENDING_VERIFIED"
         )}
@@ -66,18 +90,22 @@ export default function ListOrdersToDeliveredPage() {
             address={item.address}
             status={item.status}
             priority={item.priority}
+            payment={item.payment}
             onSeeDetail={() =>
               navigation.navigate("OrderDetail", { order: item })
             }
-            onPaymentType={() =>
-              navigation.navigate("SelectPaymentType", {
-                orderId: item.id,
-                updateOrderStatus,
-              })
-            }
+            onPaymentType={() => handleOpenPaymentModal(item.id)} // 👈 ahora abre modal
             onRenderOrder={handleRenderOrder}
           />
         )}
+      />
+
+      {/* Modal de confirmación de pago */}
+      <ConfirmPaymentModal
+        visible={modalVisible}
+        orderId={selectedOrderId?.toString() ?? ""}
+        onClose={() => setModalVisible(false)}
+        onConfirm={handleConfirmPayment}
       />
 
       <Footer />

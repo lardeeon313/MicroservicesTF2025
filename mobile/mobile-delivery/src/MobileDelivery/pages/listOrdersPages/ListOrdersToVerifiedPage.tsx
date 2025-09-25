@@ -39,7 +39,7 @@ export default function ListOrdersToVerifiedPage() {
 
       <Text style={styles.title}>Pedidos Verificados</Text>
 
-      <FlatList
+      <FlatList contentContainerStyle={{ padding: 16 }}
         data={orders.filter((o) => o.status === "VERIFIED")}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (

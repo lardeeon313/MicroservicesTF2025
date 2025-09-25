@@ -8,9 +8,10 @@ type Props = {
   address: string;
   status: string;
   priority: string;
+  payment: "CASH" | "TRANSFER" | "ACCOUNT"; // 👈 nuevo campo
   onSeeDetail: () => void;
   onPaymentType: () => void;
-  onRenderOrder: (orderId: number) => void; // recibe id para confirmar
+  onRenderOrder: (orderId: number) => void;
 };
 
 export default function ListOrdersToDeliveredComponent({
@@ -19,6 +20,7 @@ export default function ListOrdersToDeliveredComponent({
   address,
   status,
   priority,
+  payment, // 👈 lo recibimos
   onSeeDetail,
   onPaymentType,
   onRenderOrder,
@@ -36,16 +38,19 @@ export default function ListOrdersToDeliveredComponent({
         elevation: 4,
       }}
     >
-      <Text style={{ fontSize: 18, fontWeight: "bold" }}>Pedido #{id}</Text>
+      <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+        Pedido #{id}
+      </Text>
       <Text style={{ fontSize: 20, fontWeight: "300", marginTop: 4 }}>
         Cliente: {customer}
       </Text>
       <Text style={{ marginTop: 4, fontSize: 20 }}>Dirección: {address}</Text>
       <Text style={{ marginTop: 4, fontSize: 20 }}>Estado: {status}</Text>
-      <Text
-        style={{ fontSize: 13, fontStyle: "italic", color: "gray" }}
-      >
+      <Text style={{ fontSize: 13, fontStyle: "italic", color: "gray" }}>
         Prioridad: {priority}
+      </Text>
+      <Text style={{ marginTop: 4, fontSize: 16, color: "#444" }}>
+        Método de pago: {payment}
       </Text>
 
       <View
@@ -70,24 +75,8 @@ export default function ListOrdersToDeliveredComponent({
           </Text>
         </TouchableOpacity>
 
-        {/* Ingresar pago */}
-        {status === "DELIVERED" && (
-          <TouchableOpacity
-            style={{
-              backgroundColor: "#4CAF50",
-              padding: 8,
-              borderRadius: 8,
-            }}
-            onPress={onPaymentType}
-          >
-            <Text style={{ color: "#fff", fontWeight: "bold" }}>
-              Ingresar Pago
-            </Text>
-          </TouchableOpacity>
-        )}
-
-        {/* Rendir pedido */}
-        {status === "PENDING_VERIFIED" && (
+        {/* Si es efectivo -> botón de rendición */}
+        {payment === "CASH" && (
           <TouchableOpacity
             style={{
               backgroundColor: "#F59E0B",
@@ -98,6 +87,22 @@ export default function ListOrdersToDeliveredComponent({
           >
             <Text style={{ color: "#fff", fontWeight: "bold" }}>
               Rendir Pedido
+            </Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Si es transferencia o cuenta corriente -> botón de confirmar pago */}
+        {(payment === "TRANSFER" || payment === "ACCOUNT") && (
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#4CAF50",
+              padding: 8,
+              borderRadius: 8,
+            }}
+            onPress={onPaymentType}
+          >
+            <Text style={{ color: "#fff", fontWeight: "bold" }}>
+              Confirmar Pago
             </Text>
           </TouchableOpacity>
         )}

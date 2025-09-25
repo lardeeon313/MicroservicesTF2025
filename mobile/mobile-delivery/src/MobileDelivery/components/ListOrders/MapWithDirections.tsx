@@ -53,6 +53,7 @@ export default function MapWithDirections({ orders }: Props) {
 
 const styles = StyleSheet.create({
   mapContainer: {
+    flex: 1, // 👈 Esto permite que crezca dentro del modal
     margin: 16,
     borderRadius: 16,
     overflow: "hidden",
@@ -63,7 +64,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
   },
   map: {
-    height: 200,
+    flex: 1, // 👈 Hace que ocupe todo el alto del contenedor
     width: "100%",
   },
 });

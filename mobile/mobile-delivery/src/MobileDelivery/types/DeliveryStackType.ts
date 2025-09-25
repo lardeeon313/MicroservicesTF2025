@@ -1,5 +1,6 @@
 // navigation/DeliveryStackType.ts
 import { DeliveryOrderTypeDto } from "./DeliveryOrderTypeDto";
+import { OrderStatus } from "./DeliveryOrderTypeDto";
 
 export type DeliveryStackParamList = {
   Dashboard: undefined;
@@ -12,6 +13,12 @@ export type DeliveryStackParamList = {
   };
   SelectPaymentType: { 
     orderId: number;
-    updateOrderStatus: (orderId: number, newStatus: string) => void;
+    updateOrderStatus:  (orderId: number, newStatus: OrderStatus) => void;
   };
+  ReportIncident: { 
+    orderId: number; 
+  };
+  NotificationIncident: {
+     orderId: number ;
+  }
 };

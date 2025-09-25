@@ -26,15 +26,15 @@ export default function ListOrdersToIncidentPage() {
   const handleLogout = () => console.log("🚪 Sesión cerrada");
 
   const handleReportIncident = (orderId: number) => {
-    console.log("Reportar incidencia del pedido", orderId);
+     navigation.navigate("ReportIncident", { orderId });
   };
 
   const handleViewIncidents = (orderId: number) => {
-    console.log("Ver incidencias del pedido", orderId);
+    navigation.navigate("NotificationIncident", { orderId });
   };
 
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1 }}>
       <NavbarDelivery
         user={mockUser}
         isAuthenticated={true}
@@ -45,18 +45,19 @@ export default function ListOrdersToIncidentPage() {
         <GetBack />
       </View>
 
-      <Text style={styles.title}>Pedidos con Incidencias</Text>
+      <Text style={styles.title}>Pedidos con Incidentes</Text>
 
-      <FlatList
+      <FlatList contentContainerStyle={{ padding: 16 }}
         data={orders.filter((o) => o.status === "INCIDENT")}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <ListOrdersToIncidentComponent
+          <ListOrdersToIncidentComponent 
             id={item.id}
             customer={item.customer}
             address={item.address}
             status={item.status}
             priority={item.priority}
+            incidentCount={item.incidentCount || 0} // 👈 contador
             onSeeDetail={() =>
               navigation.navigate("OrderDetail", { order: item })
             }
