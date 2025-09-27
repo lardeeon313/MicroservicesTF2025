@@ -13,6 +13,7 @@ import { DeliveryStackParamList } from "../../types/DeliveryStackType";
 import { DeliveryOrderTypeDto } from "../../types/DeliveryOrderTypeDto";
 
 import ConfirmPaymentModal from "../../components/ConfirmPayment/ConfirmPaymentModal";
+import { useAuth } from "../../Login/context/useAuth"; // 👈 Importamos el hook del AuthContext
 
 type DeliveryNavigationProp = NativeStackNavigationProp<DeliveryStackParamList>;
 
@@ -23,13 +24,13 @@ export default function ListOrdersToDeliveredPage() {
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const mockUser = {
-    name: "Carlos",
-    role: "Repartidor",
-    team: { teamName: "Zona Oeste" },
+  // ✅ Obtenemos user, isAuthenticated y logout del AuthContext
+  const { name, role, team, isAuthenticated, logout } = useAuth();
+  const user = {
+    name: name ?? "",
+    role: role ?? "",
+    team: team ?? null,
   };
-
-  const handleLogout = () => console.log("🚪 Sesión cerrada");
 
   // actualizar estado del pedido
   const updateOrderStatus = (
@@ -65,10 +66,11 @@ export default function ListOrdersToDeliveredPage() {
 
   return (
     <View style={styles.container}>
+      
       <NavbarDelivery
-        user={mockUser}
-        isAuthenticated={true}
-        logout={handleLogout}
+        user={user}
+        isAuthenticated={isAuthenticated}
+        logout={logout}
       />
 
       <View style={styles.backContainer}>
@@ -94,7 +96,7 @@ export default function ListOrdersToDeliveredPage() {
             onSeeDetail={() =>
               navigation.navigate("OrderDetail", { order: item })
             }
-            onPaymentType={() => handleOpenPaymentModal(item.id)} // 👈 ahora abre modal
+            onPaymentType={() => handleOpenPaymentModal(item.id)}
             onRenderOrder={handleRenderOrder}
           />
         )}

@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, Dimensions } from "react-native";
-import { MapPin, CheckCircle, AlertTriangle , CircleDollarSign} from "lucide-react-native";
+import { MapPin, CheckCircle, AlertTriangle, CircleDollarSign } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { DeliveryStackParamList } from "../types/DeliveryStackType";
+import { useAuth } from "../Login/context/useAuth";
 import NavbarDelivery from "../components/Navbar/NavbarDelivery";
 import Footer from "../../components/Footer";
 
@@ -37,32 +38,47 @@ const cards: CardItem[] = [
   },
   {
     title: "Pedidos Verificados",
-    description: "Revisa los pedidos que ya han sido verificados por tesoreria para completar el proceso.",
+    description:
+      "Revisa los pedidos que ya han sido verificados por tesorería para completar el proceso.",
     icon: CircleDollarSign,
     path: "OrdersToVerified",
-  }
+  },
 ];
 
 const DeliveryDashboardComponent = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<DeliveryStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<DeliveryStackParamList>>();
+  const { userId, name, role, team, loading: authLoading, token, isAuthenticated, logout } = useAuth();
+  const [reloadKey, setReloadKey] = useState(0);
+
+  // 🔄 Forzar recarga si cambia usuario o token
+  useEffect(() => {
+    if (userId && token) {
+      setReloadKey(prev => prev + 1);
+    }
+  }, [userId, token]);
+
+  if (authLoading) {
+    return <Text style={{ textAlign: "center", marginTop: 50 }}>Cargando sesión...</Text>;
+  }
+
+  if (!userId || !token) {
+    return <Text style={{ textAlign: "center", marginTop: 50 }}>Error: No hay sesión activa</Text>;
+  }
+
+  // ✅ Usuario garantizado a esta altura
+  const user = {
+    name: name ?? "",
+    role: role ?? "",
+    team: team ?? null,
+  };
+
   const numColumns = 2;
   const cardWidth = Dimensions.get("window").width / numColumns - 24;
 
-  const mockUser = {
-    name: "Carlos",
-    role: "Repartidor",
-    team: { teamName: "Zona Oeste" },
-  };
-
   return (
-    <View style={{ flex: 1, backgroundColor: "#ffffff" }}>
-      {/* 👇 Navbar arriba */}
-      <NavbarDelivery
-        user={mockUser}
-        isAuthenticated={true}
-        logout={() => console.log("🚪 Sesión cerrada")}
-      />
+    <View style={{ flex: 1, backgroundColor: "#ffffff" }} key={reloadKey}>
+      {/* 🔝 Navbar con datos reales */}
+      <NavbarDelivery user={user} isAuthenticated={isAuthenticated} logout={logout} />
 
       <Text
         style={{
@@ -79,18 +95,12 @@ const DeliveryDashboardComponent = () => {
           marginTop: 25,
         }}
       >
-        ¡Bienvenido {mockUser.name}!
+        ¡Bienvenido {user.name}!
       </Text>
 
-      {/* 👇 Cards abajo */}
+      {/* 📦 Cards dinámicas */}
       <View style={{ flex: 1, padding: 16 }}>
-        <View
-          style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            justifyContent: "space-between",
-          }}
-        >
+        <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}>
           {cards.map((card, index) => (
             <TouchableOpacity
               key={index}
@@ -108,7 +118,6 @@ const DeliveryDashboardComponent = () => {
                 elevation: 3,
               }}
               onPress={() => {
-                // ✅ Usamos switch/case para evitar problemas de tipo
                 switch (card.path) {
                   case "OrdersToDistribute":
                     navigation.navigate("OrdersToDistribute");
@@ -128,30 +137,15 @@ const DeliveryDashboardComponent = () => {
               }}
             >
               <card.icon size={32} color="#8b0000" style={{ marginBottom: 8 }} />
-              <Text
-                style={{
-                  fontSize: 15,
-                  fontWeight: "600",
-                  color: "#111827",
-                  textAlign: "center",
-                  marginBottom: 6,
-                }}
-              >
+              <Text style={{ fontSize: 15, fontWeight: "600", color: "#111827", textAlign: "center", marginBottom: 6 }}>
                 {card.title}
               </Text>
-              <Text
-                style={{
-                  fontSize: 12,
-                  color: "#6B7280",
-                  textAlign: "center",
-                }}
-              >
-                {card.description}
-              </Text>
+              <Text style={{ fontSize: 12, color: "#6B7280", textAlign: "center" }}>{card.description}</Text>
             </TouchableOpacity>
           ))}
         </View>
       </View>
+
       <Footer />
     </View>
   );

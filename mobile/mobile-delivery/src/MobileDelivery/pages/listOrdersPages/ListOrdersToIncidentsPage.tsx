@@ -10,6 +10,8 @@ import Footer from "../../../components/Footer";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { DeliveryStackParamList } from "../../types/DeliveryStackType";
+import { useAuth } from "../../Login/context/useAuth";
+
 
 type DeliveryNavigationProp = NativeStackNavigationProp<DeliveryStackParamList>;
 
@@ -17,14 +19,15 @@ export default function ListOrdersToIncidentPage() {
   const navigation = useNavigation<DeliveryNavigationProp>();
   const [orders] = useState(initialOrders);
 
-  const mockUser = {
-    name: "Carlos",
-    role: "Repartidor",
-    team: { teamName: "Zona Oeste" },
+
+  const { name, role, team, isAuthenticated, logout } = useAuth();
+  const user = {
+    name: name ?? "",
+    role: role ?? "",
+    team: team ?? null,
   };
 
-  const handleLogout = () => console.log("🚪 Sesión cerrada");
-
+  //METODOS: 
   const handleReportIncident = (orderId: number) => {
      navigation.navigate("ReportIncident", { orderId });
   };
@@ -36,9 +39,9 @@ export default function ListOrdersToIncidentPage() {
   return (
     <View style={{ flex: 1 }}>
       <NavbarDelivery
-        user={mockUser}
-        isAuthenticated={true}
-        logout={handleLogout}
+        user={user}
+        isAuthenticated={isAuthenticated}
+        logout={logout}
       />
 
       <View style={styles.backContainer}>

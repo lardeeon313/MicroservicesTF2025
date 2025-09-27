@@ -7,6 +7,8 @@ import NavbarDelivery from "../../components/Navbar/NavbarDelivery";
 import Footer from "../../../components/Footer";
 import GetBack from "../../../components/GetBack";
 
+import { useAuth } from "../../Login/context/useAuth";
+
 type Props = NativeStackScreenProps<DeliveryStackParamList, "NotificationIncident">;
 
 export default function NotificationIncidentPage({ route }: Props) {
@@ -24,11 +26,16 @@ export default function NotificationIncidentPage({ route }: Props) {
     setIncidents(mockIncidents.filter((i) => i.id === orderId || true));
   }, [orderId]);
 
-  const mockUser = { name: "Carlos", role: "Repartidor", team: { teamName: "Zona Oeste" } };
+  const { name, role, team, isAuthenticated, logout } = useAuth();
+  const user = {
+    name: name ?? "",
+    role: role ?? "",
+    team: team ?? null,
+  };
 
   return (
     <View style={{ flex: 1 }}>
-      <NavbarDelivery user={mockUser} isAuthenticated={true} logout={() => {}} />
+      <NavbarDelivery user={user} isAuthenticated={isAuthenticated} logout={logout} />
         <View style={{ marginTop: 10, marginLeft: 10}}>
             <GetBack/>
         </View>

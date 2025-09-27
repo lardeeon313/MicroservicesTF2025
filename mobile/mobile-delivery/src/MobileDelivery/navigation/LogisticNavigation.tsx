@@ -10,8 +10,6 @@ import PaymentTypeComponent from "../components/PaymentType/PaymentTypeComponent
 import ListOrdersToIncidentPage from "../pages/listOrdersPages/ListOrdersToIncidentsPage";
 import IncidentsDetailPage from "../pages/Incidents/ReportIncidentPage";
 import NotificationIncidentPage from "../pages/Incidents/NotificationIncidentPage";
-import LoginPage from "../Login/pages/LoginPage";
-import RegisterPage from "../Login/pages/RegisterPage";
 
 
 const Stack = createNativeStackNavigator<DeliveryStackParamList>();
@@ -28,8 +26,6 @@ export default function LogisticNavigation() {
       <Stack.Screen name='SelectPaymentType' component={PaymentTypeComponent} /> 
       <Stack.Screen name='ReportIncident' component={IncidentsDetailPage} />
       <Stack.Screen name='NotificationIncident' component={NotificationIncidentPage} />
-      <Stack.Screen name='Login' component={LoginPage}/>
-      <Stack.Screen name='Register' component={RegisterPage}/>
     </Stack.Navigator>
   );
 }

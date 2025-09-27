@@ -6,45 +6,32 @@ import {
   getRoleFromToken,
   getNameFromToken,
 } from "../Utils/jwlUtils";
-// import { TeamDeliveryType } from "../../types/TeamDeliveryType"; // 
-// import { GetTeamNameForDelivery } from "../../services/GetTeamNameService"; 
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [name, setName] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>(null);
-  // const [team, setTeam] = useState<TeamDeliveryType | null>(null); // 
   const [loading, setLoading] = useState<boolean>(true);
 
-  const [updateKey, setUpdateKey] = useState(0);
-
+  // 🔑 Este state fuerza siempre a pedir login al iniciar
   useEffect(() => {
-    const loadUserData = async () => {
+    const resetAuth = async () => {
       try {
-        const storedToken = await AsyncStorage.getItem("token");
-        if (storedToken) {
-          setToken(storedToken);
-
-          const id = getUserIdFromToken(storedToken);
-          const role = getRoleFromToken(storedToken);
-          const name = getNameFromToken(storedToken);
-
-          setUserId(id);
-          setRole(role);
-          setName(name);
-
-          // 🚫 NO TRAEMOS team hasta que haya backend
-        }
+        await AsyncStorage.removeItem("token"); // 🔥 Borro cualquier token previo
+        setToken(null);
+        setUserId(null);
+        setRole(null);
+        setName(null);
       } catch (error) {
-        console.error("Error loading token:", error);
+        console.error("Error clearing token:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    loadUserData();
-  }, [updateKey]);
+    resetAuth();
+  }, []);
 
   const login = async (newToken: string) => {
     try {
@@ -53,7 +40,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUserId(getUserIdFromToken(newToken));
       setRole(getRoleFromToken(newToken));
       setName(getNameFromToken(newToken));
-      setUpdateKey((prevKey) => prevKey + 1);
     } catch (error) {
       console.error("Error saving token:", error);
       throw error;
@@ -67,7 +53,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUserId(null);
       setRole(null);
       setName(null);
-      // setTeam(null); // No aplicable por el momento 
     } catch (error) {
       console.error("Error removing token:", error);
       throw error;
@@ -83,7 +68,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         userId,
         name,
         role,
-        team: null, // No aplicable por el momento 
+        team: null,
         isAuthenticated,
         loading,
         login,

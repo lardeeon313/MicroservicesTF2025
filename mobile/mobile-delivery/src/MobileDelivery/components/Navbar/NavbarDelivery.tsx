@@ -125,13 +125,9 @@ const NavbarDelivery = ({ user, isAuthenticated, logout }: NavbarProps) => {
               }}
             >
               <TouchableOpacity
-                onPress={() => {
-                  logout();
-                  setIsOpen(false);
-                  navigation.reset({
-                    index: 0,
-                    routes: [{ name: "Login" }],
-                  });
+              onPress={async () => {
+                await logout(); 
+                setIsOpen(false);          
                 }}
                 style={{
                   paddingVertical: 10,
