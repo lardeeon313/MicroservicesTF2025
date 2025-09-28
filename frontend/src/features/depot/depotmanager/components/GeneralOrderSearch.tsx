@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react';
 import { getAllOrders } from '../services/orderService';
 import { DepotOrderDto } from '../types/OrderTypes';
-import OrderDetails from '../../billingmanager/components/OrderDetails';
 import LoadingSpinner from '../../../../components/LoadingSpinner';
-import { Search, Filter, X } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { OrderStatusLabel } from '../constants/OrderStatusLabel';
 
 interface GeneralOrderSearchProps {
-  onOrderSelected?: (order: DepotOrderDto) => void;
+  // onOrderSelected?: (order: DepotOrderDto) => void; // Comentado temporalmente
 }
 
-const GeneralOrderSearch = ({ onOrderSelected }: GeneralOrderSearchProps) => {
+const GeneralOrderSearch = ({}: GeneralOrderSearchProps) => {
   const [orders, setOrders] = useState<DepotOrderDto[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<DepotOrderDto[]>([]);
   const [loading, setLoading] = useState(false);
@@ -29,6 +28,11 @@ const GeneralOrderSearch = ({ onOrderSelected }: GeneralOrderSearchProps) => {
   useEffect(() => {
     filterOrders();
   }, [orders, searchTerm, statusFilter]);
+
+  // Debug: Log cuando cambie el estado del modal
+  useEffect(() => {
+    console.log('Modal state changed:', { selectedOrder: !!selectedOrder, showDetails });
+  }, [selectedOrder, showDetails]);
 
   const loadOrders = async () => {
     try {
@@ -67,9 +71,10 @@ const GeneralOrderSearch = ({ onOrderSelected }: GeneralOrderSearchProps) => {
   };
 
   const handleOrderClick = (order: DepotOrderDto) => {
+    console.log('Order clicked:', order);
     setSelectedOrder(order);
     setShowDetails(true);
-    onOrderSelected?.(order);
+    // No llamamos onOrderSelected aquí para evitar que se cierre el modal
   };
 
   const handleClearFilters = () => {
@@ -77,21 +82,6 @@ const GeneralOrderSearch = ({ onOrderSelected }: GeneralOrderSearchProps) => {
     setStatusFilter('all');
   };
 
-  // Convertir DepotOrderDto a formato compatible con OrderDetails
-  const convertToTableData = (order: any) => ({
-    id: order.depotOrderId,
-    status: OrderStatusLabel[Number(order.status)] ?? 'Desconocido',
-    orderDate: order.orderDate ? order.orderDate.toString() : 'Sin fecha',
-    deliveryDate: order.deliveryDate ?? undefined,
-    deliveryDetail: order.deliveryDetail ?? '',
-    customerFirstName: order.customerName ? order.customerName.split(' ')[0] : '',
-    customerLastName: order.customerName ? order.customerName.split(' ').slice(1).join(' ') : '',
-    items: Array.isArray(order.items) ? order.items.map((item: any) => ({
-      productName: item.productName ?? '',
-      productBrand: item.productBrand ?? '',
-      quantity: item.quantity ?? 0
-    })) : []
-  });
 
   return (
     <div className="space-y-6">
@@ -226,19 +216,104 @@ const GeneralOrderSearch = ({ onOrderSelected }: GeneralOrderSearchProps) => {
           <div className="fixed inset-0 backdrop-blur-sm bg-black/30 z-[70]" />
           <div className="fixed inset-0 flex items-center justify-center z-[80]">
             <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-red-600">
                   Detalles de la Orden D-{(selectedOrder as any).depotOrderId}
                 </h2>
                 <button
                   onClick={() => setShowDetails(false)}
-                  className="text-gray-500 hover:text-gray-700"
+                  className="text-gray-500 hover:text-gray-700 text-2xl"
                 >
-                  <X className="h-5 w-5" />
+                  ✕
                 </button>
               </div>
               
-              <OrderDetails order={convertToTableData(selectedOrder)} />
+              <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-8 space-y-10">
+                {/* Datos del cliente */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">Cliente:</label>
+                    <p className="rounded-md bg-gray-50 px-3 py-2 text-gray-900 shadow-sm">
+                      {(selectedOrder as any).customerName}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">Fecha Pedido:</label>
+                    <p className="rounded-md bg-gray-50 px-3 py-2 text-gray-900 shadow-sm">
+                      {(selectedOrder as any).orderDate ? new Date((selectedOrder as any).orderDate).toLocaleDateString("es-AR") : 'Sin fecha'}
+                    </p>
+                  </div>
+                  <div className='md:col-span-2'>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">Detalles de entrega:</label>
+                    <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">
+                      {(selectedOrder as any).deliveryDetail || "No especificado"}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-4">Estado:</label>
+                    <span className={`rounded-lg border border-gray-300 px-3 py-2.5 font-semibold text-gray-900 shadow-sm ${
+                      Number((selectedOrder as any).status) === 0 ? 'bg-blue-100' :
+                      Number((selectedOrder as any).status) === 2 ? 'bg-yellow-100' :
+                      Number((selectedOrder as any).status) === 3 ? 'bg-orange-100' :
+                      Number((selectedOrder as any).status) === 7 ? 'bg-green-100' :
+                      Number((selectedOrder as any).status) === 8 ? 'bg-purple-100' :
+                      'bg-gray-100'
+                    }`}>
+                      {OrderStatusLabel[Number((selectedOrder as any).status)] ?? 'Desconocido'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Tabla de productos */}
+                <div className="overflow-x-auto rounded-lg shadow border border-gray-200">
+                  <table className="w-full text-sm text-left border-collapse">
+                    <thead className="bg-gray-100 text-gray-700 uppercase text-xs tracking-wider">
+                      <tr>
+                        <th className="px-4 py-3">Producto</th>
+                        <th className="px-4 py-3">Marca</th>
+                        <th className="px-4 py-3">Cantidad</th>
+                        {Number((selectedOrder as any).status) === 8 && (
+                          <>
+                            <th className="px-4 py-3">Precio Unitario</th>
+                            <th className="px-4 py-3">Subtotal</th>
+                          </>
+                        )}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {Array.isArray((selectedOrder as any).items) && (selectedOrder as any).items.map((item: any, index: number) => (
+                        <tr key={index} className="hover:bg-gray-50 transition">
+                          <td className="px-4 py-3">{item.productName}</td>
+                          <td className="px-4 py-3">{item.productBrand}</td>
+                          <td className="px-4 py-3">{item.quantity}</td>
+                          {Number((selectedOrder as any).status) === 8 && (
+                            <>
+                              <td className="px-4 py-3 font-medium text-gray-800">
+                                ${item.unitPrice || 0}
+                              </td>
+                              <td className="px-4 py-3 font-semibold text-gray-900">
+                                ${((item.unitPrice || 0) * item.quantity).toFixed(2)}
+                              </td>
+                            </>
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Total - Solo para órdenes facturadas */}
+                {Number((selectedOrder as any).status) === 8 && (
+                  <div className="flex justify-end items-center gap-4 mt-4">
+                    <span className="text-lg font-bold">Total:</span>
+                    <span className="text-2xl font-bold text-green-700">
+                      ${Array.isArray((selectedOrder as any).items) ? (selectedOrder as any).items.reduce((acc: number, item: any) => {
+                        return acc + ((item.unitPrice || 0) * item.quantity);
+                      }, 0).toFixed(2) : '0.00'}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </>
