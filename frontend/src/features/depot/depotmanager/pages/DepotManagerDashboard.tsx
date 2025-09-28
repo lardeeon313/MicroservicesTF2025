@@ -113,7 +113,7 @@ const DepotManagerDashboardPage = () => {
               </div>
               <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
                 <GeneralOrderSearch 
-                  onOrderSelected={() => setShowSearchModal(false)}
+                  // onOrderSelected={() => setShowSearchModal(false)} // Comentado para permitir ver detalles
                 />
               </div>
             </div>
