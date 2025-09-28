@@ -19,6 +19,7 @@ using IdentityService.Application.Commands.Login;
 using IdentityService.Application.Queries.GetAllOperators;
 using IdentityService.Application.Queries.GetAllSalesStaffs;
 using IdentityService.Application.Queries.GetCurrentUser;
+using IdentityService.Application.Queries.GetAllDeliverys;
 
 var builder = WebApplication.CreateBuilder(args);
 //para acceder desde el celular
@@ -95,6 +96,7 @@ builder.Services.AddScoped<ILoginCommandHandler, LoginCommandHandler>();
 builder.Services.AddScoped<IGetAllOperatorsQueryHandler,  GetAllOperatorsQueryHandler>();
 builder.Services.AddScoped<IGetAllSalesStaffsQueryHandler, GetAllSalesStaffsQueryHandler>();
 builder.Services.AddScoped<IGetCurrentUserQueryHandler, GetCurrentUserQueryHandler>(); 
+builder.Services.AddScoped<IGetAllDeliverysQueryHandler, GetAllDeliverysQueryHandler>();
 
 
 var app = builder.Build();

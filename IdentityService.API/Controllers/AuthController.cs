@@ -3,6 +3,7 @@ using IdentityService.Application.Commands.Login;
 using IdentityService.Application.Commands.Register;
 using IdentityService.Application.DTOs;
 using IdentityService.Application.Interfaces;
+using IdentityService.Application.Queries.GetAllDeliverys;
 using IdentityService.Application.Queries.GetAllOperators;
 using IdentityService.Application.Queries.GetAllSalesStaffs;
 using IdentityService.Application.Queries.GetCurrentUser;
@@ -24,9 +25,11 @@ namespace IdentityService.API.Controllers
         IGetAllOperatorsQueryHandler getAllOperatorsQueryHandler,
         IGetAllSalesStaffsQueryHandler getAllSalesStaffsQueryHandler,
         IGetCurrentUserQueryHandler getCurrentUserQueryHandler,
+        IGetAllDeliverysQueryHandler getAllDeliverysQueryHandler,
         IValidator<RegisterRequest> registerValidator,
         IValidator<LoginRequest> loginValidator) : Controller
     {
+        private readonly IGetAllDeliverysQueryHandler _getAllDeliverysQueryHandler = getAllDeliverysQueryHandler;
         private readonly IGetAllOperatorsQueryHandler _getAllOperatorsQueryHandler = getAllOperatorsQueryHandler;
         private readonly IValidator<LoginRequest> _loginValidator = loginValidator;
         private readonly IValidator<RegisterRequest> _registerValidator = registerValidator;
@@ -147,6 +150,18 @@ namespace IdentityService.API.Controllers
             var result = await _getCurrentUserQueryHandler.GetCurrentUserHandler(query);
 
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Endpoint para obtener todos los usuarios con rol "DeliveryOperator"
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("deliveryoperators")]
+        [ProducesResponseType(typeof(List<OperatorDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllDeliveryOperators()
+        {
+            var deliveryOperators = await _getAllDeliverysQueryHandler.HandleAsync();
+            return Ok(deliveryOperators);
         }
     }
 }

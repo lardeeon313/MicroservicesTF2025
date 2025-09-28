@@ -123,8 +123,8 @@ const RegisterForm = () => {
                     <option value="DepotManager">Encargado Depósito</option>
                     <option value="DepotOperator">Operario Deposito</option>
                     <option value="BillingManager">Encargado Facturación</option>
-                    <option value="Delivery">Logística</option>
-                    <option value="VerificationStaff">Verificación</option>
+                    <option value="DeliveryOperator">Operario Logística</option>
+                    <option value="VerificationManager">Encargado Verificación</option>
                   </Field>
                   <ErrorMessage name="role" component="div" className="text-red-700 text-sm" />
                 </div>

@@ -143,26 +143,26 @@ namespace DepotService.Infraestructure.Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public Task<List<DepotOrderEntity>> GetAssignedPendingOrdersByOperatorIdAsync()
+        public async Task<List<DepotOrderEntity>> GetAssignedPendingOrdersByOperatorIdAsync()
         {
-            return _context.DepotOrders
+            return await _context.DepotOrders
                 .Include(o => o.Items)
                 .Where(o => o.AssignedOperatorId != null &&
                             (o.Status == OrderStatus.Assigned || o.Status == OrderStatus.ReReceived))
                 .ToListAsync();
         }
 
-        public Task<List<DepotOrderEntity>> GetOrdersPendingBillingAsync()
+        public async Task<List<DepotOrderEntity>> GetOrdersPendingBillingAsync()
         {
-            return _context.DepotOrders
+            return await _context.DepotOrders
                 .Include(o => o.Items)
                 .Where(o => o.Status == OrderStatus.SentToBilling)
                 .ToListAsync();
         }
 
-        public Task<List<DepotOrderEntity>> GetAllInvoicedOrdersAsync()
+        public async Task<List<DepotOrderEntity>> GetAllInvoicedOrdersAsync()
         {
-            return _context.DepotOrders
+            return await _context.DepotOrders
                 .Include(o => o.Items)
                 .Where(o => o.Status == OrderStatus.Invoiced)
                 .ToListAsync();
@@ -177,11 +177,10 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 .ToListAsync();
         }
 
-        public Task<List<DepotOrderEntity>> GetInvoicedOrdersByCustomerAsync(Guid customerId)
+        public async Task<List<DepotOrderEntity>> GetInvoicedOrdersByCustomerAsync(string customerName)
         {
-            return _context.DepotOrders
-                .Include(o => o.Items)
-                .Where(o => o.Status == OrderStatus.Invoiced && o.CustomerId == customerId)
+            return await _context.DepotOrders
+                .Where(o => o.CustomerName.Contains(customerName))
                 .ToListAsync();
         }
 

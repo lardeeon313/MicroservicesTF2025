@@ -46,7 +46,7 @@ namespace IdentityService.Application.Commands.Register
             var selectedRole = command.Role;
             var validRoles = new[]
             {
-                "DepotManager", "DepotOperator", "BillingManager", "SalesStaff", "Delivery", "VerificationStaff", "Admin"
+                "DepotManager", "DepotOperator", "BillingManager", "SalesStaff", "DeliveryOperator", "VerificationManager", "Admin"
             };
 
             if (!validRoles.Contains(selectedRole))
