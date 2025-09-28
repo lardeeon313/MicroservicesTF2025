@@ -16,6 +16,7 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
 
 export const register = async (userData: RegisterRequest): Promise<RegisterResponse> => {
     try{
+        console.log(userData)
         const response = await API.post<RegisterResponse>("api/auth/register", userData);
         return response.data
     } catch (error) {

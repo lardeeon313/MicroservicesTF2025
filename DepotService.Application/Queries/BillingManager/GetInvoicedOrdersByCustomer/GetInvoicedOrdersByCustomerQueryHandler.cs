@@ -29,9 +29,7 @@ namespace DepotService.Application.Queries.BillingManager.GetInvoicedOrdersByCus
                 throw new ArgumentException("Debe especificar el nombre del cliente.");
             }
 
-            var ordersByCustomer = _context.DepotOrders
-                .Where(o => o.CustomerName.Contains(query.CustomerName))
-                .ToList();
+            var ordersByCustomer = await _repository.GetInvoicedOrdersByCustomerAsync(query.CustomerName);
 
             if (!ordersByCustomer.Any())
             {

@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LogisticService.Infraestructure.Persistence.Repositories
+namespace LogisticService.Infraestructure.Persistence
 {
-    public class OrderRepository(LogisticDbContext context) : IOrderRepository
+    public class LogisticReportRepository(LogisticDbContext context) : ILogisticReportRepository
     {
         private readonly LogisticDbContext _context = context;
 

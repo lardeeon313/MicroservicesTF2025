@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LogisticService.Domain.IRepositories
 {
-    public interface IOrderRepository
+    public interface ILogisticOrderRepository
     {
     }
 }

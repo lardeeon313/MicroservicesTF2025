@@ -42,7 +42,7 @@ namespace IdentityService.Application.Validators
                 .Must(role => new[]
                 {
                 "DepotManager", "DepotOperator", "BillingManager", "Admin",
-                "Delivery", "SalesStaff", "VerificationStaff"
+                "DeliveryOperator", "SalesStaff", "VerificationManager"
                 }.Contains(role))
                 .WithMessage("El rol seleccionado no es válido.");
         }

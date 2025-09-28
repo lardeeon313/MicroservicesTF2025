@@ -7,30 +7,30 @@ using System.Threading.Tasks;
 
 namespace DepotService.Domain.Entities
 {
-    public class DepotOrderEntity
-    {
-        public int DepotOrderId { get; set; }
-        public int SalesOrderId { get; set; }
-        public Guid CustomerId { get; set; }
-        public string CustomerName { get; set; } = null!;
-        public string CustomerEmail { get; set; } = null!;
-        public string PhoneNumber { get; set; } = null!;
-        public string? DeliveryDetail { get; set; }
-        public DateTime OrderDate { get; set; }
-        public DateTime? DeliveryDate { get; set; }
-        public OrderStatus Status { get; set; }
-        public decimal TotalAmount { get; set; } = 0;
+        public class DepotOrderEntity
+        {
+            public int DepotOrderId { get; set; }
+            public int SalesOrderId { get; set; }
+            public Guid CustomerId { get; set; }
+            public string CustomerName { get; set; } = null!;
+            public string CustomerEmail { get; set; } = null!;
+            public string PhoneNumber { get; set; } = null!;
+            public string? DeliveryDetail { get; set; }
+            public DateTime OrderDate { get; set; }
+            public DateTime? DeliveryDate { get; set; }
+            public OrderStatus Status { get; set; }
+            public decimal TotalAmount { get; set; } = 0;
 
-        // Relacion con Items
-        public ICollection<DepotOrderItemEntity> Items { get; set; } = [];
+            // Relacion con Items
+            public ICollection<DepotOrderItemEntity> Items { get; set; } = [];
 
-        // Relacion con Faltantes
-        public ICollection<DepotOrderMissing> Missings { get; set; } = [];
-        public Guid? AssignedOperatorId { get; set; }
-        public DepotTeamEntity? AssignedDepotTeam { get; set; }
-        public int? AssignedDepotTeamId { get; private set; }
-        public string? RejectionReason { get; set; }
-        public ICollection<OrderStatusHistory> StatusHistory { get; set; } = [];
+            // Relacion con Faltantes
+            public ICollection<DepotOrderMissing> Missings { get; set; } = [];
+            public Guid? AssignedOperatorId { get; set; }
+            public DepotTeamEntity? AssignedDepotTeam { get; set; }
+            public int? AssignedDepotTeamId { get; private set; }
+            public string? RejectionReason { get; set; }
+            public ICollection<OrderStatusHistory> StatusHistory { get; set; } = [];
         public void AssignToOperator(Guid operatorId, DepotTeamEntity team)
         {
             if (Status != OrderStatus.Received && Status != OrderStatus.ReReceived)
