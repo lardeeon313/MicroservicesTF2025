@@ -1,18 +1,18 @@
-import { Users, BarChart2, Truck, ClipboardCheck } from "lucide-react";
+import { ClipboardList, Users, BarChart2, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const cards = [
   {
     title: "Pedidos Pendientes de Verificación",
     description: "Revisá todos los pedidos que esperan ser verificados .",
-    Icon: ClipboardCheck,
+    Icon: ClipboardList,
     link: "/verification/pending-orders",      
   },
   {
-    title: "Pedidos Verificados",
+    title: "Pedidos en Camino",
     description: "Visualizá los pedidos que están siendo entregados por repartidores.",
-    Icon: Truck,
-    link: "/verification/verified-orders",  
+    Icon: Clock,
+    link: "/verification/in-preparation-orders",  
   },
   {
     title: "Gestión de Equipos",
@@ -32,9 +32,9 @@ const VerificationManagerDashboardPage = () => {
   return (
     <div className="container m-0 pt-36 min-w-full min-h-full">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Panel de Verficacion</h1>
+        <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Panel de Verificacion</h1>
         <p className="text-center text-lg text-gray-700 mb-12">
-          Todo lo que necesitás para gestionar las operaciones de Verficacion
+          Todo lo que necesitás para gestionar las operaciones de Verificacion
         </p>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {cards.map(({ title, description, Icon, link }, idx) => (

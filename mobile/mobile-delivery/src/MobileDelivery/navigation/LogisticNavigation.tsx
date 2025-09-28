@@ -9,7 +9,6 @@ import ListOrdersToVerifiedPage from "../pages/listOrdersPages/ListOrdersToVerif
 import PaymentTypeComponent from "../components/PaymentType/PaymentTypeComponent";
 import ListOrdersToIncidentPage from "../pages/listOrdersPages/ListOrdersToIncidentsPage";
 import IncidentsDetailPage from "../pages/Incidents/ReportIncidentPage";
-import NotificationIndicentComponent from "../components/Incidents/NotificacionIncident";
 import NotificationIncidentPage from "../pages/Incidents/NotificationIncidentPage";
 
 

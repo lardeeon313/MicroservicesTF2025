@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import {
   View,
   FlatList,
@@ -23,6 +23,8 @@ import { useValidationOrdersLogic } from "../../validations/ValidationOrdersToDi
 import { DeliveryOrderTypeDto } from "../../types/DeliveryOrderTypeDto";
 import ConfirmOrderModal from "../../components/ConfirmOrder/ConfirmOrder";
 import RejectOrderModal from "../../components/RejectOrder/RejectOrder";
+import { useAuth } from "../../Login/context/useAuth";
+
 
 type DeliveryNavigationProp = NativeStackNavigationProp<DeliveryStackParamList>;
 
@@ -40,14 +42,12 @@ export default function ListOrdersToDistributePage() {
     handleTraceRoute,
   } = useValidationOrdersLogic(orders as DeliveryOrderTypeDto[]);
   const navigation = useNavigation<DeliveryNavigationProp>();
-  const mockUser = {
-    name: "Carlos",
-    role: "Repartidor",
-    team: { teamName: "Zona Oeste" },
-  };
-
-
-  const handleLogout = () => console.log("🚪 Sesión cerrada");
+  const { name, role, team, isAuthenticated, logout } = useAuth();
+    const user = {
+      name: name ?? "",
+      role: role ?? "",
+      team: team ?? null,
+    };
 
   // Manejo de confirmación de pedido
   const handleConfirmOrder = (order: DeliveryOrderTypeDto) => {
@@ -126,7 +126,7 @@ const rejectOrder = (reason: string) => {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#f8f8f8" }}>
-      <NavbarDelivery user={mockUser} isAuthenticated={true} logout={handleLogout} />
+      <NavbarDelivery user={user} isAuthenticated={isAuthenticated} logout={logout} />
       <View style={{ marginTop: 8, marginLeft: 16 }}>
         <GetBack />
       </View>

@@ -54,13 +54,13 @@ import {DashboardBillingReportsPage} from "../features/depot/pages/DashboardBill
 import InvoicePage from "../features/depot/billingmanager/pages/InvoiceExportPage";
 import InvoiceOneDetailPage from "../features/depot/billingmanager/pages/InvoiceDetailPage";
 
-// Verificación
+// Otros roles
+import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
 import VerificationManagerDashboardPage from "../features/verification/pages/VerificationManagerDashboard";
+import { DashboardLogisticReportsPage } from "../features/verification/pages/reports/DashboardLogisticReportsPage";
 
 
-//Administracion
-
-
+//import InvoiceDetailPage from "../features/depot/billingmanager/components/InvoiceListComponent";
 
 
 
@@ -146,32 +146,36 @@ const AppRouter = () => {
             {/**para exportar: */}
             <Route path="exports" element={<InvoicePage/>}/>
             <Route path="exports/:billingOrderId" element={<InvoiceOneDetailPage />} />
-            {/**Reportes: */}
             <Route path="reports" element={<DashboardBillingReportsPage/>} />
             <Route path="reports/billingTimeProcess" element={<BillingTimeProcessPage />} />
             <Route path="reports/customerIncome" element={<CustomerIncomePage />} />
             <Route path="reports/orderBilled" element={<OrderBilledPage />} />
         </Route>
 
+        {/* Delivery */}
+        <Route
+            path="/delivery"
+            element={
+            <ProtectedRoute requiredRole="Delivery">
+                <DeliveryDashboard />
+            </ProtectedRoute>
+            }
+        />
 
         {/* Verificación */}
         <Route
             path="/verification"
             element={
-            <ProtectedRoute requiredRole="VerificationStaff">
-                <Outlet />
-            </ProtectedRoute>
-            } 
-            >
-           <Route index element={<VerificationManagerDashboardPage/>} />
-           {/* <Route path="pending-orders" element={<PendingOrdersPageVerification />} />
-           <Route path="pending-orders/:id" element={<PendingOrderDetailsPageVerification />} />
-           <Route path="verified-orders" element={<VerifiedOrdersPageVerification />} />
-           <Route path="verified-orders/:id" element={<VerifiedOrderDetailsPageVerification />} />
-           <Route path="teams" element={<TeamsPageVerification />} />
-           <Route path="reports" element={<DashboardVerificationReportsPage />} /> */}
+                <ProtectedRoute requiredRole="VerificationStaff">
+                    <Outlet/>
+                </ProtectedRoute>
+            }
+        >
+            <Route index element={<VerificationManagerDashboardPage/>} />
+            {/**reportes sector logistica*/}
+            <Route path="reports" element={<DashboardLogisticReportsPage/>} />
+        </Route>
 
-           </Route>
 
         {/* Admin */}
         <Route

@@ -8,6 +8,9 @@ import Footer from "../../../components/Footer";
 import ReportIncidentComponent from "../../components/Incidents/ReportIncident";
 import { mockOrders } from "../../MockPrueba/mockOrders";
 
+import { useAuth } from "../../Login/context/useAuth";
+
+
 type ReportIncidentRouteProp = RouteProp<
   DeliveryStackParamList,
   "ReportIncident"
@@ -25,17 +28,17 @@ export default function ReportIncidentPage() {
     console.log("🚨 Incidente enviado para el pedido:", orderId, "Notas:", notes);
   };
 
+  const { name, role, team, isAuthenticated, logout } = useAuth();
+  const user = {
+    name: name ?? "",
+    role: role ?? "",
+    team: team ?? null,
+  };
+  
+
   return (
     <View style={styles.container}>
-      <NavbarDelivery
-        user={{
-          name: "Carlos",
-          role: "Repartidor",
-          team: { teamName: "Zona Oeste" },
-        }}
-        isAuthenticated={true}
-        logout={() => console.log("🚪 Sesión cerrada")}
-      />
+      <NavbarDelivery user={user} isAuthenticated={isAuthenticated}logout={logout}/>
 
       <View style={styles.content}>
         <View style={{ marginTop: 10, marginLeft: 10 }}>
