@@ -38,23 +38,23 @@ namespace DepotService.Test.Queries.BillingManager
         public async Task GetInvoicedOrdersByCustomerAsync_WhenNoOrdersFound_ThrowsKeyNotFoundException()
         {
             // Arrange
-            var customerId = Guid.NewGuid();
-            var query = new GetInvoicedOrdersByCustomerQuery(customerId);
+            var customerName = Guid.NewGuid().ToString();
+            var query = new GetInvoicedOrdersByCustomerQuery(customerName);
 
-            _repositoryMock.Setup(r => r.GetInvoicedOrdersByCustomerAsync(customerId))
+            _repositoryMock.Setup(r => r.GetInvoicedOrdersByCustomerAsync(customerName))
                 .ReturnsAsync(new List<DepotOrderEntity>());
 
             // Act & Assert
             var exception = await Assert.ThrowsAsync<KeyNotFoundException>(
                 () => _handler.GetInvoicedOrdersByCustomerAsync(query));
 
-            Assert.Equal($"No invoiced orders found for customer with ID {customerId}.", exception.Message);
+            Assert.Equal($"No invoiced orders found for customer with ID {customerName}.", exception.Message);
 
             _loggerMock.Verify(
                 x => x.Log(
                     LogLevel.Warning,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, _) => v.ToString()!.Contains($"No invoiced orders found for customer with ID {customerId}.")),
+                    It.Is<It.IsAnyType>((v, _) => v.ToString()!.Contains($"No invoiced orders found for customer with ID {customerName}.")),
                     null,
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);
@@ -64,8 +64,8 @@ namespace DepotService.Test.Queries.BillingManager
         public async Task GetInvoicedOrdersByCustomerAsync_WhenOrdersExist_ReturnsDepotOrderDtoList()
         {
             // Arrange
-            var customerId = Guid.NewGuid();
-            var query = new GetInvoicedOrdersByCustomerQuery(customerId);
+            var customerName = Guid.NewGuid().ToString();
+            var query = new GetInvoicedOrdersByCustomerQuery(customerName.ToString());
 
             var orders = new List<DepotOrderEntity>
         {
@@ -119,7 +119,7 @@ namespace DepotService.Test.Queries.BillingManager
             }
         };
 
-            _repositoryMock.Setup(r => r.GetInvoicedOrdersByCustomerAsync(customerId))
+            _repositoryMock.Setup(r => r.GetInvoicedOrdersByCustomerAsync(customerName))
                 .ReturnsAsync(orders);
 
             // Act
@@ -149,7 +149,7 @@ namespace DepotService.Test.Queries.BillingManager
                 x => x.Log(
                     LogLevel.Information,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, _) => v.ToString()!.Contains($"Found 2 invoiced orders for customer with ID {customerId}.")),
+                    It.Is<It.IsAnyType>((v, _) => v.ToString()!.Contains($"Found 2 invoiced orders for customer with ID {customerName}.")),
                     null,
                     It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
                 Times.Once);

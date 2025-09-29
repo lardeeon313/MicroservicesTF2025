@@ -1,0 +1,179 @@
+using FluentValidation;
+using LogisticService.API.RequestDtos.DeliveryTeams;
+using LogisticService.API.RequestDtos.DeliveryZones;
+using LogisticService.API.Validators.DeliveryTeams;
+using LogisticService.API.Validators.DeliveryZones;
+using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.ActiveDeliveryTeam;
+using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.CreateDeliveryTeam;
+using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.DeleteDeliveryTeam;
+using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.DisableDeliveryTeam;
+using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.UpdateDeliveryTeam;
+using LogisticService.Application.Commands.LogisticManager.DeliveryZone.ActiveDeliveryZone;
+using LogisticService.Application.Commands.LogisticManager.DeliveryZone.CreateDeliveryZone;
+using LogisticService.Application.Commands.LogisticManager.DeliveryZone.DeleteDeliveryZone;
+using LogisticService.Application.Commands.LogisticManager.DeliveryZone.DisableDeliveryZone;
+using LogisticService.Application.Commands.LogisticManager.DeliveryZone.UpdateDeliveryZone;
+using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetAllTeams;
+using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetById;
+using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetAllZones;
+using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetByIdZone;
+using LogisticService.Application.Services.IdentityServiceClient;
+using LogisticService.Domain.Common.Interfaces;
+using LogisticService.Domain.IRepositories;
+using LogisticService.Infraestructure.Email;
+using LogisticService.Infraestructure.Messaging.Publisher;
+using LogisticService.Infraestructure.Persistence;
+using LogisticService.Infraestructure.Persistence.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+    });
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
+
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Logistic Service API",
+        Version = "v1",
+        Description = "Microservicio encargado de la verificacion de pagos y gestion de la logistca del pedido.",
+        Contact = new OpenApiContact
+        {
+            Name = "Milton Argüello, Bustos Santiago, Diego Aguirre"
+        }
+    });
+});
+
+//////////////// Inyeccion de dependencias //////////////////////
+
+// Add FluentValidation
+builder.Services.AddScoped<IValidator<CreateDeliveryTeamRequest>, CreateDeliveryTeamRequestValidator>();
+builder.Services.AddScoped<IValidator<UpdateDeliveryTeamRequest>, UpdateDeliveryTeamRequestValidator>();
+
+builder.Services.AddScoped<IValidator<UpdateDeliveryZoneRequest>, UpdateDeliveryZoneRequestValidator>();
+builder.Services.AddScoped<IValidator<CreateDeliveryZoneRequest>, CreateDeliveryZoneRequestValidator>();
+
+// Add RepositoriesS
+builder.Services.AddScoped<IDeliveryTeamRepository, DeliveryTeamRepository>();
+builder.Services.AddScoped<ILogisticOrderRepository, LogisticOrderRepository>();
+builder.Services.AddScoped<ILogisticReportRepository, LogisticReportRepository>();
+builder.Services.AddScoped<IDeliveryZoneRepository, DeliveryZoneRepository>();
+
+///// Add Commands and Queries /////
+    
+//Commands CRUD LogisticDeliveryTeams
+builder.Services.AddScoped<ICreateDeliveryTeamCommandHandler, CreateDeliveryTeamCommandHandler>();
+builder.Services.AddScoped<IUpdateDeliveryTeamCommandHandler, UpdateDeliveryTeamCommandHandler>();
+builder.Services.AddScoped<IDeleteDeliveryTeamCommandHandler, DeleteDeliveryTeamCommandHandler>();
+builder.Services.AddScoped<IActiveDeliveryTeamCommandHandler, ActiveDeliveryTeamCommandHandler>();
+builder.Services.AddScoped<IDisableDeliveryTeamCommandHandler, DisableDeliveryTeamCommandHandler>();
+//Queries CRUD LogisticDeliveryTeams
+builder.Services.AddScoped<IGetAllTeamsQueryHandler, GetAllTeamsQueryHandler>();
+builder.Services.AddScoped<IGetTeamByIdQueryHandler, GetTeamByIdQueryHandler>();
+
+//Commands CRUD LogisticDeliveryZones
+builder.Services.AddScoped<ICreateDeliveryZoneCommandHandler, CreateDeliveryZoneCommandHandler>();
+builder.Services.AddScoped<IUpdateDeliveryZoneCommandHandler, UpdateDeliveryZoneCommandHandler>();
+builder.Services.AddScoped<IDeleteDeliverZoneCommandHandler, DeleteDeliverZoneCommandHandler>();
+builder.Services.AddScoped<IActiveDeliveryZoneCommandHandler, ActiveDeliveryZoneCommandHandler>();
+builder.Services.AddScoped<IDisableDeliveryZoneCommandHandler, DisableDeliveryZoneCommandHandler>();
+//Queries CRUD LogisticDeliveryZones 
+builder.Services.AddScoped<IGetAllDeliveryZonesQueryHandler, GetAllDeliveryZonesQueryHandler>();
+builder.Services.AddScoped<IGetDeliveryZoneByIdQueryHandler, GetDeliveryZoneByIdQueryHandler>();
+
+// Add EmailService
+builder.Services.AddScoped<IEmailService, MailgunEmailService>();
+
+// RabbitMQ Consumer
+
+// Identity Service Client 
+builder.Services.AddHttpClient("IdentityService", client =>
+{
+    client.BaseAddress = new Uri("http://identityservice:8080/api/auth/");
+});
+builder.Services.AddScoped<IIdentityServiceClient, IdentityServiceClient>();
+builder.Services.AddHttpContextAccessor();
+
+// Add RabbitMQ Producer
+builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
+
+//////////////////// Configuracion DbContext //////////////////////
+
+// Obtener la cadena de conexión del appsettings.json
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Registrar el DbContext
+builder.Services.AddDbContext<LogisticDbContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+        b => b.MigrationsAssembly("LogisticService.API")));
+
+/////////////////// Configuracion JWT ////////////////////
+
+var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+
+// Configuración de autenticación JWT
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = jwtIssuer,
+            ValidateAudience = false,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey!)),
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+// Configuración de autorización
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("LogisticAcces", policy =>
+        policy.RequireClaim("role", "VerificationManager, DeliveryOperator"));
+
+
+var app = builder.Build();
+
+// Migrar automaticamente, cada vez que levante el servicio.
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<LogisticDbContext>();
+    dbContext.Database.Migrate();
+}
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+
+app.UseAuthentication();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();

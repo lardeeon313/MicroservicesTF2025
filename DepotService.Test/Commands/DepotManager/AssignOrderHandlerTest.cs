@@ -21,6 +21,7 @@ namespace DepotService.Test.Commands.DepotManager
     {
         private readonly Mock<IDepotOrderRepository> _repositoryMock;
         private readonly Mock<IRabbitMQPublisher> _publisherMock;
+        private readonly Mock<ITeamRepository> _teamRepositoryMock;
         private readonly Mock<ILogger<AssignOrderCommandHandler>> _loggerMock;
         private readonly Mock<DepotDbContext> _contextMock;
         private readonly AssignOrderCommandHandler _handler;
@@ -29,12 +30,14 @@ namespace DepotService.Test.Commands.DepotManager
         {
             _repositoryMock = new Mock<IDepotOrderRepository>();
             _publisherMock = new Mock<IRabbitMQPublisher>();
+            _teamRepositoryMock = new Mock<ITeamRepository>();
             _loggerMock = new Mock<ILogger<AssignOrderCommandHandler>>();
             _contextMock = new Mock<DepotDbContext>(new DbContextOptions<DepotDbContext>());
 
             _handler = new AssignOrderCommandHandler(
                 _publisherMock.Object,
                 _repositoryMock.Object,
+                _teamRepositoryMock.Object,   // 👈 este te faltaba
                 _contextMock.Object,
                 _loggerMock.Object
             );

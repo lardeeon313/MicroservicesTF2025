@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DepotService.Infraestructure.Migrations
+namespace DepotService.API.Migrations
 {
     [DbContext(typeof(DepotDbContext))]
     partial class DepotDbContextModelSnapshot : ModelSnapshot

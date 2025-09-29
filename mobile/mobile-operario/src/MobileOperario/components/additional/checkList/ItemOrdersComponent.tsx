@@ -33,11 +33,11 @@ const ItemOrdersComponent: React.FC<Props> = ({ operatorUserId, pedidoItems, ped
   const handleMarkToggle = async (item: OrderItem) => {
     try {
       if (item.marcado) {
-        const data: UnMarkItemReadyCommand = { OrderItemId: item.id };
+        const data: UnMarkItemReadyCommand = { orderItemId: item.id };
         await UnMarkItemIsReady(data);
         Alert.alert('Éxito', 'Ítem desmarcado');
       } else {
-        const data: MarkItemCommand = { OrderItemId: item.id, OperatorUserId: operatorUserId };
+        const data: MarkItemCommand = { orderItemId: item.id, operatorUserId: operatorUserId };
         await MarkItemIsReady(data);
         Alert.alert('Éxito', 'Ítem marcado como listo');
       }

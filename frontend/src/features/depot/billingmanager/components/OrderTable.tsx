@@ -31,15 +31,24 @@ export default function OrderTable({
 
   if (orders.length === 0)
     return (
-      <EmptyState
-        icon={AlertCircle}
-        title={emptyMessageTitle || "No Hay Órdenes Registradas"}
-        description={
-          emptyMessageBody || "Actualmente no hay órdenes en el sistema."
-        }
-        actionLabel="Actualizar"
-        onAction={onRefetch}
-      />
+      <div className="text-center py-8">
+        <div className="max-w-md mx-auto">
+          <div className="bg-gray-50 border border-red-200 rounded-lg p-6">
+            <div className="text-gray-600 mb-1">
+              <h3 className="text-lg font-semibold mb-2">{emptyMessageTitle || "No Hay Órdenes Registradas"}</h3>
+              <p className="text-sm text-gray-700">
+                {emptyMessageBody || "Actualmente no hay órdenes en el sistema."}
+              </p>
+            </div>
+            <button 
+              onClick={onRefetch} 
+              className="mt-4 ml-2 px-4 py-2 inline-block btn-primary border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              Actualizar
+            </button>
+          </div>
+        </div>
+      </div>
     );
 
   return (

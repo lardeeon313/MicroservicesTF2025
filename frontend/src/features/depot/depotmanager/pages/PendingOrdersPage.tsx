@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react';
 import { DepotOrderDto, OrderStatus } from '../types/OrderTypes';
 import OrderTable from '../../billingmanager/components/OrderTable';
-import OrderDetails from '../../billingmanager/components/OrderDetails';
 import { AssignOrderToOperator } from '../components/AssignOrderToOperator';
 import LoadingSpinner from '../../../../components/LoadingSpinner';
 import BackButton from '../../../../components/BackButton';
@@ -205,44 +204,44 @@ function PendingOrdersPage() {
             </div>
           )}
 
-          {/* Diálogo de detalles de orden */}
-          {selectedOrder && !showAssignDialog && (
-            <>
-              <div className="fixed inset-0 backdrop-blur-sm bg-black/30 z-40" />
-              <div className="fixed inset-0 flex items-center justify-center z-50">
-                <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold">Detalles de la Orden</h2>
+        {/* Diálogo de detalles de orden */}
+        {selectedOrder && !showAssignDialog && (
+          <>
+            <div className="fixed inset-0 backdrop-blur-sm bg-black/30 z-40" />
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold">Detalles de la Orden</h2>
+                  <button
+                    onClick={() => setSelectedOrder(null)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <OrderDetails order={{...convertToTableData(selectedOrder), status:
+                  activeTab === 'pending'
+                    ? 'Pendiente'
+                    : activeTab === 'assigned'
+                    ? 'Asignado a Operario'
+                    : 'Re-emitida'}} />
+                {(activeTab === 'pending' || activeTab === 'rereceived')  && (
+                  <div className="mt-6 flex justify-end">
                     <button
-                      onClick={() => setSelectedOrder(null)}
-                      className="text-gray-500 hover:text-gray-700 "
+                      onClick={() => {
+                        setSelectedOrder(null);
+                        handleAssign((selectedOrder as any).depotOrderId);
+                      }}
+                      className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
                     >
-                      ✕
+                      Asignar Operador
                     </button>
                   </div>
-                  <OrderDetails order={{...convertToTableData(selectedOrder), status:
-                    activeStatus === OrderStatus.Received
-                      ? 'Pendiente'
-                      : activeStatus === OrderStatus.Assigned
-                      ? 'Asignado a Operario'
-                      : 'Re-emitida'}} />
-                  {(activeStatus === OrderStatus.Received || activeStatus === OrderStatus.ReReceived)  && (
-                    <div className="flex justify-end space-y-6 mt-6 w-3xl">
-                      <button
-                        onClick={() => {
-                          setSelectedOrder(null);
-                          handleAssign((selectedOrder as any).depotOrderId);
-                        }}
-                        className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                      >
-                        Asignar Operador
-                      </button>
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
-            </>
-          )}
+            </div>
+          </>
+        )}
 
           {/* Diálogo de asignar operador */}
           {showAssignDialog && selectedOrder && (

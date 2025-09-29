@@ -33,34 +33,34 @@ namespace DepotService.Test.Queries.DepotOperator
         {
             // Arrange
             var orders = new List<DepotOrderEntity>
-        {
-            new DepotOrderEntity
             {
-                DepotOrderId = 10,
-                SalesOrderId = 100,
-                Status = Domain.Enums.OrderStatus.Assigned,
-                CustomerName = "Cliente 1",
-                CustomerEmail = "cliente1@email.com",
-                PhoneNumber = "123456789",
-                DeliveryDetail = "Dirección 1",
-                OrderDate = DateTime.UtcNow.AddDays(-1),
-                Items = new List<DepotOrderItemEntity>
+                new DepotOrderEntity
                 {
-                    new DepotOrderItemEntity
+                    DepotOrderId = 10,
+                    SalesOrderId = 100,
+                    Status = Domain.Enums.OrderStatus.Assigned,
+                    CustomerName = "Cliente 1",
+                    CustomerEmail = "cliente1@email.com",
+                    PhoneNumber = "123456789",
+                    DeliveryDetail = "Dirección 1",
+                    OrderDate = DateTime.UtcNow.AddDays(-1),
+                    Items = new List<DepotOrderItemEntity>
                     {
-                        Id = 1,
-                        ProductBrand = "Marca A",
-                        ProductName = "Producto A",
-                        PackagingType = "Caja",
-                        Quantity = 2
-                    }
-                },
-                AssignedDepotTeam = null
-            }
-        };
+                        new DepotOrderItemEntity
+                        {
+                            Id = 1,
+                            ProductBrand = "Marca A",
+                            ProductName = "Producto A",
+                            PackagingType = "Caja",
+                            Quantity = 2
+                        }
+                    },
+                    AssignedDepotTeam = null
+                }
+            };
 
             _repositoryMock.Setup(r => r.GetAssignedPendingOrdersByOperatorIdAsync())
-                .ReturnsAsync(orders);
+                .ReturnsAsync(orders!); // Add null-forgiving operator to resolve nullable mismatch
 
             // Act
             var result = await _handler.GetAssignedPendingOrders();
@@ -77,7 +77,7 @@ namespace DepotService.Test.Queries.DepotOperator
         {
             // Arrange
             _repositoryMock.Setup(r => r.GetAssignedPendingOrdersByOperatorIdAsync())
-                .ReturnsAsync((List<DepotOrderEntity>)null);
+                .ReturnsAsync((List<DepotOrderEntity>?)null); // Explicitly specify nullable type
 
             // Act
             Func<Task> act = async () => await _handler.GetAssignedPendingOrders();
