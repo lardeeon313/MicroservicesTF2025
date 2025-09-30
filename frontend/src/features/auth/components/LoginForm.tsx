@@ -43,7 +43,7 @@ const LoginForm = () => {
       case "Delivery":
         navigate("/delivery");
         break;
-      case "VerificationStaff":
+      case "VerificationManager":
         navigate("/verification");
         break;
       case "BillingManager":

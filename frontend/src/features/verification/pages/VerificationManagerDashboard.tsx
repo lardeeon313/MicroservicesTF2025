@@ -1,4 +1,4 @@
-import { ClipboardList, Users, BarChart2, Clock } from "lucide-react";
+import { ClipboardList, Users, BarChart2, Truck } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const cards = [
@@ -6,19 +6,19 @@ const cards = [
     title: "Pedidos Pendientes de Verificación",
     description: "Revisá todos los pedidos que esperan ser verificados .",
     Icon: ClipboardList,
-    link: "/verification/pending-orders",      
+    link: "/verification/pending-orders-verification",      
   },
   {
     title: "Pedidos en Camino",
     description: "Visualizá los pedidos que están siendo entregados por repartidores.",
-    Icon: Clock,
-    link: "/verification/in-preparation-orders",  
+    Icon: Truck,
+    link: "/verification/orders-in-route",  
   },
   {
     title: "Gestión de Equipos",
     description: "Administrá los operarios y equipos de repartidores.",
     Icon: Users,
-    link: "/verification/teams",  
+    link: "/verification/teams-verification",  
   },
   {
     title: "Reportes",
