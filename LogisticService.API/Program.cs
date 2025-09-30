@@ -4,9 +4,13 @@ using LogisticService.API.RequestDtos.DeliveryZones;
 using LogisticService.API.Validators.DeliveryTeams;
 using LogisticService.API.Validators.DeliveryZones;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.ActiveDeliveryTeam;
+using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.AssignOperatorToTeam;
+using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.AssignZoneToTeam;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.CreateDeliveryTeam;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.DeleteDeliveryTeam;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.DisableDeliveryTeam;
+using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.RemoveOperatorToTeam;
+using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.RemoveZoneToTeam;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.UpdateDeliveryTeam;
 using LogisticService.Application.Commands.LogisticManager.DeliveryZone.ActiveDeliveryZone;
 using LogisticService.Application.Commands.LogisticManager.DeliveryZone.CreateDeliveryZone;
@@ -84,6 +88,10 @@ builder.Services.AddScoped<IUpdateDeliveryTeamCommandHandler, UpdateDeliveryTeam
 builder.Services.AddScoped<IDeleteDeliveryTeamCommandHandler, DeleteDeliveryTeamCommandHandler>();
 builder.Services.AddScoped<IActiveDeliveryTeamCommandHandler, ActiveDeliveryTeamCommandHandler>();
 builder.Services.AddScoped<IDisableDeliveryTeamCommandHandler, DisableDeliveryTeamCommandHandler>();
+builder.Services.AddScoped<IRemoveOperatorCommandHandler, RemoveOperatorCommandHandler>();
+builder.Services.AddScoped<IAssignOperatorCommandHandler, AssignOperatorCommandHandler>();
+builder.Services.AddScoped<IAssignZoneToTeamCommandHandler , AssignZoneToTeamCommandHandler>();
+builder.Services.AddScoped<IRemoveZoneFromTeamCommandHandler , RemoveZoneFromTeamCommandHandler>();
 //Queries CRUD LogisticDeliveryTeams
 builder.Services.AddScoped<IGetAllTeamsQueryHandler, GetAllTeamsQueryHandler>();
 builder.Services.AddScoped<IGetTeamByIdQueryHandler, GetTeamByIdQueryHandler>();
@@ -94,6 +102,7 @@ builder.Services.AddScoped<IUpdateDeliveryZoneCommandHandler, UpdateDeliveryZone
 builder.Services.AddScoped<IDeleteDeliverZoneCommandHandler, DeleteDeliverZoneCommandHandler>();
 builder.Services.AddScoped<IActiveDeliveryZoneCommandHandler, ActiveDeliveryZoneCommandHandler>();
 builder.Services.AddScoped<IDisableDeliveryZoneCommandHandler, DisableDeliveryZoneCommandHandler>();
+
 //Queries CRUD LogisticDeliveryZones 
 builder.Services.AddScoped<IGetAllDeliveryZonesQueryHandler, GetAllDeliveryZonesQueryHandler>();
 builder.Services.AddScoped<IGetDeliveryZoneByIdQueryHandler, GetDeliveryZoneByIdQueryHandler>();
