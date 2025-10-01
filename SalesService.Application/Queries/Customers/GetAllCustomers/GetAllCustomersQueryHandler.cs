@@ -1,5 +1,6 @@
 ﻿using SalesService.Application.DTOs.Customer;
 using SalesService.Domain.Entities;
+using SalesService.Domain.Entities.CustomerEntity;
 using SalesService.Domain.IRepositories;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,19 @@ namespace SalesService.Application.Queries.Customers.GetAllCustomers
                 LastName = c.LastName,
                 Email = c.Email,
                 PhoneNumber = c.PhoneNumber,
-                Address = c.Address
+                Addresses = c.Addresses.Select(a => new AddressDto
+                {
+                    Street = a.Street,
+                    Number = a.Number,
+                    Apartment = a.Apartment,
+                    City = a.City,
+                    Province = a.Province,
+                    Country = a.Country,
+                    PostalCode = a.PostalCode,
+                    Latitude = a.Latitude,
+                    Longitude = a.Longitude,
+                    FormattedAddress = a.FormattedAddress,
+                }).ToList()
             });
         }
     }

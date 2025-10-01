@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,12 +19,31 @@ namespace SalesService.Domain.Entities.CustomerEntity
         public string Email { get; set; } = string.Empty;
 
         public string PhoneNumber { get; set; } = string.Empty;
-
-        public string Address { get; set; } = string.Empty;
+        
         public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
 
         public CustomerStatus Status { get; set; } = CustomerStatus.Inactive;
         public string? SatisfactionDescription { get; set; }
         public int? SatisfactionScore { get; set; }
+        public List<Address> Addresses { get; set; } = [];
+        public bool IsActive { get; set; } = true;
+
+        // Metodo para Inhabilitar un equipo
+        public void Desactivate()
+        {
+            if (!IsActive)
+                throw new InvalidOperationException("The Customer is already disabled.");
+
+            IsActive = false;
+        }
+
+        // Metodo para Habilitar un equipo
+        public void Active()
+        {
+            if (IsActive)
+                throw new InvalidOperationException("The Customer is already active.");
+
+            IsActive = true;
+        }
     }
 }

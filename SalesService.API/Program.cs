@@ -44,6 +44,8 @@ using SalesService.Application.Commands.Orders.OrderReissued;
 using SalesService.Application.Commands.Orders.UpdateMissingOrder;
 using SalesService.Application.Queries.Orders.GetAllMissingOrders;
 using SalesService.Infraestructure.Messaging.Consumer;
+using SalesService.Application.Commands.Customers.ActivateCustomer;
+using SalesService.Application.Commands.Customers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -91,6 +93,8 @@ builder.Services.AddScoped<IValidator<UpdateOrderMissingRequest>, UpdateOrderMis
 builder.Services.AddScoped<ICustomerDeleteCommandHandler, CustomerDeleteCommandHandler>();
 builder.Services.AddScoped<ICustomerUpdateCommandHandler, CustomerUpdateCommandHandler>();
 builder.Services.AddScoped<ICustomerRegisterCommandHandler, CustomerRegisterCommandHandler>();
+builder.Services.AddScoped<IActivateCustomerCommandHandler, ActivateCustomerCommandHandler>();
+builder.Services.AddScoped<IDesactivateCustomerCommandHandler, DesactivateCustomerCommandHandler>();
 builder.Services.AddScoped<IGetAllCustomersQueryHandler, GetAllCustomersQueryHandler>();
 builder.Services.AddScoped<IGetCustomerByIdQueryHandler, GetCustomerByIdQueryHandler>();
 builder.Services.AddScoped<IGetCustomerByEmailQueryHandler, GetCustomerByEmailQueryHandler>();
