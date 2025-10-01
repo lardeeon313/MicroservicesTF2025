@@ -62,5 +62,53 @@ namespace LogisticService.Domain.Entities
             IsActive = true;
         }
 
+        /// Asigna un operador al equipo si no está asignado.
+        public void AssignOperator(Guid userId)
+        {
+            if (DeliveryOperators.Any(a => a.OperatorUserId == userId))
+                throw new InvalidOperationException("El operador ya está asignado a este equipo.");
+
+            DeliveryOperators.Add(new DeliveryTeamMemberAssignment
+            {
+                OperatorUserId = userId,
+                DeliveryTeamId = Id,
+                AssignedAt = DateTime.UtcNow,
+                RoleInTeam = "Delivery Operator" // Asignar rol por defecto
+            });
+        }
+
+        
+        /// Remueve un operador del equipo.        
+        public void RemoveOperator(Guid userId)
+        {
+            var assignment = DeliveryOperators.FirstOrDefault(a => a.OperatorUserId == userId);
+            if (assignment == null)
+                throw new InvalidOperationException("El operador no está asignado a este equipo.");
+            DeliveryOperators.Remove(assignment);
+        }
+
+        /// Asigna una zona al equipo si no está asignado.
+        public void AssignZone(int zoneId)
+        {
+            if (ZoneAssignments.Any(a => a.DeliveryZoneId == zoneId))
+                throw new InvalidOperationException("La zona ya está asignada a este equipo.");
+
+            ZoneAssignments.Add(new DeliveryTeamZoneAssignment
+            {
+                DeliveryZoneId = zoneId,
+                DeliveryTeamId = Id,
+                AssignedAt = DateTime.UtcNow,
+            });
+        }
+
+        /// Remueve una zona del equipo.        
+        public void RemoveZone(int zoneId)
+        {
+            var assignment = ZoneAssignments.FirstOrDefault(a => a.DeliveryZoneId == zoneId);
+            if (assignment == null)
+                throw new InvalidOperationException("La zona no está asignada a este equipo.");
+            ZoneAssignments.Remove(assignment);
+        }
+
     }
 }

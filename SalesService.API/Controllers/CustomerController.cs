@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SalesService.Application.Commands.Customers;
+using SalesService.Application.Commands.Customers.ActivateCustomer;
 using SalesService.Application.Commands.Customers.Delete;
 using SalesService.Application.Commands.Customers.Register;
 using SalesService.Application.Commands.Customers.Update;
@@ -21,6 +23,8 @@ namespace SalesService.API.Controllers
         ICustomerDeleteCommandHandler customerDeleteCommandHandler,
         ICustomerRegisterCommandHandler customerRegisterCommandHandler,
         ICustomerUpdateCommandHandler customerUpdateCommandHandler,
+        IActivateCustomerCommandHandler activateCustomerCommandHandler,
+        IDesactivateCustomerCommandHandler desactivateCustomerCommandHandler,
         IGetCustomerByEmailQueryHandler getCustomerByEmailQueryHandler,
         IGetCustomerByIdQueryHandler getCustomerByIdQueryHandler,
         IGetAllCustomersQueryHandler getAllCustomersQueryHandler,
@@ -29,6 +33,8 @@ namespace SalesService.API.Controllers
         IValidator<UpdateCustomerRequest> updateCustomerValidator
         ) : ControllerBase
     {
+        private readonly IActivateCustomerCommandHandler _activateCustomerCommandHandler = activateCustomerCommandHandler;
+        private readonly IDesactivateCustomerCommandHandler _desactivateCustomerCommandHandler = desactivateCustomerCommandHandler;
         private readonly IGetPagedCustomersQueryHandler _getPagedCustomersQueryHandler = getPagedCustomersQueryHandler;
         private readonly ICustomerDeleteCommandHandler _customerDeleteCommandHandler = customerDeleteCommandHandler;
         private readonly ICustomerRegisterCommandHandler _customerRegisterCommandHandler = customerRegisterCommandHandler;
@@ -57,12 +63,26 @@ namespace SalesService.API.Controllers
                 return BadRequest(errors);
             }
 
+            var addresses = request.Addresses.Select(a => new AddressDto
+            {
+                Street = a.Street,
+                Number = a.Number,
+                Apartment = a.Apartment,
+                City = a.City,
+                Province = a.Province,
+                Country = a.Country,
+                PostalCode = a.PostalCode,
+                Latitude = a.Latitude,
+                Longitude = a.Longitude,
+                FormattedAddress = a.FormattedAddress
+            }).ToList();
+
             var command = new RegisterCustomerCommand(
                 request.FirstName,
                 request.LastName,
                 request.Email,
                 request.PhoneNumber,
-                request.Address
+                addresses
             );
 
             var result = await _customerRegisterCommandHandler.RegisterHandle(command);
@@ -92,13 +112,27 @@ namespace SalesService.API.Controllers
                 return BadRequest(errors);
             }
 
+            var addresses = request.Addresses.Select(a => new AddressDto
+            {
+                Street = a.Street,
+                Number = a.Number,
+                Apartment = a.Apartment,
+                City = a.City,
+                Province = a.Province,
+                Country = a.Country,
+                PostalCode = a.PostalCode,
+                Latitude = a.Latitude,
+                Longitude = a.Longitude,
+                FormattedAddress = a.FormattedAddress
+            }).ToList();
+
             var command = new UpdateCustomerCommand(
                 request.Id,
                 request.FirstName,
                 request.LastName,
                 request.Email,
                 request.PhoneNumber,
-                request.Address
+                addresses
             );
 
             var result = await _customerUpdateCommandHandler.UpdateHandle(command);
@@ -180,6 +214,52 @@ namespace SalesService.API.Controllers
             var query = new GetPagedCustomersQuery(pageNumber, pageSize);
             var result = await _getPagedCustomersQueryHandler.HandleAsync(query, cancellationToken);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Endpoint para activar un cliente
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
+        [HttpPut("active-customer/{customerId}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ActivateCustomer(Guid customerId)
+        {
+            try
+            {
+                var command = new ActivateCustomerCommand(customerId);
+                await _activateCustomerCommandHandler.ActivateCustomerHandlerAsync(command);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            return Ok(new { message = "Cliente habilitado exitosamente." });
+        }
+
+        /// <summary>
+        /// Endpoint para Desactivar un cliente
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
+        [HttpPut("desactivate-customer/{customerId}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DesactivateCustomer(Guid customerId)
+        {
+            try
+            {
+                var command = new DesactivateCustomerCommand(customerId);
+                await _desactivateCustomerCommandHandler.DesactivateCustomerHandlerAsync(command);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            return Ok(new { message = "Cliente Desactivado exitosamente." });
         }
     }
 }

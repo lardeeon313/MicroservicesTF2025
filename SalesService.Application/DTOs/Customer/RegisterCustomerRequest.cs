@@ -26,8 +26,6 @@ namespace SalesService.Application.DTOs.Customer
         [Display(Name = "PhoneNumber")]
         public string PhoneNumber { get; set; } = default!;
 
-        [Required, MaxLength(50)]
-        [Display(Name = "Address")]
-        public string Address { get; set; } = default!;
+        public List<AddressRequest> Addresses { get; set; } = new();
     }
 }

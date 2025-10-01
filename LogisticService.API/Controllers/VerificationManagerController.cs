@@ -4,9 +4,13 @@ using LogisticService.API.RequestDtos.DeliveryZones;
 using LogisticService.API.Validators.DeliveryTeams;
 using LogisticService.API.Validators.DeliveryZones;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.ActiveDeliveryTeam;
+using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.AssignOperatorToTeam;
+using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.AssignZoneToTeam;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.CreateDeliveryTeam;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.DeleteDeliveryTeam;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.DisableDeliveryTeam;
+using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.RemoveOperatorToTeam;
+using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.RemoveZoneToTeam;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.UpdateDeliveryTeam;
 using LogisticService.Application.Commands.LogisticManager.DeliveryZone.ActiveDeliveryZone;
 using LogisticService.Application.Commands.LogisticManager.DeliveryZone.CreateDeliveryZone;
@@ -36,6 +40,10 @@ namespace LogisticService.API.Controllers
         IDeleteDeliveryTeamCommandHandler deleteDeliveryTeamCommandHandler,
         IDisableDeliveryTeamCommandHandler disableDeliveryTeamCommandHandler,
         IActiveDeliveryTeamCommandHandler activeDeliveryTeamCommandHandler,
+        IAssignOperatorCommandHandler assignOperatorCommandHandler,
+        IRemoveOperatorCommandHandler removeOperatorCommandHandlers,
+        IRemoveZoneFromTeamCommandHandler removeZoneFromTeamCommandHandler,
+        IAssignZoneToTeamCommandHandler assignZoneToTeamCommandHandler,
         IGetAllTeamsQueryHandler getAllTeamsQueryHandler,
         IGetTeamByIdQueryHandler getTeamByIdQueryHandler,
         IValidator<CreateDeliveryTeamRequest> createDeliveryTeamRequestValidator,
@@ -54,6 +62,10 @@ namespace LogisticService.API.Controllers
     {
         private readonly IValidator<CreateDeliveryTeamRequest> _createDeliveryTeamRequestValidator = createDeliveryTeamRequestValidator;
         private readonly IValidator<UpdateDeliveryTeamRequest> _updateDeliveryTeamRequestValidator = updateDeliveryTeamRequestValidator;
+        private readonly IRemoveOperatorCommandHandler _removeOperatorCommandHandler = removeOperatorCommandHandlers;
+        private readonly IAssignOperatorCommandHandler _assignOperatorCommandHandler = assignOperatorCommandHandler;
+        private readonly IAssignZoneToTeamCommandHandler _assignZoneToTeamCommandHandler = assignZoneToTeamCommandHandler;
+        private readonly IRemoveZoneFromTeamCommandHandler _removeZoneToTeamCommandHandler = removeZoneFromTeamCommandHandler;
         private readonly ICreateDeliveryZoneCommandHandler _createDeliveryZoneCommandHandler = createDeliveryZoneCommandHandler;
         private readonly IUpdateDeliveryZoneCommandHandler _updateDeliveryZoneCommandHandler = updateDeliveryZoneCommandHandler;
         private readonly IDeleteDeliverZoneCommandHandler _deleteDeliveryZoneCommandHandler = deleteDeliverZoneCommandHandler;
@@ -72,7 +84,11 @@ namespace LogisticService.API.Controllers
         private readonly IValidator<CreateDeliveryZoneRequest> _createDeliveryZoneRequestValidator = createDeliveryZoneRequestValidator;
         private readonly IValidator<UpdateDeliveryZoneRequest> _updateDeliveryZoneRequestValidator = updateDeliveryZoneRequestValidator;
 
-        //// CRUD DELIVERY TEAMS ////
+        /**************************************************************/
+        /**************************************************************/
+        /////      CRUD DE EQUIPOS DE REPARTO - DELIVERYTEAMS     //////
+        /**************************************************************/
+        /**************************************************************/
 
         /// <summary>
         /// Endpoint para crear un nuevo equipo de entrega.
@@ -234,9 +250,104 @@ namespace LogisticService.API.Controllers
             return team is not null ? Ok(team) : NotFound(new { message = "Team not found." });
         }
 
-        //// CRUD DELIVERY ZONES ////
-        
 
+        /// <summary>
+        /// Asigna un operador a un equipo
+        /// </summary>
+        /// <param name="teamId">ID de la orden</param>
+        /// <param name="request">Datos del operador</param>
+        /// <returns>200 OK</returns>
+        /// <response code="200">Asignación exitosa</response>
+        /// <response code="400">Datos inválidos</response>
+        /// <response code="404">Orden no encontrada</response>
+        [HttpPost("{teamId}/assign-operator")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+
+        public async Task<IActionResult> AssignOperatorToTeam(int teamId, [FromBody] AssignOperatorToTeamRequest request)
+        {
+            var command = new AssignOperatorCommand(request.OperatorUserId, teamId);
+
+            var result = await _assignOperatorCommandHandler.AssignOperatorAsync(command);
+
+            if (!result)
+                return BadRequest("No se pudo asignar el operador.");
+
+            return Ok("Operador asignado correctamente.");
+        }
+
+        /// <summary>
+        /// Remover un operador de un equipo 
+        /// </summary>
+        /// <param name="teamId"></param>
+        /// <param name="operatorUserId"></param>
+        /// <returns></returns>
+        [HttpDelete("{teamId}/remove-operator/{operatorUserId}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RemoveOperator(int teamId, Guid operatorUserId)
+        {
+            var command = new RemoveOperatorCommand(operatorUserId, teamId);
+            var result = await _removeOperatorCommandHandler.RemoveOperatorAsync(command);
+            if (!result)
+                return BadRequest("No se pudo remover el operador.");
+
+            return Ok("Operador removido correctamente.");
+        }
+
+        /// <summary>
+        /// Asigna una zona a un equipo
+        /// </summary>
+        /// <param name="teamId">ID de la orden</param>
+        /// <param name="request">Datos del operador</param>
+        /// <returns>200 OK</returns>
+        /// <response code="200">Asignación exitosa</response>
+        /// <response code="400">Datos inválidos</response>
+        /// <response code="404">Orden no encontrada</response>
+        [HttpPost("{teamId}/assign-zone")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+
+        public async Task<IActionResult> AssignZoneToTeam(int teamId, [FromBody] AssignZoneToTeamRequest request)
+        {
+            var command = new AssignZoneToTeamCommand(request.ZoneId, teamId);
+
+            var result = await _assignZoneToTeamCommandHandler.AssignZoneToTeam(command);
+
+            if (!result)
+                return BadRequest("No se pudo asignar la zona.");
+
+            return Ok("Zona asignada correctamente.");
+        }
+
+        /// <summary>
+        /// Remover una zona de un equipo 
+        /// </summary>
+        /// <param name="teamId"></param>
+        /// <param name="operatorUserId"></param>
+        /// <returns></returns>
+        [HttpDelete("{teamId}/remove-zone/{zoneId}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RemoveZoneFromTeam(int zoneId, int teamId)
+        {
+            var command = new RemoveZoneFromTeamCommand(zoneId, teamId);
+            var result = await _removeZoneToTeamCommandHandler.RemoveZoneAsync(command);
+            if (!result)
+                return BadRequest("No se pudo remover la zona.");
+
+            return Ok("Zona removido correctamente.");
+        }
+
+        /**************************************************************/
+        /**************************************************************/
+        /////      CRUD DE ZONAS DE REPARTO - DELIVERYTEAMS     //////
+        /**************************************************************/
+        /**************************************************************/
 
 
         /// <summary>

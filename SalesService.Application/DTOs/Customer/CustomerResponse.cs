@@ -13,7 +13,8 @@ namespace SalesService.Application.DTOs.Customer
         public string LastName { get; set; } = default!;
         public string Email { get; set; } = default!;
         public string PhoneNumber { get; set; } = default!;
-        public string Address { get; set; } = default!;
+        public DateTime RegistrationDate { get; set; }
+        public List<AddressDto> Addresses { get; set; } = new();
         public string Status { get; set; } = default!;
 
     }

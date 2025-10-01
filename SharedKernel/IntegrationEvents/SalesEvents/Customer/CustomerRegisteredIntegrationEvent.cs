@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharedKernel.IntegrationEvents.SalesEvents.DTOs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ namespace SharedKernel.IntegrationEvents.SalesEvents.Customer
         public string FirstName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
-        public string Address { get; set; } = string.Empty;
+        public List<AddressDto> Addresses { get; set; } = new List<AddressDto>();
         public DateTime CreatedAt { get; set; }
 
     }

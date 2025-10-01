@@ -1,4 +1,5 @@
-﻿using SalesService.Domain.IRepositories;
+﻿using SalesService.Domain.Entities;
+using SalesService.Domain.IRepositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,8 +21,7 @@ namespace SalesService.Application.Commands.Customers.Update
             
             if (command.FirstName is not null) customer.FirstName = command.FirstName;
             if (command.LastName is not null) customer.LastName = command.LastName;
-            if (command.PhoneNumber is not null) customer.PhoneNumber = command.PhoneNumber;
-            if (command.Address is not null) customer.Address = command.Address;
+            if (command.PhoneNumber is not null) customer.PhoneNumber = command.PhoneNumber;            
             if (command.Email is not null && command.Email != customer.Email)
             {
                 // Validamos si el correo electrónico ya existe
@@ -31,6 +31,30 @@ namespace SalesService.Application.Commands.Customers.Update
 
                 customer.Email = command.Email;
             }
+
+            // 🔑 Reemplazo de direcciones
+            if (command.Addresses.Any())
+            {
+                customer.Addresses.Clear();
+                foreach (var a in command.Addresses)
+                {
+                    customer.Addresses.Add(new Address
+                    {
+                        Street = a.Street,
+                        Number = a.Number,
+                        Apartment = a.Apartment,
+                        City = a.City,
+                        Province = a.Province,
+                        Country = a.Country,
+                        PostalCode = a.PostalCode,
+                        Latitude = a.Latitude,
+                        Longitude = a.Longitude,
+                        FormattedAddress = a.FormattedAddress,
+                        CustomerId = customer.Id
+                    });
+                }
+            }
+
             await _repository.UpdateAsync(customer);
             return true;
         }
