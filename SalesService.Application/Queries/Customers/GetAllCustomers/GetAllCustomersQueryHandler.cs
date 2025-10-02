@@ -27,6 +27,7 @@ namespace SalesService.Application.Queries.Customers.GetAllCustomers
                 PhoneNumber = c.PhoneNumber,
                 Addresses = c.Addresses.Select(a => new AddressDto
                 {
+                    Id = a.Id,
                     Street = a.Street,
                     Number = a.Number,
                     Apartment = a.Apartment,
