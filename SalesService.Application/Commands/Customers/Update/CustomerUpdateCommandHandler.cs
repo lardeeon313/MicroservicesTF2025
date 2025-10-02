@@ -32,26 +32,54 @@ namespace SalesService.Application.Commands.Customers.Update
                 customer.Email = command.Email;
             }
 
-            // 🔑 Reemplazo de direcciones
-            if (command.Addresses.Any())
+            if (command.Addresses != null && command.Addresses.Any())
             {
-                customer.Addresses.Clear();
-                foreach (var a in command.Addresses)
+                var existingAddresses = customer.Addresses.ToList();
+                
+                foreach (var ea in existingAddresses)
                 {
-                    customer.Addresses.Add(new Address
+                    if (!command.Addresses.Any(a => a.Id == ea.Id))
                     {
-                        Street = a.Street,
-                        Number = a.Number,
-                        Apartment = a.Apartment,
-                        City = a.City,
-                        Province = a.Province,
-                        Country = a.Country,
-                        PostalCode = a.PostalCode,
-                        Latitude = a.Latitude,
-                        Longitude = a.Longitude,
-                        FormattedAddress = a.FormattedAddress,
-                        CustomerId = customer.Id
-                    });
+                        await _repository.RemoveAddress(ea); 
+                    }
+                }
+
+                // 🔄 Actualizar o agregar
+                foreach (var dto in command.Addresses)
+                {
+                    var existing = existingAddresses.FirstOrDefault(a => a.Id == dto.Id);
+                    if (existing != null)
+                    {
+                        // Actualizar dirección existente
+                        existing.Street = dto.Street;
+                        existing.Number = dto.Number;
+                        existing.Apartment = dto.Apartment;
+                        existing.City = dto.City;
+                        existing.Province = dto.Province;
+                        existing.Country = dto.Country;
+                        existing.PostalCode = dto.PostalCode;
+                        existing.Latitude = dto.Latitude;
+                        existing.Longitude = dto.Longitude;
+                        existing.FormattedAddress = dto.FormattedAddress;
+                    }
+                    else
+                    {
+                        // Agregar nueva dirección
+                        customer.Addresses.Add(new Address
+                        {
+                            Street = dto.Street,
+                            Number = dto.Number,
+                            Apartment = dto.Apartment,
+                            City = dto.City,
+                            Province = dto.Province,
+                            Country = dto.Country,
+                            PostalCode = dto.PostalCode,
+                            Latitude = dto.Latitude,
+                            Longitude = dto.Longitude,
+                            FormattedAddress = dto.FormattedAddress,
+                            CustomerId = customer.Id
+                        });
+                    }
                 }
             }
 

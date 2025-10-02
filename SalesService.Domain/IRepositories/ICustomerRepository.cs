@@ -1,4 +1,5 @@
-﻿using SalesService.Domain.Entities.CustomerEntity;
+﻿using SalesService.Domain.Entities;
+using SalesService.Domain.Entities.CustomerEntity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace SalesService.Domain.IRepositories
         Task<Customer?> GetByEmailAsync(string? email);
         Task<(List<Customer> Customers, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
         Task<Customer?> GetByIdWithAddressesAsync(Guid id);
+        Task RemoveAddress(Address address);
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SalesService.Domain.Entities;
 using SalesService.Domain.Entities.CustomerEntity;
 using SalesService.Domain.IRepositories;
 using System;
@@ -75,6 +76,12 @@ namespace SalesService.Infraestructure.Persistence.Repositories
             return await _context.Customers
                 .Include(c => c.Addresses)
                 .FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task RemoveAddress(Address address)
+        {
+            _context.Addresses.Remove(address);
+            await _context.SaveChangesAsync();
         }
     }
 }
