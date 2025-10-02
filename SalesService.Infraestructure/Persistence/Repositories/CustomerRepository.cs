@@ -69,5 +69,12 @@ namespace SalesService.Infraestructure.Persistence.Repositories
 
             return (customers, totalCount);
         }
+
+        public async Task<Customer?> GetByIdWithAddressesAsync(Guid id)
+        {
+            return await _context.Customers
+                .Include(c => c.Addresses)
+                .FirstOrDefaultAsync(c => c.Id == id);
+        }
     }
 }

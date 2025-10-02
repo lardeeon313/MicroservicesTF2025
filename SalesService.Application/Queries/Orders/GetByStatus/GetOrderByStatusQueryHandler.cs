@@ -1,4 +1,5 @@
-﻿using SalesService.Application.DTOs.Order;
+﻿using SalesService.Application.DTOs.Customer;
+using SalesService.Application.DTOs.Order;
 using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
 using System;
@@ -37,7 +38,20 @@ namespace SalesService.Application.Queries.Orders.GetByStatus
                     ProductBrand = item.ProductBrand,
                     ProductName = item.ProductName,
                     Quantity = item.Quantity
-                }).ToList()
+                }).ToList(),
+                Address = new AddressDto
+                {
+                    Street = order.DeliveryAddress.Street,
+                    Number = order.DeliveryAddress.Number,
+                    Apartment = order.DeliveryAddress.Apartment,
+                    City = order.DeliveryAddress.City,
+                    Province = order.DeliveryAddress.Province,
+                    Country = order.DeliveryAddress.Country,
+                    PostalCode = order.DeliveryAddress.PostalCode,
+                    Latitude = order.DeliveryAddress.Latitude,
+                    Longitude = order.DeliveryAddress.Longitude,
+                    FormattedAddress = order.DeliveryAddress.FormattedAddress
+                }
             });
         }
     }

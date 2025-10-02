@@ -1,4 +1,5 @@
 ﻿using SalesService.Application.DTOs.Order;
+using SalesService.Domain.Entities;
 using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.IRepositories;
 using System;
@@ -27,6 +28,25 @@ namespace SalesService.Application.Commands.Orders.Update
             existingOrder.ModifiedStatusDate = DateTime.UtcNow;
             existingOrder.Status = command.Request.Status;
             existingOrder.CreatedByUserId = command.Request.ModifiedByUserId ?? existingOrder.CreatedByUserId;
+
+            if (command.Request.AddressRequest != null)
+            {
+                // Reemplazamos la dirección completa
+                existingOrder.DeliveryAddress = new Address
+                {
+                    Street = command.Request.AddressRequest.Street,
+                    Number = command.Request.AddressRequest.Number,
+                    Apartment = command.Request.AddressRequest.Apartment,
+                    City = command.Request.AddressRequest.City,
+                    Province = command.Request.AddressRequest.Province,
+                    Country = command.Request.AddressRequest.Country,
+                    PostalCode = command.Request.AddressRequest.PostalCode,
+                    Latitude = command.Request.AddressRequest.Latitude,
+                    Longitude = command.Request.AddressRequest.Longitude,
+                    FormattedAddress = command.Request.AddressRequest.FormattedAddress,
+                    CreatedAt = existingOrder.DeliveryAddress?.CreatedAt ?? DateTime.UtcNow
+                };
+            }
 
             // Actualizar Items
             foreach (var itemDto in command.Request.Items)

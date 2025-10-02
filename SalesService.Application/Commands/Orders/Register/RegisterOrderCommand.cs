@@ -1,4 +1,5 @@
-﻿using SalesService.Application.DTOs.Order;
+﻿using SalesService.Application.DTOs.Customer;
+using SalesService.Application.DTOs.Order;
 using SalesService.Application.DTOs.Order.Request;
 using System;
 using System.Collections.Generic;
@@ -18,14 +19,16 @@ namespace SalesService.Application.Commands.Orders.Register
         public string? DeliveryDetail { get; set; }
         public DateTime? DeliveryDate { get; set; }
         public string CreatedByUserId { get; set; } = string.Empty;
+        public AddressRequest DeliveryAddress { get; set; } = new();
 
-        public RegisterOrderCommand(Guid customerId, List<RegisterOrderItemRequest> items,DateTime? deliverDate, string? deliveryDetail, string createdByUserId)
+        public RegisterOrderCommand(Guid customerId, List<RegisterOrderItemRequest> items,DateTime? deliverDate, string? deliveryDetail, string createdByUserId, AddressRequest deliveryAddress)
         {
             CustomerId = customerId;
             DeliveryDetail = deliveryDetail;
             DeliveryDate = deliverDate;
             Items = items;
             CreatedByUserId = createdByUserId;
+            DeliveryAddress = deliveryAddress;
         }
             
     }

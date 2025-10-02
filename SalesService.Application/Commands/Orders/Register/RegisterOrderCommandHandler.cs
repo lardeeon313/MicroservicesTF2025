@@ -1,5 +1,6 @@
 ﻿using SalesService.Application.DTOs.Order;
 using SalesService.Domain.Common.Interfaces;
+using SalesService.Domain.Entities;
 using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
@@ -32,6 +33,21 @@ namespace SalesService.Application.Commands.Orders.Register
             var customer = await _customerRepository.GetByIdAsync(command.CustomerId)
                 ?? throw new KeyNotFoundException($"Customer with ID {command.CustomerId} not found.");
 
+            // Crear el objeto Address
+            var deliveryAddress = new Address
+            {
+                Street = command.DeliveryAddress.Street,
+                Number = command.DeliveryAddress.Number,
+                Apartment = command.DeliveryAddress.Apartment,
+                City = command.DeliveryAddress.City,
+                Province = command.DeliveryAddress.Province,
+                Country = command.DeliveryAddress.Country,
+                PostalCode = command.DeliveryAddress.PostalCode,
+                Latitude = command.DeliveryAddress.Latitude,
+                Longitude = command.DeliveryAddress.Longitude,
+                FormattedAddress = command.DeliveryAddress.FormattedAddress
+            };
+
             // Crear la orden
             var order = new Order
             {
@@ -46,7 +62,8 @@ namespace SalesService.Application.Commands.Orders.Register
                     ProductBrand = i.ProductBrand,
                     ProductName = i.ProductName,
                     Quantity = i.Quantity
-                }).ToList()
+                }).ToList(),
+                DeliveryAddress = deliveryAddress,
             };
 
             // Guardar la orden en la base de datos
@@ -99,7 +116,7 @@ namespace SalesService.Application.Commands.Orders.Register
                 OrderDate = order.OrderDate,
                 Status = order.Status,
                 DeliveryDate = order.DeliveryDate,
-                CreatedByUserId = order.CreatedByUserId,
+                CreatedByUserId = order.CreatedByUserId,                
             };
         }
     }

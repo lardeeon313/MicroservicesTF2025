@@ -1,5 +1,7 @@
-﻿using SalesService.Application.DTOs.Order;
+﻿using SalesService.Application.DTOs.Customer;
+using SalesService.Application.DTOs.Order;
 using SalesService.Application.DTOs.Order.Response;
+using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.IRepositories;
 using System;
 using System.Collections.Generic;
@@ -39,7 +41,21 @@ namespace SalesService.Application.Queries.Orders.GetPagedOrders
                     DeliveryDetail = o.DeliveryDetail,
                     PaymentType = o.PaymentType,
                     ModifiedStatusDate = o.ModifiedStatusDate,
-                }).ToList()
+                    Address = new AddressDto
+                    {
+                        Street = o.DeliveryAddress.Street,
+                        Number = o.DeliveryAddress.Number,
+                        Apartment = o.DeliveryAddress.Apartment,
+                        City = o.DeliveryAddress.City,
+                        Province = o.DeliveryAddress.Province,
+                        Country = o.DeliveryAddress.Country,
+                        PostalCode = o.DeliveryAddress.PostalCode,
+                        Latitude = o.DeliveryAddress.Latitude,
+                        Longitude = o.DeliveryAddress.Longitude,
+                        FormattedAddress = o.DeliveryAddress.FormattedAddress
+                    }
+                }).ToList(),
+
             };
             // Devolver tambien la fecha de creación - 
         }

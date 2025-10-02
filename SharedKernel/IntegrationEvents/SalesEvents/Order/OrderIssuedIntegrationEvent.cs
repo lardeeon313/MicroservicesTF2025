@@ -22,6 +22,7 @@ namespace SharedKernel.IntegrationEvents.SalesEvents.Order
         public DateTime? DeliveryDate { get; set; }
         public string? DeliveryDetail { get; set; }
         public List<OrderItemsDto> Items { get; set; } = [];
+        public AddressDto DeliveryAddress { get; set; } = new();
     }
 
 }

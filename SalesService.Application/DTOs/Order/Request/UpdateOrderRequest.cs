@@ -1,4 +1,5 @@
-﻿using SalesService.Domain.Enums;
+﻿using SalesService.Application.DTOs.Customer;
+using SalesService.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -21,5 +22,6 @@ namespace SalesService.Application.DTOs.Order.Request
         public string? PaymentReceipt { get; set; }
         public PaymentType? PaymentType { get; set; }
         public string? ModifiedByUserId { get; set; }
+        public AddressRequest AddressRequest { get; set; } = new();
     }
 }
