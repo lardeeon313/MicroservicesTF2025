@@ -20,7 +20,11 @@ const CustomerDetail = ({ customer }: Props) => {
       <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{customer.phoneNumber}</p>
 
       <label className="block text-sm font-medium text-gray-900 mb-1">Dirección</label>
-      <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">{customer.address}</p>
+      <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">
+        {customer.addresses && customer.addresses.length > 0
+          ? `${customer.addresses[0].street} ${customer.addresses[0].number}${customer.addresses[0].apartment ? ', ' + customer.addresses[0].apartment : ''}, ${customer.addresses[0].city}, ${customer.addresses[0].province}, ${customer.addresses[0].country}`
+          : "Sin dirección"}
+      </p>
 
       <div className="mt-10">
         <Link 

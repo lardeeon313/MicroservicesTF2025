@@ -5,10 +5,47 @@ export interface Customer {
   lastName: string;
   email: string;
   phoneNumber: string;
-  address: string;
+  
   registrationDate: string; // ISO string
   status: CustomerStatus;
   descriptionsatisfaction: string;
+  //
+  satisfactionScore?: number;
+  addresses: Address[];
+  isActive: boolean;
+}
+
+
+export interface Address{
+  id: number; 
+  street: string;
+  number: number;
+  apartment?: string;
+  city:string;
+  province:string;
+  country:string;
+  postalCode:string;
+  latitude:number;
+  longitude:number;
+  formattedAddress?:string; 
+  createdAt:string;
+  customerId: string; // Guid → string
+  customer?: Customer;
+}
+
+//Request que se comunicara con el service: 
+
+export interface AddressRequest {
+  street: string;
+  number: string;
+  apartment?: string;
+  city: string;
+  province: string;
+  country: string;
+  postalCode?: string;
+  latitude?: number;
+  longitude?: number;
+  formattedAddress?: string;
 }
 
 //estado del cliente , si este perdido inactivo y perdido: 
@@ -26,7 +63,7 @@ export interface CustomerResponse {
   lastName: string;
   email: string;
   phoneNumber: string;
-  address: string;
+  addresses: Address[];
   status: CustomerStatus;
 }
 
@@ -36,7 +73,7 @@ export interface RegisterCustomerRequest {
   lastName: string;
   email: string;
   phoneNumber: string;
-  address: string;
+  addresses: AddressRequest[];
 }
 
 // Para el formulario de actualización de cliente
@@ -46,7 +83,7 @@ export interface UpdateCustomerRequest {
   lastName?: string;
   email?: string;
   phoneNumber?: string;
-  address?: string;
+  addresses: AddressRequest[];
 }
 
 // Get: CustomerPaginated 

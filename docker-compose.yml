@@ -114,6 +114,7 @@ services:
     networks:
       - micro_net
 
+
   identityservice:
     build:
       context: .
