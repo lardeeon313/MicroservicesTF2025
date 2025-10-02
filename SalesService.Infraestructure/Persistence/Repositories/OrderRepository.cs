@@ -35,6 +35,8 @@ namespace SalesService.Infraestructure.Persistence.Repositories
         {
             return await _context.Orders
                 .Include(o => o.Items)
+                .Include(o => o.Customer)
+                .Include(o => o.DeliveryAddress)
                 .ToListAsync();
         }
 
@@ -42,6 +44,7 @@ namespace SalesService.Infraestructure.Persistence.Repositories
         {
             return await _context.Orders
                 .Include(o => o.Items)
+                .Include(o => o.DeliveryAddress)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -50,6 +53,7 @@ namespace SalesService.Infraestructure.Persistence.Repositories
         {
             return await _context.Orders
                 .Include(o => o.Items)
+                .Include(o => o.DeliveryAddress)
                 .AsNoTracking()
                 .Where(o => o.CustomerId == customerId)
                 .ToListAsync();
@@ -59,6 +63,7 @@ namespace SalesService.Infraestructure.Persistence.Repositories
         {
             return await _context.Orders
                 .Include(o => o.Customer)
+                .Include(o => o.DeliveryAddress)
                 .Include(o => o.Items)
                 .FirstOrDefaultAsync(o => o.Id == orderId);
         }
@@ -70,6 +75,7 @@ namespace SalesService.Infraestructure.Persistence.Repositories
 
             return await _context.Orders
                 .Include(o => o.Items)
+                .Include(o => o.DeliveryAddress)
                 .AsNoTracking()
                 .Where(o => o.Status == parsedStatus)
                 .ToListAsync();
@@ -90,6 +96,7 @@ namespace SalesService.Infraestructure.Persistence.Repositories
             return await _context.OrderMissings
                 .Include(om => om.Order) // Carga la entidad 'Order'
                     .ThenInclude(o => o.Items) // Luego, carga la entidad 'Customer'
+                .Include(om => om.Order.DeliveryAddress) // Carga la entidad Address relacionada con Order
                 .Include(om => om.Order.Customer) // Carga la entidad 'Customer' relacionada con 'Order'
                 .Include(om => om.MissingItems) // También cargas los 'MissingItems'
                 .ToListAsync();
@@ -99,6 +106,7 @@ namespace SalesService.Infraestructure.Persistence.Repositories
         {
             var query = _context.Orders
                 .Include(o => o.Customer)
+                .Include(o => o.DeliveryAddress)
                 .OrderByDescending(o => o.OrderDate);
 
             var totalCount = await query.CountAsync(cancellationToken);

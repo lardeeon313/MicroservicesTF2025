@@ -1,4 +1,5 @@
-﻿using SalesService.Domain.Enums;
+﻿using SalesService.Application.DTOs.Customer;
+using SalesService.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,5 +23,6 @@ namespace SalesService.Application.DTOs.Order
         public List<OrderItemDto> Items { get; set; } = new();
         public DateTime? ModifiedStatusDate { get; internal set; }
         public string CreatedByUserId { get; set; } = string.Empty;
+        public AddressDto? Address { get; set; }
     }
 }

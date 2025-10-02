@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SalesService.Domain.Entities.CustomerEntity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,7 +31,7 @@ namespace SalesService.Domain.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // 🔑 Relación con Customer
-        public Guid CustomerId { get; set; }
-        public CustomerEntity.Customer Customer { get; set; } = null!;
+        public Guid? CustomerId { get; set; }
+        public Customer? Customer { get; set; } = null!;
     }
 }

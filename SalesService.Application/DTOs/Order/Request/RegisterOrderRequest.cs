@@ -1,4 +1,5 @@
-﻿using SalesService.Domain.Enums;
+﻿using SalesService.Application.DTOs.Customer;
+using SalesService.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -21,8 +22,12 @@ namespace SalesService.Application.DTOs.Order.Request
 
         [MaxLength(220)]
         public string? DeliveryDetail { get; set; }
+
         [Required]
         public string CreatedByUserId { get; set; } = string.Empty;
+
+        [Required]
+        public AddressRequest DeliveryAddress { get; set; } = new();
 
     }
 }

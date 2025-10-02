@@ -28,7 +28,7 @@ namespace SalesService.Domain.Entities.CustomerEntity
         public List<Address> Addresses { get; set; } = [];
         public bool IsActive { get; set; } = true;
 
-        // Metodo para Inhabilitar un equipo
+        // Metodo para Inhabilitar un Customer
         public void Desactivate()
         {
             if (!IsActive)
@@ -37,7 +37,7 @@ namespace SalesService.Domain.Entities.CustomerEntity
             IsActive = false;
         }
 
-        // Metodo para Habilitar un equipo
+        // Metodo para Habilitar un Customer
         public void Active()
         {
             if (IsActive)
