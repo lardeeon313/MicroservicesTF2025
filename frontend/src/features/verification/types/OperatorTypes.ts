@@ -5,6 +5,7 @@ export interface DeliveryOperatorDto {
   lastName?: string;
   phoneNumber?: string;
   email?: string;
+  fullName?: string;
 }
 
 export interface DeliveryOperatorsInTeamDto {
@@ -21,19 +22,21 @@ export interface DeliveryOperatorsInTeamDto {
 
 export interface OperatorDto {
   id: string;
-  fullName: string;
-  email?: string;
+  firstName?: string;
+  lastName?: string;
   phoneNumber?: string;
+  email?: string;
+  fullName?: string;
 }
 
-export interface AssignOperatorRequest {
+export interface AssignOperatorToTeamRequest {
   teamId: number;
   operatorUserId: string;
-  roleInTeam: string;
+  roleInTeam?: string;
 }
 
-export interface RemoveOperatorRequest {
-  operatorUserId: string;
+export interface AssignZoneToTeamRequest {
   teamId: number;
+  zoneId: number;
 }
 

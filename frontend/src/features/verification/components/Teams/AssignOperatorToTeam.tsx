@@ -17,7 +17,6 @@ export const AssignOperatorToTeam = ({ isOpen, onClose, teamId, onRefetch }: Ass
     const [query, setQuery] = useState('');
     const [selectedOperator, setSelectedOperator] = useState<OperatorDto | null>(null);
     const [previewOperator, setPreviewOperator] = useState<OperatorDto | null>(null);
-    const [roleInTeam, setRoleInTeam] = useState('Member');
     
     const { operators, loading: loadingOperators, error, assignOperator, fetchAvailableOperators } = useOperators();
 
@@ -56,8 +55,7 @@ export const AssignOperatorToTeam = ({ isOpen, onClose, teamId, onRefetch }: Ass
         try {
             await assignOperator({
                 teamId,
-                operatorUserId: selectedOperator.id,
-                roleInTeam
+                operatorUserId: selectedOperator.id
             });
             toast.success('Operador asignado exitosamente');
             if (onRefetch) await onRefetch();
@@ -120,7 +118,7 @@ export const AssignOperatorToTeam = ({ isOpen, onClose, teamId, onRefetch }: Ass
                                                     <Combobox.Input
                                                         className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0 focus:outline-none"
                                                         displayValue={(operator: OperatorDto) =>
-                                                            operator ? operator.fullName : ''
+                                                            operator ? (operator.fullName || `${operator.firstName || ''} ${operator.lastName || ''}`.trim() || operator.id) : ''
                                                         }
                                                         onChange={(event) => setQuery(event.target.value)}
                                                         placeholder="Buscar por nombre o email..."
@@ -162,7 +160,7 @@ export const AssignOperatorToTeam = ({ isOpen, onClose, teamId, onRefetch }: Ass
                                                                                 className={`block truncate ${selected ? 'font-medium' : 'font-normal'} cursor-pointer`}
                                                                                 onClick={() => handleOperatorClick(operator)}
                                                                             >
-                                                                                {operator.fullName}
+                                                                                {operator.fullName || `${operator.firstName || ''} ${operator.lastName || ''}`.trim() || operator.id}
                                                                             </span>
                                                                             {operator.email && (
                                                                                 <span className={`block truncate text-sm ${active ? 'text-white' : 'text-gray-500'}`}>
@@ -187,7 +185,7 @@ export const AssignOperatorToTeam = ({ isOpen, onClose, teamId, onRefetch }: Ass
                                                 <>
                                                     <div className="flex items-center text-sm text-gray-600">
                                                         <User className="h-4 w-4 mr-2" />
-                                                        <span>{(selectedOperator || previewOperator)?.fullName}</span>
+                                                        <span>{(selectedOperator || previewOperator)?.fullName || `${(selectedOperator || previewOperator)?.firstName || ''} ${(selectedOperator || previewOperator)?.lastName || ''}`.trim() || (selectedOperator || previewOperator)?.id}</span>
                                                     </div>
                                                     {(selectedOperator || previewOperator)?.email && (
                                                         <div className="text-sm text-gray-600">
@@ -203,23 +201,6 @@ export const AssignOperatorToTeam = ({ isOpen, onClose, teamId, onRefetch }: Ass
                                         </div>
                                     </div>
 
-                                    {selectedOperator && (
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                Rol en el Equipo
-                                            </label>
-                                            <select
-                                                value={roleInTeam}
-                                                onChange={(e) => setRoleInTeam(e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                            >
-                                                <option value="Member">Miembro</option>
-                                                <option value="Leader">Líder</option>
-                                                <option value="Driver">Conductor</option>
-                                                <option value="Helper">Ayudante</option>
-                                            </select>
-                                        </div>
-                                    )}
 
                                     <div className="mt-6 flex justify-end space-x-3">
                                         <button

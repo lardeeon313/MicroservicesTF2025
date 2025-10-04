@@ -20,10 +20,7 @@ export const RemoveOperatorFromTeam = ({ isOpen, onClose, operator, teamId, onRe
         if (!operator) return;
 
         try {
-            await removeOperator({
-                operatorUserId: operator.operatorByUserId,
-                teamId
-            });
+            await removeOperator(teamId, operator.operatorByUserId);
             toast.success('Operador removido exitosamente');
             if (onRefetch) await onRefetch();
             onClose();
