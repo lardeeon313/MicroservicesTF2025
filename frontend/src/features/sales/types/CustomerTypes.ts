@@ -36,6 +36,7 @@ export interface Address{
 //Request que se comunicara con el service: 
 
 export interface AddressRequest {
+  id?: number; // opcional, en caso de que quieras editar
   street: string;
   number: string;
   apartment?: string;
@@ -43,8 +44,8 @@ export interface AddressRequest {
   province: string;
   country: string;
   postalCode?: string;
-  latitude?: number;
-  longitude?: number;
+  latitude?: number | null;
+  longitude?: number | null;
   formattedAddress?: string;
 }
 

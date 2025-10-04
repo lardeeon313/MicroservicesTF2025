@@ -21,7 +21,7 @@ namespace SalesService.Application.Commands.Orders.Register
         public string CreatedByUserId { get; set; } = string.Empty;
         public AddressRequest DeliveryAddress { get; set; } = new();
 
-        public RegisterOrderCommand(Guid customerId, List<RegisterOrderItemRequest> items,DateTime? deliverDate, string? deliveryDetail, string createdByUserId, AddressRequest deliveryAddress)
+        public RegisterOrderCommand(Guid customerId, List<RegisterOrderItemRequest> items, DateTime? deliverDate, string? deliveryDetail, string createdByUserId, AddressRequest deliveryAddress)
         {
             CustomerId = customerId;
             DeliveryDetail = deliveryDetail;
@@ -30,6 +30,6 @@ namespace SalesService.Application.Commands.Orders.Register
             CreatedByUserId = createdByUserId;
             DeliveryAddress = deliveryAddress;
         }
-            
+
     }
 }

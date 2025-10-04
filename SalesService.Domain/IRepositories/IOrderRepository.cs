@@ -1,4 +1,5 @@
-﻿using SalesService.Domain.Entities.OrderEntity;
+﻿using SalesService.Domain.Entities;
+using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace SalesService.Domain.IRepositories
     public interface IOrderRepository
     {
         Task AddAsync(Order order);
+        Task AddAddressAsync(Address address);
         Task<Order?> GetByIdAsync(int orderId);
         Task<IEnumerable<Order>> GetAllAsync();
         Task<IEnumerable<Order>> GetByStatusAsync(string status);

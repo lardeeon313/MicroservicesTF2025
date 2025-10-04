@@ -11,7 +11,7 @@ using SharedKernel.IntegrationEvents.SalesEvents.Order;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SalesService.Application.Commands.Orders.Register
@@ -19,21 +19,27 @@ namespace SalesService.Application.Commands.Orders.Register
     /// <summary>
     /// Manejador para registrar nota de pedido
     /// </summary>
-
-    public class RegisterOrderCommandHandler(IEmailService emailService ,IOrderRepository orderRepository,IRabbitMQPublisher publisher, ICustomerRepository customerRepository ) : IRegisterOrderCommandHandler
+    public class RegisterOrderCommandHandler(
+        IEmailService emailService,
+        IOrderRepository orderRepository,
+        IRabbitMQPublisher publisher,
+        ICustomerRepository customerRepository
+    ) : IRegisterOrderCommandHandler
     {
         private readonly IEmailService _emailService = emailService;
         private readonly IOrderRepository _orderRepository = orderRepository;
         private readonly IRabbitMQPublisher _publisher = publisher;
         private readonly ICustomerRepository _customerRepository = customerRepository;
-            
+
         public async Task<OrderDto> HandleAsync(RegisterOrderCommand command)
         {
             // Verificar si el cliente existe
             var customer = await _customerRepository.GetByIdAsync(command.CustomerId)
                 ?? throw new KeyNotFoundException($"Customer with ID {command.CustomerId} not found.");
 
-            // Crear el objeto Address
+            Console.WriteLine($"DeliveryAddress recibido: {JsonSerializer.Serialize(command.DeliveryAddress)}");
+
+            // Crear el objeto Address (NO lo guardamos aparte, lo dejamos colgado del Order)
             var deliveryAddress = new Address
             {
                 Street = command.DeliveryAddress.Street,
@@ -45,10 +51,13 @@ namespace SalesService.Application.Commands.Orders.Register
                 PostalCode = command.DeliveryAddress.PostalCode,
                 Latitude = command.DeliveryAddress.Latitude,
                 Longitude = command.DeliveryAddress.Longitude,
-                FormattedAddress = command.DeliveryAddress.FormattedAddress
+                FormattedAddress = command.DeliveryAddress.FormattedAddress,
+                CustomerId = command.CustomerId // opcional, si querés dejar la traza
             };
 
-            // Crear la orden
+            Console.WriteLine($"Address antes de guardar: {deliveryAddress.Id}, {deliveryAddress.Street}, {deliveryAddress.Number}");
+
+            // Crear la orden directamente con el Address
             var order = new Order
             {
                 CustomerId = command.CustomerId,
@@ -63,17 +72,21 @@ namespace SalesService.Application.Commands.Orders.Register
                     ProductName = i.ProductName,
                     Quantity = i.Quantity
                 }).ToList(),
-                DeliveryAddress = deliveryAddress,
+                DeliveryAddress = deliveryAddress // 🔑 asignación directa
             };
 
-            // Guardar la orden en la base de datos
+            Console.WriteLine($"Order antes de guardar: {JsonSerializer.Serialize(order)}");
+
+            // Guardar todo en la DB (EF hace el insert de Address y Order en la misma transacción)
             await _orderRepository.AddAsync(order);
+
+            Console.WriteLine($"Order después de guardar: {JsonSerializer.Serialize(order)}");
 
             // Actualizar el estado del cliente a "Active"
             customer.Status = CustomerStatus.Active;
             await _customerRepository.UpdateAsync(customer);
 
-            // Creamos el evento
+            // Creamos el evento de integración
             var integrationEvent = new OrderRegisteredIntegrationEvent
             {
                 OrderId = order.Id,
@@ -92,7 +105,7 @@ namespace SalesService.Application.Commands.Orders.Register
 
             // Enviar un correo electrónico al cliente
             var htmlBody = EmailTemplateGenerator.BuildOrderRegisteredTemplate(
-                customerName: customer.FirstName + " " + customer.LastName,
+                customerName: $"{customer.FirstName} {customer.LastName}",
                 orderId: order.Id,
                 orderDate: order.OrderDate,
                 deliveryDate: order.DeliveryDate,
@@ -106,7 +119,6 @@ namespace SalesService.Application.Commands.Orders.Register
                 htmlBody
             );
 
-
             // Devolver el DTO de la orden creada
             return new OrderDto
             {
@@ -116,7 +128,27 @@ namespace SalesService.Application.Commands.Orders.Register
                 OrderDate = order.OrderDate,
                 Status = order.Status,
                 DeliveryDate = order.DeliveryDate,
-                CreatedByUserId = order.CreatedByUserId,                
+                CreatedByUserId = order.CreatedByUserId,
+                Items = order.Items.Select(i => new OrderItemDto
+                {
+                    ProductName = i.ProductName,
+                    ProductBrand = i.ProductBrand,
+                    Quantity = i.Quantity
+                }).ToList(),
+                Address = new SalesService.Application.DTOs.Customer.AddressDto
+                {
+                    Id = order.DeliveryAddress.Id,
+                    Street = order.DeliveryAddress.Street,
+                    Number = order.DeliveryAddress.Number,
+                    Apartment = order.DeliveryAddress.Apartment,
+                    City = order.DeliveryAddress.City,
+                    Province = order.DeliveryAddress.Province,
+                    Country = order.DeliveryAddress.Country,
+                    PostalCode = order.DeliveryAddress.PostalCode,
+                    Latitude = order.DeliveryAddress.Latitude,
+                    Longitude = order.DeliveryAddress.Longitude,
+                    FormattedAddress = order.DeliveryAddress.FormattedAddress
+                }
             };
         }
     }

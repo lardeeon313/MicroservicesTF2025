@@ -1,4 +1,4 @@
-import { CalendarDays, Package, User, BadgeCheck, Eye, Pencil, Trash } from "lucide-react"
+import { CalendarDays, Package, User, BadgeCheck, Eye, Pencil, Trash,MapPin } from "lucide-react"
 import { OrderTableData } from "../../types/OrderTypes";
 import formatDate from "../../../../utils/formateDate";
 import { OrderStatusBadge } from "../../../../components/OrderStatusBadge";
@@ -50,6 +50,7 @@ export default function OrderTable({
                 <th className="px-4 py-3 text-left"><User className="inline w-4 h-4 mr-1" /> Cliente</th>
                 <th className="px-4 py-3 text-left"><CalendarDays className="inline w-4 h-4 mr-1" /> Fecha Pedido</th>
                 <th className="px-4 py-3 text-left"><Package className="inline w-4 h-4 mr-1" /> Fecha Entrega</th>
+                <th className="px-4 py-3 text-left"><MapPin className="inline w-4 h-4 mr-1" /> Dirección</th>
                 <th className="px-4 py-3 text-left"><BadgeCheck className="inline w-4 h-4 mr-1" /> Estado</th>
                 <th className="px-4 py-3 text-center">Acciones</th>
                 <th className="px-4 py-3 text-center">Cambiar estado</th>
@@ -62,17 +63,45 @@ export default function OrderTable({
                   <td className="px-4 py-3">{order.customerFirstName ?? ""} {order.customerLastName ?? ""}</td>
                   <td className="px-4 py-3">{formatDate(order.orderDate)}</td>
                   <td className="px-4 py-3">{order.deliveryDate ? formatDate(order.deliveryDate) : "No asignada"}</td>
+                  <td className="px-4 py-3">
+                    {order.deliveryAddress ? (
+                      <div>
+                        {order.deliveryAddress.street} {order.deliveryAddress.number}
+                        {order.deliveryAddress.apartment
+                          ? `, ${order.deliveryAddress.apartment}`
+                          : ""}
+                        , {order.deliveryAddress.city}, {order.deliveryAddress.province},{" "}
+                        {order.deliveryAddress.country}
+                      </div>
+                    ) : (
+                      <span>Sin dirección</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3"><OrderStatusBadge status={order.status}></OrderStatusBadge></td>
-                  <td className="px-4 py-3 space-x-2 text-center">
-                    <button onClick={() => onView(order.id)}>
-                      <Eye className="w-5 h-5 text-blue-600 hover:text-gray-700 transition-colors" />
-                    </button>
-                    <button onClick={() => onEdit(order.id)}>
-                      <Pencil className="w-5 h-5 text-yellow-600 hover:text-gray-700 transition-colors" />
-                    </button>
-                    <button onClick={() => onDelete(order.id)}>
-                      <Trash className="w-5 h-5 text-red-600 hover:text-gray-700 transition-colors" />
-                    </button>
+                  <td className="px-4 py-3 text-center">
+                    <div className="flex justify-center items-center gap-x-2">
+                      <button
+                        onClick={() => onView(order.id)}
+                        className="p-2 rounded-full hover:bg-blue-100 transition"
+                        title="Ver"
+                      >
+                        <Eye className="w-5 h-5 text-blue-600" />
+                      </button>
+                      <button
+                        onClick={() => onEdit(order.id)}
+                        className="p-2 rounded-full hover:bg-yellow-100 transition"
+                        title="Editar"
+                      >
+                        <Pencil className="w-5 h-5 text-yellow-600" />
+                      </button>
+                      <button
+                        onClick={() => onDelete(order.id)}
+                        className="p-2 rounded-full hover:bg-red-100 transition"
+                        title="Eliminar"
+                      >
+                        <Trash className="w-5 h-5 text-red-600" />
+                      </button>
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-center">
                     <select

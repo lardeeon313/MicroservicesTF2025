@@ -1,4 +1,4 @@
-import { Customer, CustomerResponse } from "./CustomerTypes";
+import {AddressRequest, Customer, CustomerResponse, Address } from "./CustomerTypes";
 
 export enum OrderStatus {
     Pending = "pending",
@@ -51,6 +51,12 @@ export interface RegisterOrderRequest {
   deliveryDate?: string; // ISO date string
   deliveryDetail?: string;
   createdByUserId?: string;  
+
+  // O se selecciona una ya registrada
+  deliveryAddressId?: number | null;   
+
+  // O se completa manualmente
+  deliveryAddress?: AddressRequest;
 }
 
 export interface DeleteOrderRequest {
@@ -61,10 +67,15 @@ export interface DeleteOrderRequest {
 // Request para actualizar orden completa
 export interface UpdateOrderRequest {
   orderId: number;
+  customerId: string;
   deliveryDetail?: string;
   deliveryDate?: string;
   items: UpdateOrderItemRequest[];
   status: OrderStatus;
+
+  // 👉 El backend espera siempre un objeto AddressRequest
+  addressRequest: AddressRequest;
+  deliveryAddress?: AddressRequest;
 }
 
 // Solo actualizar el estado
@@ -102,8 +113,11 @@ export interface Order {
   customerLastName?: string;
   items: OrderItem[];
   //NUEVO CAMPOS : 
+  deliveryAddress?: Address;
+  deliveryAddressId?: string | null;
   startedDate : string;
   finishDate: string; 
+  customerAddresses?: AddressRequest[]
 }
 
 // Submodelo: ítems dentro de la orden devuelta
@@ -132,6 +146,7 @@ export interface OrderTableData {
   customerFirstName?: string;
   customerLastName?: string;
   items: OrderItem[];
+  deliveryAddress?: Address; 
 }
 
 export interface OrderDetailResponse {

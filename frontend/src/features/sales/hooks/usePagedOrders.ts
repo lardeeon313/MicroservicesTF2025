@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getPagedOrders } from "../services/OrderService";
 import { OrderTableData } from "../types/OrderTypes";
 import { handleFormikError } from "../../../components/ErrorHandler";
+import { mapOrderToOrderTableData } from "../validations/orderMapped";
 
 export function usePagedOrders(page: number, pageSize: number) {
   const [orders, setOrders] = useState<OrderTableData[]>([]);
@@ -13,7 +14,10 @@ export function usePagedOrders(page: number, pageSize: number) {
     try {
         setLoading(true);
         const result = await getPagedOrders(page, pageSize);
-        setOrders(result.orders);
+
+        const mappedOrders = result.orders.map(mapOrderToOrderTableData);
+
+        setOrders(mappedOrders);
         setTotalPages(result.totalPages);
         console.log("Orders fetched:", result.orders);
     } catch (error) {
