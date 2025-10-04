@@ -5,19 +5,23 @@ using SalesService.Domain.IRepositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace SalesService.Application.Commands.Orders.Update
 {
-    public class UpdateOrderCommandHandler(IOrderRepository orderRepository) : IUpdateOrderCommandHandler
+    public class UpdateOrderCommandHandler : IUpdateOrderCommandHandler
     {
-        private readonly IOrderRepository _orderRepository = orderRepository;
+        private readonly IOrderRepository _orderRepository;
+
+        public UpdateOrderCommandHandler(IOrderRepository orderRepository)
+        {
+            _orderRepository = orderRepository;
+        }
+
         public async Task<OrderDto?> HandleAsync(UpdateOrderCommand command)
         {
-            
             var existingOrder = await _orderRepository.GetByIdAsync(command.OrderId);
-
             if (existingOrder == null)
             {
                 throw new KeyNotFoundException($"Order with ID {command.OrderId} not found.");
@@ -48,11 +52,19 @@ namespace SalesService.Application.Commands.Orders.Update
                 };
             }
 
-            // Actualizar Items
+            // Eliminar Items que ya no están en la solicitud
+            var itemsToRemove = existingOrder.Items.Where(existingItem =>
+                !command.Request.Items.Any(requestItem => requestItem.Id == existingItem.Id)).ToList();
+
+            foreach (var itemToRemove in itemsToRemove)
+            {
+                existingOrder.Items.Remove(itemToRemove);
+            }
+
+            // Actualizar o agregar Items
             foreach (var itemDto in command.Request.Items)
             {
                 var existingItem = existingOrder.Items.FirstOrDefault(i => i.Id == itemDto.Id);
-
                 if (existingItem != null)
                 {
                     // Actualizamos item existente
@@ -61,7 +73,7 @@ namespace SalesService.Application.Commands.Orders.Update
                     existingItem.Quantity = itemDto.Quantity;
                 }
                 else
-                {   
+                {
                     // Agregamos nuevo item
                     var newItem = new OrderItem
                     {
@@ -71,7 +83,6 @@ namespace SalesService.Application.Commands.Orders.Update
                         Order = existingOrder,
                         OrderId = existingOrder.Id
                     };
-
                     existingOrder.Items.Add(newItem);
                 }
             }
@@ -94,8 +105,6 @@ namespace SalesService.Application.Commands.Orders.Update
                     Quantity = i.Quantity
                 }).ToList()
             };
-
-
         }
     }
 }

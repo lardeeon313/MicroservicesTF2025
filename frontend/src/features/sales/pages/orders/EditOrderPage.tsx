@@ -22,16 +22,12 @@ const EditOrderPage = () => {
       try {
         const orderId = parseInt(id!, 10);
         const order: Order = await getOrderById(orderId);
-
-        // Traer direcciones registradas del cliente y convertir número a string
         const addresses: Address[] = await getCustomerAddresses(order.customerId.toString());
         const mappedAddresses: AddressRequest[] = addresses.map(addr => ({
           ...addr,
           number: addr.number?.toString() ?? "",
         }));
         setSavedAddresses(mappedAddresses);
-
-        // Set initial values
         setInitialValues({
           orderId: order.id,
           customerId: order.customerId,
@@ -63,13 +59,29 @@ const EditOrderPage = () => {
     if (id) fetchOrder();
   }, [id, navigate]);
 
+
+  const handleItemsChange = (items: Array<{ id: number; productName: string; productBrand: string; quantity: number }>) => {
+    
+    if (initialValues) {
+    const updatedValues = {
+      ...initialValues,
+      items: items,
+    };
+    console.log("Nuevos initialValues:", updatedValues);
+    setInitialValues(updatedValues);
+  }
+  };
+
   const handleSubmit = async (values: UpdateOrderRequest) => {
     setIsSubmitting(true);
     try {
-      await updateOrder(values.orderId, values);
+      
+      const response = await updateOrder(values.orderId, values);
+      console.log("Respuesta del backend:", response);
       toast.success("Órden actualizada correctamente");
       navigate("/sales/orders");
     } catch (error) {
+      console.error("Error al actualizar la orden:", error);
       handleFormikError({
         error,
         customMessages: {
@@ -82,6 +94,7 @@ const EditOrderPage = () => {
     }
   };
 
+
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
@@ -93,6 +106,7 @@ const EditOrderPage = () => {
             savedAddresses={savedAddresses}
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
+            onItemsChange={handleItemsChange}
           />
         ) : (
           <LoadingSpinner message="Cargando datos de la orden" height="h-screen" />
@@ -103,5 +117,3 @@ const EditOrderPage = () => {
 };
 
 export default EditOrderPage;
-
-
