@@ -5,6 +5,7 @@ export interface DepotTeam {
     teamName: string;
     teamDescription: string;
     operators: OperatorInTeamDto[];
+    createdAt: Date;
 }
 
 // Exportar el tipo Operator para que esté disponible

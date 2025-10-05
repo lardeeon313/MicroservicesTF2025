@@ -1,25 +1,28 @@
-import { Pencil, Trash2, Calendar, Plus, List } from 'lucide-react';
-import { DepotTeam } from '../types/DepotTeamTypes';
+import { Pencil, Trash2, MapPin, Calendar, Power, PowerOff, Plus, List } from 'lucide-react';
+import { DeliveryTeamDto } from '../../types/DeliveryTeamTypes';
 import { useState } from 'react';
 import { AssignOperatorToTeam } from './AssignOperatorToTeam';
 import { RemoveOperatorFromTeam } from './RemoveOperatorFromTeam';
-import { OperatorInTeamDto } from '../types/OperatorTypes';
+import { DeliveryOperatorsInTeamDto } from '../../types/OperatorTypes';
 import { TeamOperatorsList } from './TeamOperatorsList';
 
 interface TeamCardProps {
-    team: DepotTeam;
-    onEdit: (team: DepotTeam) => void;
-    onDelete: (team: DepotTeam) => void;
+    team: DeliveryTeamDto;
+    onEdit: (team: DeliveryTeamDto) => void;
+    onDelete: (team: DeliveryTeamDto) => void;
+    onActivate?: (teamId: number) => Promise<void>;
+    onDeactivate?: (teamId: number) => Promise<void>;
     onRefetch?: () => Promise<void>;
 }
 
-export const TeamCard = ({ team, onEdit, onDelete, onRefetch }: TeamCardProps) => {
+export const TeamCard = ({ team, onEdit, onDelete, onActivate, onDeactivate, onRefetch }: TeamCardProps) => {
+    
     const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
     const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
-    const [selectedOperator, setSelectedOperator] = useState<OperatorInTeamDto | null>(null);
+    const [selectedOperator, setSelectedOperator] = useState<DeliveryOperatorsInTeamDto | null>(null);
     const [isOperatorsListOpen, setIsOperatorsListOpen] = useState(false);
 
-    const handleRemoveOperator = (operator: OperatorInTeamDto) => {
+    const handleRemoveOperator = (operator: DeliveryOperatorsInTeamDto) => {
         setSelectedOperator(operator);
         setIsRemoveDialogOpen(true);
     };
@@ -34,9 +37,8 @@ export const TeamCard = ({ team, onEdit, onDelete, onRefetch }: TeamCardProps) =
         setSelectedOperator(null);
     };
 
-    const formatDate = (date: Date | string) => {
-        const dateObj = date instanceof Date ? date : new Date(date);
-        return dateObj.toLocaleDateString('es-ES', {
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('es-ES', {
             year: 'numeric',
             month: 'short',
             day: 'numeric'
@@ -60,6 +62,23 @@ export const TeamCard = ({ team, onEdit, onDelete, onRefetch }: TeamCardProps) =
                     >
                         <Pencil className="h-4 w-4" />
                     </button>
+                    {team.isActive ? (
+                        <button
+                            onClick={() => onDeactivate?.(team.id)}
+                            className="p-2 text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                            title="Desactivar equipo"
+                        >
+                            <PowerOff className="h-4 w-4" />
+                        </button>
+                    ) : (
+                        <button
+                            onClick={() => onActivate?.(team.id)}
+                            className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            title="Activar equipo"
+                        >
+                            <Power className="h-4 w-4" />
+                        </button>
+                    )}
                     <button
                         onClick={() => onDelete(team)}
                         className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
@@ -76,7 +95,31 @@ export const TeamCard = ({ team, onEdit, onDelete, onRefetch }: TeamCardProps) =
                     <Calendar className="h-4 w-4 mr-2" />
                     <span>Creado: {formatDate(team.createdAt)}</span>
                 </div>
+
+                {team.zoneAssignments.length > 0 && (
+                    <div className="flex items-center text-sm text-gray-600">
+                        <MapPin className="h-4 w-4 mr-2 text-red-500" />
+                        <span>{team.zoneAssignments.length} zona{team.zoneAssignments.length !== 1 ? 's' : ''}</span>
+                    </div>
+                )}
             </div>
+
+            {/* Zonas asignadas */}
+            {team.zoneAssignments.length > 0 && (
+                <div className="mb-4">
+                    <h4 className="text-sm font-medium text-gray-700 mb-2">Zonas Asignadas:</h4>
+                    <div className="flex flex-wrap gap-1">
+                        {team.zoneAssignments.map((zone) => (
+                            <span
+                                key={zone.id}
+                                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"
+                            >
+                                {zone.name}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Operadores */}
             <div className="mb-4">
@@ -105,28 +148,38 @@ export const TeamCard = ({ team, onEdit, onDelete, onRefetch }: TeamCardProps) =
                 </p>
             </div>
 
+            {/* Estado del equipo */}
+            <div className="flex items-center justify-between">
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    team.isActive 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800'
+                }`}>
+                    {team.isActive ? 'Activo' : 'Inactivo'}
+                </span>
+            </div>
+
+            {/* Dialogs */}
             <AssignOperatorToTeam
                 isOpen={isAssignDialogOpen}
                 onClose={handleAssignDialogClose}
-                team={team}
+                teamId={team.id}
                 onRefetch={onRefetch}
             />
 
-            {selectedOperator && (
-                <RemoveOperatorFromTeam
-                    isOpen={isRemoveDialogOpen}
-                    onClose={handleRemoveDialogClose}
-                    operator={selectedOperator}
-                    teamId={team.id}
-                    onRefetch={onRefetch}
-                />
-            )}
+            <RemoveOperatorFromTeam
+                isOpen={isRemoveDialogOpen}
+                onClose={handleRemoveDialogClose}
+                operator={selectedOperator}
+                teamId={team.id}
+                onRefetch={onRefetch}
+            />
 
             <TeamOperatorsList
                 isOpen={isOperatorsListOpen}
                 onClose={() => setIsOperatorsListOpen(false)}
-                teamName={team.teamName}
                 operators={team.operators}
+                teamName={team.teamName}
                 onRemoveOperator={handleRemoveOperator}
             />
         </div>

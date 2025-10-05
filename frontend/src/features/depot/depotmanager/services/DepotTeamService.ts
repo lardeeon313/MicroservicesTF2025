@@ -16,6 +16,7 @@ export const getTeams = async (): Promise<DepotTeam[]> => {
             id: team.id,
             teamName: team.teamName,
             teamDescription: team.teamDescription || '',
+            createdAt: team.createdAt ? new Date(team.createdAt) : new Date(),
             operators: (team.operators || []).map((operator: any) => {
                                 
                 const mappedOperator = {
@@ -75,6 +76,7 @@ export const createTeam = async (team: CreateTeamRequest): Promise<DepotTeam> =>
             id: response.data.id,
             teamName: response.data.teamName,
             teamDescription: response.data.teamDescription || '',
+            createdAt: response.data.createdAt ? new Date(response.data.createdAt) : new Date(),
             operators: (response.data.operators || []).map((operator: any) => {
                 const fullName = operator.fullName || operator.operatorName || '';
                 const nameParts = fullName.split(' ');
@@ -112,6 +114,7 @@ export const updateTeam = async (id: number, team: UpdateTeamRequest): Promise<D
                 id,
                 teamName: team.teamName,
                 teamDescription: team.teamDescription,
+                createdAt: new Date(),
                 operators: []
             };
         }
@@ -121,6 +124,7 @@ export const updateTeam = async (id: number, team: UpdateTeamRequest): Promise<D
             id,
             teamName: response.data.teamName || team.teamName,
             teamDescription: response.data.teamDescription || team.teamDescription || '',
+            createdAt: response.data.createdAt ? new Date(response.data.createdAt) : new Date(),
             operators: (response.data.operators || []).map((operator: any) => {
                 // Intentar obtener el nombre completo si existe
                 const fullName = operator.fullName || operator.operatorName || '';

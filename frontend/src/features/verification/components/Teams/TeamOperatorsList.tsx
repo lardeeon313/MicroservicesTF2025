@@ -1,0 +1,156 @@
+import { Dialog, Transition } from '@headlessui/react';
+import { Fragment, useState } from 'react';
+import { X, User, Mail } from 'lucide-react';
+import { DeliveryOperatorsInTeamDto } from '../../types/OperatorTypes';
+
+interface TeamOperatorsListProps {
+    isOpen: boolean;
+    onClose: () => void;
+    teamName: string;
+    operators: DeliveryOperatorsInTeamDto[];
+    onRemoveOperator: (operator: DeliveryOperatorsInTeamDto) => void;
+}
+
+export const TeamOperatorsList = ({ isOpen, onClose, teamName, operators, onRemoveOperator }: TeamOperatorsListProps) => {
+    const [selectedOperator, setSelectedOperator] = useState<DeliveryOperatorsInTeamDto | null>(null);
+
+    return (
+        <Transition appear show={isOpen} as={Fragment}>
+            <Dialog as="div" className="relative z-10" onClose={onClose}>
+                <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                >
+                    <div className="fixed inset-0 backdrop-blur-sm bg-black/30" />
+                </Transition.Child>
+
+                <div className="fixed inset-0 overflow-y-auto">
+                    <div className="flex min-h-full items-center justify-center p-4 text-center">
+                        <Transition.Child
+                            as={Fragment}
+                            enter="ease-out duration-300"
+                            enterFrom="opacity-0 scale-95"
+                            enterTo="opacity-100 scale-100"
+                            leave="ease-in duration-200"
+                            leaveFrom="opacity-100 scale-100"
+                            leaveTo="opacity-0 scale-95"
+                        >
+                            <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                <div className="flex justify-between items-center mb-6">
+                                    <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                                        Operadores del Equipo: {teamName}
+                                    </Dialog.Title>
+                                    <button
+                                        onClick={onClose}
+                                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                                    >
+                                        <X size={20} />
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* Lista de Operadores */}
+                                    <div className="space-y-3">
+                                        <h4 className="text-sm font-medium text-gray-900 mb-3">Lista de Operadores</h4>
+                                        {operators.length === 0 ? (
+                                            <div className="text-center py-4 text-gray-500">
+                                                No hay operadores asignados
+                                            </div>
+                                        ) : (
+                                            operators.map((operator) => (
+                                                <div
+                                                    key={operator.operatorByUserId}
+                                                    className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                                                        selectedOperator?.operatorByUserId === operator.operatorByUserId
+                                                            ? 'border-blue-500 bg-blue-50'
+                                                            : 'border-gray-200 hover:border-blue-300'
+                                                    }`}
+                                                    onClick={() => setSelectedOperator(operator)}
+                                                >
+                                                    <div className="flex items-center space-x-3">
+                                                        <div className="flex-shrink-0">
+                                                            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                                                <User className="h-5 w-5 text-blue-600" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-sm font-medium text-gray-900 truncate">
+                                                                {operator.firstName} {operator.lastName}
+                                                            </p>
+                                                            <p className="text-xs text-gray-500 truncate">
+                                                                {operator.email}
+                                                            </p>
+                                                        </div>
+                                                        
+                                                        <div className="flex items-center space-x-2">
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    onRemoveOperator(operator);
+                                                                }}
+                                                                className="text-red-600 bg-red-100 rounded-full p-1 pl-2 pr-2 hover:text-red-100 hover:bg-red-500 transition"
+                                                            >
+                                                                Remover
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+
+                                    {/* Detalles del Operador */}
+                                    <div className="bg-gray-50 rounded-lg p-4">
+                                        <h4 className="text-sm font-medium text-gray-900 mb-4">Detalles del Operador</h4>
+                                        {selectedOperator ? (
+                                            <div className="space-y-4">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="flex-shrink-0">
+                                                        <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
+                                                            <User className="h-8 w-8 text-blue-600" />
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <h5 className="text-lg font-medium text-gray-900">
+                                                            {selectedOperator.firstName} {selectedOperator.lastName}
+                                                        </h5>
+                                                        <p className="text-sm text-gray-500">{selectedOperator.roleInTeam}</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-3">
+                                                    <div className="flex items-center text-sm text-gray-600">
+                                                        <Mail className="h-4 w-4 mr-2 text-gray-400" />
+                                                        <span>{selectedOperator.email}</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="pt-3 border-t border-gray-200">
+                                                    <div className="flex justify-between text-sm">
+                                                        <span className="text-gray-500">Fecha de Asignación:</span>
+                                                        <span className="text-gray-900">
+                                                            {new Date(selectedOperator.assignAt).toLocaleDateString()}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-8 text-gray-500">
+                                                Selecciona un operador para ver sus detalles
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </Dialog.Panel>
+                        </Transition.Child>
+                    </div>
+                </div>
+            </Dialog>
+        </Transition>
+    );
+}; 
