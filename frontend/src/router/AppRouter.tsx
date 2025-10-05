@@ -54,33 +54,16 @@ import {DashboardBillingReportsPage} from "../features/depot/pages/DashboardBill
 import InvoicePage from "../features/depot/billingmanager/pages/InvoiceExportPage";
 import InvoiceOneDetailPage from "../features/depot/billingmanager/pages/InvoiceDetailPage";
 
-<<<<<<< HEAD
 // Otros roles
 import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
-import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
-=======
+
 // Verification
 import TeamsPageVerification from "../features/verification/pages/TeamsPage";
 import VerificationManagerDashboardPage from "../features/verification/pages/VerificationManagerDashboard";
-import { DashboardLogisticReportsPage } from "../features/verification/pages/reports/DashboardLogisticReportsPage";
 import PendingOrdersVerificationPage from "../features/verification/pages/PendingOrdersVerficationPage";
 import PendingOrdersVerificationDetailsPage from "../features/verification/pages/PendingOrderVerificationDetailsPage";
 import OrdersInRoutePage from "../features/verification/pages/OrdersInRoutePage";
 import OrdersInRouteDetailsPage from "../features/verification/pages/OrdersInRouteDetailsPage";
-
-
-// Otros roles
-import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
->>>>>>> c4d97e8 (Desarollo del frontend de crud de equipos y zonas,Modificacion de Rol de VerificationManager,modificacion de la team card y Team List de depot, modificacion del program y cs.proj para abrir swagger.)
-
-
-
-//import InvoiceDetailPage from "../features/depot/billingmanager/components/InvoiceListComponent";
-
-
-
-
-
 
 const AppRouter = () => {
   return (
@@ -182,13 +165,6 @@ const AppRouter = () => {
         <Route
             path="/verification"
             element={
-<<<<<<< HEAD
-            <ProtectedRoute requiredRole="VerificationStaff">
-                <VerificationDashboard />
-            </ProtectedRoute>
-            }
-        />
-=======
                 <ProtectedRoute requiredRole="VerificationManager">
                     <Outlet/>
                 </ProtectedRoute>
@@ -201,10 +177,8 @@ const AppRouter = () => {
             <Route path="orders-in-route" element={<OrdersInRoutePage/> } />
             <Route path="orders-in-route/:id" element={<OrdersInRouteDetailsPage/> } />
             {/**reportes sector logistica*/}
-            <Route path="reports" element={<DashboardLogisticReportsPage/>} />
+            <Route path="reports" element={<VerificationManagerDashboardPage/>} />
         </Route>
-
->>>>>>> c4d97e8 (Desarollo del frontend de crud de equipos y zonas,Modificacion de Rol de VerificationManager,modificacion de la team card y Team List de depot, modificacion del program y cs.proj para abrir swagger.)
 
         {/* Admin */}
         <Route
