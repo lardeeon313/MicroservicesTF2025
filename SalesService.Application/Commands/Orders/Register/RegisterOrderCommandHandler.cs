@@ -11,7 +11,7 @@ using SharedKernel.IntegrationEvents.SalesEvents.Order;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SalesService.Application.Commands.Orders.Register
@@ -26,7 +26,7 @@ namespace SalesService.Application.Commands.Orders.Register
         private readonly IOrderRepository _orderRepository = orderRepository;
         private readonly IRabbitMQPublisher _publisher = publisher;
         private readonly ICustomerRepository _customerRepository = customerRepository;
-            
+
         public async Task<OrderDto> HandleAsync(RegisterOrderCommand command)
         {
             // Verificar si el cliente existe
@@ -45,7 +45,8 @@ namespace SalesService.Application.Commands.Orders.Register
                 PostalCode = command.DeliveryAddress.PostalCode,
                 Latitude = command.DeliveryAddress.Latitude,
                 Longitude = command.DeliveryAddress.Longitude,
-                FormattedAddress = command.DeliveryAddress.FormattedAddress
+                FormattedAddress = command.DeliveryAddress.FormattedAddress,
+                CustomerId = command.CustomerId // opcional, si querés dejar la traza
             };
 
             // Crear la orden
@@ -69,6 +70,8 @@ namespace SalesService.Application.Commands.Orders.Register
 
             // Guardar la orden en la base de datos
             await _orderRepository.AddAsync(order);
+
+            Console.WriteLine($"Order después de guardar: {JsonSerializer.Serialize(order)}");
 
             // Actualizar el estado del cliente a "Active"
             customer.Status = CustomerStatus.Active;
@@ -117,7 +120,27 @@ namespace SalesService.Application.Commands.Orders.Register
                 OrderDate = order.OrderDate,
                 Status = order.Status,
                 DeliveryDate = order.DeliveryDate,
-                CreatedByUserId = order.CreatedByUserId,                
+                CreatedByUserId = order.CreatedByUserId,
+                Items = order.Items.Select(i => new OrderItemDto
+                {
+                    ProductName = i.ProductName,
+                    ProductBrand = i.ProductBrand,
+                    Quantity = i.Quantity
+                }).ToList(),
+                Address = new SalesService.Application.DTOs.Customer.AddressDto
+                {
+                    Id = order.DeliveryAddress.Id,
+                    Street = order.DeliveryAddress.Street,
+                    Number = order.DeliveryAddress.Number,
+                    Apartment = order.DeliveryAddress.Apartment,
+                    City = order.DeliveryAddress.City,
+                    Province = order.DeliveryAddress.Province,
+                    Country = order.DeliveryAddress.Country,
+                    PostalCode = order.DeliveryAddress.PostalCode,
+                    Latitude = order.DeliveryAddress.Latitude,
+                    Longitude = order.DeliveryAddress.Longitude,
+                    FormattedAddress = order.DeliveryAddress.FormattedAddress
+                }
             };
         }
     }

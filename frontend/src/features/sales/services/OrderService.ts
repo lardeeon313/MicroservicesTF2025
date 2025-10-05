@@ -6,7 +6,7 @@ import {
    RegisterOrderRequest,
    CancelOrderRequest,
    DeleteOrderRequest } from "../types/OrderTypes";
-
+import { Address } from "../types/CustomerTypes";
 
 // Obtener todas las órdenes
 export const getAllOrders = async (): Promise<Order[]> => {
@@ -127,6 +127,14 @@ export const getSalesPerfomance = async (
     params: { from, to }, // Axios se encarga de armar la query string automáticamente
   });
 
+  return response.data;
+};
+
+//Obtiene las direcciones asociadas a un cliente especifico: 
+export const getCustomerAddresses = async (customerId: string): Promise<Address[]> => {
+  const response = await API.get(`/sales/Order/addresses`, {
+    params: { customerId }
+  });
   return response.data;
 };
 
