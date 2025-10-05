@@ -9,6 +9,7 @@ interface EditOrderFormProps {
   onSubmit: (values: UpdateOrderRequest) => void;
   isSubmitting: boolean;
   savedAddresses?: AddressRequest[];
+  onItemsChange?: (items: Array<{ id: number; productName: string; productBrand: string; quantity: number }>) => void;
 }
 
 export default function EditOrderForm({
@@ -16,6 +17,7 @@ export default function EditOrderForm({
   onSubmit,
   isSubmitting,
   savedAddresses = [],
+  onItemsChange,
 }: EditOrderFormProps) {
   const [selectedSavedAddressId, setSelectedSavedAddressId] = useState<number | null>(
     initialValues.deliveryAddress?.id ?? null
@@ -30,6 +32,7 @@ export default function EditOrderForm({
       initialValues={initialValues}
       validationSchema={EditOrderValidationSchema}
       onSubmit={(values) => {
+        console.log("Valores enviados al backend:", values);
         if (selectedSavedAddressId != null) {
           const savedAddress = savedAddresses.find(addr => addr.id === selectedSavedAddressId);
           if (savedAddress) {
@@ -38,7 +41,6 @@ export default function EditOrderForm({
         }
         onSubmit(values);
       }}
-      enableReinitialize
     >
       {({ values, setFieldValue }) => (
         <Form className="space-y-6 container mx-auto py-10 px-16 sm:max-w-6xl">
@@ -125,25 +127,29 @@ export default function EditOrderForm({
 
           {/* Items */}
           <FieldArray name="items">
-            {({ push }) => {
-              const handleRemove = (index: number) => {
-                const newItems = [...values.items];
-                newItems.splice(index, 1);
-                setFieldValue("items", newItems);
-              };
-              return (
-                <div className="space-y-4 pt-2">
-                  <table className="table-fixed w-full border-separate">
-                    <thead>
-                      <tr>
-                        <th className="w-1/3 text-left px-4 py-2">Productos</th>
-                        <th className="w-1/3 text-left px-4 py-2">Marca</th>
-                        <th className="w-1/3 text-left px-4 py-2">Cantidad</th>
-                        <th className="w-1/8 text-left px-4 py-2"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {values.items.map((item, index) => (
+            {({ push }) => (
+              <div className="space-y-4 pt-2">
+                <table className="table-fixed w-full border-separate">
+                  <thead>
+                    <tr>
+                      <th className="w-1/3 text-left px-4 py-2">Productos</th>
+                      <th className="w-1/3 text-left px-4 py-2">Marca</th>
+                      <th className="w-1/3 text-left px-4 py-2">Cantidad</th>
+                      <th className="w-1/8 text-left px-4 py-2"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {values.items.map((item: { id: number; productName: string; productBrand: string; quantity: number }, index: number) => {
+                      const handleRemove = () => {
+                        const newItems = [...values.items];
+                        newItems.splice(index, 1);
+                        setFieldValue("items", newItems);
+                        if (onItemsChange) {
+                          onItemsChange(newItems);
+                        }
+                      };
+
+                      return (
                         <tr key={item.id || index} className="align-top">
                           <td className="pr-2 px-4 py-2">
                             <Field name={`items[${index}].productName`} className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200" />
@@ -161,30 +167,30 @@ export default function EditOrderForm({
                             <button
                               type="button"
                               disabled={values.items.length === 1}
-                              onClick={() => handleRemove(index)}
+                              onClick={handleRemove}
                               className="block w-full rounded-md text-red-700 font-semibold bg-white px-3 py-1.5 hover:bg-red-600 hover:text-white transition duration-150"
                             >
                               Quitar
                             </button>
                           </td>
                         </tr>
-                      ))}
-                      <tr>
-                        <td colSpan={4} className="p-2 text-left">
-                          <button
-                            type="button"
-                            onClick={() => push({ productName: "", productBrand: "", quantity: 1 })}
-                            className="text-sm font-semibold text-red-700 hover:text-red-600"
-                          >
-                            + Agregar Producto
-                          </button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              );
-            }}
+                      );
+                    })}
+                    <tr>
+                      <td colSpan={4} className="p-2 text-left">
+                        <button
+                          type="button"
+                          onClick={() => push({ productName: "", productBrand: "", quantity: 1 })}
+                          className="text-sm font-semibold text-red-700 hover:text-red-600"
+                        >
+                          + Agregar Producto
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
           </FieldArray>
 
           {/* Submit */}

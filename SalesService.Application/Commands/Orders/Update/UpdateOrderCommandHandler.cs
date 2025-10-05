@@ -50,6 +50,15 @@ namespace SalesService.Application.Commands.Orders.Update
                 };
             }
 
+            // Eliminar Items que ya no están en la solicitud
+            var itemsToRemove = existingOrder.Items.Where(existingItem =>
+                !command.Request.Items.Any(requestItem => requestItem.Id == existingItem.Id)).ToList();
+
+            foreach (var itemToRemove in itemsToRemove)
+            {
+                existingOrder.Items.Remove(itemToRemove);
+            }
+
             // Actualizar Items
             foreach (var itemDto in command.Request.Items)
             {
