@@ -47,6 +47,19 @@ namespace DepotService.Application.Queries.BillingManager.GetInvoicedOrderById
                 DeliveryDetail = billingOrderId.DeliveryDetail,
                 OrderDate = billingOrderId.OrderDate,
                 Status = billingOrderId.Status,
+                Address = new OrderAddressDto
+                {
+                    Street = billingOrderId.DeliveryAddress.Street,
+                    Number = billingOrderId.DeliveryAddress.Number,
+                    Apartment = billingOrderId.DeliveryAddress.Apartment,
+                    City = billingOrderId.DeliveryAddress.City,
+                    Province = billingOrderId.DeliveryAddress.Province,
+                    Country = billingOrderId.DeliveryAddress.Country,
+                    PostalCode = billingOrderId.DeliveryAddress.PostalCode,
+                    Latitude = billingOrderId.DeliveryAddress.Latitude,
+                    Longitude = billingOrderId.DeliveryAddress.Longitude,
+                    FormattedAddress = billingOrderId.DeliveryAddress.FormattedAddress
+                },
                 Items = billingOrderId.Items.Select(i => new DepotOrderItemDto
                 {
                     Id = i.Id,

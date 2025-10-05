@@ -14,9 +14,9 @@ namespace SharedKernel.IntegrationEvents.SalesEvents.Order
         public int OrderId { get; set; }
         public Guid CustomerId { get; set; }
         public string CustomerName { get; set; } = string.Empty;
-        public string CustomerEmail { get; set; } = string.Empty;
-        public string Address { get; set; } = string.Empty;
+        public string CustomerEmail { get; set; } = string.Empty;        
         public string PhoneNumber { get; set; } = string.Empty;
+        public DateTime RegistrationDate { get; set; }
         public OrderStatus Status { get; set; }
         public DateTime OrderDate { get; set; }
         public DateTime? DeliveryDate { get; set; }

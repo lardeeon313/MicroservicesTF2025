@@ -29,6 +29,7 @@ namespace DepotService.Application.DTOs.DepotOrder
         public Guid? AssignedOperatorId { get; set; }
         public DepotTeamEntity? AssignedDepotTeam { get; set; }
         public int? AssignedDepotTeamId { get; private set; }
+        public OrderAddressDto? Address { get; set; }
 
     }
 }

@@ -42,7 +42,7 @@ const CustomerSatisfactionFilter: React.FC<Props> = ({
   };
 
   return (
-    <div className="bg-gray-50 border border-gray-200 shadow-sm rounded-xl p-6 w-full mb-6">
+    <div className="bg-gray-50 border border-gray-200 shadow-sm rounded-xl p-6 w-full">
       <h2 className="text-lg font-semibold text-gray-800 mb-4">
         Filtros de satisfacción del cliente
       </h2>

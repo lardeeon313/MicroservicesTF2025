@@ -21,6 +21,7 @@ namespace LogisticService.Domain.Enums
         Canceled,    // Cancelado por ventas
         PendingResolution, // Pendiente de resolución
         ReIssued, // Reemitido
-        PendingReissued
+        PendingReissued, // Pendiente de reemisión
+        PendingVerification, // Pendiente de verificación
     }
 }

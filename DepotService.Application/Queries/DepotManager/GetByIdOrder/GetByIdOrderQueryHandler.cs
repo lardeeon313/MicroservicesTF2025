@@ -47,7 +47,20 @@ namespace DepotService.Application.Queries.DepotManager.GetByIdOrder
                     Total = i.UnitPrice.HasValue ? i.UnitPrice.Value * i.Quantity : 0
                 }).ToList(),
                 Missings = orderExist.Missings,
-                AssignedDepotTeam = orderExist.AssignedDepotTeam
+                AssignedDepotTeam = orderExist.AssignedDepotTeam,
+                Address = new OrderAddressDto
+                {
+                    Street = orderExist.DeliveryAddress.Street,
+                    Number = orderExist.DeliveryAddress.Number,
+                    Apartment = orderExist.DeliveryAddress.Apartment,
+                    City = orderExist.DeliveryAddress.City,
+                    Province = orderExist.DeliveryAddress.Province,
+                    Country = orderExist.DeliveryAddress.Country,
+                    PostalCode = orderExist.DeliveryAddress.PostalCode,
+                    Latitude = orderExist.DeliveryAddress.Latitude,
+                    Longitude = orderExist.DeliveryAddress.Longitude,
+                    FormattedAddress = orderExist.DeliveryAddress.FormattedAddress
+                }
             };
             _logger.LogInformation($"Order with ID {depotOrderId} retrieved successfully.");
             return orderDto;

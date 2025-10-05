@@ -42,6 +42,7 @@ export default function CustomerReportPage() {
           Todo lo que necesitás para gestionar los pedidos y clientes
         </p>
 
+        <div className="flex flex-col md:flex-row mb-4 w-full justify-between gap-2">
         {/* Filtros */}
         <CustomerReportFilter
           onFilterChange={({ name, email, minOrders }) => {
@@ -51,6 +52,7 @@ export default function CustomerReportPage() {
             setPage(1); // reiniciar paginación al aplicar filtros
           }}
         />
+        </div>
 
         <CustomerReportTable data={filteredCustomers} />
         <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />

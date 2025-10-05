@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,6 +16,7 @@ namespace DepotService.Domain.Entities
             public string CustomerName { get; set; } = null!;
             public string CustomerEmail { get; set; } = null!;
             public string PhoneNumber { get; set; } = null!;
+            public DateTime RegistrationDate { get; set; }
             public string? DeliveryDetail { get; set; }
             public DateTime OrderDate { get; set; }
             public DateTime? DeliveryDate { get; set; }
@@ -31,6 +33,12 @@ namespace DepotService.Domain.Entities
             public int? AssignedDepotTeamId { get; private set; }
             public string? RejectionReason { get; set; }
             public ICollection<OrderStatusHistory> StatusHistory { get; set; } = [];
+
+            // Relacion 1 a 1 con Address
+            public int DeliveryAddressId { get; set; }
+            public OrderAddress DeliveryAddress { get; set; } = null!;
+
+
         public void AssignToOperator(Guid operatorId, DepotTeamEntity team)
         {
             if (Status != OrderStatus.Received && Status != OrderStatus.ReReceived)

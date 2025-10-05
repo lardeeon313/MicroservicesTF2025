@@ -57,6 +57,7 @@ namespace SalesService.Application.Commands.Orders.Register
                 OrderDate = DateTime.UtcNow,
                 Status = OrderStatus.Pending,
                 CreatedByUserId = command.CreatedByUserId,
+                PaymentType = command.PaymentType,
                 Items = command.Items.Select(i => new OrderItem
                 {
                     ProductBrand = i.ProductBrand,
