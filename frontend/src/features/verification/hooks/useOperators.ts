@@ -45,10 +45,13 @@ export function useOperators() {
     }, []);
 
 
-    const assignOperator = async (teamId: number, operatorUserId: string): Promise<void> => {
+    const assignOperator = async (data: { teamId: number; operatorUserId: string; roleInTeam?: string }): Promise<void> => {
         try {
             setError(null);
-            await assignOperatorToTeam(teamId, operatorUserId);
+            await assignOperatorToTeam(data.teamId, {
+                teamId: data.teamId,
+                operatorUserId: data.operatorUserId
+            });
             // Refrescar la lista de operadores disponibles
             await fetchOperators();
         } catch (error) {
@@ -109,5 +112,6 @@ export function useOperators() {
         assignOperator,
         removeOperator,
         fetchOperators,
+        fetchAvailableOperators: fetchOperators, // Alias para compatibilidad
     };
 }

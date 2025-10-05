@@ -1,6 +1,7 @@
 import API from "../../../api/axios";
 import {CreateDeliveryTeamRequest,UpdateDeliveryTeamRequest,CreateDeliveryZoneRequest,UpdateDeliveryZoneRequest,DeliveryTeamDto,DeliveryZoneDto
 } from "../types/DeliveryTeamTypes";
+import {AssignOperatorToTeamRequest, AssignZoneToTeamRequest} from "../types/OperatorTypes";
 
 // ========== TEAM OPERATIONS ==========
 
@@ -99,4 +100,36 @@ export const getAllZones = async (): Promise<DeliveryZoneDto[]> => {
 export const getZoneById = async (zoneId: number): Promise<DeliveryZoneDto> => {
   const response = await API.get(`/logistic/VerificationManager/get-zone-by-id/${zoneId}`);
   return response.data;
+};
+
+// ========== TEAM OPERATOR OPERATIONS ==========
+
+// Asignar operador a equipo
+export const assignOperatorToTeam = async (teamId: number, data: AssignOperatorToTeamRequest): Promise<void> => {
+  const requestData = {
+    TeamId: data.teamId,
+    OperatorUserId: data.operatorUserId
+  };
+  await API.post(`/logistic/VerificationManager/${teamId}/assign-operator`, requestData);
+};
+
+// Remover operador de equipo
+export const removeOperatorFromTeam = async (teamId: number, operatorUserId: string): Promise<void> => {
+  await API.delete(`/logistic/VerificationManager/${teamId}/remove-operator/${operatorUserId}`);
+};
+
+// ========== TEAM ZONE OPERATIONS ==========
+
+// Asignar zona a equipo
+export const assignZoneToTeam = async (teamId: number, data: AssignZoneToTeamRequest): Promise<void> => {
+  const requestData = {
+    TeamId: data.teamId,
+    ZoneId: data.zoneId
+  };
+  await API.post(`/logistic/VerificationManager/${teamId}/assign-zone`, requestData);
+};
+
+// Remover zona de equipo
+export const removeZoneFromTeam = async (teamId: number, zoneId: number): Promise<void> => {
+  await API.delete(`/logistic/VerificationManager/${teamId}/remove-zone/${zoneId}`);
 };

@@ -1,10 +1,12 @@
-import { Pencil, Trash2, MapPin, Calendar, Power, PowerOff, Plus, List } from 'lucide-react';
-import { DeliveryTeamDto } from '../../types/DeliveryTeamTypes';
+import { Pencil, Trash2, MapPin, Calendar, Power, PowerOff, Plus, List, X } from 'lucide-react';
+import { DeliveryTeamDto, DeliveryZoneDto } from '../../types/DeliveryTeamTypes';
 import { useState } from 'react';
 import { AssignOperatorToTeam } from './AssignOperatorToTeam';
 import { RemoveOperatorFromTeam } from './RemoveOperatorFromTeam';
 import { DeliveryOperatorsInTeamDto } from '../../types/OperatorTypes';
 import { TeamOperatorsList } from './TeamOperatorsList';
+import { AssignZoneModal } from './AssignZoneModal';
+import { removeZoneFromTeam } from '../../services/DeliveryTeamService';
 
 interface TeamCardProps {
     team: DeliveryTeamDto;
@@ -21,6 +23,7 @@ export const TeamCard = ({ team, onEdit, onDelete, onActivate, onDeactivate, onR
     const [isRemoveDialogOpen, setIsRemoveDialogOpen] = useState(false);
     const [selectedOperator, setSelectedOperator] = useState<DeliveryOperatorsInTeamDto | null>(null);
     const [isOperatorsListOpen, setIsOperatorsListOpen] = useState(false);
+    const [isAssignZoneModalOpen, setIsAssignZoneModalOpen] = useState(false);
 
     const handleRemoveOperator = (operator: DeliveryOperatorsInTeamDto) => {
         setSelectedOperator(operator);
@@ -35,6 +38,15 @@ export const TeamCard = ({ team, onEdit, onDelete, onActivate, onDeactivate, onR
     const handleRemoveDialogClose = () => {
         setIsRemoveDialogOpen(false);
         setSelectedOperator(null);
+    };
+
+    const handleRemoveZone = async (zone: DeliveryZoneDto) => {
+        try {
+            await removeZoneFromTeam(team.id, zone.id);
+            if (onRefetch) await onRefetch();
+        } catch (error) {
+            console.error('Error al remover zona:', error);
+        }
     };
 
     const formatDate = (dateString: string) => {
@@ -105,21 +117,39 @@ export const TeamCard = ({ team, onEdit, onDelete, onActivate, onDeactivate, onR
             </div>
 
             {/* Zonas asignadas */}
-            {team.zoneAssignments.length > 0 && (
-                <div className="mb-4">
-                    <h4 className="text-sm font-medium text-gray-700 mb-2">Zonas Asignadas:</h4>
+            <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-sm font-medium text-gray-700">Zonas Asignadas:</h4>
+                    <button
+                        onClick={() => setIsAssignZoneModalOpen(true)}
+                        className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                        title="Asignar zona"
+                    >
+                        <Plus className="h-4 w-4" />
+                    </button>
+                </div>
+                {team.zoneAssignments.length > 0 ? (
                     <div className="flex flex-wrap gap-1">
                         {team.zoneAssignments.map((zone) => (
                             <span
                                 key={zone.id}
-                                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"
+                                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 group"
                             >
                                 {zone.name}
+                                <button
+                                    onClick={() => handleRemoveZone(zone)}
+                                    className="ml-1 text-red-600 hover:text-red-800 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    title="Remover zona"
+                                >
+                                    <X className="h-3 w-3" />
+                                </button>
                             </span>
                         ))}
                     </div>
-                </div>
-            )}
+                ) : (
+                    <p className="text-sm text-gray-500">No hay zonas asignadas</p>
+                )}
+            </div>
 
             {/* Operadores */}
             <div className="mb-4">
@@ -182,6 +212,16 @@ export const TeamCard = ({ team, onEdit, onDelete, onActivate, onDeactivate, onR
                 teamName={team.teamName}
                 onRemoveOperator={handleRemoveOperator}
             />
+
+
+            <AssignZoneModal
+                isOpen={isAssignZoneModalOpen}
+                onClose={() => setIsAssignZoneModalOpen(false)}
+                teamId={team.id}
+                teamName={team.teamName}
+                onSuccess={() => onRefetch?.()}
+            />
+
         </div>
     );
 };

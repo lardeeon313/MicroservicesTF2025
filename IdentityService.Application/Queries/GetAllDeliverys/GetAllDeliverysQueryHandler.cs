@@ -14,7 +14,7 @@ namespace IdentityService.Application.Queries.GetAllDeliverys
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         public async Task<IEnumerable<DeliveryOperatorDto>> HandleAsync()
         {
-            var deliveryOperators = await _userManager.GetUsersInRoleAsync("Delivery");
+            var deliveryOperators = await _userManager.GetUsersInRoleAsync("DeliveryOperator");
 
             return deliveryOperators.Select(o => new DeliveryOperatorDto
             {
