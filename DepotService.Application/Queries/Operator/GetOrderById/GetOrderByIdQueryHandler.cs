@@ -49,8 +49,20 @@ namespace DepotService.Application.Queries.Operator.GetOrderById
                 CustomerEmail = order.CustomerEmail,
                 PhoneNumber = order.PhoneNumber,
                 Status = order.Status,
+                Address = new OrderAddressDto
+                {
+                    Street = order.DeliveryAddress.Street,
+                    Number = order.DeliveryAddress.Number,
+                    Apartment = order.DeliveryAddress.Apartment,
+                    City = order.DeliveryAddress.City,
+                    Province = order.DeliveryAddress.Province,
+                    Country = order.DeliveryAddress.Country,
+                    PostalCode = order.DeliveryAddress.PostalCode,
+                    Latitude = order.DeliveryAddress.Latitude,
+                    Longitude = order.DeliveryAddress.Longitude,
+                    FormattedAddress = order.DeliveryAddress.FormattedAddress
+                },
                 AssignedDepotTeam = order.AssignedDepotTeam,
-                // ** Aquí está la corrección **
                 Missings = order.Missings?.Select(m => new DepotOrderMissing
                 {
                     MissingId = m.MissingId,
@@ -58,7 +70,6 @@ namespace DepotService.Application.Queries.Operator.GetOrderById
                     MissingReason = m.MissingReason,
                     MissingDescription = m.MissingDescription,
                     DescriptionResolution = m.DescriptionResolution,
-                    // ** Y la corrección en esta línea **
                     MissingItems = m.MissingItems?.Select(mi => new DepotOrderMissingItem
                     {
                         Id = mi.Id,
@@ -73,7 +84,6 @@ namespace DepotService.Application.Queries.Operator.GetOrderById
                 AssignedOperatorId = order.AssignedOperatorId,
                 DeliveryDetail = order.DeliveryDetail,
                 OrderDate = order.OrderDate,
-                // ** Y también aquí, para evitar futuros errores **
                 Items = order.Items?.Select(i => new DepotOrderItemDto
                 {
                     Id = i.Id,

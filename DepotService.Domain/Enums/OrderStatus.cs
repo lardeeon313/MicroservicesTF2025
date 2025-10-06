@@ -19,6 +19,11 @@ namespace DepotService.Domain.Enums
         Invoiced,        // Facturado
         Issued,          // Emitido por ventas
         Cancelled,       // Cancelado
-        Deleted          // Eliminado
+        Deleted,          // Eliminado
+        Verify,   // Verificado
+        OnTheWay,   // En camino
+        Delivered,  // Entregado
+        PendingVerification // Pendiente de verificación
+
     }
 }

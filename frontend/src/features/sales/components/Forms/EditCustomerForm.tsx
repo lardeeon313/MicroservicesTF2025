@@ -61,6 +61,7 @@ const EditCustomerForm = ({ initialValues, onSubmit, isSubmitting }: Props) => {
         <Form className="space-y-6 container mx-auto py-10 px-16 sm:max-w-6xl">
           <Field type="hidden" name="id" />
           {/* Datos básicos */}
+          <h3 className="text-lg font-semibold mb-4">Datos de Contacto</h3>
           {["firstName", "lastName", "email", "phoneNumber"].map((field) => (
             <div key={field}>
               <label className="block text-sm font-medium text-gray-900 mb-1">
@@ -118,7 +119,7 @@ const EditCustomerForm = ({ initialValues, onSubmit, isSubmitting }: Props) => {
                         <button
                           type="button"
                           onClick={() => remove(index)}
-                          className="text-red-600 hover:underline text-sm"
+                          className="block rounded-md text-red-700 font-semibold bg-white px-3 py-1.5 hover:bg-red-600 hover:text-white transition duration-150"
                           disabled={values.addresses.length === 1}
                         >
                           Quitar
@@ -143,7 +144,7 @@ const EditCustomerForm = ({ initialValues, onSubmit, isSubmitting }: Props) => {
                         tempId: uuidv4(),
                       })
                     }
-                    className="text-red-600 hover:underline text-sm mt-2"
+                    className="text-sm font-semibold text-red-700 hover:text-red-600"
                   >
                     + Agregar Dirección
                   </button>

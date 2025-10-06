@@ -1,0 +1,95 @@
+// import { CalendarDays, User, BadgeCheck, Eye, AlertCircle } from "lucide-react"
+// import formatDate from "../../../../utils/formateDate";
+// import LoadingSpinner from "../../../../components/LoadingSpinner";
+// import EmptyState from "../../../../components/EmptyState";
+
+// interface Props {
+//   orders: any[];
+//   loading: boolean;
+//   error: string | null;
+//   onRefetch: () => void;
+//   onView: (id: number) => void;
+//   activeTab: 'pending' | 'assigned' | 'rereceived' | 'inPreparation' | 'prepared' | 'invoiced' | 'sentToBilling';
+//   emptyMessageTitle?: string;
+//   emptyMessageBody?: string;
+//   // El resto de props se ignoran para Pending Orders
+// }
+
+// export default function OrderTable({
+//   orders,
+//   loading,
+//   onRefetch,
+//   onView,
+//   activeTab,
+//   emptyMessageTitle,
+//   emptyMessageBody
+// }: Props) {
+//   if (loading)
+//     return (
+//       <LoadingSpinner message="Cargando órdenes..."/>
+//     )
+
+//   if (orders.length === 0)
+//     return (
+//       <EmptyState
+//         icon={AlertCircle}
+//         title={emptyMessageTitle || "No Hay Órdenes Registradas"}
+//         description={
+//           emptyMessageBody || "Actualmente no hay órdenes en el sistema."
+//         }
+//         actionLabel="Actualizar"
+//         onAction={onRefetch}
+//       />
+//     );
+
+//   return (
+//       <div className="w-full overflow-hidden rounded-lg border border-gray-200 shadow">
+//         <div className="overflow-x-auto">
+//           <table className="w-full text-sm text-gray-800">
+//             <thead className="bg-gray-100 text-xs font-semibold uppercase tracking-wide text-gray-600">
+//               <tr>
+//                 <th className="px-4 py-3 text-left">ID</th>
+//                 <th className="px-4 py-3 text-left"><User className="inline w-4 h-4 mr-1" /> Cliente</th>
+//                 <th className="px-4 py-3 text-left"><CalendarDays className="inline w-4 h-4 mr-1" /> Fecha Pedido</th>
+//                 <th className="px-4 py-3 text-left"><BadgeCheck className="inline w-4 h-4 mr-1" /> Estado</th>
+//                 {(activeTab === 'assigned' || activeTab === 'inPreparation') && (
+//                   <th className="px-4 py-3 text-left">Operario Asignado</th>
+//                 )}
+//                 <th className="px-4 py-3 text-center">Ver Detalle</th>
+//               </tr>
+//             </thead>
+//             <tbody className="divide-y divide-gray-200">
+//               {orders.map((order) => (
+//                 <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+//                   <td className="px-4 py-3 font-medium">D-{order.id}</td>
+//                   <td className="px-4 py-3">{order.customerFirstName ?? ""}</td>
+//                   <td className="px-4 py-3">{formatDate(order.orderDate)}</td>
+//                   <td className="px-4 py-3">
+//                       {order.status === 8 || order.status === '8' || order.status === 'Facturada' ? (
+//                         <span className="inline-block px-2 py-1 rounded bg-green-100 text-green-800 text-xs font-semibold">
+//                           Facturada
+//                         </span>
+//                       ) : order.status === 5 || order.status === '5' || order.status === 'sentToBilling' ? (
+//                         <span className="inline-block px-2 py-1 rounded bg-orange-100 text-orange-800 text-xs font-semibold">
+//                           Pendiente de facturación
+//                         </span>
+//                       ) : (
+//                         order.status
+//                       )}
+//                   </td>
+//                   {(activeTab === 'assigned'  || activeTab === 'inPreparation') && (
+//                     <td className="px-4 py-3">{order.operatorName || '-'}</td>
+//                   )}
+//                   <td className="px-4 py-3 space-x-2 text-center">
+//                     <button onClick={() => onView(order.id)}>
+//                       <Eye className="w-5 h-5 text-blue-600 hover:text-gray-700 transition-colors" />
+//                     </button>
+//                   </td>
+//                 </tr>
+//               ))}
+//             </tbody>
+//           </table>
+//         </div>
+//       </div>
+//   );
+// }

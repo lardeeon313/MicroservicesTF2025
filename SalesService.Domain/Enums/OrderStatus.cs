@@ -21,6 +21,7 @@ namespace SalesService.Domain.Enums
         Canceled,    // Cancelado por ventas
         PendingResolution, // Pendiente de resolución
         ReIssued, // Reemitido
-        PendingReissued
+        PendingReissued,
+        PendingVerification // Pendiente de verificación
     }
 }   

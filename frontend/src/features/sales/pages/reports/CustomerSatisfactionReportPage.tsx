@@ -48,6 +48,7 @@ const CustomerSatisfactionReportPage: React.FC = () => {
           Todo lo que necesitás para gestionar los pedidos y clientes
         </p>
 
+        <div className="flex flex-col md:flex-row mb-4 w-full justify-between gap-2">
         {/* Filtros */}
         <CustomerSatisfactionFilter
           selectedName={appliedFilters.name}
@@ -62,6 +63,7 @@ const CustomerSatisfactionReportPage: React.FC = () => {
             setAppliedFilters({ name: "", email: "", satisfaction: "Todas" });
           }}
         />
+        </div>
 
         {/* Tabla + Paginación + Gráfico */}
         <CustomerSatisfactionTable data={satisfactionFilteredCustomers} />

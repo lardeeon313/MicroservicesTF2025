@@ -22,7 +22,7 @@ namespace LogisticService.Domain.Entities
         public PaymentType? PaymentType { get; set; }
 
         // Relacion con el cliente
-        public int CustomerId { get; set; }
+        public Guid CustomerId { get; set; }
         public LogisticCustomer Customer { get; set; } = null!;
         
         // Relacion con los productos del pedido
@@ -42,5 +42,9 @@ namespace LogisticService.Domain.Entities
         public LogisticAddress DeliveryAddress { get; set; } = null!;
 
         public List<OrderStatusHistory> StatusHistory { get; set; } = new();
+
+        // Trazabilidad con DepotService y SalesService
+        public int DepotOrderId { get; set; }
+        public int SalesOrderId { get; set; }
     }
 }

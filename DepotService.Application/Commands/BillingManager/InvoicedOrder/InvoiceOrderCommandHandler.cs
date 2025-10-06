@@ -6,6 +6,7 @@ using DepotService.Infraestructure.Persistence.Repositories;
 using Microsoft.Extensions.Logging;
 using SharedKernel.IntegrationEvents.DepotEvents;
 using SharedKernel.IntegrationEvents.DepotEvents.DTOs;
+using SharedKernel.IntegrationEvents.SalesEvents.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,7 +56,11 @@ namespace DepotService.Application.Commands.BillingManager.InvoicedOrder
 
             var orderItems = order.Items.Select(i => new InvoicedItemDto
             {
-                OrderItemId = i.SalesOrderItemId,
+                SalesOrderItemId = i.SalesOrderItemId,
+                DepotOrderItemId = i.Id,
+                ProductName = i.ProductName,
+                ProductBrand = i.ProductBrand,
+                PackagingType = i.PackagingType,
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice ?? 0
             }).ToList();
@@ -72,11 +77,32 @@ namespace DepotService.Application.Commands.BillingManager.InvoicedOrder
             // Emitimos un evento de dominio para notificar que la orden ha sido facturada
             var integrationEvent = new OrderInvoicedIntegrationEvent
             {
+                DepotOrderId = order.DepotOrderId,
                 SalesOrderId = order.SalesOrderId,
                 CustomerId = order.CustomerId,
-                OrderItems = orderItems,
+                CustomerName = order.CustomerName,
+                CustomerEmail = order.CustomerEmail,
+                PhoneNumber = order.PhoneNumber,
+                RegistrationDate = order.RegistrationDate,
+                OrderDate = order.OrderDate,
+                DeliveryDate = order.DeliveryDate,
+                DeliveryDetail = order.DeliveryDetail,
                 TotalAmount = totalAmount,
-                InvoicedDate = DateTime.UtcNow
+                InvoicedDate = DateTime.UtcNow,
+                DeliveryAddress = new AddressDto
+                {
+                    Street = order.DeliveryAddress.Street,
+                    Number = order.DeliveryAddress.Number,
+                    Apartment = order.DeliveryAddress.Apartment,
+                    City = order.DeliveryAddress.City,
+                    Province = order.DeliveryAddress.Province,
+                    Country = order.DeliveryAddress.Country,
+                    PostalCode = order.DeliveryAddress.PostalCode,
+                    Latitude = order.DeliveryAddress.Latitude,
+                    Longitude = order.DeliveryAddress.Longitude,
+                    FormattedAddress = order.DeliveryAddress.FormattedAddress
+                },
+                OrderItems = orderItems
             };
 
             await _publisher.PublishAsync(integrationEvent, "order_invoiced_queue");

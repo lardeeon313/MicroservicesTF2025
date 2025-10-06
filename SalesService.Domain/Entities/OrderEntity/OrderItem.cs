@@ -15,8 +15,8 @@ namespace SalesService.Domain.Entities.OrderEntity
         public Order? Order { get; set; }
 
         // Propiedades del producto
-        public required string ProductName { get; set; } // Lo coloca SalesService
-        public required string ProductBrand { get; set; } // Lo coloca SalesService
+        public string? ProductName { get; set; } // Lo coloca SalesService
+        public string? ProductBrand { get; set; } // Lo coloca SalesService
         public int Quantity { get; set; } // Lo coloca SalesService 
         public string? PackagingType { get; set; } // Lo coloca el Operador de Deposito a cargo de la orden
         public decimal? UnitPrice { get; set; } // Lo coloca el encargado de Facturacion en Deposito

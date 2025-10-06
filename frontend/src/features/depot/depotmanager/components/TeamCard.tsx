@@ -1,4 +1,4 @@
-import { Pencil, Trash2, Users, UserMinus } from 'lucide-react';
+import { Pencil, Trash2, Calendar, Plus, List } from 'lucide-react';
 import { DepotTeam } from '../types/DepotTeamTypes';
 import { useState } from 'react';
 import { AssignOperatorToTeam } from './AssignOperatorToTeam';
@@ -34,48 +34,73 @@ export const TeamCard = ({ team, onEdit, onDelete, onRefetch }: TeamCardProps) =
         setSelectedOperator(null);
     };
 
+    const formatDate = (date: Date | string) => {
+        const dateObj = date instanceof Date ? date : new Date(date);
+        return dateObj.toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    };
+
     return (
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow">
             <div className="flex justify-between items-start mb-4">
-                <div>
+                <div className="flex-1">
                     <h3 className="text-lg font-semibold text-gray-900">{team.teamName}</h3>
-                    <p className="text-sm text-gray-500 mt-1">{team.teamDescription}</p>
+                    {team.teamDescription && (
+                        <p className="text-sm text-gray-500 mt-1">{team.teamDescription}</p>
+                    )}
                 </div>
                 <div className="flex space-x-2">
                     <button
                         onClick={() => onEdit(team)}
-                        className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Editar equipo"
                     >
-                        <Pencil className="h-5 w-5" />
+                        <Pencil className="h-4 w-4" />
                     </button>
                     <button
                         onClick={() => onDelete(team)}
-                        className="p-2 text-gray-600 hover:text-red-600 hover:bg-gray-100 rounded-full transition-colors"
+                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Eliminar equipo"
                     >
-                        <Trash2 className="h-5 w-5" />
+                        <Trash2 className="h-4 w-4" />
                     </button>
                 </div>
             </div>
 
-            <div className="border-t border-gray-200 pt-4">
-                <div className="flex justify-between items-center mb-2">
-                    <h4 className="text-sm font-medium text-gray-900">Operadores</h4>
+            {/* Información del equipo */}
+            <div className="space-y-3 mb-4">
+                <div className="flex items-center text-sm text-gray-600">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    <span>Creado: {formatDate(team.createdAt)}</span>
+                </div>
+            </div>
+
+            {/* Operadores */}
+            <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-sm font-medium text-gray-700">Operadores:</h4>
                     <div className="flex space-x-2">
                         <button
                             onClick={() => setIsOperatorsListOpen(true)}
-                            className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Ver lista de operadores"
                         >
-                            <Users className="h-5 w-5" />
+                            <List className="h-4 w-4" />
                         </button>
                         <button
                             onClick={() => setIsAssignDialogOpen(true)}
-                            className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+                            className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            title="Asignar operador"
                         >
-                            <UserMinus className="h-5 w-5" />
+                            <Plus className="h-4 w-4" />
                         </button>
                     </div>
                 </div>
-                <p className="text-sm text-gray-500">
+                
+                <p className="text-sm text-gray-600">
                     {team.operators.length} operador{team.operators.length !== 1 ? 'es' : ''} asignado{team.operators.length !== 1 ? 's' : ''}
                 </p>
             </div>

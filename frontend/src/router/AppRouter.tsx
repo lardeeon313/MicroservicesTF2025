@@ -56,16 +56,14 @@ import InvoiceOneDetailPage from "../features/depot/billingmanager/pages/Invoice
 
 // Otros roles
 import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
-import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
 
-
-
-//import InvoiceDetailPage from "../features/depot/billingmanager/components/InvoiceListComponent";
-
-
-
-
-
+// Verification
+import TeamsPageVerification from "../features/verification/pages/TeamsPage";
+import VerificationManagerDashboardPage from "../features/verification/pages/VerificationManagerDashboard";
+import PendingOrdersVerificationPage from "../features/verification/pages/PendingOrdersVerficationPage";
+import PendingOrdersVerificationDetailsPage from "../features/verification/pages/PendingOrderVerificationDetailsPage";
+import OrdersInRoutePage from "../features/verification/pages/OrdersInRoutePage";
+import OrdersInRouteDetailsPage from "../features/verification/pages/OrdersInRouteDetailsPage";
 
 const AppRouter = () => {
   return (
@@ -167,11 +165,20 @@ const AppRouter = () => {
         <Route
             path="/verification"
             element={
-            <ProtectedRoute requiredRole="VerificationStaff">
-                <VerificationDashboard />
-            </ProtectedRoute>
+                <ProtectedRoute requiredRole="VerificationManager">
+                    <Outlet/>
+                </ProtectedRoute>
             }
-        />
+        >
+            <Route index element={<VerificationManagerDashboardPage/>} />
+            <Route path="teams-verification" element={<TeamsPageVerification/>} />
+            <Route path="pending-orders-verification" element={<PendingOrdersVerificationPage/>} />
+            <Route path="pending-orders-verification/:id" element={<PendingOrdersVerificationDetailsPage/> } />
+            <Route path="orders-in-route" element={<OrdersInRoutePage/> } />
+            <Route path="orders-in-route/:id" element={<OrdersInRouteDetailsPage/> } />
+            {/**reportes sector logistica*/}
+            <Route path="reports" element={<VerificationManagerDashboardPage/>} />
+        </Route>
 
         {/* Admin */}
         <Route

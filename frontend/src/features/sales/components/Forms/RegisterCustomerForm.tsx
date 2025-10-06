@@ -38,6 +38,7 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
       {({ values }) => (
         <Form className="space-y-6 container mx-auto py-10 px-16 sm:max-w-6xl">
           {/* Datos básicos del cliente */}
+          <h3 className="text-lg font-semibold mb-4">Datos de Contacto</h3>
           {["firstName", "lastName", "email", "phoneNumber"].map((field) => (
             <div key={field}>
               <label
@@ -197,7 +198,7 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
                         <button
                           type="button"
                           onClick={() => remove(index)}
-                          className="text-red-600 hover:underline text-sm"
+                          className="block w-full rounded-md text-red-700 font-semibold bg-white px-3 py-1.5 hover:bg-red-600 hover:text-white transition duration-150"
                         >
                           Quitar
                         </button>
@@ -219,7 +220,7 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
                         postalCode: "",
                       })
                     }
-                    className="text-red-600 hover:underline text-sm mt-2"
+                    className="text-sm font-semibold text-red-700 hover:text-red-600"
                   >
                     + Agregar Dirección
                   </button>

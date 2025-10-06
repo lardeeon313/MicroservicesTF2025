@@ -31,8 +31,6 @@ namespace DepotService.Application.Queries.Operator.GetOrdersPreparedOrSentToBil
             }
             _logger.LogInformation("Found {Count} orders for operator {OperatorUserId}", orders.Count(), query.OperatorUserId);
 
-            //lo devuelve al pedido con los respectivos status : 
-
             return orders.Select(o => new DepotOrderDto
             {
                 DepotOrderId = o.DepotOrderId,
@@ -43,6 +41,19 @@ namespace DepotService.Application.Queries.Operator.GetOrdersPreparedOrSentToBil
                 PhoneNumber = o.PhoneNumber,
                 DeliveryDetail = o.DeliveryDetail,
                 OrderDate = o.OrderDate,
+                Address = new OrderAddressDto
+                {
+                    Street = o.DeliveryAddress.Street,
+                    Number = o.DeliveryAddress.Number,
+                    Apartment = o.DeliveryAddress.Apartment,
+                    City = o.DeliveryAddress.City,
+                    Province = o.DeliveryAddress.Province,
+                    Country = o.DeliveryAddress.Country,
+                    PostalCode = o.DeliveryAddress.PostalCode,
+                    Latitude = o.DeliveryAddress.Latitude,
+                    Longitude = o.DeliveryAddress.Longitude,
+                    FormattedAddress = o.DeliveryAddress.FormattedAddress
+                },
                 Items = o.Items.Select(i => new DepotOrderItemDto
                 {
                     Id = i.Id,

@@ -30,6 +30,8 @@ namespace SalesService.Application.Commands.Orders.Update
             // Se actualizan solo los campos modificables desde SalesService
             existingOrder.DeliveryDetail = command.Request.DeliveryDetail;
             existingOrder.ModifiedStatusDate = DateTime.UtcNow;
+            existingOrder.PaymentType = command.Request.PaymentType;
+            existingOrder.PaymentReceipt = command.Request.PaymentReceipt;
             existingOrder.Status = command.Request.Status;
             existingOrder.CreatedByUserId = command.Request.ModifiedByUserId ?? existingOrder.CreatedByUserId;
 
@@ -61,7 +63,7 @@ namespace SalesService.Application.Commands.Orders.Update
                 existingOrder.Items.Remove(itemToRemove);
             }
 
-            // Actualizar o agregar Items
+            // Actualizar Items
             foreach (var itemDto in command.Request.Items)
             {
                 var existingItem = existingOrder.Items.FirstOrDefault(i => i.Id == itemDto.Id);

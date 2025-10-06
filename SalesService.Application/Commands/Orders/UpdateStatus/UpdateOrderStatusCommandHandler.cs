@@ -25,11 +25,6 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
             if (existingOrder is null)
                 throw new KeyNotFoundException($"Order with ID {command.OrderId} not found.");
 
-            ILogger.LogInformation("📧 DatosCUSTOMER:  CustomerName={Name}, Email={Email}, Phone={Phone}",
-                existingOrder.Customer.FirstName + " " + existingOrder.Customer.LastName,
-                existingOrder.Customer.Email,
-                existingOrder.Customer.PhoneNumber);
-
             // Validamos que unicamente sea pending y que no tenga otro estado.
             if (existingOrder.Status != OrderStatus.Pending && existingOrder.Status != OrderStatus.Canceled)
             {
@@ -61,6 +56,7 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
                         CustomerName = existingOrder.Customer.FirstName + " " + existingOrder.Customer.LastName,
                         CustomerEmail = existingOrder.Customer.Email,
                         PhoneNumber = existingOrder.Customer.PhoneNumber,
+                        RegistrationDate = existingOrder.Customer.RegistrationDate,
                         DeliveryDetail = existingOrder.DeliveryDetail,
                         DeliveryDate = existingOrder.DeliveryDate,
                         OrderDate = existingOrder.OrderDate,

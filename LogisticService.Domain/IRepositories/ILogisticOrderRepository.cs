@@ -8,5 +8,6 @@ namespace LogisticService.Domain.IRepositories
 {
     public interface ILogisticOrderRepository
     {
+
     }
 }

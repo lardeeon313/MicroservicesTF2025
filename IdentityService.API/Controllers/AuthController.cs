@@ -157,10 +157,10 @@ namespace IdentityService.API.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("deliveryoperators")]
-        [ProducesResponseType(typeof(List<OperatorDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<DeliveryOperatorDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllDeliveryOperators()
         {
-            var deliveryOperators = await _getAllDeliverysQueryHandler.HandleAsync();
+            var deliveryOperators = await _getAllDeliverysQueryHandler.HandleAsync(); // ← Verificar que use el handler correcto
             return Ok(deliveryOperators);
         }
     }

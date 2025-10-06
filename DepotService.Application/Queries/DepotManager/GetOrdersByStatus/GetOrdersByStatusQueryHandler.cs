@@ -59,6 +59,19 @@ namespace DepotService.Application.Queries.DepotManager.GetOrdersByStatus
                     Missings = order.Missings,
                     AssignedDepotTeam = order.AssignedDepotTeam,
                     AssignedOperatorId = order.AssignedOperatorId,
+                    Address = new OrderAddressDto
+                    {
+                        Street = order.DeliveryAddress.Street,
+                        Number = order.DeliveryAddress.Number,
+                        Apartment = order.DeliveryAddress.Apartment,
+                        City = order.DeliveryAddress.City,
+                        Province = order.DeliveryAddress.Province,
+                        Country = order.DeliveryAddress.Country,
+                        PostalCode = order.DeliveryAddress.PostalCode,
+                        Latitude = order.DeliveryAddress.Latitude,
+                        Longitude = order.DeliveryAddress.Longitude,
+                        FormattedAddress = order.DeliveryAddress.FormattedAddress
+                    }
                 });
 
                 _logger.LogInformation("Orders retrieved successfully for status: {Status}", status);
