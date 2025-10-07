@@ -7,12 +7,14 @@ import BackButton from "../../../../components/BackButton";
 import { ChartColumn, DollarSign, File } from "lucide-react";
 import StatCard from "../components/StatCard";
 import formatDate from "../../../../utils/formateDate";
+import { BillingAddressDto } from "../types/OrderTypes";
 
 type InvoicedOrder = {
   billingOrderId: number;
   customerName: string;
   totalAmount: number;
   date: string;
+  address: BillingAddressDto,
 };
 
 const InvoicedOrdersPage = () => {
@@ -30,7 +32,8 @@ const InvoicedOrdersPage = () => {
         billingOrderId: item.depotOrderId,  // Ajuste de nombre
         customerName: item.customerName,
         date: item.orderDate,
-        totalAmount: item.totalAmount
+        totalAmount: item.totalAmount,
+        address: item.address,
       }));
 
       setOrders(mappedOrders);
@@ -103,6 +106,9 @@ const InvoicedOrdersPage = () => {
                         Cliente
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                        Dirección
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
                         Fecha
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
@@ -141,6 +147,13 @@ const InvoicedOrdersPage = () => {
                                 {order.customerName}
                               </div>
                             </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-slate-900">
+                            {order.address
+                              ? `${order.address.street} ${order.address.number},${order.address.apartment}, ${order.address.city}, ${order.address.province},${order.address.country}`
+                              : 'Sin dirección'}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">

@@ -16,6 +16,45 @@ export interface DepotOrderDTO{
     rejectionReason?:string | null; 
     items : any[];
     missings: DepotOrderMissingDTO[];
+    address?: OrderAddressDTO | null;
+}
+
+export interface OrderAddressDTO{
+    id: number;
+    street: string;
+    number: string;
+    apartment?: string;
+    city: string;
+    province: string;
+    country: string;
+    postalCode?: string;
+    latitude?: number;
+    longitude?: number;
+    formattedAddress?: string;
+}
+
+export interface OrderAddressEntity{
+    id: number;
+
+    // Información básica de la dirección
+    street: string;        // Calle
+    number: string;        // Altura / numeración
+    apartment?: string;    // Depto, piso, etc.
+    // Jerarquía de ubicación
+    city: string;
+    province: string;
+    country: string;
+    postalCode?: string;
+    // Para integración con Google Maps
+    latitude?: number;
+    longitude?: number;
+    formattedAddress?: string; // lo que devuelva Google Maps al validar
+
+    // Auditoría
+    createdAt: string; // En frontend, DateTime se maneja como string (ISO date)
+
+    // Navegación inversa (solo si lo necesitás)
+    // depotOrder?: DepotOrderDto;
 }
 
 //NUEVO STATUS SIMILAR AL ESTADO DE LOS PEDIDOS DENTRO DEL BACK 

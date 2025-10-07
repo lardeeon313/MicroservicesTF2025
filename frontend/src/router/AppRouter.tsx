@@ -32,7 +32,7 @@ import MissingOrdersSalesPage from "../features/sales/pages/orders/MissingOrderS
 import DepotManagerDashboard from "../features/depot/depotmanager/pages/DepotManagerDashboard";
 import TeamsPage from "../features/depot/depotmanager/pages/TeamsPage";
 import PendingOrdersPageDepot from "../features/depot/depotmanager/pages/PendingOrdersPage";
-//import InPreparationOrdersPage from "../features/depot/depotmanager/pages/InPreparationOrdersPage";
+import InPreparationOrdersPage from "../features/depot/depotmanager/pages/InPreparationOrdersPage";
 import PreparedOrdersPage from "../features/depot/depotmanager/pages/PreparedOrdersPage";
 import MissingOrdersPage from "../features/depot/depotmanager/pages/MissingOrdersPage";
 import { DashboardDepotReportsPage } from "../features/depot/pages/DashboardDepotReportsPage";
@@ -56,14 +56,16 @@ import InvoiceOneDetailPage from "../features/depot/billingmanager/pages/Invoice
 
 // Otros roles
 import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
+import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
 
-// Verification
-import TeamsPageVerification from "../features/verification/pages/TeamsPage";
-import VerificationManagerDashboardPage from "../features/verification/pages/VerificationManagerDashboard";
-import PendingOrdersVerificationPage from "../features/verification/pages/PendingOrdersVerficationPage";
-import PendingOrdersVerificationDetailsPage from "../features/verification/pages/PendingOrderVerificationDetailsPage";
-import OrdersInRoutePage from "../features/verification/pages/OrdersInRoutePage";
-import OrdersInRouteDetailsPage from "../features/verification/pages/OrdersInRouteDetailsPage";
+
+
+//import InvoiceDetailPage from "../features/depot/billingmanager/components/InvoiceListComponent";
+
+
+
+
+
 
 const AppRouter = () => {
   return (
@@ -114,7 +116,7 @@ const AppRouter = () => {
             <Route index element={<DepotManagerDashboard />} />
             <Route path="teams" element={<TeamsPage />} />
             <Route path="pending-orders" element={<PendingOrdersPageDepot />} />
-            {/*<Route path="in-preparation-orders" element={<InPreparationOrdersPage />} */}
+            <Route path="in-preparation-orders" element={<InPreparationOrdersPage />} />
             <Route path="prepared-orders" element={<PreparedOrdersPage />} />
             <Route path="missing-orders" element={<MissingOrdersPage />} />
             <Route path="reports" element={<DashboardDepotReportsPage />} />
@@ -165,20 +167,11 @@ const AppRouter = () => {
         <Route
             path="/verification"
             element={
-                <ProtectedRoute requiredRole="VerificationManager">
-                    <Outlet/>
-                </ProtectedRoute>
+            <ProtectedRoute requiredRole="VerificationStaff">
+                <VerificationDashboard />
+            </ProtectedRoute>
             }
-        >
-            <Route index element={<VerificationManagerDashboardPage/>} />
-            <Route path="teams-verification" element={<TeamsPageVerification/>} />
-            <Route path="pending-orders-verification" element={<PendingOrdersVerificationPage/>} />
-            <Route path="pending-orders-verification/:id" element={<PendingOrdersVerificationDetailsPage/> } />
-            <Route path="orders-in-route" element={<OrdersInRoutePage/> } />
-            <Route path="orders-in-route/:id" element={<OrdersInRouteDetailsPage/> } />
-            {/**reportes sector logistica*/}
-            <Route path="reports" element={<VerificationManagerDashboardPage/>} />
-        </Route>
+        />
 
         {/* Admin */}
         <Route

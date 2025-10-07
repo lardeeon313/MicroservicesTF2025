@@ -156,6 +156,28 @@ namespace DepotService.Infraestructure.Documents.Word
             clientInfoCell.AppendChild(CreateInfoParagraph($"Email: {order.CustomerEmail ?? "N/D"}", false, "000000"));
             clientInfoCell.AppendChild(CreateInfoParagraph($"Teléfono: {order.PhoneNumber ?? "N/D"}", false, "000000"));
 
+            // --- NUEVO BLOQUE: Dirección ---
+            if (order.DeliveryAddress != null)
+            {
+                clientInfoCell.AppendChild(CreateInfoParagraph("Dirección de entrega", true, "6B7280"));
+
+                clientInfoCell.AppendChild(CreateInfoParagraph(
+                    $"Calle: {order.DeliveryAddress.Street} {order.DeliveryAddress.Number}" +
+                    $"{(!string.IsNullOrEmpty(order.DeliveryAddress.Apartment) ? $", Dpto: {order.DeliveryAddress.Apartment}" : "")}",
+                    false, "000000"
+                ));
+
+                clientInfoCell.AppendChild(CreateInfoParagraph(
+                    $"Ciudad: {order.DeliveryAddress.City}, Provincia: {order.DeliveryAddress.Province}",
+                    false, "000000"
+                ));
+
+                clientInfoCell.AppendChild(CreateInfoParagraph(
+                    $"Código Postal: {order.DeliveryAddress.PostalCode ?? "N/D"}",
+                    false, "000000"
+                ));
+            }
+
             infoRow.Append(invoiceInfoCell, clientInfoCell);
             infoTable.AppendChild(infoRow);
             body.AppendChild(infoTable);

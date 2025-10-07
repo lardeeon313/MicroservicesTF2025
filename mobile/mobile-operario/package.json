@@ -10,11 +10,12 @@
     "build": "expo export -p web"
   },
   "dependencies": {
+    "@babel/runtime": "^7.28.4",
     "@expo/metro-runtime": "~5.0.4",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-picker/picker": "^2.11.1",
-    "@react-navigation/native": "^7.1.9",
-    "@react-navigation/native-stack": "^7.3.13",
+    "@react-navigation/native": "^7.1.18",
+    "@react-navigation/native-stack": "^7.3.27",
     "axios": "^1.11.0",
     "babel-preset-expo": "~13.0.0",
     "expo": "53.0.22",
@@ -22,8 +23,8 @@
     "formik": "^2.4.6",
     "jwt-decode": "^4.0.0",
     "lucide-react-native": "^0.511.0",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "react-native": "0.79.5",
     "react-native-awesome-alerts": "^2.0.0",
     "react-native-dotenv": "^3.3.1",
@@ -37,13 +38,15 @@
     "react-native-sweet-alert": "^3.5.0",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "^0.20.0",
-    "yup": "^1.6.1"
+    "yup": "^1.7.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@react-native-community/cli": "latest",
+    "@types/jwt-decode": "^2.2.1",
     "@types/react": "~19.0.10",
     "@types/react-native": "^0.72.8",
+    "@types/yup": "^0.29.14",
     "autoprefixer": "^10.4.21",
     "babel-plugin-module-resolver": "^5.0.2",
     "nativewind": "^4.1.23",

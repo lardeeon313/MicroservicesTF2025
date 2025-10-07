@@ -6,6 +6,8 @@ import NavbarOperator from "../../components/Navbar/NavbarOperator";
 import { View, ActivityIndicator, Text } from "react-native";
 import { useGetOneOrder } from "../../hocks/useGetOneOrder";
 import { useAuth } from "../../Login/context/useAuth"; 
+import GetBack from "../../../components/GetBack";
+import Footer from "../../../components/Footer";
 
 
 type DetailOrderPageProps = RouteProp<DepotStackParamList, "DetailOrder">;
@@ -16,10 +18,12 @@ type Props = {
 const DetailOrderPage = ({ route }: Props) => {
   const { orderId, operatorUserId } = route.params;
 
-  const { userId, name, role, isAuthenticated, logout,team } = useAuth();
-
-  const user = userId && name && role 
-    ? { id: userId, name, role, team }  
+  const { userId, name, role, isAuthenticated, logout, team } = useAuth();
+    
+  const teamName = typeof team === 'object' ? team?.teamName : team;
+    
+  const user = userId && name && role
+    ? { id: userId, name, role, team: teamName ?? null } 
     : null;
 
   console.log("orderId:", orderId, operatorUserId, user?.id);
@@ -34,6 +38,10 @@ const DetailOrderPage = ({ route }: Props) => {
         logout={logout} 
       />
 
+      <View style={{ marginTop: 10, marginLeft: 10}}>
+        <GetBack/>
+      </View>
+
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
       {error && <Text style={{ color: "red", padding: 16 }}>{error}</Text>}
       {order && user && (
@@ -42,6 +50,8 @@ const DetailOrderPage = ({ route }: Props) => {
           operatorUserId={user.id} 
         />
       )}
+
+      <Footer/>
     </View>
   );
 };

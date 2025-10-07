@@ -10,14 +10,18 @@ import { useArmOrders } from "../../hocks/useArmOrders";
 
 import { useAuth } from "../../Login/context/useAuth";  
 
+import Footer from "../../../components/Footer";
+import GetBack from "../../../components/GetBack";
+
 const ListofOrdersArmPage = () => {
   const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
 
-  const { userId, name, role, isAuthenticated, logout , team} = useAuth();
-
- 
-  const user = userId && name && role 
-    ? { id: userId, name, role, team }  // 👈 ahora incluye el team
+  const { userId, name, role, isAuthenticated, logout, team } = useAuth();
+        
+  const teamName = typeof team === 'object' ? team?.teamName : team;
+        
+  const user = userId && name && role
+    ? { id: userId, name, role, team: teamName ?? null } 
     : null;
 
   const { armOrders: orders, loading, error } = useArmOrders(user?.id ?? "");
@@ -59,6 +63,10 @@ const ListofOrdersArmPage = () => {
         logout={logout}
       />
 
+      <View style={{ marginTop: 10, marginLeft: 10}}>
+        <GetBack/>
+      </View>
+
       <Text
         style={{
           fontSize: 22,
@@ -90,6 +98,7 @@ const ListofOrdersArmPage = () => {
           ))
         )}
       </ScrollView>
+      <Footer/>
     </View>
   );
 };

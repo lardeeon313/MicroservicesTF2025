@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DepotService.Infraestructure.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateMissingTables : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -34,6 +34,62 @@ namespace DepotService.Infraestructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "OrderAddresses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Street = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Number = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Apartment = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    City = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Province = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Country = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    PostalCode = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Latitude = table.Column<double>(type: "double", nullable: true),
+                    Longitude = table.Column<double>(type: "double", nullable: true),
+                    FormattedAddress = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderAddresses", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "TeamAssignments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    DepotTeamId = table.Column<int>(type: "int", nullable: false),
+                    OperatorUserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    RoleInTeam = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    AssignedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TeamAssignments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TeamAssignments_DepotTeams_DepotTeamId",
+                        column: x => x.DepotTeamId,
+                        principalTable: "DepotTeams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "DepotOrders",
                 columns: table => new
                 {
@@ -47,6 +103,7 @@ namespace DepotService.Infraestructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     PhoneNumber = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    RegistrationDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     DeliveryDetail = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     OrderDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -56,7 +113,8 @@ namespace DepotService.Infraestructure.Migrations
                     AssignedOperatorId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
                     AssignedDepotTeamId = table.Column<int>(type: "int", nullable: true),
                     RejectionReason = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DeliveryAddressId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -66,30 +124,42 @@ namespace DepotService.Infraestructure.Migrations
                         column: x => x.AssignedDepotTeamId,
                         principalTable: "DepotTeams",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_DepotOrders_OrderAddresses_DeliveryAddressId",
+                        column: x => x.DeliveryAddressId,
+                        principalTable: "OrderAddresses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "TeamAssignments",
+                name: "DepotOrderItems",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    DepotTeamId = table.Column<int>(type: "int", nullable: false),
-                    OperatorUserId = table.Column<string>(type: "longtext", nullable: false)
+                    DepotOrderEntityId = table.Column<int>(type: "int", nullable: false),
+                    SalesOrderItemId = table.Column<int>(type: "int", nullable: false),
+                    ProductName = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    RoleInTeam = table.Column<string>(type: "longtext", nullable: false)
+                    ProductBrand = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    AssignedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+                    PackagingType = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UnitPrice = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    IsReady = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    Total = table.Column<decimal>(type: "decimal(65,30)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TeamAssignments", x => x.Id);
+                    table.PrimaryKey("PK_DepotOrderItems", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TeamAssignments_DepotTeams_DepotTeamId",
-                        column: x => x.DepotTeamId,
-                        principalTable: "DepotTeams",
-                        principalColumn: "Id",
+                        name: "FK_DepotOrderItems_DepotOrders_DepotOrderEntityId",
+                        column: x => x.DepotOrderEntityId,
+                        principalTable: "DepotOrders",
+                        principalColumn: "DepotOrderId",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -147,43 +217,6 @@ namespace DepotService.Infraestructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "DepotOrderItems",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    DepotOrderEntityId = table.Column<int>(type: "int", nullable: false),
-                    SalesOrderItemId = table.Column<int>(type: "int", nullable: false),
-                    ProductName = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProductBrand = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    PackagingType = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    UnitPrice = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
-                    IsReady = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    Total = table.Column<decimal>(type: "decimal(65,30)", nullable: true),
-                    DepotOrderMissingId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DepotOrderItems", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DepotOrderItems_DepotOrderMissings_DepotOrderMissingId",
-                        column: x => x.DepotOrderMissingId,
-                        principalTable: "DepotOrderMissings",
-                        principalColumn: "MissingId");
-                    table.ForeignKey(
-                        name: "FK_DepotOrderItems_DepotOrders_DepotOrderEntityId",
-                        column: x => x.DepotOrderEntityId,
-                        principalTable: "DepotOrders",
-                        principalColumn: "DepotOrderId",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "DepotOrderMissingItem",
                 columns: table => new
                 {
@@ -191,6 +224,7 @@ namespace DepotService.Infraestructure.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     OrderMissingId = table.Column<int>(type: "int", nullable: false),
                     DepotOrderItemId = table.Column<int>(type: "int", nullable: false),
+                    SalesOrderItemId = table.Column<int>(type: "int", nullable: false),
                     ProductName = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ProductBrand = table.Column<string>(type: "longtext", nullable: false)
@@ -223,14 +257,10 @@ namespace DepotService.Infraestructure.Migrations
                 column: "DepotOrderEntityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DepotOrderItems_DepotOrderMissingId",
-                table: "DepotOrderItems",
-                column: "DepotOrderMissingId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DepotOrderMissingItem_DepotOrderItemId",
                 table: "DepotOrderMissingItem",
-                column: "DepotOrderItemId");
+                column: "DepotOrderItemId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DepotOrderMissingItem_OrderMissingId",
@@ -246,6 +276,12 @@ namespace DepotService.Infraestructure.Migrations
                 name: "IX_DepotOrders_AssignedDepotTeamId",
                 table: "DepotOrders",
                 column: "AssignedDepotTeamId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DepotOrders_DeliveryAddressId",
+                table: "DepotOrders",
+                column: "DeliveryAddressId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderStatusHistories_OrderId",
@@ -281,6 +317,9 @@ namespace DepotService.Infraestructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "DepotTeams");
+
+            migrationBuilder.DropTable(
+                name: "OrderAddresses");
         }
     }
 }

@@ -19,6 +19,37 @@ export interface DepotOrderDto {
     operatorName: string;
     assignedDepotTeam?: DepotTeam;
     assignedDepotTeamId?: number;
+    address?: OrderAddressDto;
+}
+
+export interface OrderAddressEntity{
+    id: number;
+    street: string;
+    number: string;
+    apartment?: string;
+    city: string;
+    province: string;
+    country: string;
+    postalCode?: string;
+    latitude?: number;
+    longitude?: number;
+    formattedAddress?: string;
+    createdAt: string;
+    depotOrder?: any;
+}
+
+export interface OrderAddressDto{
+    id: number;
+    street: string;
+    number: string;
+    apartment?: string;
+    city: string;
+    province: string;
+    country: string;
+    postalCode?: string;
+    latitude?: number;
+    longitude?: number;
+    formattedAddress?: string;
 }
 
 export interface DepotOrderItemDto {
@@ -109,6 +140,8 @@ export interface DepotOrderEntity {
     assignedDepotTeam?: DepotTeam;
     assignedDepotTeamId?: number;
     rejectionReason?: string;
+    deliveryAddressId: number;
+    deliveryAddress: OrderAddressEntity;
 }
 
 export enum OrderStatus {
@@ -148,9 +181,11 @@ export interface OrderTableData {
     status: OrderStatus | string;
     orderDate: string;
     deliveryDate?: string;
-    deliveryDetail?: string;
+    deliveryDetail: string;
     customerFirstName?: string;
     customerLastName?: string;
+    operatorName?: string;
+    address?: OrderAddressDto;
     items: {
         productName: string;
         productBrand: string;

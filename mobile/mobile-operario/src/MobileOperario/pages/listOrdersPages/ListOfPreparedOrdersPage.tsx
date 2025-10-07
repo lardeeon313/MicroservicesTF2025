@@ -9,6 +9,8 @@ import { usePreparedOrders } from "../../hocks/usePreparedOrders";
 import { useSendOrderToBilled } from "../../hocks/useSendOrderToBilled";
 import ListPreparedOrders from "../../components/listOrders/ListOfPreparedOrders";
 import NavbarOperator from "../../components/Navbar/NavbarOperator";
+import GetBack from "../../../components/GetBack";
+import Footer from "../../../components/Footer";
 
 import { useAuth } from "../../Login/context/useAuth"; 
 
@@ -16,11 +18,12 @@ import { useAuth } from "../../Login/context/useAuth";
 const ListOfPreparedOrdersPage = () => {
   const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
 
-  const { userId, name, role, isAuthenticated, logout,team } = useAuth();
-
-
-    const user = userId && name && role 
-    ? { id: userId, name, role, team }  // 👈 ahora incluye el team
+  const { userId, name, role, isAuthenticated, logout, team } = useAuth();
+          
+  const teamName = typeof team === 'object' ? team?.teamName : team;
+          
+  const user = userId && name && role
+    ? { id: userId, name, role, team: teamName ?? null } 
     : null;
 
   const { preparedOrders: orders, loading, error } = usePreparedOrders(user?.id ?? "");
@@ -85,6 +88,11 @@ const ListOfPreparedOrdersPage = () => {
         isAuthenticated={isAuthenticated}
         logout={logout}
       />
+
+      <View style={{ marginTop: 10, marginLeft: 10}}>
+        <GetBack/>
+      </View>
+      
       <Text
         style={{
           fontSize: 22,
@@ -115,6 +123,7 @@ const ListOfPreparedOrdersPage = () => {
           ))
         )}
       </ScrollView>
+      <Footer/>
     </View>
   );
 };

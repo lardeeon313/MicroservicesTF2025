@@ -8,7 +8,7 @@ interface NavbarProps {
   user: { 
     name: string; 
     role: string; 
-    team?: TeamDepotType | null 
+    team?: string | null | undefined;
   } | null;
   isAuthenticated: boolean;
   logout: () => void;
@@ -85,7 +85,7 @@ const NavbarOperator = ({ user, isAuthenticated, logout }: NavbarProps) => {
                   Equipo:
                 </Text>
                 <Text style={{ color: '#9e0f0fff', fontSize: 9 , fontWeight: '800'}}>
-                  {user.team?.teamName ?? "N/A"}
+                  {user.team ?? "N/A"}
                 </Text>
               </View>
             </View>

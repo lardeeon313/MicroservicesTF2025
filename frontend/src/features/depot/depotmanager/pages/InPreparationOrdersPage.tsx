@@ -19,21 +19,39 @@ function InPreparationOrdersPage() {
   const itemsPerPage = 10;
 
   // Convertir DepotOrderDto a OrderTableData para compatibilidad
-  const convertToTableData = (order: DepotOrderDto) => ({
+    const convertToTableData = (order: DepotOrderDto) => ({
     id: order.depotOrderId,
-    status: 'En Preparación', // Estado fijo para órdenes en preparación
+    status: 'En Preparación',
     orderDate: order.orderDate ? order.orderDate.toString() : 'Sin fecha',
     deliveryDate: order.deliveryDate ? order.deliveryDate.toString() : undefined,
     deliveryDetail: order.deliveryDetail ?? '',
-    customerFirstName: order.customerName?.split(' ')[0] || '' ,
+    customerFirstName: order.customerName?.split(' ')[0] || '',
     customerLastName: order.customerName?.split(' ').slice(1).join(' ') || '',
     operatorName: order.operatorName || '-',
-    items: Array.isArray(order.items) ? order.items.map((item: any) => ({
-      productName: item.productName ?? '',
-      productBrand: item.productBrand ?? '',
-      quantity: item.quantity ?? 0
-    })) : []
+    address: order.address
+      ? {
+          id: order.address.id,
+          street: order.address.street,
+          number: order.address.number,
+          apartment: order.address.apartment,
+          city: order.address.city,
+          province: order.address.province,
+          country: order.address.country,
+          postalCode: order.address.postalCode,
+          latitude: order.address.latitude,
+          longitude: order.address.longitude,
+          formattedAddress: order.address.formattedAddress
+        }
+      : undefined,
+    items: Array.isArray(order.items)
+      ? order.items.map((item: any) => ({
+          productName: item.productName ?? '',
+          productBrand: item.productBrand ?? '',
+          quantity: item.quantity ?? 0
+        }))
+      : []
   });
+
 
   // Paginación
   const paginatedOrders = useMemo(() => {

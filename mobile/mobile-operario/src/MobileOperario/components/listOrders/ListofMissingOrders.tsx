@@ -32,6 +32,7 @@ const ListOfMissingOrders = ({
   }
 
   const { depotOrderId, customerName, status, } = order;
+  const address = order.address;
   return(
     <View style={{backgroundColor: '#fff',padding: 16,borderRadius: 12,shadowColor: '#000',shadowOffset: { width: 0, height: 2 },shadowOpacity: 0.1,elevation: 2,marginBottom: 16}}>
       <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
@@ -62,6 +63,46 @@ const ListOfMissingOrders = ({
       <Text style={{ fontSize: 20, color: '#6B7280', marginTop: 8 }}>
         Estado: {OrderStatusLabels[status as DepotOrderStatus]}
       </Text>
+
+        {address && (
+        <View
+          style={{
+            marginTop: 12,
+            backgroundColor: '#f9f9f9',
+            padding: 12,
+            borderRadius: 12,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.1,
+            shadowRadius: 2,
+            elevation: 2,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 17,
+              fontWeight: '700',
+              marginBottom: 6,
+              color: '#333',
+            }}
+          >
+            📍 Dirección de entrega
+          </Text>
+
+          <Text style={{ fontSize: 16, color: '#222', marginBottom: 2 }}>
+            {`${address.street} ${address.number}${address.apartment ? `, ${address.apartment}` : ''}`}
+          </Text>
+
+          <Text style={{ fontSize: 15.5, color: '#444', marginBottom: 2 }}>
+            {`${address.city}, ${address.province}`}
+          </Text>
+
+          <Text style={{ fontSize: 15, color: '#777' }}>
+            {address.country}
+          </Text>
+        </View>
+      )}
+
 
       <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 16, marginBottom: 8 }}>
         Total de faltantes: 

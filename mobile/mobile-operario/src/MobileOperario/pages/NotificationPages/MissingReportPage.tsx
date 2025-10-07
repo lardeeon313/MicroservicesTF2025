@@ -9,6 +9,9 @@ import { ValidationMissingReport } from '../../validations/ValidationMissingRepo
 import NavbarOperator from '../../components/Navbar/NavbarOperator';
 import { useAuth } from '../../Login/context/useAuth';
 
+import Footer from '../../../components/Footer';
+import GetBack from '../../../components/GetBack';
+
 type MissingRouteProp = RouteProp<DepotStackParamList, 'MissingReport'>;
 
 const MissingPage = () => {
@@ -16,7 +19,12 @@ const MissingPage = () => {
     const order: DepotOrderDTO = params.order;
 
     const { userId, name, role, isAuthenticated, logout, team } = useAuth();
-    const user = userId && name && role ? { id: userId, name, role, team } : null;
+      
+    const teamName = typeof team === 'object' ? team?.teamName : team;
+      
+    const user = userId && name && role
+        ? { id: userId, name, role, team: teamName ?? null } 
+        : null;
 
     if (!userId) {
         throw new Error("El usuario no está autenticado");
@@ -141,6 +149,9 @@ const MissingPage = () => {
     return (
         <View style={{ flex: 1 }}>
             <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={logout} />
+            <View style={{ marginTop: 10, marginLeft: 10}}>
+                <GetBack/>
+            </View>
             <MissingReport
                 description={description}
                 onNotifyMissing={setDescription}
@@ -153,6 +164,7 @@ const MissingPage = () => {
                 onToggleBrandIssue={handleToggleBrandIssue}
                 onBrandIssueChange={handleBrandIssueChange}
             />
+            <Footer/>
         </View>
     );
 };

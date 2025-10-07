@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DepotService.API.Migrations
+namespace DepotService.Infraestructure.Migrations
 {
     [DbContext(typeof(DepotDbContext))]
     partial class DepotDbContextModelSnapshot : ModelSnapshot
@@ -43,6 +43,9 @@ namespace DepotService.API.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int>("DeliveryAddressId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("DeliveryDate")
                         .HasColumnType("datetime(6)");
 
@@ -55,6 +58,9 @@ namespace DepotService.API.Migrations
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("RejectionReason")
                         .HasColumnType("longtext");
@@ -72,6 +78,9 @@ namespace DepotService.API.Migrations
 
                     b.HasIndex("AssignedDepotTeamId");
 
+                    b.HasIndex("DeliveryAddressId")
+                        .IsUnique();
+
                     b.ToTable("DepotOrders");
                 });
 
@@ -82,9 +91,6 @@ namespace DepotService.API.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("DepotOrderEntityId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DepotOrderMissingId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsReady")
@@ -116,8 +122,6 @@ namespace DepotService.API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DepotOrderEntityId");
-
-                    b.HasIndex("DepotOrderMissingId");
 
                     b.ToTable("DepotOrderItems");
                 });
@@ -179,9 +183,13 @@ namespace DepotService.API.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int>("SalesOrderItemId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("DepotOrderItemId");
+                    b.HasIndex("DepotOrderItemId")
+                        .IsUnique();
 
                     b.HasIndex("OrderMissingId");
 
@@ -200,9 +208,8 @@ namespace DepotService.API.Migrations
                     b.Property<int>("DepotTeamId")
                         .HasColumnType("int");
 
-                    b.Property<string>("OperatorUserId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<Guid>("OperatorUserId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("RoleInTeam")
                         .IsRequired()
@@ -235,6 +242,55 @@ namespace DepotService.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("DepotTeams");
+                });
+
+            modelBuilder.Entity("DepotService.Domain.Entities.OrderAddress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Apartment")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("FormattedAddress")
+                        .HasColumnType("longtext");
+
+                    b.Property<double?>("Latitude")
+                        .HasColumnType("double");
+
+                    b.Property<double?>("Longitude")
+                        .HasColumnType("double");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Province")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OrderAddresses");
                 });
 
             modelBuilder.Entity("DepotService.Domain.Entities.OrderStatusHistory", b =>
@@ -271,7 +327,15 @@ namespace DepotService.API.Migrations
                         .WithMany()
                         .HasForeignKey("AssignedDepotTeamId");
 
+                    b.HasOne("DepotService.Domain.Entities.OrderAddress", "DeliveryAddress")
+                        .WithOne("DepotOrder")
+                        .HasForeignKey("DepotService.Domain.Entities.DepotOrderEntity", "DeliveryAddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("AssignedDepotTeam");
+
+                    b.Navigation("DeliveryAddress");
                 });
 
             modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderItemEntity", b =>
@@ -282,13 +346,7 @@ namespace DepotService.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DepotService.Domain.Entities.DepotOrderMissing", "DepotOrderMissing")
-                        .WithMany()
-                        .HasForeignKey("DepotOrderMissingId");
-
                     b.Navigation("DepotOrderEntity");
-
-                    b.Navigation("DepotOrderMissing");
                 });
 
             modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderMissing", b =>
@@ -305,8 +363,8 @@ namespace DepotService.API.Migrations
             modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderMissingItem", b =>
                 {
                     b.HasOne("DepotService.Domain.Entities.DepotOrderItemEntity", "DepotOrderItem")
-                        .WithMany()
-                        .HasForeignKey("DepotOrderItemId")
+                        .WithOne("DepotOrderMissingItem")
+                        .HasForeignKey("DepotService.Domain.Entities.DepotOrderMissingItem", "DepotOrderItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -352,6 +410,11 @@ namespace DepotService.API.Migrations
                     b.Navigation("StatusHistory");
                 });
 
+            modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderItemEntity", b =>
+                {
+                    b.Navigation("DepotOrderMissingItem");
+                });
+
             modelBuilder.Entity("DepotService.Domain.Entities.DepotOrderMissing", b =>
                 {
                     b.Navigation("MissingItems");
@@ -360,6 +423,12 @@ namespace DepotService.API.Migrations
             modelBuilder.Entity("DepotService.Domain.Entities.DepotTeamEntity", b =>
                 {
                     b.Navigation("Assignments");
+                });
+
+            modelBuilder.Entity("DepotService.Domain.Entities.OrderAddress", b =>
+                {
+                    b.Navigation("DepotOrder")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

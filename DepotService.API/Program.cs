@@ -203,7 +203,7 @@ builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
 // Registrar el DbContext
 builder.Services.AddDbContext<DepotDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-    b => b.MigrationsAssembly("DepotService.API")));
+    b => b.MigrationsAssembly("DepotService.Infraestructure")));
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
