@@ -117,7 +117,9 @@ export interface Order {
   deliveryAddressId?: string | null;
   startedDate : string;
   finishDate: string; 
-  customerAddresses?: AddressRequest[]
+  customerAddresses?: AddressRequest[],
+  // Nuevo campo solo para view:
+  address?: Address;
 }
 
 // Submodelo: ítems dentro de la orden devuelta
