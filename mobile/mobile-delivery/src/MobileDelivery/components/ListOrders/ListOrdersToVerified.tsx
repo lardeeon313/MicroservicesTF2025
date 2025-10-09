@@ -1,23 +1,13 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import { LogisticOrder } from "../../types/DeliveryOrderTypeDto";
 
 type Props = {
-  id: number;
-  customer: string;
-  address: string;
-  status: string;
-  priority: string;
+  order: LogisticOrder;
   onSeeDetail: () => void;
 };
 
-export default function ListOrdersToVerifiedComponent({
-  id,
-  customer,
-  address,
-  status,
-  priority,
-  onSeeDetail,
-}: Props) {
+export default function ListOrdersToVerifiedComponent({ order, onSeeDetail }: Props) {
   return (
     <View
       style={{
@@ -29,16 +19,20 @@ export default function ListOrdersToVerifiedComponent({
         elevation: 4,
       }}
     >
-      <Text style={{ fontSize: 18, fontWeight: "bold" }}>Pedido #{id}</Text>
-      <Text style={{ fontSize: 20, fontWeight: "300", marginTop: 4 }}>
-        Cliente: {customer}
+      <Text style={{ fontSize: 18, fontWeight: "bold" }}>Pedido #{order.id}</Text>
+
+      <Text style={{ fontSize: 18, marginTop: 4 }}>
+        Cliente: {`${order.customer.firstName} ${order.customer.lastName}`}
       </Text>
-      <Text style={{ marginTop: 4, fontSize: 20 }}>Dirección: {address}</Text>
-      <Text style={{ marginTop: 4, fontSize: 20 }}>Estado: {status}</Text>
-      <Text
-        style={{ fontSize: 13, fontStyle: "italic", color: "gray" }}
-      >
-        Prioridad: {priority}
+
+      <Text style={{ marginTop: 4, fontSize: 16 }}>
+        Dirección: {`${order.deliveryAddress.street} ${order.deliveryAddress.number}, ${order.deliveryAddress.city}`}
+      </Text>
+
+      <Text style={{ marginTop: 4, fontSize: 16 }}>Estado: {order.status}</Text>
+
+      <Text style={{ fontSize: 13, fontStyle: "italic", color: "gray" }}>
+        Prioridad: {order.priority}
       </Text>
 
       <View
@@ -57,9 +51,7 @@ export default function ListOrdersToVerifiedComponent({
           }}
           onPress={onSeeDetail}
         >
-          <Text style={{ color: "#fff", fontWeight: "bold" }}>
-            Ver Detalle
-          </Text>
+          <Text style={{ color: "#fff", fontWeight: "bold" }}>Ver Detalle</Text>
         </TouchableOpacity>
       </View>
     </View>

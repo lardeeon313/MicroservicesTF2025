@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 import CountIncident from "../Incidents/CountIncident";
 
 type Props = {
@@ -12,6 +12,7 @@ type Props = {
   onSeeDetail: () => void;
   onReportIncident: () => void;
   onViewIncidents: () => void;
+  onOpenInMap: () => void;
 };
 
 export default function ListOrdersToIncidentComponent({
@@ -24,6 +25,7 @@ export default function ListOrdersToIncidentComponent({
   onSeeDetail,
   onReportIncident,
   onViewIncidents,
+  onOpenInMap,
 }: Props) {
   return (
     <View style={{backgroundColor: '#fff',padding: 16,borderRadius: 12,shadowColor: '#000',shadowOffset: { width: 0, height: 2 },shadowOpacity: 0.1,elevation: 2,marginBottom: 16}}>
@@ -64,6 +66,43 @@ export default function ListOrdersToIncidentComponent({
           </Text>
         </TouchableOpacity>
       </View>
+
+      <View
+        style={{
+            flexDirection: "row",
+            justifyContent: "flex-start", 
+            marginTop: 14,
+        }}
+      >
+        <TouchableOpacity
+          style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: "#fff", 
+              borderWidth: 2,
+              borderColor: "#10B981", 
+              paddingVertical: 10,
+              paddingHorizontal: 14,
+              borderRadius: 8,
+          }}
+          onPress={onOpenInMap}
+        >
+          <Image
+            source={require("../../../assetsImages/GoogleLogo.png")}
+            style={{
+              width: 16,
+              height: 16,
+              marginRight: 6,
+              resizeMode: "contain",
+            }}
+          />
+          <Text style={{color: "#15380bff", fontWeight: "bold"}}>
+            Abrir en Google Maps
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+
 
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10 }}>
         <TouchableOpacity style={{backgroundColor: "#eb074bff",paddingVertical: 8,paddingHorizontal: 12,borderRadius: 6,marginTop: 8,}}

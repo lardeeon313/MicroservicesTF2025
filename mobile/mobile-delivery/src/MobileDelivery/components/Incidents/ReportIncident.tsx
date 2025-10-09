@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
-import { DeliveryOrderTypeDto } from "../../types/DeliveryOrderTypeDto";
+import { LogisticOrder } from "../../types/DeliveryOrderTypeDto";
 
 type Props = {
-  order: DeliveryOrderTypeDto;
+  order: LogisticOrder;
   onSubmit: (notes: string) => void;
 };
 
@@ -35,7 +35,7 @@ export default function ReportIncidentComponent({ order, onSubmit }: Props) {
         </Text>
 
         <Text style={{ fontSize: 16, marginBottom: 4, color: "#333" }}>
-            Cliente: {order.customer}
+            Cliente: {order.customer.firstName}{order.customer.lastName}
         </Text>
 
         <Text style={{ marginBottom: 6, fontWeight: "500", color: "#444" }}>

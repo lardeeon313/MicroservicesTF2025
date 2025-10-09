@@ -1,78 +1,74 @@
 import React, { useState } from "react";
-import { View, FlatList, StyleSheet, Text } from "react-native";
-
+import { View, FlatList, StyleSheet, Text, Alert } from "react-native";
 import NavbarDelivery from "../../components/Navbar/NavbarDelivery";
 import GetBack from "../../../components/GetBack";
-import { mockOrders as initialOrders } from "../../MockPrueba/mockOrders";
-import ListOrdersToDeliveredComponent from "../../components/ListOrders/ListOrdersToDelivered";
 import Footer from "../../../components/Footer";
-
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { DeliveryStackParamList } from "../../types/DeliveryStackType";
-import { DeliveryOrderTypeDto } from "../../types/DeliveryOrderTypeDto";
-
+import { LogisticOrder, OrderStatus, PaymentType } from "../../types/DeliveryOrderTypeDto";
+import { mockOrders as initialOrders } from "../../MockPrueba/mockOrders";
+import ListOrdersToDeliveredComponent from "../../components/ListOrders/ListOrdersToDelivered";
 import ConfirmPaymentModal from "../../components/ConfirmPayment/ConfirmPaymentModal";
-import { useAuth } from "../../Login/context/useAuth"; // 👈 Importamos el hook del AuthContext
+import { useAuth } from "../../Login/context/useAuth";
 
 type DeliveryNavigationProp = NativeStackNavigationProp<DeliveryStackParamList>;
 
 export default function ListOrdersToDeliveredPage() {
   const navigation = useNavigation<DeliveryNavigationProp>();
-  const [orders, setOrders] = useState(initialOrders);
-
+  const [orders, setOrders] = useState<LogisticOrder[]>(initialOrders);
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  // ✅ Obtenemos user, isAuthenticated y logout del AuthContext
   const { name, role, team, isAuthenticated, logout } = useAuth();
-  const user = {
-    name: name ?? "",
-    role: role ?? "",
-    team: team ?? null,
-  };
+  const user = { name: name ?? "", role: role ?? "", team: team ?? null };
 
-  // actualizar estado del pedido
-  const updateOrderStatus = (
-    orderId: number,
-    newStatus: DeliveryOrderTypeDto["status"]
-  ) => {
+  // actualizar estado de pedido
+  const updateOrderStatus = (orderId: number, newStatus: OrderStatus) => {
     setOrders((prev) =>
-      prev.map((o) =>
-        o.id === orderId ? { ...o, status: newStatus } : o
-      )
+      prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
     );
   };
 
-  // abrir modal de confirmación de pago
-  const handleOpenPaymentModal = (orderId: number) => {
-    setSelectedOrderId(orderId);
-    setModalVisible(true);
-  };
-
-  // confirmar pago desde modal
-  const handleConfirmPayment = () => {
-    if (selectedOrderId !== null) {
-      updateOrderStatus(selectedOrderId, "PAYMENT_CONFIRMED");
-      console.log(`💰 Pago confirmado para pedido ${selectedOrderId}`);
-    }
-  };
-
-  // confirmar rendición
+  // abrir modal de confirmación de pago efectivo
   const handleRenderOrder = (orderId: number) => {
-    console.log(`✅ Pedido ${orderId} rendido`);
-    updateOrderStatus(orderId, "RENDERED");
+    updateOrderStatus(orderId, OrderStatus.PendingVerification);
+    Alert.alert("Rendición realizada", `Pedido #${orderId} rendido correctamente`);
+  };
+
+  // abrir modal para pagos de Transfer, Credit/Debit
+  const handleConfirmPayment = (order: LogisticOrder) => {
+    switch (order.paymentType) {
+      case PaymentType.Transfer:
+      case PaymentType.Credit_Card:
+      case PaymentType.Debit_Card:
+        updateOrderStatus(order.id, OrderStatus.Verify);
+        Alert.alert("Pago confirmado", `Pago de ${order.paymentType} confirmado`);
+        break;
+
+      case PaymentType.Current_Account:
+        updateOrderStatus(order.id, OrderStatus.Verify);
+        Alert.alert("Cuenta corriente confirmada", `Pedido #${order.id} confirmado por cuenta corriente`);
+        break;
+
+      case PaymentType.Check:
+        updateOrderStatus(order.id, OrderStatus.Verify);
+        Alert.alert("Cheque confirmado", `Pedido #${order.id} confirmado con cheque`);
+        break;
+
+      case PaymentType.Promissory_Note:
+        updateOrderStatus(order.id, OrderStatus.Verify);
+        Alert.alert("Nota promissoria confirmada", `Pedido #${order.id} confirmado con nota promissoria`);
+        break;
+
+      default:
+        break;
+    }
   };
 
   return (
     <View style={styles.container}>
-      
-      <NavbarDelivery
-        user={user}
-        isAuthenticated={isAuthenticated}
-        logout={logout}
-      />
-
+      <NavbarDelivery user={user} isAuthenticated={isAuthenticated} logout={logout} />
       <View style={styles.backContainer}>
         <GetBack />
       </View>
@@ -81,33 +77,16 @@ export default function ListOrdersToDeliveredPage() {
 
       <FlatList
         contentContainerStyle={{ padding: 16 }}
-        data={orders.filter(
-          (o) => o.status === "DELIVERED" || o.status === "PENDING_VERIFIED"
-        )}
+        data={orders.filter((o) => o.status === OrderStatus.Delivered)}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <ListOrdersToDeliveredComponent
-            id={item.id}
-            customer={item.customer}
-            address={item.address}
-            status={item.status}
-            priority={item.priority}
-            payment={item.payment}
-            onSeeDetail={() =>
-              navigation.navigate("OrderDetail", { order: item })
-            }
-            onPaymentType={() => handleOpenPaymentModal(item.id)}
+            order={item}
+            onSeeDetail={() => navigation.navigate("OrderDetail", { order: item })}
+            onPaymentType={() => handleConfirmPayment(item)}
             onRenderOrder={handleRenderOrder}
           />
         )}
-      />
-
-      {/* Modal de confirmación de pago */}
-      <ConfirmPaymentModal
-        visible={modalVisible}
-        orderId={selectedOrderId?.toString() ?? ""}
-        onClose={() => setModalVisible(false)}
-        onConfirm={handleConfirmPayment}
       />
 
       <Footer />

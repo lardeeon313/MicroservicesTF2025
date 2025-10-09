@@ -37,7 +37,6 @@ export default function OrderDetailPage() {
       <ScrollView contentContainerStyle={styles.content}>
         <DetailOrderComponent
           order={order}
-          onBack={() => navigation.goBack()}
         />
       </ScrollView>
 
@@ -58,4 +57,3 @@ const styles = StyleSheet.create({
 });
 
 
-//{ marginTop: 10, marginLeft: 10 },

@@ -1,5 +1,4 @@
-// navigation/DeliveryStackType.ts
-import { DeliveryOrderTypeDto } from "./DeliveryOrderTypeDto";
+import { LogisticOrder } from "./DeliveryOrderTypeDto";
 import { OrderStatus } from "./DeliveryOrderTypeDto";
 
 export type DeliveryStackParamList = {
@@ -9,18 +8,28 @@ export type DeliveryStackParamList = {
   OrdersToIncidents: undefined;
   OrdersToVerified: undefined;
   OrderDetail: {
-    order: DeliveryOrderTypeDto
+    order: LogisticOrder;
   };
   SelectPaymentType: { 
     orderId: number;
-    updateOrderStatus:  (orderId: number, newStatus: OrderStatus) => void;
+    updateOrderStatus: (orderId: number, newStatus: OrderStatus) => void;
   };
   ReportIncident: { 
     orderId: number; 
   };
   NotificationIncident: {
-     orderId: number ;
-  }
-  Login : undefined;
+    orderId: number;
+  };
+  Login: undefined;
   Register: undefined;
+  OrdersRouteMap: {
+    orders: LogisticOrder[];
+  };
+  OneOrderRouteMap: {
+    order: LogisticOrder;
+  };
+  /** ✅ Nuevo correctamente definido */
+  OrderStatusChange: {
+    order: LogisticOrder;
+  };
 };

@@ -11,14 +11,13 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { DeliveryStackParamList } from "../../types/DeliveryStackType";
 import { useAuth } from "../../Login/context/useAuth";
-
+import { LogisticOrder } from "../../types/DeliveryOrderTypeDto"; // 👈 asegurate de importar tu nueva interfaz
 
 type DeliveryNavigationProp = NativeStackNavigationProp<DeliveryStackParamList>;
 
 export default function ListOrdersToIncidentPage() {
   const navigation = useNavigation<DeliveryNavigationProp>();
-  const [orders] = useState(initialOrders);
-
+  const [orders, setOrders] = useState<LogisticOrder[]>(initialOrders);
 
   const { name, role, team, isAuthenticated, logout } = useAuth();
   const user = {
@@ -27,14 +26,20 @@ export default function ListOrdersToIncidentPage() {
     team: team ?? null,
   };
 
-  //METODOS: 
+  // 👉 Navegar a Reportar Incidente
   const handleReportIncident = (orderId: number) => {
-     navigation.navigate("ReportIncident", { orderId });
+    navigation.navigate("ReportIncident", { orderId });
   };
 
+  // 👉 Ver incidencias registradas
   const handleViewIncidents = (orderId: number) => {
     navigation.navigate("NotificationIncident", { orderId });
   };
+
+  // 👉 Filtrar pedidos con estado "WithIncidents"
+  const ordersWithIncidents = orders.filter(
+    (o) => o.status === "WithIncidents"
+  );
 
   return (
     <View style={{ flex: 1 }}>
@@ -50,22 +55,29 @@ export default function ListOrdersToIncidentPage() {
 
       <Text style={styles.title}>Pedidos con Incidentes</Text>
 
-      <FlatList contentContainerStyle={{ padding: 16 }}
-        data={orders.filter((o) => o.status === "INCIDENT")}
+      <FlatList
+        contentContainerStyle={{ padding: 16 }}
+        data={ordersWithIncidents}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <ListOrdersToIncidentComponent 
+          <ListOrdersToIncidentComponent
             id={item.id}
-            customer={item.customer}
-            address={item.address}
+            customer={item.customer?.firstName + item.customer.lastName || "Cliente desconocido"}
+            address={
+              item.deliveryAddress?.formattedAddress ||
+              `${item.deliveryAddress?.street ?? ""} ${item.deliveryAddress?.number ?? ""}`
+            }
             status={item.status}
             priority={item.priority}
-            incidentCount={item.incidentCount || 0} // 👈 contador
+            incidentCount={item.items.filter((i) => i.hasIncident).length || 0} // 👈 si tenés flag por item
             onSeeDetail={() =>
               navigation.navigate("OrderDetail", { order: item })
             }
             onReportIncident={() => handleReportIncident(item.id)}
             onViewIncidents={() => handleViewIncidents(item.id)}
+            onOpenInMap={() =>
+              navigation.navigate("OneOrderRouteMap", { order: item })
+            }
           />
         )}
       />
