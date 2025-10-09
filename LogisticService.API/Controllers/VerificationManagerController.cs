@@ -21,6 +21,15 @@ using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetAllTea
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetById;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetAllZones;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetByIdZone;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrders;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrderById;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByCustomerId;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByDeliveryZoneId;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByOperatorId;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByStatus;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByTeamId;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetPagedOrders;
+using LogisticService.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,7 +40,7 @@ using Microsoft.AspNetCore.Mvc;
 /**************************************************************/
 namespace LogisticService.API.Controllers
 {
-    [Authorize(Roles = "VerificationManager")] 
+    [Authorize(Roles = "VerificationManager")]
     [ApiController]
     [Route("api/VerificationManager")]
     public class VerificationManagerController(
@@ -57,7 +66,16 @@ namespace LogisticService.API.Controllers
         IGetAllDeliveryZonesQueryHandler getAllDeliveryZonesQueryHandler,
         IGetDeliveryZoneByIdQueryHandler getDeliveryZoneByIdQueryHandler,
         IValidator<CreateDeliveryZoneRequest> createDeliveryZoneRequestValidator,
-        IValidator<UpdateDeliveryZoneRequest> updateDeliveryZoneRequestValidator
+        IValidator<UpdateDeliveryZoneRequest> updateDeliveryZoneRequestValidator,
+
+        IGetAllOrdersQueryHandler getAllOrdersQueryHandler,
+        IGetOrderByIdCustomerQueryHandler getOrderByIdCustomerQueryHandler,
+        IGetOrderByIdQueryHandler getOrderByIdQueryHandler,
+        IGetOrdersByStatusQueryHandler getOrdersByStatusQueryHandler,
+        IGetPagedOrdersQueryHandler getPagedOrdersQueryHandler,
+        IGetOrdersByDeliveryZoneIdQueryHandler getOrdersByDeliveryZoneIdQueryHandler,
+        IGetOrdersByTeamIdQueryHandler getOrdersByTeamIdQueryHandler,
+        IGetOrdersByOperatorIdQueryHandler getOrdersByOperatorIdQueryHandler
         ) : ControllerBase
     {
         private readonly IValidator<CreateDeliveryTeamRequest> _createDeliveryTeamRequestValidator = createDeliveryTeamRequestValidator;
@@ -84,6 +102,15 @@ namespace LogisticService.API.Controllers
         private readonly IValidator<CreateDeliveryZoneRequest> _createDeliveryZoneRequestValidator = createDeliveryZoneRequestValidator;
         private readonly IValidator<UpdateDeliveryZoneRequest> _updateDeliveryZoneRequestValidator = updateDeliveryZoneRequestValidator;
 
+        private readonly IGetAllOrdersQueryHandler _getAllOrdersQueryHandler = getAllOrdersQueryHandler;
+        private readonly IGetOrderByIdCustomerQueryHandler _getOrderByIdCustomerQueryHandler = getOrderByIdCustomerQueryHandler;
+        private readonly IGetOrderByIdQueryHandler _getOrderByIdQueryHandler = getOrderByIdQueryHandler;
+        private readonly IGetOrdersByStatusQueryHandler _getOrdersByStatusQueryHandler = getOrdersByStatusQueryHandler;
+        private readonly IGetPagedOrdersQueryHandler _getPagedOrdersQueryHandler = getPagedOrdersQueryHandler;
+        private readonly IGetOrdersByDeliveryZoneIdQueryHandler _getOrdersByDeliveryZoneIdQueryHandler = getOrdersByDeliveryZoneIdQueryHandler;
+        private readonly IGetOrdersByTeamIdQueryHandler _getOrdersByTeamIdQueryHandler = getOrdersByTeamIdQueryHandler;
+        private readonly IGetOrdersByOperatorIdQueryHandler _getOrdersByOperatorIdQueryHandler = getOrdersByOperatorIdQueryHandler;
+
         /**************************************************************/
         /**************************************************************/
         /////      CRUD DE EQUIPOS DE REPARTO - DELIVERYTEAMS     //////
@@ -93,8 +120,6 @@ namespace LogisticService.API.Controllers
         /// <summary>
         /// Endpoint para crear un nuevo equipo de entrega.
         /// </summary>
-        /// <param name="TeamName"></param>
-        /// <param name="TeamDescription"></param>
         /// <returns></returns>
         [HttpPost("create-team")]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
@@ -117,7 +142,7 @@ namespace LogisticService.API.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
-            
+
             return Ok(new { message = "Equipo de entrega creado exitosamente." });
         }
 
@@ -125,8 +150,7 @@ namespace LogisticService.API.Controllers
         /// Endpoint para actualizar equipo 
         /// </summary>
         /// <param name="teamId"></param>
-        /// <param name="TeamName"></param>
-        /// <param name="TeamDescription"></param>
+        /// <param name="request"></param>        
         /// <returns></returns>
         [HttpPut("update-team/{teamId}")]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
@@ -208,10 +232,10 @@ namespace LogisticService.API.Controllers
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteTeam(int teamId)
-        {    
+        {
             try
             {
-                await _deleteDeliveryTeamCommandHandler.DeleteDeliveryTeamAsync(teamId);                
+                await _deleteDeliveryTeamCommandHandler.DeleteDeliveryTeamAsync(teamId);
             }
             catch (Exception ex)
             {
@@ -326,8 +350,8 @@ namespace LogisticService.API.Controllers
         /// <summary>
         /// Remover una zona de un equipo 
         /// </summary>
-        /// <param name="teamId"></param>
-        /// <param name="operatorUserId"></param>
+        /// <param name="zoneId"></param>
+        /// <param name="teamId"></param>        
         /// <returns></returns>
         [HttpDelete("{teamId}/remove-zone/{zoneId}")]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
@@ -345,7 +369,7 @@ namespace LogisticService.API.Controllers
 
         /**************************************************************/
         /**************************************************************/
-        /////      CRUD DE ZONAS DE REPARTO - DELIVERYTEAMS     //////
+        /////      CRUD DE ZONAS DE REPARTO - DELIVERYTEAMS       //////
         /**************************************************************/
         /**************************************************************/
 
@@ -353,8 +377,7 @@ namespace LogisticService.API.Controllers
         /// <summary>
         /// Endpoint para crear una nueva zona de entrega.
         /// </summary>
-        /// <param name="ZoneName"></param>
-        /// <param name="ZoneDescription"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("create-zone")]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
@@ -378,15 +401,14 @@ namespace LogisticService.API.Controllers
                 return BadRequest(new { message = ex.Message });
             }
 
-            return Ok(new { message = "Zona de entrega creado exitosamente." });            
+            return Ok(new { message = "Zona de entrega creado exitosamente." });
         }
 
         /// <summary>
         /// Endpoint para actualizar una zona
         /// </summary>
         /// <param name="zoneId"></param>
-        /// <param name="ZoneName"></param>
-        /// <param name="ZoneDescription"></param>
+        /// <param name="request"></param>
         /// <returns></returns>
         [HttpPut("update-zone/{zoneId}")]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
@@ -503,5 +525,141 @@ namespace LogisticService.API.Controllers
             return zone is not null ? Ok(zone) : NotFound(new { message = "Zone not found." });
         }
 
+        /**************************************************************/
+        /**************************************************************/
+        /////    CONSULTAS DE ORDENES LOGISTICAS - LOGISTICORDERS /////
+        /*************************************************************/
+        /**************************************************************/
+
+        /// <summary>
+        /// Endpoint para retornar una lista de todas las órdenes logísticas
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("get-all-orders")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAllOrders()
+        {
+            var orders = await _getAllOrdersQueryHandler.GetAllHandleAsync();
+            return Ok(orders);
+        }
+
+
+        /// <summary>
+        /// endpoint para retornar una orden logística por su ID
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
+        [HttpGet("get-orders-by-customer/{customerId}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetOrdersByCustomerId(Guid customerId)
+        {
+            var query = new GetOrderByIdCustomerQuery(customerId);
+            var orders = await _getOrderByIdCustomerQueryHandler.HandleAsync(query);
+            return Ok(orders);
+        }
+
+        /// <summary>
+        /// Endpoint para retornar una orden logística por su ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("get-order-by-id/{id}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetOrderById(int id)
+        {
+            var query = new GetOrderByIdQuery(id);
+            var order = await _getOrderByIdQueryHandler.GetOrderByIdHandleAsync(query);
+            return Ok(order);
+        }
+
+        /// <summary>
+        /// Endpoint para retornar una lista de ordenes por su estado
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
+        [HttpGet("get-orders-by-status/{status}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetOrdersByStatus(string status)
+        {
+            if (!Enum.TryParse<OrderStatus>(status, true, out var parsedStatus))
+              return BadRequest(new { message = $"Invalid order status: {status}" });
+            var query = new GetOrdersByStatusQuery(parsedStatus);
+            var orders = await _getOrdersByStatusQueryHandler.GetOrdersByStatusHandleAsync(query);
+            return Ok(orders);
+        }
+
+        /// <summary>
+        /// Endpoint para retornar una lista paginada de órdenes logísticas
+        /// </summary>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpGet("get-paged-orders")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetPagedOrders([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
+        {
+            var query = new GetPagedOrdersQuery(pageNumber, pageSize);
+            var result = await _getPagedOrdersQueryHandler.Handle(query, cancellationToken);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Endpoint para retornar una lista de órdenes logísticas asignadas a un equipo de reparto específico
+        /// </summary>
+        /// <param name="zoneId"></param>
+        /// <returns></returns>
+        [HttpGet("get-orders-by-delivery-zone/{zoneId}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetOrdersByDeliveryZoneId(int zoneId)
+        {
+            var query = new GetOrdersByDeliveryZoneIdQuery(zoneId);
+            var orders = await _getOrdersByDeliveryZoneIdQueryHandler.HandleAsync(query);
+            return Ok(orders);
+        }
+
+        /// <summary>
+        /// Endpoint para retornar una lista de órdenes logísticas asignadas a un equipo de reparto específico
+        /// </summary>
+        /// <param name="teamId"></param>
+        /// <returns></returns>
+        [HttpGet("get-orders-by-team/{teamId}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetOrdersByTeamId(int teamId)
+        {
+            var query = new GetOrdersByTeamIdQuery(teamId);
+            var orders = await _getOrdersByTeamIdQueryHandler.HandleAsync(query);
+            return Ok(orders);
+        }
+
+        /// <summary>
+        /// Endpoint para retornar una lista de órdenes logísticas asignadas a un operador específico
+        /// </summary>
+        /// <param name="operatorUserId"></param>
+        /// <returns></returns>
+        [HttpGet("get-orders-by-operator/{operatorUserId}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetOrdersByOperatorId(Guid operatorUserId)
+        {
+            var query = new GetOrdersByOperatorIdQuery(operatorUserId);
+            var orders = await _getOrdersByOperatorIdQueryHandler.HandleAsync(query);
+            return Ok(orders);
+        }
     }
 }

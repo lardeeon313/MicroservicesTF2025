@@ -1,0 +1,82 @@
+﻿using LogisticService.Application.DTOs;
+using LogisticService.Application.DTOs.DeliveryZoneDtos;
+using LogisticService.Application.DTOs.LogisticOrderDtos;
+using LogisticService.Domain.IRepositories;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByCustomerId
+{
+    /// <summary>
+    /// Manejador de la consulta GetOrderByIdCustomerQuery
+    /// </summary>
+    public class GetOrderByIdCustomerQueryHandler(ILogisticOrderRepository repository) : IGetOrderByIdCustomerQueryHandler
+    {
+        private ILogisticOrderRepository _repository = repository;
+        public async Task<IEnumerable<LogisticOrderDto>> HandleAsync(GetOrderByIdCustomerQuery query)
+        {
+            var orders = await _repository.GetOrdersByCustomerIdAsync(query.CustomerId);
+
+            if (!orders.Any())
+                throw new KeyNotFoundException($"No orders found for customer with id {query.CustomerId}");
+
+            return orders.Select(order => new LogisticOrderDto 
+            {
+                Id = order.Id,
+                Status = order.Status,
+                OrderDate = order.OrderDate,
+                DeliveryDate = order.DeliveryDate,
+                ModifiedStatusDate = order.ModifiedStatusDate,
+                TotalAmount = order.TotalAmount,
+                PaymentReceipt = order.PaymentReceipt,
+                DeliveryDetail = order.DeliveryDetail,
+                PaymentType = order.PaymentType,
+                Customer = order.Customer == null ? null : new()
+                {
+                    Id = order.Customer.Id,
+                    FirstName = order.Customer.FirstName,
+                    LastName = order.Customer.LastName,
+                    Email = order.Customer.Email,
+                    PhoneNumber = order.Customer.PhoneNumber
+                },
+                Items = order.Items.Select(item => new LogisticOrderItemDto
+                {
+                    Id = item.Id,
+                    ProductName = item.ProductName,
+                    ProductBrand = item.ProductBrand,
+                    Quantity = item.Quantity,
+                    Total = item.Total,
+                    PackagingType = item.PackagingType,
+                    UnitPrice = item.UnitPrice
+                }).ToList(),
+                AssignedOperatorId = order.AssignedOperatorId,
+                AssignedDeliveryZone = new DeliveryZoneDto
+                {
+                    Name = order.AssignedDeliveryZone?.Name ?? string.Empty,
+                    Description = order.AssignedDeliveryZone?.Description ?? string.Empty
+                },
+                AssignedDeliveryTeam = new DeliveryTeamDto
+                {
+                    TeamName = order.AssignedDeliveryTeam?.TeamName ?? string.Empty,
+                    TeamDescription = order.AssignedDeliveryTeam?.TeamDescription ?? string.Empty
+                },
+                DeliveryAddress = new LogisticAddressDto
+                {
+                    Street = order.DeliveryAddress.Street,
+                    Number = order.DeliveryAddress.Number,
+                    Apartment = order.DeliveryAddress.Apartment,
+                    City = order.DeliveryAddress.City,
+                    Province = order.DeliveryAddress.Province,
+                    Country = order.DeliveryAddress.Country,
+                    PostalCode = order.DeliveryAddress.PostalCode,
+                    Latitude = order.DeliveryAddress.Latitude,
+                    Longitude = order.DeliveryAddress.Longitude,
+                    FormattedAddress = order.DeliveryAddress.FormattedAddress
+                }
+            });
+        }
+    }
+}

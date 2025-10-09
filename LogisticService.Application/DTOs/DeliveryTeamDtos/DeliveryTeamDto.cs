@@ -9,8 +9,8 @@ namespace LogisticService.Application.DTOs
 {
     public class DeliveryTeamDto
     {
-        public int Id { get; set; }
-        public string TeamName { get; set; } = string.Empty;
+        public int? Id { get; set; }
+        public string? TeamName { get; set; } = string.Empty;
         public string? TeamDescription { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
