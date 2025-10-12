@@ -46,5 +46,34 @@ namespace LogisticService.Domain.Entities
         // Trazabilidad con DepotService y SalesService
         public int DepotOrderId { get; set; }
         public int SalesOrderId { get; set; }
+
+
+        public void AssignToOperator(Guid operatorId, DeliveryTeam team)
+        {
+            if (Status != OrderStatus.PendingVerification && Status != OrderStatus.AssignedDelivery)
+                throw new InvalidOperationException("cannot assign employee to an order that is not pending verification or assigned to delivery.");
+
+            // Validar que el operador pertenezca al equipo
+            if (!team.DeliveryOperators.Any(a => a.OperatorUserId == operatorId))
+                throw new InvalidOperationException("El operador no pertenece al equipo proporcionado.");
+
+            if (Status == OrderStatus.Verify)
+            {
+                AssignedOperatorId = operatorId;
+                AssignedDeliveryTeam = team;
+                AssignedDeliveryTeamId = team.Id;
+                Status = OrderStatus.AssignedDelivery;
+            }
+        }
+
+        public void RemoveAssignment()
+        {
+            if (Status != OrderStatus.AssignedDelivery)
+                throw new InvalidOperationException("Cannot remove assignment from an order that is not assigned to a delivery operator.");
+            AssignedOperatorId = null;
+            AssignedDeliveryTeam = null;
+            AssignedDeliveryTeamId = null;
+            Status = OrderStatus.Verify;
+        }
     }
 }

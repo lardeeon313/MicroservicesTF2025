@@ -1,8 +1,11 @@
 ﻿using FluentValidation;
 using LogisticService.API.RequestDtos.DeliveryTeams;
 using LogisticService.API.RequestDtos.DeliveryZones;
+using LogisticService.API.RequestDtos.LogisticOrders;
 using LogisticService.API.Validators.DeliveryTeams;
 using LogisticService.API.Validators.DeliveryZones;
+using LogisticService.Application.Commands.LogisticManager.DeliveryOperatorToTeam.AssignOperatorToTeam;
+using LogisticService.Application.Commands.LogisticManager.DeliveryOperatorToTeam.RemoveOperatorToTeam;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.ActiveDeliveryTeam;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.AssignOperatorToTeam;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.AssignZoneToTeam;
@@ -48,15 +51,15 @@ namespace LogisticService.API.Controllers
         IUpdateDeliveryTeamCommandHandler updateDeliveryTeamCommandHandler,
         IDeleteDeliveryTeamCommandHandler deleteDeliveryTeamCommandHandler,
         IDisableDeliveryTeamCommandHandler disableDeliveryTeamCommandHandler,
-        IActiveDeliveryTeamCommandHandler activeDeliveryTeamCommandHandler,
-        IAssignOperatorCommandHandler assignOperatorCommandHandler,
-        IRemoveOperatorCommandHandler removeOperatorCommandHandlers,
+        IActiveDeliveryTeamCommandHandler activeDeliveryTeamCommandHandler,       
         IRemoveZoneFromTeamCommandHandler removeZoneFromTeamCommandHandler,
         IAssignZoneToTeamCommandHandler assignZoneToTeamCommandHandler,
         IGetAllTeamsQueryHandler getAllTeamsQueryHandler,
         IGetTeamByIdQueryHandler getTeamByIdQueryHandler,
         IValidator<CreateDeliveryTeamRequest> createDeliveryTeamRequestValidator,
         IValidator<UpdateDeliveryTeamRequest> updateDeliveryTeamRequestValidator,
+        IAssignOperatorToTeamCommandHandler assignOperatorToTeamCommandHandler,
+        IRemoveOperatorToTeamCommandHandler removeOperatorToTeamCommandHandler,
 
         ICreateDeliveryZoneCommandHandler createDeliveryZoneCommandHandler,
         IUpdateDeliveryZoneCommandHandler updateDeliveryZoneCommandHandler,
@@ -68,6 +71,8 @@ namespace LogisticService.API.Controllers
         IValidator<CreateDeliveryZoneRequest> createDeliveryZoneRequestValidator,
         IValidator<UpdateDeliveryZoneRequest> updateDeliveryZoneRequestValidator,
 
+        IAssignOperatorCommandHandler assignOperatorCommandHandler,
+        IRemoveOperatorCommandHandler removeOperatorCommandHandler,
         IGetAllOrdersQueryHandler getAllOrdersQueryHandler,
         IGetOrderByIdCustomerQueryHandler getOrderByIdCustomerQueryHandler,
         IGetOrderByIdQueryHandler getOrderByIdQueryHandler,
@@ -80,8 +85,6 @@ namespace LogisticService.API.Controllers
     {
         private readonly IValidator<CreateDeliveryTeamRequest> _createDeliveryTeamRequestValidator = createDeliveryTeamRequestValidator;
         private readonly IValidator<UpdateDeliveryTeamRequest> _updateDeliveryTeamRequestValidator = updateDeliveryTeamRequestValidator;
-        private readonly IRemoveOperatorCommandHandler _removeOperatorCommandHandler = removeOperatorCommandHandlers;
-        private readonly IAssignOperatorCommandHandler _assignOperatorCommandHandler = assignOperatorCommandHandler;
         private readonly IAssignZoneToTeamCommandHandler _assignZoneToTeamCommandHandler = assignZoneToTeamCommandHandler;
         private readonly IRemoveZoneFromTeamCommandHandler _removeZoneToTeamCommandHandler = removeZoneFromTeamCommandHandler;
         private readonly ICreateDeliveryZoneCommandHandler _createDeliveryZoneCommandHandler = createDeliveryZoneCommandHandler;
@@ -91,6 +94,8 @@ namespace LogisticService.API.Controllers
         private readonly IDisableDeliveryZoneCommandHandler _disableDeliveryZoneCommandHandler = disableDeliveryZoneCommandHandler;
         private readonly IGetAllDeliveryZonesQueryHandler _getAllDeliveryZonesQueryHandler = getAllDeliveryZonesQueryHandler;
         private readonly IGetDeliveryZoneByIdQueryHandler _getDeliveryZoneByIdQueryHandler = getDeliveryZoneByIdQueryHandler;
+        private readonly IAssignOperatorToTeamCommandHandler _assignOperatorToTeamCommandHandler = assignOperatorToTeamCommandHandler;
+        private readonly IRemoveOperatorToTeamCommandHandler _removeOperatorToTeamCommandHandler = removeOperatorToTeamCommandHandler;
 
         private readonly IDeleteDeliveryTeamCommandHandler _deleteDeliveryTeamCommandHandler = deleteDeliveryTeamCommandHandler;
         private readonly IGetTeamByIdQueryHandler _getTeamByIdQueryHandler = getTeamByIdQueryHandler;
@@ -102,6 +107,9 @@ namespace LogisticService.API.Controllers
         private readonly IValidator<CreateDeliveryZoneRequest> _createDeliveryZoneRequestValidator = createDeliveryZoneRequestValidator;
         private readonly IValidator<UpdateDeliveryZoneRequest> _updateDeliveryZoneRequestValidator = updateDeliveryZoneRequestValidator;
 
+
+        private readonly IRemoveOperatorCommandHandler _removeOperatorCommandHandler = removeOperatorCommandHandler;
+        private readonly IAssignOperatorCommandHandler _assignOperatorCommandHandler = assignOperatorCommandHandler;
         private readonly IGetAllOrdersQueryHandler _getAllOrdersQueryHandler = getAllOrdersQueryHandler;
         private readonly IGetOrderByIdCustomerQueryHandler _getOrderByIdCustomerQueryHandler = getOrderByIdCustomerQueryHandler;
         private readonly IGetOrderByIdQueryHandler _getOrderByIdQueryHandler = getOrderByIdQueryHandler;
@@ -367,6 +375,42 @@ namespace LogisticService.API.Controllers
             return Ok("Zona removido correctamente.");
         }
 
+        /// <summary>
+        /// Endpoint para asignar un operador a un equipo
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("AssignOperatorToTeam")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> AssignOperatorToTeam([FromBody] AssignOperatorToTeamRequest request)
+        {
+            var command = new AssignOperatorToTeamCommand(request.OperatorUserId, request.TeamId);
+            var result = await _assignOperatorToTeamCommandHandler.AssignOperatorAsync(command);
+            if (!result)
+                return BadRequest("No se pudo asignar el operador.");
+            return Ok("Operador asignado correctamente.");
+        }
+
+        /// <summary>
+        /// Endpoint para remover un operador de un equipo
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("RemoveOperatorFromTeam")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RemoveOperatorFromTeam([FromBody] RemoveOperatorToTeamRequest request)
+        {
+            var command = new RemoveOperatorToTeamCommand(request.OperatorUserId, request.TeamId);
+            var result = await _removeOperatorToTeamCommandHandler.RemoveOperatorAsync(command);
+            if (!result)
+                return BadRequest("No se pudo asignar el operador.");
+            return Ok("Operador asignado correctamente.");
+        }
+
         /**************************************************************/
         /**************************************************************/
         /////      CRUD DE ZONAS DE REPARTO - DELIVERYTEAMS       //////
@@ -527,9 +571,40 @@ namespace LogisticService.API.Controllers
 
         /**************************************************************/
         /**************************************************************/
-        /////    CONSULTAS DE ORDENES LOGISTICAS - LOGISTICORDERS /////
+        /////          ENDPOINTS DE ORDENES LOGISTICAS             /////
         /*************************************************************/
         /**************************************************************/
+
+        /// <summary>
+        /// Endpoint para asignar un operador a una orden logística
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("assign-operator")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> AssignOperator([FromBody] AssignOperatorRequest request)
+        {
+            var command = new AssignOperatorCommand(request.OperatorUserId, request.LogisticOrderId);
+            var result = await _assignOperatorCommandHandler.AssignOperatorAsync(command);
+            if (!result)
+                return BadRequest("No se pudo asignar el operador.");
+            return Ok("Operador asignado correctamente.");
+        }
+
+        [HttpPost("remove-operator")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RemoveOperator([FromBody] RemoveAssignOperatorRequest request)
+        {
+            var command = new RemoveOperatorCommand(request.OperatorUserId, request.LogisticOrderId);
+            var result = await _removeOperatorCommandHandler.RemoveOperatorAsync(command);
+            if (!result)
+                return BadRequest("No se pudo remover el operador.");
+            return Ok("Operador removido correctamente.");
+        }
 
         /// <summary>
         /// Endpoint para retornar una lista de todas las órdenes logísticas
@@ -661,5 +736,7 @@ namespace LogisticService.API.Controllers
             var orders = await _getOrdersByOperatorIdQueryHandler.HandleAsync(query);
             return Ok(orders);
         }
+
+
     }
 }

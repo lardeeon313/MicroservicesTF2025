@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using SalesService.Application.Commands.Orders.UpdateStatus;
 using SalesService.Application.DTOs.Order.Request;
+using SalesService.Domain.Entities;
 using SalesService.Domain.Entities.CustomerEntity;
 using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.Enums;
@@ -49,7 +50,7 @@ namespace SalesService.Tests.Handlers
                     LastName = "Perez",
                     Email = "juan@example.com",
                     PhoneNumber = "3515555555",
-                    Address = "Calle Falsa 123"
+                    Addresses = new List<Address>()
                 },
                 Status = OrderStatus.Pending,
                 Items = new List<OrderItem>

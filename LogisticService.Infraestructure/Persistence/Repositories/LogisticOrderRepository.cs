@@ -24,6 +24,12 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task AddStatusHistoryAsync(OrderStatusHistory statusHistory)
+        {
+            await _context.OrderStatusHistories.AddAsync(statusHistory);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<IEnumerable<LogisticOrder>> GetAllAsync()
         {
             return await _context.LogisticOrders

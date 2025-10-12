@@ -15,8 +15,7 @@ namespace LogisticService.Infraestructure.Persistence
         public LogisticDbContext(DbContextOptions<LogisticDbContext> options)
         : base(options)
         {
-        }
-        /// Delivery Teams
+        }        
         public DbSet<DeliveryTeam> DeliveryTeams { get; set; }
         public DbSet<DeliveryZone> DeliveryZones { get; set; }
         public DbSet<LogisticCustomer> Customers { get; set; }
@@ -24,10 +23,9 @@ namespace LogisticService.Infraestructure.Persistence
         public DbSet<DeliveryTeamMemberAssignment> DeliveryTeamMembers { get; set; }
         public DbSet<DeliveryTeamZoneAssignment> DeliveryTeamZoneAssignments { get; set; }
         public DbSet<LogisticAddress> Addresses { get; set; }
-
-        /// Order
         public DbSet<LogisticOrder> LogisticOrders { get; set; }
-
+        public DbSet<LogisticOrderItem> LogisticOrderItems { get; set; }
+        public DbSet<OrderStatusHistory> OrderStatusHistories { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

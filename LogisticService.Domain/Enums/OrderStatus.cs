@@ -23,5 +23,6 @@ namespace LogisticService.Domain.Enums
         ReIssued, // Reemitido
         PendingReissued, // Pendiente de reemisión
         PendingVerification, // Pendiente de verificación
+        AssignedDelivery, // Asignado a reparto
     }
 }

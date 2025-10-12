@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace LogisticService.API.RequestDtos.DeliveryTeams
 {
-    public class AssignOperatorToTeamRequest
+    public class RemoveOperatorToTeamRequest
     {
         /// <summary>
         /// ID del equipo al que se asigna el operador.

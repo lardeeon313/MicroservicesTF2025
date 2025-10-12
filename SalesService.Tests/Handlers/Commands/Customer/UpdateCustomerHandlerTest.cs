@@ -2,6 +2,8 @@
 using Moq;
 using SalesService.Application.Commands.Customers.Register;
 using SalesService.Application.Commands.Customers.Update;
+using SalesService.Application.DTOs.Customer;
+using SalesService.Domain.Entities;
 using SalesService.Domain.Entities.CustomerEntity;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Messaging.Publisher;
@@ -33,9 +35,24 @@ namespace SalesService.Tests.Handlers
                 Guid.NewGuid(),
                 "Carlos",
                 "López",
+
                 "carlos.lopez@email.com",
-                "Nueva Dirección 456",
-                "3519876543"
+                "3519876543",
+                new List<AddressDto>
+                {
+                    new AddressDto
+                    {
+                        Street = "Calle Falsa",
+                        Number = "123",
+                        City = "Springfield",
+                        Province = "SomeProvince",
+                        Country = "SomeCountry",
+                        PostalCode = "12345",
+                        FormattedAddress = "Calle Falsa 123, Springfield, SomeProvince, SomeCountry, 12345",
+                        Latitude = -34.6037,
+                        Longitude = -58.3816
+                    }
+                }
             );
 
             var existingCustomer = new Customer
@@ -44,8 +61,22 @@ namespace SalesService.Tests.Handlers
                 FirstName = "ViejoNombre",
                 LastName = "ViejoApellido",
                 Email = "viejo@email.com",
-                Address = "Vieja Direccion",
-                PhoneNumber = "1111111111"
+                PhoneNumber = "1111111111",
+                Addresses = new List<Address>
+                {
+                    new Address
+                    {
+                        Street = "Calle Falsa",
+                        Number = "123",
+                        City = "Springfield",
+                        Province = "SomeProvince",
+                        Country = "SomeCountry",
+                        PostalCode = "12345",
+                        FormattedAddress = "Calle Falsa 123, Springfield, SomeProvince, SomeCountry, 12345",
+                        Latitude = -34.6037,
+                        Longitude = -58.3816
+                    }
+                }
             };
 
             _customerRepositoryMock
@@ -83,8 +114,22 @@ namespace SalesService.Tests.Handlers
                 "Carlos",
                 "López",
                 "carlos.lopez@email.com",
-                "Nueva Dirección 456",
-                "3519876543"
+                "3519876543",
+                new List<AddressDto>
+                {
+                    new AddressDto
+                    {
+                        Street = "Calle Falsa",
+                        Number = "123",
+                        City = "Springfield",
+                        Province = "SomeProvince",
+                        Country = "SomeCountry",
+                        PostalCode = "12345",
+                        FormattedAddress = "Calle Falsa 123, Springfield, SomeProvince, SomeCountry, 12345",
+                        Latitude = -34.6037,
+                        Longitude = -58.3816
+                    }
+                }
             );
 
             _customerRepositoryMock
