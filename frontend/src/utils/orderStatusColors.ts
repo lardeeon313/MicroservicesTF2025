@@ -10,6 +10,13 @@ export const orderStatusStyles: Record<OrderStatus, { text: string; bg: string }
     bg: "bg-yellow-100", // amarillo = reemitido
   },
   [OrderStatus.PendingResolution]: {
+<<<<<<< HEAD
+=======
+    text: "text-yellow-700",
+    bg: "bg-yellow-100", // amarillo claro = pendiente de resolución
+  },
+   [OrderStatus.PendingReissued]: {
+>>>>>>> origin/feature/santiago-microservicestf2025
     text: "text-orange-700",
     bg: "bg-orange-100", // naranja = requiere atención
   },

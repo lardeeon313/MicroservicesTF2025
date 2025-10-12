@@ -68,7 +68,15 @@ namespace SalesService.Infraestructure.Messaging.Consumer
 
                     try
                     {
+<<<<<<< HEAD
                         var salesOrder = await repository.GetByIdAsync(evento.SalesOrderId);
+=======
+                        salesOrder.Status = OrderStatus.Invoiced;
+                        salesOrder.TotalAmount = evento.TotalAmount;
+                        await repository.UpdateAsync(salesOrder);
+                        await context.SaveChangesAsync();
+                        _logger.LogInformation($"Order {salesOrder.Id} is now in Invoiced.");
+>>>>>>> origin/feature/santiago-microservicestf2025
 
                         if (salesOrder != null)
                         {
