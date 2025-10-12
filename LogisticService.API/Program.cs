@@ -21,6 +21,14 @@ using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetAllTea
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetById;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetAllZones;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetByIdZone;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrders;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrderById;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByCustomerId;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByDeliveryZoneId;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByOperatorId;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByStatus;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByTeamId;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetPagedOrders;
 using LogisticService.Application.Services.IdentityServiceClient;
 using LogisticService.Domain.Common.Interfaces;
 using LogisticService.Domain.IRepositories;
@@ -106,6 +114,16 @@ builder.Services.AddScoped<IDisableDeliveryZoneCommandHandler, DisableDeliveryZo
 //Queries CRUD LogisticDeliveryZones 
 builder.Services.AddScoped<IGetAllDeliveryZonesQueryHandler, GetAllDeliveryZonesQueryHandler>();
 builder.Services.AddScoped<IGetDeliveryZoneByIdQueryHandler, GetDeliveryZoneByIdQueryHandler>();
+
+//Queries LogisticOrders
+builder.Services.AddScoped<IGetAllOrdersQueryHandler, GetAllOrdersQueryHandler>();
+builder.Services.AddScoped<IGetOrderByIdCustomerQueryHandler, GetOrderByIdCustomerQueryHandler>();
+builder.Services.AddScoped<IGetOrderByIdQueryHandler, GetOrderByIdQueryHandler>();
+builder.Services.AddScoped<IGetOrdersByStatusQueryHandler, GetOrdersByStatusQueryHandler>();
+builder.Services.AddScoped<IGetPagedOrdersQueryHandler, GetPagedOrdersQueryHandler>();
+builder.Services.AddScoped<IGetOrdersByDeliveryZoneIdQueryHandler, GetOrdersByDeliveryZoneIdQueryHandler>();
+builder.Services.AddScoped<IGetOrdersByOperatorIdQueryHandler, GetOrdersByOperatorIdQueryHandler>();
+builder.Services.AddScoped<IGetOrdersByTeamIdQueryHandler, GetOrdersByTeamIdQueryHandler>();
 
 // Add EmailService
 builder.Services.AddScoped<IEmailService, MailgunEmailService>();

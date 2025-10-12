@@ -160,7 +160,7 @@ namespace IdentityService.API.Controllers
         [ProducesResponseType(typeof(List<DeliveryOperatorDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllDeliveryOperators()
         {
-            var deliveryOperators = await _getAllDeliverysQueryHandler.HandleAsync(); // ← Verificar que use el handler correcto
+            var deliveryOperators = await _getAllDeliverysQueryHandler.HandleAsync();
             return Ok(deliveryOperators);
         }
     }

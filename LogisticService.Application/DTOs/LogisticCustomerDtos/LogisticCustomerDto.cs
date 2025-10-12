@@ -1,0 +1,21 @@
+﻿using SharedKernel.IntegrationEvents.SalesEvents.DTOs;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace LogisticService.Application.DTOs.LogisticCustomerDtos
+{
+    public class LogisticCustomerDto
+    {
+        public Guid Id { get; set; }
+        public string FirstName { get; set; } = default!;
+        public string LastName { get; set; } = default!;
+        public string Email { get; set; } = default!;
+        public string PhoneNumber { get; set; } = default!;
+        public DateTime RegistrationDate { get; set; }
+        public List<AddressDto> Addresses { get; set; } = new();
+        public string Status { get; set; } = default!;
+    }
+}
