@@ -57,7 +57,7 @@ namespace LogisticService.Domain.Entities
             if (!team.DeliveryOperators.Any(a => a.OperatorUserId == operatorId))
                 throw new InvalidOperationException("El operador no pertenece al equipo proporcionado.");
 
-            if (Status == OrderStatus.Verify)
+            if (Status == OrderStatus.Verified)
             {
                 AssignedOperatorId = operatorId;
                 AssignedDeliveryTeam = team;
@@ -73,7 +73,7 @@ namespace LogisticService.Domain.Entities
             AssignedOperatorId = null;
             AssignedDeliveryTeam = null;
             AssignedDeliveryTeamId = null;
-            Status = OrderStatus.Verify;
+            Status = OrderStatus.Verified;
         }
     }
 }

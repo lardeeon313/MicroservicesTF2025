@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SharedKernel.IntegrationEvents
+namespace SharedKernel.IntegrationEvents.LogisticEvents
 {
-    public class OrderVerifyIntegrationEvent
+    public class OrderAssignDeliveryIntegrationEvent
     {
         public int LogisticOrderId { get; set; }
-        public int DepotOrderId { get; set; }    
+        public int DepotOrderId { get; set; }
         public int SalesOrderId { get; set; }
-        public DateTime VerifyAt { get; set; } = DateTime.UtcNow;
+        public DateTime AssignDeliveryAt { get; set; } = DateTime.UtcNow;
     }
 }

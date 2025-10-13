@@ -60,7 +60,7 @@ namespace LogisticService.Application.Commands.LogisticManager.LogisticOrder.Ass
                 LogisticOrderId = command.LogisticOrderId,
                 DepotOrderId = order.DepotOrderId,
                 SalesOrderId = order.SalesOrderId,
-                AssignedDeliveryAt = DateTime.UtcNow,
+                AssignDeliveryAt = DateTime.UtcNow,
             };
 
             // Publicar el evento de orden confirmada
