@@ -3,8 +3,6 @@ using LogisticService.API.RequestDtos.DeliveryTeams;
 using LogisticService.API.RequestDtos.DeliveryZones;
 using LogisticService.API.Validators.DeliveryTeams;
 using LogisticService.API.Validators.DeliveryZones;
-using LogisticService.Application.Commands.LogisticManager.DeliveryOperatorToTeam.AssignOperatorToTeam;
-using LogisticService.Application.Commands.LogisticManager.DeliveryOperatorToTeam.RemoveOperatorToTeam;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.ActiveDeliveryTeam;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.AssignOperatorToTeam;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.AssignZoneToTeam;
@@ -100,8 +98,6 @@ builder.Services.AddScoped<IUpdateDeliveryTeamCommandHandler, UpdateDeliveryTeam
 builder.Services.AddScoped<IDeleteDeliveryTeamCommandHandler, DeleteDeliveryTeamCommandHandler>();
 builder.Services.AddScoped<IActiveDeliveryTeamCommandHandler, ActiveDeliveryTeamCommandHandler>();
 builder.Services.AddScoped<IDisableDeliveryTeamCommandHandler, DisableDeliveryTeamCommandHandler>();
-builder.Services.AddScoped<IRemoveOperatorCommandHandler, RemoveOperatorCommandHandler>();
-builder.Services.AddScoped<IAssignOperatorCommandHandler, AssignOperatorCommandHandler>();
 builder.Services.AddScoped<IAssignZoneToTeamCommandHandler , AssignZoneToTeamCommandHandler>();
 builder.Services.AddScoped<IRemoveZoneFromTeamCommandHandler , RemoveZoneFromTeamCommandHandler>();
 builder.Services.AddScoped<IAssignOperatorToTeamCommandHandler, AssignOperatorToTeamCommandHandler>();

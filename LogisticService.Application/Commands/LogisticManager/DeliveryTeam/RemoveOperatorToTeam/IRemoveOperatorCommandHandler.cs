@@ -9,8 +9,8 @@ namespace LogisticService.Application.Commands.LogisticManager.DeliveryTeam.Remo
     /// <summary>
     /// Interfaz para el manejador del comando de eliminar un operador de un equipo.
     /// </summary>
-    public interface IRemoveOperatorCommandHandler
+    public interface IRemoveOperatorToTeamCommandHandler
     {
-        Task<bool> RemoveOperatorAsync(RemoveOperatorCommand command);
+        Task<bool> RemoveOperatorAsync(RemoveOperatorToTeamCommand command);
     }
 }

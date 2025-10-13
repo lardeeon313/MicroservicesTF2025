@@ -8,6 +8,6 @@ namespace LogisticService.Application.Commands.LogisticManager.LogisticOrder.Ass
 {
     public interface IAssignOrderCommandHandler
     {
-        Task HandleAsync(AssignOrderCommand command);
+        Task<bool> HandleAsync(AssignOrderCommand command);
     }
 }

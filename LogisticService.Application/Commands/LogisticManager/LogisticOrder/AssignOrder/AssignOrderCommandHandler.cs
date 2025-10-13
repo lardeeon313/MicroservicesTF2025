@@ -27,17 +27,25 @@ namespace LogisticService.Application.Commands.LogisticManager.LogisticOrder.Ass
         /// <returns></returns>
         /// <exception cref="KeyNotFoundException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public async Task HandleAsync(AssignOrderCommand command)
+        public async Task<bool> HandleAsync(AssignOrderCommand command)
         {
             var order = await _repository.GetByIdAsync(command.LogisticOrderId);
             if (order == null)
-                throw new KeyNotFoundException($"Order with ID {command.LogisticOrderId} not found.");
+            {
+                _logger.LogWarning("No se encontró la orden logística con ID: {LogisticOrderId}", command.LogisticOrderId);
+                return false;
+            }
+             
 
             // Buscar el equipo en base al operador
             var team = await _teamRepository.GetTeamByOperatorAsync(command.OperatorUserId);
 
             if (team == null)
-                throw new InvalidOperationException("El operador no está asignado a ningún equipo.");
+            {
+                _logger.LogError("No se encontró un equipo asociado al operador con ID: {OperatorUserId}", command.OperatorUserId);
+                return false;
+            }
+            
 
             if (order.Status != OrderStatus.AssignedDelivery)
             {
@@ -67,6 +75,7 @@ namespace LogisticService.Application.Commands.LogisticManager.LogisticOrder.Ass
             await _publisher.PublishAsync(integrationEvent, "order_assigndelivery_queue");
 
             _logger.LogInformation("✅ Evento OrderAssignDeliveryIntegrationEvent publicado para la orden {DepotOrderId}", order.DepotOrderId);
+            return true;
         }
     }
 }
