@@ -20,11 +20,13 @@ using LogisticService.Application.Commands.LogisticManager.DeliveryZone.DisableD
 using LogisticService.Application.Commands.LogisticManager.DeliveryZone.UpdateDeliveryZone;
 using LogisticService.Application.Commands.LogisticManager.LogisticOrder.AssignOrder;
 using LogisticService.Application.Commands.LogisticManager.LogisticOrder.RemoveAssignOrder;
+using LogisticService.Application.Commands.LogisticManager.LogisticOrder.SetPriorityOrder;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetAllTeams;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetById;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetAllZones;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetByIdZone;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrders;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrdersByDeliveryPriority;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrderById;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByCustomerId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByDeliveryZoneId;
@@ -73,6 +75,8 @@ namespace LogisticService.API.Controllers
 
         IAssignOrderCommandHandler assignOrderCommandHandler,
         IRemoveAssignOrderCommandHandler removeAssignOrderCommandHandler,
+        ISetDeliveryPriorityOrderCommandHandler setPriorityOrderCommandHandler,
+        IGetOrdersByDeliveryPriorityQueryHandler getOrdersByDeliveryPriorityQueryHandler,
         IGetAllOrdersQueryHandler getAllOrdersQueryHandler,
         IGetOrderByIdCustomerQueryHandler getOrderByIdCustomerQueryHandler,
         IGetOrderByIdQueryHandler getOrderByIdQueryHandler,
@@ -110,6 +114,8 @@ namespace LogisticService.API.Controllers
 
         private readonly IRemoveAssignOrderCommandHandler _removeAssignOrderCommandHandler = removeAssignOrderCommandHandler;
         private readonly IAssignOrderCommandHandler _assignOrderCommandHandler = assignOrderCommandHandler;
+        private readonly ISetDeliveryPriorityOrderCommandHandler _setPriorityOrderCommandHandler = setPriorityOrderCommandHandler;
+        private readonly IGetOrdersByDeliveryPriorityQueryHandler _getOrdersByDeliveryPriorityQueryHandler = getOrdersByDeliveryPriorityQueryHandler;
         private readonly IGetAllOrdersQueryHandler _getAllOrdersQueryHandler = getAllOrdersQueryHandler;
         private readonly IGetOrderByIdCustomerQueryHandler _getOrderByIdCustomerQueryHandler = getOrderByIdCustomerQueryHandler;
         private readonly IGetOrderByIdQueryHandler _getOrderByIdQueryHandler = getOrderByIdQueryHandler;
@@ -607,6 +613,42 @@ namespace LogisticService.API.Controllers
         }
 
         /// <summary>
+        /// Endpoint para establecer la prioridad de una orden logística
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("set-priority")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> SetPriority([FromBody] SetPriorityRequest request)
+        {            
+            var command = new SetDeliveryPriorityOrderCommand(request.LogisticOrderId, request.DeliveryPriority);
+            var result = await _setPriorityOrderCommandHandler.SetPriorityHandleAsync(command);
+
+            if (!result)
+                return BadRequest("No se pudo establecer la prioridad.");
+
+            return Ok("Prioridad establecida correctamente.");
+        }
+
+        /// <summary>
+        /// Endpoint para retornar una lista de ordenes en base a su prioridad de entrega
+        /// </summary>
+        /// <param name="deliveryPriority"></param>
+        /// <returns></returns>
+        [HttpGet("get-orders-by-priority/{deliveryPriority}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetOrdersByDeliveryPriority(DeliveryPriority deliveryPriority)
+        {                            
+            var query = new GetOrdersByDeliveryPriorityQuery(deliveryPriority);
+            var orders = await _getOrdersByDeliveryPriorityQueryHandler.GetOrdersByDeliveryPriorityAsync(query);
+            return Ok(orders);
+        }
+
+        /// <summary>
         /// Endpoint para retornar una lista de todas las órdenes logísticas
         /// </summary>
         /// <returns></returns>
@@ -619,7 +661,6 @@ namespace LogisticService.API.Controllers
             var orders = await _getAllOrdersQueryHandler.GetAllHandleAsync();
             return Ok(orders);
         }
-
 
         /// <summary>
         /// endpoint para retornar una orden logística por su ID

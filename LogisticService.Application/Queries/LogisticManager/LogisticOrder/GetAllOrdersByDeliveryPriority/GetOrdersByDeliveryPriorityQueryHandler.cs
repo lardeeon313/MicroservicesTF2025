@@ -1,6 +1,7 @@
 ﻿using LogisticService.Application.DTOs;
 using LogisticService.Application.DTOs.DeliveryZoneDtos;
 using LogisticService.Application.DTOs.LogisticOrderDtos;
+using LogisticService.Domain.Enums;
 using LogisticService.Domain.IRepositories;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,26 +10,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrders
+namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrdersByDeliveryPriority
 {
-    public class GetAllOrdersQueryHandler(ILogisticOrderRepository repository, ILogger<GetAllOrdersQueryHandler> logger) : IGetAllOrdersQueryHandler
+    public class GetOrdersByDeliveryPriorityQueryHandler(ILogisticOrderRepository repository, ILogger<GetOrdersByDeliveryPriorityQueryHandler> logger) : IGetOrdersByDeliveryPriorityQueryHandler
     {
         private readonly ILogisticOrderRepository _repository = repository;
-        private readonly ILogger<GetAllOrdersQueryHandler> _logger = logger;
+        private readonly ILogger<GetOrdersByDeliveryPriorityQueryHandler> _logger = logger;
 
         /// <summary>
-        /// Query para obtener todas las órdenes logísticas.
+        /// Query handler para obtener todas las órdenes de depósito filtradas por prioridad de entrega.
         /// </summary>
+        /// <param name="priority"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<IEnumerable<LogisticOrderDto>> GetAllHandleAsync()
+        public async Task<IEnumerable<LogisticOrderDto>> GetOrdersByDeliveryPriorityAsync(GetOrdersByDeliveryPriorityQuery query)
         {
-            var orders = await _repository.GetAllAsync();
-
-            if (!orders.Any())
+            var orders = await _repository.GetOrdersByDeliveryPriorityAsync(query.DeliveryPriority);
+            if (orders == null || !orders.Any())
             {
-                _logger.LogWarning("No logistic orders found.");
-                throw new KeyNotFoundException("No logistic orders found");
+                _logger.LogInformation("No orders found with delivery priority {Priority}.", query.DeliveryPriority);
+                return new List<LogisticOrderDto>();
             }
 
             return orders.Select(order => new LogisticOrderDto

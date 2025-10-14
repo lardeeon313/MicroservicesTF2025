@@ -65,6 +65,17 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<LogisticOrder>> GetOrdersByDeliveryPriorityAsync(DeliveryPriority priority)
+        {
+            return await _context.LogisticOrders
+                .Where(o => o.DeliveryPriority == priority)
+                .Include(o => o.Customer)
+                .Include(o => o.Items)
+                .Include(o => o.AssignedDeliveryTeam)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<LogisticOrder>> GetOrdersByDeliveryZoneId(int zoneId)
         {
             return await _context.LogisticOrders

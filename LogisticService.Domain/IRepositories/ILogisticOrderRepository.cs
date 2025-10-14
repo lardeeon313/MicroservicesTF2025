@@ -21,6 +21,6 @@ namespace LogisticService.Domain.IRepositories
         Task<IEnumerable<LogisticOrder>> GetOrdersByOperatorId(Guid operatorId);
         Task<IEnumerable<LogisticOrder>> GetOrdersByDeliveryZoneId(int zoneId);
         Task AddStatusHistoryAsync(OrderStatusHistory statusHistory);
-
+        Task<IEnumerable<LogisticOrder>> GetOrdersByDeliveryPriorityAsync(DeliveryPriority priority);
     }
 }

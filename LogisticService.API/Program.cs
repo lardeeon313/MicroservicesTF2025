@@ -19,11 +19,13 @@ using LogisticService.Application.Commands.LogisticManager.DeliveryZone.DisableD
 using LogisticService.Application.Commands.LogisticManager.DeliveryZone.UpdateDeliveryZone;
 using LogisticService.Application.Commands.LogisticManager.LogisticOrder.AssignOrder;
 using LogisticService.Application.Commands.LogisticManager.LogisticOrder.RemoveAssignOrder;
+using LogisticService.Application.Commands.LogisticManager.LogisticOrder.SetPriorityOrder;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetAllTeams;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetById;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetAllZones;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetByIdZone;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrders;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrdersByDeliveryPriority;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrderById;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByCustomerId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByDeliveryZoneId;
@@ -121,8 +123,10 @@ builder.Services.AddScoped<IGetDeliveryZoneByIdQueryHandler, GetDeliveryZoneById
 //Commands LogisticOrders
 builder.Services.AddScoped<IAssignOrderCommandHandler, AssignOrderCommandHandler>();
 builder.Services.AddScoped<IRemoveAssignOrderCommandHandler, RemoveAssignOrderCommandHandler>();
+builder.Services.AddScoped<ISetDeliveryPriorityOrderCommandHandler, SetDeliveryPriorityOrderCommandHandler>();
 
 //Queries LogisticOrders
+builder.Services.AddScoped<IGetOrdersByDeliveryPriorityQueryHandler, GetOrdersByDeliveryPriorityQueryHandler>();
 builder.Services.AddScoped<IGetAllOrdersQueryHandler, GetAllOrdersQueryHandler>();
 builder.Services.AddScoped<IGetOrderByIdCustomerQueryHandler, GetOrderByIdCustomerQueryHandler>();
 builder.Services.AddScoped<IGetOrderByIdQueryHandler, GetOrderByIdQueryHandler>();
