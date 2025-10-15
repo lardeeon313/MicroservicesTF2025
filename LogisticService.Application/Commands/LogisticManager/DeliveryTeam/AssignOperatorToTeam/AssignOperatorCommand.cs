@@ -9,7 +9,7 @@ namespace LogisticService.Application.Commands.LogisticManager.DeliveryTeam.Assi
     /// <summary>
     /// Comando para asignar un operario a un equipo 
     /// </summary>
-    public class AssignOperatorCommand
+    public class AssignOperatorToTeamCommand
     {
         /// <summary>
         /// Identificador del operario a asignar.
@@ -26,7 +26,7 @@ namespace LogisticService.Application.Commands.LogisticManager.DeliveryTeam.Assi
         /// </summary>
         /// <param name="operatorId">Identificador del operario.</param>
         /// <param name="teamId">Identificador del equipo.</param>
-        public AssignOperatorCommand(Guid operatorUserId, int teamId)
+        public AssignOperatorToTeamCommand(Guid operatorUserId, int teamId)
         {
             OperatorUserId = operatorUserId;
             TeamId = teamId;

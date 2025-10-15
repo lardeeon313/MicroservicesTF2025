@@ -17,34 +17,46 @@ const ModifyOrderModal: React.FC<Props> = ({ order, onClose, onSave }) => {
       quantity: item.quantity,
     }))
   );
-  console.log(order.salesOrder);
+
+  const [addressRequest, setAddressRequest] = useState({
+    street: order.salesOrder.deliveryAddress?.street || '',
+    number: order.salesOrder.deliveryAddress?.number?.toString() || '',
+    apartment: order.salesOrder.deliveryAddress?.apartment || '',
+    city: order.salesOrder.deliveryAddress?.city || '',
+    province: order.salesOrder.deliveryAddress?.province || '',
+    country: order.salesOrder.deliveryAddress?.country || '',
+    postalCode: order.salesOrder.deliveryAddress?.postalCode || '',
+  });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleItemChange = (
-    index: number,
-    field: keyof UpdateOrderItemRequest,
-    value: string | number
-  ) => {
+  const handleItemChange = (index: number, field: keyof UpdateOrderItemRequest, value: string | number) => {
     const newItems = [...items];
     (newItems[index] as any)[field] = value;
     setItems(newItems);
   };
 
+  const handleAddressChange = (field: keyof typeof addressRequest, value: string) => {
+    setAddressRequest(prev => ({ ...prev, [field]: value }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
     const data: UpdateOrderRequest = {
       orderId: order.salesOrderId,
+      customerId: order.salesOrder.customerId,
       deliveryDetail,
       items,
       status: OrderStatus.PendingReissued,
+      addressRequest,
     };
 
     try {
       await onSave(order.salesOrderId, data);
       onClose();
     } catch (error) {
-      // El error es manejado por el hook
       setIsSubmitting(false);
     }
   };
@@ -54,23 +66,79 @@ const ModifyOrderModal: React.FC<Props> = ({ order, onClose, onSave }) => {
       <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Modificar Orden #{order.salesOrderId}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-            ✕
-          </button>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">✕</button>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
+
+            {/* Detalle de entrega */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Detalle de Entrega
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Detalle de Entrega</label>
               <textarea
                 value={deliveryDetail}
                 onChange={(e) => setDeliveryDetail(e.target.value)}
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-red-400 focus:outline-none"
-              ></textarea>
+              />
             </div>
+
+            {/* Dirección de entrega */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Dirección de Entrega</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  type="text"
+                  placeholder="Calle"
+                  value={addressRequest.street}
+                  onChange={(e) => handleAddressChange('street', e.target.value)}
+                  className="px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:border-red-400"
+                />
+                <input
+                  type="text"
+                  placeholder="Número"
+                  value={addressRequest.number}
+                  onChange={(e) => handleAddressChange('number', e.target.value)}
+                  className="px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:border-red-400"
+                />
+                <input
+                  type="text"
+                  placeholder="Depto (opcional)"
+                  value={addressRequest.apartment}
+                  onChange={(e) => handleAddressChange('apartment', e.target.value)}
+                  className="col-span-2 px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:border-red-400"
+                />
+                <input
+                  type="text"
+                  placeholder="Ciudad"
+                  value={addressRequest.city}
+                  onChange={(e) => handleAddressChange('city', e.target.value)}
+                  className="px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:border-red-400"
+                />
+                <input
+                  type="text"
+                  placeholder="Provincia"
+                  value={addressRequest.province}
+                  onChange={(e) => handleAddressChange('province', e.target.value)}
+                  className="px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:border-red-400"
+                />
+                <input
+                  type="text"
+                  placeholder="País"
+                  value={addressRequest.country}
+                  onChange={(e) => handleAddressChange('country', e.target.value)}
+                  className="px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:border-red-400"
+                />
+                <input
+                  type="text"
+                  placeholder="Código Postal"
+                  value={addressRequest.postalCode}
+                  onChange={(e) => handleAddressChange('postalCode', e.target.value)}
+                  className="px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:border-red-400"
+                />
+              </div>
+            </div>
+
+            {/* Productos */}
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">Productos</h3>
               {items.map((item, index) => (
@@ -92,14 +160,17 @@ const ModifyOrderModal: React.FC<Props> = ({ order, onClose, onSave }) => {
                   <input
                     type="number"
                     value={item.quantity}
-                    onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value))}
+                    onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value, 10) || 0)}
                     placeholder="Cantidad"
-                    className="w-20 px-3 py-2 border rounded-md border-gray-300 focus:border-red-400 focus:outline-none" 
+                    className="w-20 px-3 py-2 border rounded-md border-gray-300 focus:border-red-400 focus:outline-none"
                   />
                 </div>
               ))}
             </div>
+
           </div>
+
+          {/* Botones */}
           <div className="flex justify-end space-x-3 mt-6">
             <button
               type="button"

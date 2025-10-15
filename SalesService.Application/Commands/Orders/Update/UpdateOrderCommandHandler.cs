@@ -26,6 +26,8 @@ namespace SalesService.Application.Commands.Orders.Update
             // Se actualizan solo los campos modificables desde SalesService
             existingOrder.DeliveryDetail = command.Request.DeliveryDetail;
             existingOrder.ModifiedStatusDate = DateTime.UtcNow;
+            existingOrder.PaymentType = command.Request.PaymentType;
+            existingOrder.PaymentReceipt = command.Request.PaymentReceipt;
             existingOrder.Status = command.Request.Status;
             existingOrder.CreatedByUserId = command.Request.ModifiedByUserId ?? existingOrder.CreatedByUserId;
 
@@ -46,6 +48,15 @@ namespace SalesService.Application.Commands.Orders.Update
                     FormattedAddress = command.Request.AddressRequest.FormattedAddress,
                     CreatedAt = existingOrder.DeliveryAddress?.CreatedAt ?? DateTime.UtcNow
                 };
+            }
+
+            // Eliminar Items que ya no están en la solicitud
+            var itemsToRemove = existingOrder.Items.Where(existingItem =>
+                !command.Request.Items.Any(requestItem => requestItem.Id == existingItem.Id)).ToList();
+
+            foreach (var itemToRemove in itemsToRemove)
+            {
+                existingOrder.Items.Remove(itemToRemove);
             }
 
             // Actualizar Items

@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LogisticService.Domain\LogisticService.Domain.csproj" />
+    <ProjectReference Include="..\SharedKernel\SharedKernel.csproj" />
   </ItemGroup>
 
 </Project>

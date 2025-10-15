@@ -29,6 +29,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         {
             return await _context.DepotOrders
                 .Include(o => o.Items)
+                .Include(o => o.DeliveryAddress)
                 .Include(o => o.Missings)
                     .ThenInclude(m => m.MissingItems)
                 .FirstOrDefaultAsync(o => o.DepotOrderId == depotOrderId);
@@ -38,6 +39,8 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         {
             return await _context.DepotOrders
                 .Include(x => x.Items)
+                .Include(o => o.DeliveryAddress)
+                .Include(o => o.Missings)
                 .ToListAsync();
         }
 
@@ -54,6 +57,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
 
             return await _context.DepotOrders
                 .Include(o => o.Items)
+                .Include(o => o.DeliveryAddress)
                 .AsNoTracking()
                 .Where(o => o.Status == parsedStatus)
                 .ToListAsync();
@@ -90,6 +94,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         {
             return await _context.DepotOrders
                 .Include(o => o.Items)
+                .Include(o => o.DeliveryAddress)
                 .Include(o => o.Missings)
                 .Where(o => o.AssignedOperatorId == operatorId &&
                         
@@ -101,6 +106,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         {
             return await _context.DepotOrders
                 .Include(o => o.Items)
+                .Include(o => o.DeliveryAddress)
                 .Include(o => o.Missings)
                 .Where(o => o.AssignedOperatorId == operatorId &&
                        (o.Status == OrderStatus.InPreparation || o.Status == OrderStatus.MissingProduct))
@@ -112,6 +118,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         {
             return await _context.DepotOrders
                 .Include(o => o.Items)
+                .Include(o => o.DeliveryAddress)
                 .Include (o => o.Missings)
                 .Where(o => o.AssignedOperatorId == operatorId &&
                         (o.Status == OrderStatus.Prepared || o.Status == OrderStatus.SentToBilling))
@@ -147,6 +154,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         {
             return await _context.DepotOrders
                 .Include(o => o.Items)
+                .Include(o => o.DeliveryAddress)
                 .Where(o => o.AssignedOperatorId != null &&
                             (o.Status == OrderStatus.Assigned || o.Status == OrderStatus.ReReceived))
                 .ToListAsync();
@@ -156,6 +164,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         {
             return await _context.DepotOrders
                 .Include(o => o.Items)
+                .Include(o => o.DeliveryAddress)
                 .Where(o => o.Status == OrderStatus.SentToBilling)
                 .ToListAsync();
         }
@@ -164,6 +173,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         {
             return await _context.DepotOrders
                 .Include(o => o.Items)
+                .Include(o => o.DeliveryAddress)
                 .Where(o => o.Status == OrderStatus.Invoiced)
                 .ToListAsync();
         }
@@ -172,6 +182,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         {
             return _context.DepotOrders
                 .Include(o => o.Items)
+                .Include(o => o.DeliveryAddress)
                 .Where(o => o.Status == OrderStatus.Invoiced &&
                             o.OrderDate >= StartTime && o.OrderDate <= EndTime)
                 .ToListAsync();
@@ -181,6 +192,8 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         {
             return await _context.DepotOrders
                 .Where(o => o.CustomerName.Contains(customerName))
+                .Include(o => o.Items)
+                .Include(o => o.DeliveryAddress)
                 .ToListAsync();
         }
 
@@ -188,6 +201,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         {
             return await _context.DepotOrders
                 .Include(o => o.Items)
+                .Include(o => o.DeliveryAddress)
                 .Include(o => o.Missings)
                     .ThenInclude(m => m.MissingItems)
                 .FirstOrDefaultAsync(o => o.SalesOrderId == salesOrderId);

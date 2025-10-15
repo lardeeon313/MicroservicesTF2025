@@ -55,6 +55,19 @@ namespace DepotService.Application.Queries.BillingManager.GetAllInvoicedOrders
                 PhoneNumber = o.PhoneNumber,
                 DeliveryDetail = o.DeliveryDetail,
                 OrderDate = o.OrderDate,
+                Address = new OrderAddressDto
+                {
+                    Street = o.DeliveryAddress.Street,
+                    Number = o.DeliveryAddress.Number,
+                    Apartment = o.DeliveryAddress.Apartment,
+                    City = o.DeliveryAddress.City,
+                    Province = o.DeliveryAddress.Province,
+                    Country = o.DeliveryAddress.Country,
+                    PostalCode = o.DeliveryAddress.PostalCode,
+                    Latitude = o.DeliveryAddress.Latitude,
+                    Longitude = o.DeliveryAddress.Longitude,
+                    FormattedAddress = o.DeliveryAddress.FormattedAddress
+                }
 
             }).ToList();
         }

@@ -15,12 +15,14 @@ namespace LogisticService.Domain.Enums
         Prepared,  // Preparado
         SentToBilling, // Enviado a facturar
         Invoiced,   // Facturado
-        Verify,   // Verificado
+        Verified,   // Verificado
         OnTheWay,   // En camino
         Delivered,  // Entregado
         Canceled,    // Cancelado por ventas
         PendingResolution, // Pendiente de resolución
         ReIssued, // Reemitido
-        PendingReissued
+        PendingReissued, // Pendiente de reemisión
+        PendingVerification, // Pendiente de verificación
+        AssignedDelivery, // Asignado a reparto
     }
 }

@@ -12,7 +12,7 @@ namespace LogisticService.API.RequestDtos.DeliveryTeams
         /// <summary>
         /// ID del equipo al que se asigna el operador.
         /// </summary>
-        [Required(ErrorMessage = "DepotTeam is required")]
+        [Required(ErrorMessage = "DeliveryTeam is required")]
         public int TeamId { get; set; }
 
         /// <summary>

@@ -14,6 +14,6 @@ namespace LogisticService.Domain.IRepositories
         Task DeleteAsync(int teamId);
         Task<DeliveryTeam?> GetByIdAsync(int id);
         Task<IEnumerable<DeliveryTeam>> GetAllAsync();
-
+        Task<DeliveryTeam?> GetTeamByOperatorAsync(Guid operatorUserId);
     }
 }

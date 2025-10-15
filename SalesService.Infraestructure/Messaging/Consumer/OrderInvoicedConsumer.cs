@@ -66,35 +66,74 @@ namespace SalesService.Infraestructure.Messaging.Consumer
                     var context = scope.ServiceProvider.GetRequiredService<SalesDbContext>();
                     var repository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
 
-                    var salesOrder = await repository.GetByIdAsync(evento.SalesOrderId);
-
-                    if (salesOrder != null)
+                    try
                     {
-                        salesOrder.Status = OrderStatus.Invoiced;
-                        salesOrder.TotalAmount = evento.TotalAmount;
-                        await repository.UpdateAsync(salesOrder);
-                        await context.SaveChangesAsync();
-                        _logger.LogInformation($"Order {salesOrder.Id} is now in Invoiced.");
+                        var salesOrder = await repository.GetByIdAsync(evento.SalesOrderId);
 
-                        // Guardar el historial de estado
-                        var statusHistory = new OrderStatusHistory
+                        if (salesOrder != null)
                         {
-                            OrderId = salesOrder.Id,
-                            OldStatus = OrderStatus.SentToBilling,
-                            NewStatus = OrderStatus.Invoiced,
-                            ChangedAt = evento.InvoicedDate
-                        };
-                        await context.OrderStatusHistories.AddAsync(statusHistory);
-                        await context.SaveChangesAsync();
+                            // 🔹 Actualizar estado de la orden
+                            salesOrder.Status = OrderStatus.Invoiced;
+                            salesOrder.TotalAmount = evento.TotalAmount;
+                            salesOrder.ModifiedStatusDate = evento.InvoicedDate;
+
+                            // 🔹 Actualizar items con los valores recibidos desde Depot
+                            foreach (var itemEvento in evento.OrderItems)
+                            {
+                                var orderItem = salesOrder.Items
+                                    .FirstOrDefault(i => i.Id == itemEvento.SalesOrderItemId);
+
+                                if (orderItem != null)
+                                {
+                                    orderItem.PackagingType = itemEvento.PackagingType;
+                                    orderItem.UnitPrice = itemEvento.UnitPrice;
+                                    // Total es propiedad calculada => no hace falta setearlo
+                                }
+                                else
+                                {
+                                    // En caso de que Depot haya agregado ítems adicionales (poco común, pero seguro)
+                                    salesOrder.Items.Add(new OrderItem
+                                    {
+                                        Id = itemEvento.SalesOrderItemId,
+                                        ProductName = itemEvento.ProductName,
+                                        ProductBrand = itemEvento.ProductBrand,
+                                        Quantity = itemEvento.Quantity,
+                                        PackagingType = itemEvento.PackagingType,
+                                        UnitPrice = itemEvento.UnitPrice,
+                                        OrderId = salesOrder.Id
+                                    });
+                                }
+                            }
+                            
+                            await repository.UpdateAsync(salesOrder);
+                            await context.SaveChangesAsync();
+
+                            _logger.LogInformation("✅ Order {OrderId} updated as Invoiced with items.", salesOrder.Id);
+                            
+                            var statusHistory = new OrderStatusHistory
+                            {
+                                OrderId = salesOrder.Id,
+                                OldStatus = OrderStatus.SentToBilling,
+                                NewStatus = OrderStatus.Invoiced,
+                                ChangedAt = evento.InvoicedDate
+                            };
+
+                            await context.OrderStatusHistories.AddAsync(statusHistory);
+                            await context.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            _logger.LogWarning("⚠️ Order with ID {SalesOrderId} not found.", evento.SalesOrderId);
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        _logger.LogWarning($"Order with ID {evento.SalesOrderId} not found.");
+                        _logger.LogError(ex, "❌ Error updating sales order from event {SalesOrderId}", evento.SalesOrderId);
                     }
                 }
                 else
                 {
-                    _logger.LogWarning("Received an empty or invalid OrderInvoicedIntegrationEvent.");
+                    _logger.LogWarning("⚠️ Received an empty or invalid OrderInvoicedIntegrationEvent.");
                 }
             };
 

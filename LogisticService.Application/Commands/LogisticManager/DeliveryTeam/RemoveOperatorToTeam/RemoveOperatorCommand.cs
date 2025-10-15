@@ -9,12 +9,12 @@ namespace LogisticService.Application.Commands.LogisticManager.DeliveryTeam.Remo
     /// <summary>
     /// Comando para remover un operario de un equipo
     /// </summary>
-    public class RemoveOperatorCommand
+    public class RemoveOperatorToTeamCommand
     {
         public Guid OperatorUserId { get; set; }
         public int TeamId { get; set; }
 
-        public RemoveOperatorCommand(Guid operatorByUserId, int teamId)
+        public RemoveOperatorToTeamCommand(Guid operatorByUserId, int teamId)
         {
             OperatorUserId = operatorByUserId;
             TeamId = teamId;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SalesService.Domain.Entities;
 using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
@@ -18,6 +19,13 @@ namespace SalesService.Infraestructure.Persistence.Repositories
         {
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
+        }
+        //
+        public async Task AddAddressAsync(Address address)
+        {
+            await _context.Addresses.AddAsync(address);
+            await _context.SaveChangesAsync();
+            Console.WriteLine($"Address guardado con Id: {address.Id}");
         }
 
         public Task AttachReceiptAsync(int orderId, string receiptBase64)

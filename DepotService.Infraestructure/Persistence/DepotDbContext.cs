@@ -22,6 +22,7 @@ namespace DepotService.Infraestructure
         public DbSet<DepotTeamAssignment> TeamAssignments { get; set; }
         public DbSet<DepotOrderMissing> DepotOrderMissings { get; set; }
         public DbSet<OrderStatusHistory> OrderStatusHistories { get; set; }
+        public DbSet<OrderAddress> OrderAddresses { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -30,7 +31,6 @@ namespace DepotService.Infraestructure
             {
                 team.HasKey(t => t.Id);
                 team.Property(t => t.TeamName).IsRequired().HasMaxLength(100);
-
             });
 
             modelBuilder.Entity<DepotTeamAssignment>()
@@ -90,9 +90,19 @@ namespace DepotService.Infraestructure
                     .WithMany(o => o.StatusHistory)
                     .HasForeignKey(h => h.OrderId);
             });
-                
 
-                
+            modelBuilder.Entity<DepotOrderEntity>()
+                .HasOne(o => o.DeliveryAddress)
+                .WithOne(a => a.DepotOrder)
+                .HasForeignKey<DepotOrderEntity>(o => o.DeliveryAddressId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+
+
+
+
+
         }
     }
 }

@@ -2,7 +2,7 @@ import { Formik, Form, Field, ErrorMessage, FieldArray } from "formik";
 import { updateCustomerSchema } from "../../validations/customerSchemas";
 import { UpdateCustomerRequest, AddressRequest } from "../../types/CustomerTypes";
 import { useMemo } from "react";
-import { v4 as uuidv4 } from "uuid"; // Instala uuid con `npm install uuid`
+import { v4 as uuidv4 } from "uuid";
 
 interface Props {
   initialValues: UpdateCustomerRequest;
@@ -10,60 +10,58 @@ interface Props {
   isSubmitting?: boolean;
 }
 
+// Tipo extendido solo para el formulario (frontend)
+type FormAddress = AddressRequest & { tempId: string };
+
 const EditCustomerForm = ({ initialValues, onSubmit, isSubmitting }: Props) => {
   const normalizedInitialValues = useMemo(() => {
-    return {
-      ...initialValues,
-      addresses: initialValues.addresses?.length
-        ? initialValues.addresses.map((addr) => ({
-            id: uuidv4(), // ID temporal solo para el frontend
-            street: addr.street || "",
-            number: addr.number?.toString() || "", // Convertir a string para el formulario
-            apartment: addr.apartment || "",
-            city: addr.city || "",
-            province: addr.province || "",
-            country: addr.country || "",
-            postalCode: addr.postalCode || "",
-            latitude: addr.latitude,
-            longitude: addr.longitude,
-            formattedAddress: addr.formattedAddress,
-          }))
-        : [
-            {
-              id: uuidv4(),
-              street: "",
-              number: "",
-              apartment: "",
-              city: "",
-              province: "",
-              country: "",
-              postalCode: "",
-            },
-          ],
-    };
-  }, [initialValues.id]);
+    const addresses: FormAddress[] = initialValues.addresses?.length
+      ? initialValues.addresses.map((addr) => ({
+          ...addr,
+          number: addr.number?.toString() || "",
+          tempId: uuidv4(), // ID temporal solo para el frontend
+        }))
+      : [
+          {
+            street: "",
+            number: "",
+            apartment: "",
+            city: "",
+            province: "",
+            country: "",
+            postalCode: "",
+            latitude: null,
+            longitude: null,
+            formattedAddress: undefined,
+            tempId: uuidv4(),
+          },
+        ];
+
+    return { ...initialValues, addresses };
+  }, [initialValues]);
 
   return (
     <Formik
       initialValues={normalizedInitialValues}
       validationSchema={updateCustomerSchema}
+      enableReinitialize
       onSubmit={(values) => {
         // Remover los IDs temporales y convertir `number` a string si es necesario
-        const valuesToSubmit = {
+        const valuesToSubmit: UpdateCustomerRequest = {
           ...values,
-          addresses: values.addresses.map(({ id, ...rest }) => ({
+          addresses: values.addresses.map(({ tempId, ...rest }) => ({
             ...rest,
-            number: rest.number.toString(), // Asegurar que `number` sea string
+            number: rest.number.toString(),
           })),
         };
         onSubmit(valuesToSubmit);
       }}
-      enableReinitialize={true}
     >
       {({ values }) => (
         <Form className="space-y-6 container mx-auto py-10 px-16 sm:max-w-6xl">
           <Field type="hidden" name="id" />
           {/* Datos básicos */}
+          <h3 className="text-lg font-semibold mb-4">Datos de Contacto</h3>
           {["firstName", "lastName", "email", "phoneNumber"].map((field) => (
             <div key={field}>
               <label className="block text-sm font-medium text-gray-900 mb-1">
@@ -78,22 +76,19 @@ const EditCustomerForm = ({ initialValues, onSubmit, isSubmitting }: Props) => {
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
                 placeholder={`Ingrese ${field}`}
               />
-              <ErrorMessage
-                name={field}
-                component="div"
-                className="text-red-500 text-sm"
-              />
+              <ErrorMessage name={field} component="div" className="text-red-500 text-sm" />
             </div>
           ))}
+
           {/* Direcciones */}
           <div className="mt-6">
             <h3 className="text-lg font-semibold mb-4">Direcciones</h3>
             <FieldArray name="addresses">
               {({ push, remove }) => (
                 <div className="space-y-4">
-                  {values.addresses.map((address: AddressRequest & { id: string }, index: number) => (
+                  {values.addresses.map((address: FormAddress, index: number) => (
                     <div
-                      key={address.id} // Usamos el ID único como key
+                      key={address.tempId} // Usamos el ID temporal como key
                       className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-start border-b pb-4"
                     >
                       {[
@@ -124,7 +119,7 @@ const EditCustomerForm = ({ initialValues, onSubmit, isSubmitting }: Props) => {
                         <button
                           type="button"
                           onClick={() => remove(index)}
-                          className="text-red-600 hover:underline text-sm"
+                          className="block rounded-md text-red-700 font-semibold bg-white px-3 py-1.5 hover:bg-red-600 hover:text-white transition duration-150"
                           disabled={values.addresses.length === 1}
                         >
                           Quitar
@@ -136,7 +131,6 @@ const EditCustomerForm = ({ initialValues, onSubmit, isSubmitting }: Props) => {
                     type="button"
                     onClick={() =>
                       push({
-                        id: uuidv4(),
                         street: "",
                         number: "",
                         apartment: "",
@@ -144,9 +138,13 @@ const EditCustomerForm = ({ initialValues, onSubmit, isSubmitting }: Props) => {
                         province: "",
                         country: "",
                         postalCode: "",
+                        latitude: null,
+                        longitude: null,
+                        formattedAddress: undefined,
+                        tempId: uuidv4(),
                       })
                     }
-                    className="text-red-600 hover:underline text-sm mt-2"
+                    className="text-sm font-semibold text-red-700 hover:text-red-600"
                   >
                     + Agregar Dirección
                   </button>
@@ -154,6 +152,7 @@ const EditCustomerForm = ({ initialValues, onSubmit, isSubmitting }: Props) => {
               )}
             </FieldArray>
           </div>
+
           {/* Submit */}
           <div className="mt-10">
             <button

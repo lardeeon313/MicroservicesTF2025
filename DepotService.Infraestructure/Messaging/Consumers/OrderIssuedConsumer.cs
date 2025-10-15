@@ -80,10 +80,24 @@ namespace DepotService.Infraestructure
                             CustomerName = evento.CustomerName,
                             CustomerEmail = evento.CustomerEmail,
                             PhoneNumber = evento.PhoneNumber,
-                            DeliveryDetail = evento.DeliveryDetail,
+                            RegistrationDate = evento.RegistrationDate,
+                            DeliveryDetail = evento.DeliveryDetail,         
                             DeliveryDate = evento.DeliveryDate,
                             OrderDate = evento.OrderDate,
                             Status = OrderStatus.Received,
+                            DeliveryAddress = new OrderAddress
+                            {
+                                Street = evento.DeliveryAddress.Street,
+                                Number = evento.DeliveryAddress.Number,
+                                Apartment = evento.DeliveryAddress.Apartment,
+                                City = evento.DeliveryAddress.City,
+                                Province = evento.DeliveryAddress.Province,
+                                Country = evento.DeliveryAddress.Country,
+                                PostalCode = evento.DeliveryAddress.PostalCode,
+                                Latitude = evento.DeliveryAddress.Latitude,
+                                Longitude = evento.DeliveryAddress.Longitude,
+                                FormattedAddress = evento.DeliveryAddress.FormattedAddress
+                            },
                             Items = evento.Items.Select(item => new DepotOrderItemEntity
                             {
                                 SalesOrderItemId = item.Id,

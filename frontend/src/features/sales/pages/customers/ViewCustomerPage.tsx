@@ -5,6 +5,8 @@ import { getCustomerById } from "../../services/CustomerService";
 import toast from "react-hot-toast";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
 import BackButton from "../../../../components/BackButton";
+import EmptyState from "../../../../components/EmptyState";
+import { AlertCircle } from "lucide-react";
 
 const ViewCustomerPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -29,7 +31,7 @@ const ViewCustomerPage = () => {
     return (
       <LoadingSpinner message="Cargando cliente..." height="h-screen" />
     );
-  if (!customer) return <div className="text-center mt-10 text-red-500">Cliente no encontrado</div>;
+  if (!customer) return <EmptyState icon={AlertCircle} title="Cliente no encontrado" description="Ha ocurrido un error, no se encontro el cliente" ></EmptyState>
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
@@ -41,7 +43,7 @@ const ViewCustomerPage = () => {
             Detalles del Cliente
           </h2>
           <p className="text-center text-lg text-gray-700 mb-12">
-            Aquí puedes ver los detalles completos del cliente.
+            Aquí puedes ver los detalles completos del cliente
           </p>
 
           <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-8 space-y-10">

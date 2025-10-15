@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
 using SalesService.Application.Queries.Customers.GetAllCustomers;
+using SalesService.Domain.Entities;
 using SalesService.Domain.Entities.CustomerEntity;
 using SalesService.Domain.IRepositories;
 using System;
@@ -36,7 +37,7 @@ namespace SalesService.Tests.Handlers
                     LastName = "Pérez",
                     Email = "juan@email.com",
                     PhoneNumber = "3511234567",
-                    Address = "Calle Falsa 123"
+                    Addresses = new List<Address>(),
                 },
                 new Customer
                 {
@@ -45,7 +46,7 @@ namespace SalesService.Tests.Handlers
                     LastName = "Gomez",
                     Email = "ana@email.com",
                     PhoneNumber = "3517654321",
-                    Address = "Calle Verdadera 321"
+                    Addresses = new List<Address>(),
                 }
             };
 

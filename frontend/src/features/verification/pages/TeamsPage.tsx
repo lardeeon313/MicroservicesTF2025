@@ -1,5 +1,5 @@
+import BackButton from '../../../components/BackButton';
 import { TeamsManagement } from '../components/Teams/TeamsManagement';
-import BackButton from '../components/BackButton';
 
 const TeamsPageVerification = () => {
   return (
