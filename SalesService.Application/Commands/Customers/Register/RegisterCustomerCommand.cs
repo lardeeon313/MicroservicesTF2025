@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SalesService.Application.DTOs.Customer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,15 +13,15 @@ namespace SalesService.Application.Commands.Customers.Register
         public string LastName { get; set; } = null!;
         public string Email { get; set; } = null!;
         public string PhoneNumber { get; set; } = null!;
-        public string Address { get; set; } = null!;
+        public List<AddressDto> Addresses { get; }
 
-        public RegisterCustomerCommand(string firstName, string lastName, string email, string phoneNumber, string address)
+        public RegisterCustomerCommand(string firstName, string lastName, string email, string phoneNumber, List<AddressDto> addresses)
         {
             FirstName = firstName;
             LastName = lastName;
             Email = email;
             PhoneNumber = phoneNumber;
-            Address = address;
+            Addresses = addresses;
         }
     }
 }

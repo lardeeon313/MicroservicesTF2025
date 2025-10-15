@@ -44,6 +44,9 @@ using SalesService.Application.Commands.Orders.OrderReissued;
 using SalesService.Application.Commands.Orders.UpdateMissingOrder;
 using SalesService.Application.Queries.Orders.GetAllMissingOrders;
 using SalesService.Infraestructure.Messaging.Consumer;
+using SalesService.Application.Commands.Customers.ActivateCustomer;
+using SalesService.Application.Commands.Customers;
+using SalesService.Application.Queries.Customers.GetCustomerAddresses;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -91,6 +94,8 @@ builder.Services.AddScoped<IValidator<UpdateOrderMissingRequest>, UpdateOrderMis
 builder.Services.AddScoped<ICustomerDeleteCommandHandler, CustomerDeleteCommandHandler>();
 builder.Services.AddScoped<ICustomerUpdateCommandHandler, CustomerUpdateCommandHandler>();
 builder.Services.AddScoped<ICustomerRegisterCommandHandler, CustomerRegisterCommandHandler>();
+builder.Services.AddScoped<IActivateCustomerCommandHandler, ActivateCustomerCommandHandler>();
+builder.Services.AddScoped<IDesactivateCustomerCommandHandler, DesactivateCustomerCommandHandler>();
 builder.Services.AddScoped<IGetAllCustomersQueryHandler, GetAllCustomersQueryHandler>();
 builder.Services.AddScoped<IGetCustomerByIdQueryHandler, GetCustomerByIdQueryHandler>();
 builder.Services.AddScoped<IGetCustomerByEmailQueryHandler, GetCustomerByEmailQueryHandler>();
@@ -111,6 +116,7 @@ builder.Services.AddScoped<IGetSalesPerfomanceReportQueryHandler,  GetSalesPerfo
 builder.Services.AddScoped<IOrderReissuedCommandHandler, OrderReissuedCommandHandler>();
 builder.Services.AddScoped<IUpdateMissingOrderCommandHandler, UpdateMissingOrderCommandHandler>();
 builder.Services.AddScoped<IGetAllMissingOrdersQueryHandler, GetAllMissingOrdersQueryHandler>();
+builder.Services.AddScoped<IGetCustomerAddressesQueryHandler, GetCustomerAddressesQueryHandler>();
 
 // Add EmailService
 builder.Services.AddScoped<IEmailService, MailgunEmailService>();
@@ -140,7 +146,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // Registrar el DbContext
 builder.Services.AddDbContext<SalesDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-        b => b.MigrationsAssembly("SalesService.API")));
+        b => b.MigrationsAssembly("SalesService.Infraestructure")));
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];

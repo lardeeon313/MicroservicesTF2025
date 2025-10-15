@@ -53,7 +53,17 @@ export default function CustomerTable({
                 <td className="px-4 py-2">{c.firstName} {c.lastName}</td>
                 <td className="px-4 py-2">{c.email}</td>
                 <td className="px-4 py-2">{c.phoneNumber}</td>
-                <td className="px-4 py-2">{c.address}</td>
+                <td className="px-4 py-2">
+                  {c.addresses && c.addresses.length > 0 ? (
+                    c.addresses.map(a => (
+                      <div key={a.id}>
+                        {a.street} {a.number}{a.apartment ? ', ' + a.apartment : ''}, {a.city}, {a.province}, {a.country}
+                      </div>
+                    ))
+                  ) : (
+                    <span>Sin dirección</span>
+                  )}
+                </td>
                 <td className="px-4 py-2 text-center space-x-2">
                   <button onClick={() => onView(c.id)} title="Ver">
                     <Eye className="w-5 h-5 text-blue-600 hover:text-gray-700 transition-colors" />

@@ -1,8 +1,10 @@
-﻿using SalesService.Domain.Entities;
+﻿
+using SalesService.Domain.Entities;
 using SalesService.Domain.Entities.CustomerEntity;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Messaging.Publisher;
 using SharedKernel.IntegrationEvents.SalesEvents.Customer;
+using SharedKernel.IntegrationEvents.SalesEvents.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,8 +35,22 @@ namespace SalesService.Application.Commands.Customers.Register
                 LastName = command.LastName,
                 Email = command.Email,
                 PhoneNumber = command.PhoneNumber,
-                Address = command.Address,
             };
+
+            customer.Addresses = command.Addresses.Select(a => new Address
+            {
+                Street = a.Street,
+                Number = a.Number,
+                Apartment = a.Apartment,
+                City = a.City,
+                Province = a.Province,
+                Country = a.Country,
+                PostalCode = a.PostalCode,
+                Latitude = a.Latitude,
+                Longitude = a.Longitude,
+                FormattedAddress = a.FormattedAddress,
+                CustomerId = customer.Id
+            }).ToList();
 
             await _repository.AddAsync(customer);
 
@@ -45,8 +61,22 @@ namespace SalesService.Application.Commands.Customers.Register
                 FirstName = customer.FirstName,
                 Email = customer.Email,
                 PhoneNumber = customer.PhoneNumber,
-                Address = customer.Address,
             };
+
+            customerCreatedEvent.Addresses = command.Addresses.Select(a => new AddressDto
+            {
+                Street = a.Street,
+                Number = a.Number,
+                Apartment = a.Apartment,
+                City = a.City,
+                Province = a.Province,
+                Country = a.Country,
+                PostalCode = a.PostalCode,
+                Latitude = a.Latitude,
+                Longitude = a.Longitude,
+                FormattedAddress = a.FormattedAddress,
+                CustomerId = customer.Id
+            }).ToList();
 
             await _publisher.PublishAsync(customerCreatedEvent, "customer_registered_queue");
 

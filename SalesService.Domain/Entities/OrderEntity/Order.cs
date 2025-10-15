@@ -11,7 +11,6 @@ namespace SalesService.Domain.Entities.OrderEntity
     public class Order
     {
         public int Id { get; set; }
-
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
         public DateTime? DeliveryDate { get; set; }
@@ -33,5 +32,9 @@ namespace SalesService.Domain.Entities.OrderEntity
 
         // Relacion con los productos del pedido
         public List<OrderItem> Items { get; set; } = [];
+
+        // Relacion 1 a 1 con Address
+        public int DeliveryAddressId { get; set; }
+        public Address DeliveryAddress { get; set; } = null!;
     }
 }

@@ -68,7 +68,9 @@ const ViewCustomerPage = () => {
               <div className='md:col-span-2'>
                 <label className="block text-sm font-medium text-gray-600 mb-1">Dirección:</label>
                 <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">
-                  {customer.address}
+                  {customer.addresses && customer.addresses.length > 0
+                    ? `${customer.addresses[0].street} ${customer.addresses[0].number}${customer.addresses[0].apartment ? ', ' + customer.addresses[0].apartment : ''}, ${customer.addresses[0].city}, ${customer.addresses[0].province}, ${customer.addresses[0].country}`
+                    : "Sin dirección"}
                 </p>
               </div>
             </div>

@@ -1,4 +1,5 @@
-﻿using SalesService.Application.Queries.Customers.GetCustomerById;
+﻿using SalesService.Application.DTOs.Customer;
+using SalesService.Application.Queries.Customers.GetCustomerById;
 using SalesService.Domain.Entities.CustomerEntity;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace SalesService.Application.Queries.Customers.GetCustomer
 {
     public interface IGetCustomerByIdQueryHandler
     {
-        Task<Customer?> HandleAsync(GetCustomerByIdQuery query);
+        Task<CustomerResponse?> HandleAsync(GetCustomerByIdQuery query);
     }
 }
     

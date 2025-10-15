@@ -72,7 +72,20 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
                             ProductBrand = i.ProductBrand,
                             ProductName = i.ProductName,
                             Quantity = i.Quantity
-                        }).ToList()
+                        }).ToList(),
+                        DeliveryAddress = new AddressDto
+                        {
+                            Street = existingOrder.DeliveryAddress.Street,
+                            Number = existingOrder.DeliveryAddress.Number,
+                            Apartment = existingOrder.DeliveryAddress.Apartment,
+                            City = existingOrder.DeliveryAddress.City,
+                            Province = existingOrder.DeliveryAddress.Province,
+                            Country = existingOrder.DeliveryAddress.Country,
+                            PostalCode = existingOrder.DeliveryAddress.PostalCode,
+                            Latitude = existingOrder.DeliveryAddress.Latitude,
+                            Longitude = existingOrder.DeliveryAddress.Longitude,
+                            FormattedAddress = existingOrder.DeliveryAddress.FormattedAddress
+                        }
                     };
 
                     ILogger.LogInformation("📧 Emitiendo evento: CustomerName={Name}, Email={Email}, Phone={Phone}",

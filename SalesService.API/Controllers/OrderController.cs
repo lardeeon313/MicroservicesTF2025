@@ -8,8 +8,10 @@ using SalesService.Application.Commands.Orders.Register;
 using SalesService.Application.Commands.Orders.Update;
 using SalesService.Application.Commands.Orders.UpdateMissingOrder;
 using SalesService.Application.Commands.Orders.UpdateStatus;
+using SalesService.Application.DTOs.Customer;
 using SalesService.Application.DTOs.Order;
 using SalesService.Application.DTOs.Order.Request;
+using SalesService.Application.Queries.Customers.GetCustomerAddresses;
 using SalesService.Application.Queries.Orders.GetAll;
 using SalesService.Application.Queries.Orders.GetAllMissingOrders;
 using SalesService.Application.Queries.Orders.GetById;
@@ -45,9 +47,11 @@ namespace SalesService.API.Controllers
         IOrderReissuedCommandHandler orderReissuedCommandHandler,
         IUpdateMissingOrderCommandHandler updateMissingOrderCommandHandler,
         IValidator<UpdateOrderMissingRequest> updateOrderMissingValidator,
-        IGetAllMissingOrdersQueryHandler getAllMissingOrdersQueryHandler
+        IGetAllMissingOrdersQueryHandler getAllMissingOrdersQueryHandler,
+        IGetCustomerAddressesQueryHandler getCustomerAddressesQueryHandler
         ) : ControllerBase
     {
+        private readonly IGetCustomerAddressesQueryHandler _getCustomerAddressesQueryHandler = getCustomerAddressesQueryHandler;
         private readonly IGetAllMissingOrdersQueryHandler _getAllMissingOrdersQueryHandler = getAllMissingOrdersQueryHandler;
         private readonly IValidator<UpdateOrderMissingRequest> _updateOrderMissingValidator = updateOrderMissingValidator;
         private readonly IUpdateMissingOrderCommandHandler _updateMissingOrderCommandHandler = updateMissingOrderCommandHandler;
@@ -85,7 +89,7 @@ namespace SalesService.API.Controllers
                 return BadRequest(errors);
             }
 
-            var command = new RegisterOrderCommand(request.CustomerId, request.Items, request.DeliveryDate, request.DeliveryDetail, request.CreatedByUserId);
+            var command = new RegisterOrderCommand(request.CustomerId, request.Items, request.DeliveryDate, request.DeliveryDetail, request.CreatedByUserId, request.DeliveryAddress);
             var result = await _registerOrderCommandHandler.HandleAsync(command);
             return Ok(result);
 
@@ -216,6 +220,25 @@ namespace SalesService.API.Controllers
 
             var result = await _getOrderByIdCustomerQueryHandler.HandleAsync(query);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Obtiene las direcciones asociadas a un cliente específico.
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
+        [HttpGet("addresses")]
+        [ProducesResponseType(typeof(List<AddressDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetCustomerAddresses(Guid customerId)
+        {
+            var query = new GetCustomerAddressesQuery(customerId);
+            var addresses = await _getCustomerAddressesQueryHandler.HandleAsync(query);
+
+            if (addresses == null || !addresses.Any())
+                return NotFound(new { error = "No addresses found for this customer." });
+
+            return Ok(addresses);
         }
 
         /// <summary>Obtiene pedidos con un maximo de 20</summary>

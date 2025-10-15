@@ -26,7 +26,19 @@ namespace SalesService.Application.Queries.Customers.GetCustomerByEmail
                 LastName = customer.LastName,
                 Email = customer.Email,
                 PhoneNumber = customer.PhoneNumber,
-                Address = customer.Address
+                Addresses = customer.Addresses.Select(a => new AddressDto
+                {
+                    Street = a.Street,
+                    Number = a.Number,
+                    Apartment = a.Apartment,
+                    City = a.City,
+                    Province = a.Province,
+                    Country = a.Country,
+                    PostalCode = a.PostalCode,
+                    Latitude = a.Latitude,
+                    Longitude = a.Longitude,
+                    FormattedAddress = a.FormattedAddress,
+                }).ToList()
             };
 
         }

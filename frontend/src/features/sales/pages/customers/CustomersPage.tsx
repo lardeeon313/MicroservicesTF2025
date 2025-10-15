@@ -19,8 +19,12 @@ export default function CustomersPage() {
 
 
     const filteredCustomers = customers.filter((c) => {
-        const addressMatch = `${c.address ?? ""}`
-            .includes(searchAddress.toLowerCase());
+        const addressMatch = c.addresses && c.addresses.length > 0
+          ? c.addresses.map(a => `${a.street} ${a.number} ${a.apartment ?? ""} ${a.city} ${a.province} ${a.country}`)
+            .join(" ")
+            .toLowerCase()
+            .includes(searchAddress.toLowerCase())
+          : false;
         const nameMatch = `${c.firstName ?? ""} ${c.lastName ?? ""} ${c.email ?? ""}`
             .toLowerCase()
             .includes(searchName.toLowerCase());
