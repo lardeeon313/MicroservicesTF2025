@@ -47,6 +47,7 @@ using SalesService.Infraestructure.Messaging.Consumer;
 using SalesService.Application.Commands.Customers.ActivateCustomer;
 using SalesService.Application.Commands.Customers;
 using SalesService.Application.Queries.Customers.GetCustomerAddresses;
+using SalesService.Application.Queries.Customers.GetCustomerPaymentTypes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -99,6 +100,7 @@ builder.Services.AddScoped<IDesactivateCustomerCommandHandler, DesactivateCustom
 builder.Services.AddScoped<IGetAllCustomersQueryHandler, GetAllCustomersQueryHandler>();
 builder.Services.AddScoped<IGetCustomerByIdQueryHandler, GetCustomerByIdQueryHandler>();
 builder.Services.AddScoped<IGetCustomerByEmailQueryHandler, GetCustomerByEmailQueryHandler>();
+builder.Services.AddScoped<IGetCustomerPaymentTypesQueryHandler, GetCustomerPaymentTypesQueryHandler>();    
 
 // Add services Command Handlers / Order 
 builder.Services.AddScoped<IGetPagedCustomersQueryHandler,  GetPagedCustomersQueryHandler>();
@@ -146,7 +148,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // Registrar el DbContext
 builder.Services.AddDbContext<SalesDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-        b => b.MigrationsAssembly("SalesService.Infraestructure")));
+        b => b.MigrationsAssembly("SalesService.API")));
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];

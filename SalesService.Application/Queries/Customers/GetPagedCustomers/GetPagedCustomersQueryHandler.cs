@@ -1,4 +1,5 @@
 ﻿using SalesService.Application.DTOs.Customer;
+using SalesService.Domain.Entities.CustomerEntity;
 using SalesService.Domain.IRepositories;
 using System;
 using System.Collections.Generic;
@@ -42,6 +43,9 @@ namespace SalesService.Application.Queries.Customers.GetPagedCustomers
                         Longitude = a.Longitude,
                         FormattedAddress = a.FormattedAddress,
                     }).ToList(),
+                    PaymentTypes = c.PaymentTypes
+                        .Select(pt => pt.PaymentType) 
+                        .ToList(),
                     Status = c.Status.ToString()
                 }).ToList()
             };

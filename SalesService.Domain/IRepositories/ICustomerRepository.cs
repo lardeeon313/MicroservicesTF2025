@@ -19,6 +19,7 @@ namespace SalesService.Domain.IRepositories
         Task<(List<Customer> Customers, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
         Task<Customer?> GetByIdWithAddressesAsync(Guid id);
         Task RemoveAddress(Address address);
+        Task<List<CustomerPaymentType>> GetPaymentTypesByCustomerIdAsync(Guid customerId);
 
     }
 }

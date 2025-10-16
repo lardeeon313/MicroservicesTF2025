@@ -1,4 +1,5 @@
 ﻿using LogisticService.Domain.Entities;
+using LogisticService.Domain.Enums;
 using LogisticService.Domain.IRepositories;
 using LogisticService.Infraestructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -110,10 +111,16 @@ namespace LogisticService.Infraestructure.Messaging.Consumer
                             DepotOrderId = evento.DepotOrderId, 
                             CustomerId = customer.Id,
                             DeliveryAddressId = address.Id,
-                            Status = Domain.Enums.OrderStatus.PendingVerification, 
+                            Status = OrderStatus.PendingVerification, 
                             TotalAmount = evento.TotalAmount,
                             DeliveryDate = evento.DeliveryDate,
                             OrderDate = evento.OrderDate,
+                            PaymentType = evento.PaymentType.HasValue
+                            ? (PaymentType)Enum.Parse(
+                                typeof(PaymentType),
+                                evento.PaymentType.Value.ToString()
+                              )
+                            : null,
                             Items = evento.OrderItems.Select(i => new LogisticOrderItem
                             {
                                 SalesOrderItemId = i.SalesOrderItemId,

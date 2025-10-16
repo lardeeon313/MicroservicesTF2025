@@ -26,6 +26,7 @@ namespace SalesService.Domain.Entities.CustomerEntity
         public string? SatisfactionDescription { get; set; }
         public int? SatisfactionScore { get; set; }
         public List<Address> Addresses { get; set; } = [];
+        public List<CustomerPaymentType> PaymentTypes { get; set; } = [];
         public bool IsActive { get; set; } = true;
 
         // Metodo para Inhabilitar un Customer

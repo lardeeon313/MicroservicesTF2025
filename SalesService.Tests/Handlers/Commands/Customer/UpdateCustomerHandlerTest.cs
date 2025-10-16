@@ -5,6 +5,7 @@ using SalesService.Application.Commands.Customers.Update;
 using SalesService.Application.DTOs.Customer;
 using SalesService.Domain.Entities;
 using SalesService.Domain.Entities.CustomerEntity;
+using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Messaging.Publisher;
 using System;
@@ -38,6 +39,7 @@ namespace SalesService.Tests.Handlers
 
                 "carlos.lopez@email.com",
                 "3519876543",
+
                 new List<AddressDto>
                 {
                     new AddressDto
@@ -52,7 +54,8 @@ namespace SalesService.Tests.Handlers
                         Latitude = -34.6037,
                         Longitude = -58.3816
                     }
-                }
+                },
+                new List<PaymentType> { PaymentType.Promissory_Note, PaymentType.Cash }
             );
 
             var existingCustomer = new Customer
@@ -129,7 +132,8 @@ namespace SalesService.Tests.Handlers
                         Latitude = -34.6037,
                         Longitude = -58.3816
                     }
-                }
+                },
+                new List<PaymentType> { PaymentType.Promissory_Note, PaymentType.Cash }
             );
 
             _customerRepositoryMock

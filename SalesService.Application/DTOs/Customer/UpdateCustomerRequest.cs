@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SalesService.Domain.Enums;
+using SharedKernel.IntegrationEvents.PaymentTypes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -28,5 +30,6 @@ namespace SalesService.Application.DTOs.Customer
         public string? PhoneNumber { get; set; }
 
         public List<AddressRequest> Addresses { get; set; } = new();
+        public List<PaymentType> PaymentTypes { get; set; } = new();
     }
 }

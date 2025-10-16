@@ -29,6 +29,7 @@ namespace SalesService.Application.Queries.Orders.GetById
                 CustomerLastName = order.Customer?.LastName,
                 DeliveryDetail = order.DeliveryDetail,
                 DeliveryDate = order.DeliveryDate,
+                PaymentType = order.PaymentType,
                 ModifiedStatusDate = order.ModifiedStatusDate,
                 OrderDate = order.OrderDate,
                 Status = order.Status,

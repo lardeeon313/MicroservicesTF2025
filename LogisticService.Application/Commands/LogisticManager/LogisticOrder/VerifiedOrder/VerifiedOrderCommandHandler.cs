@@ -30,7 +30,7 @@ namespace LogisticService.API.RequestDtos.LogisticOrders
                 _logger.LogWarning("No se encontró la orden logística con ID: {LogisticOrderId}", command.LogisticOrderId);
                 return false;
             }
-
+            
             order.Status = OrderStatus.Verified;
             await _repository.UpdateAsync(order);
 

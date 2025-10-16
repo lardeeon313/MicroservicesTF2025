@@ -28,7 +28,7 @@ namespace SalesService.Application.Queries.Customers.GetCustomer
                 Email = customer.Email,
                 PhoneNumber = customer.PhoneNumber,
                 RegistrationDate = customer.RegistrationDate,
-                Status = customer.Status.ToString(),
+                Status = customer.Status.ToString(),                
                 Addresses = customer.Addresses.Select(a => new AddressDto
                 {
                     Id = a.Id,
@@ -42,7 +42,10 @@ namespace SalesService.Application.Queries.Customers.GetCustomer
                     Latitude = a.Latitude,
                     Longitude = a.Longitude,
                     FormattedAddress = a.FormattedAddress,
-                }).ToList()
+                }).ToList(),
+                PaymentTypes = customer.PaymentTypes
+                    .Select(pt => pt.PaymentType) 
+                    .ToList()
             };
         }
     }

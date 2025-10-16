@@ -83,5 +83,13 @@ namespace SalesService.Infraestructure.Persistence.Repositories
             _context.Addresses.Remove(address);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<CustomerPaymentType>> GetPaymentTypesByCustomerIdAsync(Guid customerId)
+        {
+            return await _context.CustomerPaymentTypes
+                .Where(pt => pt.CustomerId == customerId)
+                .AsNoTracking()
+                .ToListAsync();
+        }
     }
 }

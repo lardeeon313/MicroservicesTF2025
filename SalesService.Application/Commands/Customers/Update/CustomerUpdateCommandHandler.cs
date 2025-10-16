@@ -1,4 +1,5 @@
 ﻿using SalesService.Domain.Entities;
+using SalesService.Domain.Entities.CustomerEntity;
 using SalesService.Domain.IRepositories;
 using System;
 using System.Collections.Generic;
@@ -80,6 +81,22 @@ namespace SalesService.Application.Commands.Customers.Update
                             CustomerId = customer.Id
                         });
                     }
+                }
+            }
+
+            if (command.PaymentTypes != null && command.PaymentTypes.Any())
+            {
+                // Eliminamos los tipos anteriores
+                customer.PaymentTypes.Clear();
+
+                // Creamos los nuevos
+                foreach (var pt in command.PaymentTypes)
+                {
+                    customer.PaymentTypes.Add(new CustomerPaymentType
+                    {
+                        CustomerId = customer.Id,
+                        PaymentType = pt
+                    });
                 }
             }
 

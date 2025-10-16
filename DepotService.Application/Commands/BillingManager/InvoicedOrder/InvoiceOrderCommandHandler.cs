@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using SharedKernel.IntegrationEvents.DepotEvents;
 using SharedKernel.IntegrationEvents.DepotEvents.DTOs;
 using SharedKernel.IntegrationEvents.SalesEvents.DTOs;
+using SharedKernel.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,6 +83,7 @@ namespace DepotService.Application.Commands.BillingManager.InvoicedOrder
                 CustomerId = order.CustomerId,
                 CustomerName = order.CustomerName,
                 CustomerEmail = order.CustomerEmail,
+                PaymentType = order.PaymentType.ToDto(),
                 PhoneNumber = order.PhoneNumber,
                 RegistrationDate = order.RegistrationDate,
                 OrderDate = order.OrderDate,

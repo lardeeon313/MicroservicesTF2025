@@ -19,6 +19,7 @@ namespace SalesService.Infraestructure
         public DbSet<OrderMissingItem> OrderMissingItems { get; set; }
         public DbSet<OrderStatusHistory> OrderStatusHistories { get; set; }
         public DbSet<Address> Addresses { get; set; }
+        public DbSet<CustomerPaymentType> CustomerPaymentTypes { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -34,6 +35,11 @@ namespace SalesService.Infraestructure
             modelBuilder.Entity<Order>(entity =>
             {
                 entity.Property(e => e.Status)
+                    .HasConversion<string>();
+            });
+
+            modelBuilder.Entity<Order>(entity => {
+                entity.Property(e => e.PaymentType)
                     .HasConversion<string>();
             });
 
@@ -81,6 +87,11 @@ namespace SalesService.Infraestructure
                 .WithMany(c => c.Addresses)
                 .HasForeignKey(a => a.CustomerId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<CustomerPaymentType>()
+                .HasOne(cpt => cpt.Customer)
+                .WithMany(c => c.PaymentTypes)
+                .HasForeignKey(cpt => cpt.CustomerId);
         }
     }
 }

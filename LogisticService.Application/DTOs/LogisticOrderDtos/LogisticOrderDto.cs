@@ -1,6 +1,5 @@
 ﻿using LogisticService.Application.DTOs.DeliveryZoneDtos;
 using LogisticService.Application.DTOs.LogisticCustomerDtos;
-using LogisticService.Domain.Entities;
 using LogisticService.Domain.Enums;
 using System;
 using System.Collections.Generic;

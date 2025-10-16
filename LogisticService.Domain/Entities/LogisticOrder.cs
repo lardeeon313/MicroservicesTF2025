@@ -76,5 +76,17 @@ namespace LogisticService.Domain.Entities
             AssignedDeliveryTeamId = null;
             Status = OrderStatus.Verified;
         }
+
+        public void CheckCash()
+        {
+            if (Status != OrderStatus.PendingCashVerification)
+                throw new InvalidOperationException("Solo se puede verificar el efectivo de una orden en estado 'PendingCashVerification'.");
+
+            if (PaymentType != Enums.PaymentType.Cash)
+                throw new InvalidOperationException("Solo las órdenes con tipo de pago 'Cash' pueden ser verificadas por efectivo.");
+
+            Status = OrderStatus.CashVerified;
+            ModifiedStatusDate = DateTime.UtcNow;
+        }
     }
 }

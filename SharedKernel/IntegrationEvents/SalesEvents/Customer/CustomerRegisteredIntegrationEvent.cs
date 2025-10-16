@@ -1,4 +1,6 @@
-﻿using SharedKernel.IntegrationEvents.SalesEvents.DTOs;
+﻿using SalesService.Domain.Enums;
+using SharedKernel.IntegrationEvents.PaymentTypes;
+using SharedKernel.IntegrationEvents.SalesEvents.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +16,7 @@ namespace SharedKernel.IntegrationEvents.SalesEvents.Customer
         public string Email { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public List<AddressDto> Addresses { get; set; } = new List<AddressDto>();
+        public List<PaymentType> PaymentTypes { get; set; } = new();
         public DateTime CreatedAt { get; set; }
 
     }
