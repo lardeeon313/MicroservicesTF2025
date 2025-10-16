@@ -16,11 +16,7 @@
     "axios": "^1.9.0",
     "classnames": "^2.5.1",
     "date-fns": "^4.1.0",
-<<<<<<< HEAD
     "dayjs": "^1.11.18",
-=======
-    "dayjs": "^1.11.13",
->>>>>>> origin/feature/santiago-microservicestf2025
     "formik": "^2.4.6",
     "framer-motion": "^12.23.18",
     "jwt-decode": "^4.0.0",
