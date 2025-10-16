@@ -10,8 +10,8 @@ namespace DepotService.Application.DTOs.DepotOrder
     public class DepotOrderItemDto
     {
         public int Id { get; set; }
-        public string ProductName { get; set; } = null!;
-        public string ProductBrand { get; set; } = null!;
+        public string? ProductName { get; set; } = null!;
+        public string? ProductBrand { get; set; } = null!;
         public string? Packaging { get; set; }
         public decimal? UnitPrice { get; set; }
         public int Quantity { get; set; }

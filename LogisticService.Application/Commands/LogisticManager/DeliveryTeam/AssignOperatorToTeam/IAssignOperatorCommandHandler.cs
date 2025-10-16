@@ -9,8 +9,8 @@ namespace LogisticService.Application.Commands.LogisticManager.DeliveryTeam.Assi
     /// <summary>
     /// Interfaz para el handler del comando AssignOperator.
     /// </summary>
-    public interface IAssignOperatorCommandHandler 
+    public interface IAssignOperatorToTeamCommandHandler
     {
-        Task<bool> AssignOperatorAsync(AssignOperatorCommand command);
+        Task<bool> AssignOperatorAsync(AssignOperatorToTeamCommand command);
     }
 }

@@ -1,6 +1,7 @@
 using FluentValidation;
 using LogisticService.API.RequestDtos.DeliveryTeams;
 using LogisticService.API.RequestDtos.DeliveryZones;
+using LogisticService.API.RequestDtos.LogisticOrders;
 using LogisticService.API.Validators.DeliveryTeams;
 using LogisticService.API.Validators.DeliveryZones;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.ActiveDeliveryTeam;
@@ -17,11 +18,17 @@ using LogisticService.Application.Commands.LogisticManager.DeliveryZone.CreateDe
 using LogisticService.Application.Commands.LogisticManager.DeliveryZone.DeleteDeliveryZone;
 using LogisticService.Application.Commands.LogisticManager.DeliveryZone.DisableDeliveryZone;
 using LogisticService.Application.Commands.LogisticManager.DeliveryZone.UpdateDeliveryZone;
+using LogisticService.Application.Commands.LogisticManager.LogisticOrder.AssignOrder;
+using LogisticService.Application.Commands.LogisticManager.LogisticOrder.CheckCashOrder;
+using LogisticService.Application.Commands.LogisticManager.LogisticOrder.RemoveAssignOrder;
+using LogisticService.Application.Commands.LogisticManager.LogisticOrder.SetPriorityOrder;
+using LogisticService.Application.Commands.LogisticManager.LogisticOrder.VerifiedOrder;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetAllTeams;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetById;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetAllZones;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetByIdZone;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrders;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrdersByDeliveryPriority;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrderById;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByCustomerId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByDeliveryZoneId;
@@ -96,10 +103,11 @@ builder.Services.AddScoped<IUpdateDeliveryTeamCommandHandler, UpdateDeliveryTeam
 builder.Services.AddScoped<IDeleteDeliveryTeamCommandHandler, DeleteDeliveryTeamCommandHandler>();
 builder.Services.AddScoped<IActiveDeliveryTeamCommandHandler, ActiveDeliveryTeamCommandHandler>();
 builder.Services.AddScoped<IDisableDeliveryTeamCommandHandler, DisableDeliveryTeamCommandHandler>();
-builder.Services.AddScoped<IRemoveOperatorCommandHandler, RemoveOperatorCommandHandler>();
-builder.Services.AddScoped<IAssignOperatorCommandHandler, AssignOperatorCommandHandler>();
 builder.Services.AddScoped<IAssignZoneToTeamCommandHandler , AssignZoneToTeamCommandHandler>();
 builder.Services.AddScoped<IRemoveZoneFromTeamCommandHandler , RemoveZoneFromTeamCommandHandler>();
+builder.Services.AddScoped<IAssignOperatorToTeamCommandHandler, AssignOperatorToTeamCommandHandler>();
+builder.Services.AddScoped<IRemoveOperatorToTeamCommandHandler, RemoveOperatorToTeamCommandHandler>();
+
 //Queries CRUD LogisticDeliveryTeams
 builder.Services.AddScoped<IGetAllTeamsQueryHandler, GetAllTeamsQueryHandler>();
 builder.Services.AddScoped<IGetTeamByIdQueryHandler, GetTeamByIdQueryHandler>();
@@ -115,7 +123,15 @@ builder.Services.AddScoped<IDisableDeliveryZoneCommandHandler, DisableDeliveryZo
 builder.Services.AddScoped<IGetAllDeliveryZonesQueryHandler, GetAllDeliveryZonesQueryHandler>();
 builder.Services.AddScoped<IGetDeliveryZoneByIdQueryHandler, GetDeliveryZoneByIdQueryHandler>();
 
+//Commands LogisticOrders
+builder.Services.AddScoped<IAssignOrderCommandHandler, AssignOrderCommandHandler>();
+builder.Services.AddScoped<IRemoveAssignOrderCommandHandler, RemoveAssignOrderCommandHandler>();
+builder.Services.AddScoped<ISetDeliveryPriorityOrderCommandHandler, SetDeliveryPriorityOrderCommandHandler>();
+builder.Services.AddScoped<IVerifiedOrderCommandHandler, VerifiedOrderCommandHandler>();
+builder.Services.AddScoped<ICheckCashOrderCommandHandler, CheckCashOrderCommandHandler>();
+
 //Queries LogisticOrders
+builder.Services.AddScoped<IGetOrdersByDeliveryPriorityQueryHandler, GetOrdersByDeliveryPriorityQueryHandler>();
 builder.Services.AddScoped<IGetAllOrdersQueryHandler, GetAllOrdersQueryHandler>();
 builder.Services.AddScoped<IGetOrderByIdCustomerQueryHandler, GetOrderByIdCustomerQueryHandler>();
 builder.Services.AddScoped<IGetOrderByIdQueryHandler, GetOrderByIdQueryHandler>();
@@ -124,6 +140,7 @@ builder.Services.AddScoped<IGetPagedOrdersQueryHandler, GetPagedOrdersQueryHandl
 builder.Services.AddScoped<IGetOrdersByDeliveryZoneIdQueryHandler, GetOrdersByDeliveryZoneIdQueryHandler>();
 builder.Services.AddScoped<IGetOrdersByOperatorIdQueryHandler, GetOrdersByOperatorIdQueryHandler>();
 builder.Services.AddScoped<IGetOrdersByTeamIdQueryHandler, GetOrdersByTeamIdQueryHandler>();
+
 
 // Add EmailService
 builder.Services.AddScoped<IEmailService, MailgunEmailService>();

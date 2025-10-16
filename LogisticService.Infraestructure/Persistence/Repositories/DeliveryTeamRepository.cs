@@ -50,8 +50,11 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
                 .FirstOrDefaultAsync(t => t.Id == id);
         }
 
-
-
-
+        public async Task<DeliveryTeam?> GetTeamByOperatorAsync(Guid operatorUserId)
+        {
+            return await _context.DeliveryTeams
+                .Include(t => t.DeliveryOperators)
+                .FirstOrDefaultAsync(t => t.DeliveryOperators.Any(a => a.OperatorUserId == operatorUserId));
+        }
     }
 }

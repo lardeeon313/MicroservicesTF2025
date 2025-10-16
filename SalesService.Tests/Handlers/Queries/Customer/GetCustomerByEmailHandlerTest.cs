@@ -37,7 +37,7 @@ namespace SalesService.Tests.Handlers
                 LastName = "Pérez",
                 Email = email,
                 PhoneNumber = "3511234567",
-                Address = "Calle Falsa 123"
+                Addresses = new List<Address>()
             };
 
             _repositoryMock

@@ -27,6 +27,7 @@ namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetO
             {
                 Id = order.Id,
                 Status = order.Status,
+                DeliveryPriority = order.DeliveryPriority,
                 OrderDate = order.OrderDate,
                 DeliveryDate = order.DeliveryDate,
                 ModifiedStatusDate = order.ModifiedStatusDate,

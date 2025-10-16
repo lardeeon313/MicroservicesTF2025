@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
 using SalesService.Application.Commands.Orders.Register;
+using SalesService.Application.DTOs.Customer;
 using SalesService.Application.DTOs.Order;
 using SalesService.Application.DTOs.Order.Request;
 using SalesService.Domain.Common.Interfaces;
@@ -50,7 +51,19 @@ namespace SalesService.Tests.Handlers
                 },
                 null,
                 "Entrega mañana",
-                "User123"
+                "User123",
+                new AddressRequest
+                {
+                    Street = "Calle Falsa",
+                    Number = "123",
+                    City = "Springfield",
+                    Province = "SomeProvince",
+                    Country = "SomeCountry",
+                    PostalCode = "12345",
+                    FormattedAddress = "Calle Falsa 123, Springfield, SomeProvince, SomeCountry, 12345",
+                    Latitude = -34.6037,
+                    Longitude = -58.3816
+                }
             );
 
             // Act
@@ -74,7 +87,18 @@ namespace SalesService.Tests.Handlers
         public async Task HandleAsync_ShouldThrow_WhenCustomerNotFound()
         {
             // Arrange
-            var command = new RegisterOrderCommand(Guid.NewGuid(), [], null, "Sin dirección", "user123");
+            var command = new RegisterOrderCommand(Guid.NewGuid(), [], null, "Sin dirección", "user123", new AddressRequest
+            {
+                Street = "Calle Falsa",
+                Number = "123",
+                City = "Springfield",
+                Province = "SomeProvince",
+                Country = "SomeCountry",
+                PostalCode = "12345",
+                FormattedAddress = "Calle Falsa 123, Springfield, SomeProvince, SomeCountry, 12345",
+                Latitude = -34.6037,
+                Longitude = -58.3816
+            });
 
             // Act
             _customerRepo.Setup(c => c.GetByIdAsync(command.CustomerId)).ReturnsAsync((Customer)null!);

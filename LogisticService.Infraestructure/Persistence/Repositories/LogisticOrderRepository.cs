@@ -24,6 +24,12 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
+        public async Task AddStatusHistoryAsync(OrderStatusHistory statusHistory)
+        {
+            await _context.OrderStatusHistories.AddAsync(statusHistory);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<IEnumerable<LogisticOrder>> GetAllAsync()
         {
             return await _context.LogisticOrders
@@ -55,6 +61,17 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
                 .Include(o => o.AssignedDeliveryTeam)
                 .Include(o => o.AssignedDeliveryZone)
                 .Include(o => o.DeliveryAddress)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<LogisticOrder>> GetOrdersByDeliveryPriorityAsync(DeliveryPriority priority)
+        {
+            return await _context.LogisticOrders
+                .Where(o => o.DeliveryPriority == priority)
+                .Include(o => o.Customer)
+                .Include(o => o.Items)
+                .Include(o => o.AssignedDeliveryTeam)
                 .AsNoTracking()
                 .ToListAsync();
         }

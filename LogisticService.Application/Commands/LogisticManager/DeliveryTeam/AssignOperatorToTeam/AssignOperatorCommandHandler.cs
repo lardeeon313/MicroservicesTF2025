@@ -10,15 +10,15 @@ namespace LogisticService.Application.Commands.LogisticManager.DeliveryTeam.Assi
     /// <summary>
     /// Handler para asignar un operador a un equipo.
     /// </summary>
-    public class AssignOperatorCommandHandler(IDeliveryTeamRepository repository, ILogger<AssignOperatorCommandHandler> logger) : IAssignOperatorCommandHandler
+    public class AssignOperatorToTeamCommandHandler(IDeliveryTeamRepository repository, ILogger<AssignOperatorToTeamCommandHandler> logger) : IAssignOperatorToTeamCommandHandler
     {
         private readonly IDeliveryTeamRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        private readonly ILogger<AssignOperatorCommandHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));       
+        private readonly ILogger<AssignOperatorToTeamCommandHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));       
 
         /// <summary>
         /// Asigna un operador a un equipo existente.
         /// </summary>
-        public async Task<bool> AssignOperatorAsync(AssignOperatorCommand command)
+        public async Task<bool> AssignOperatorAsync(AssignOperatorToTeamCommand command)
         {
             var team = await _repository.GetByIdAsync(command.TeamId);
             if (team == null)

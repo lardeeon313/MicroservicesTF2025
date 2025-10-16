@@ -1,7 +1,10 @@
 ﻿using FluentAssertions;
 using Moq;
 using SalesService.Application.Commands.Customers.Register;
+using SalesService.Application.DTOs.Customer;
+using SalesService.Domain.Entities;
 using SalesService.Domain.Entities.CustomerEntity;
+using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Messaging.Publisher;
 using SharedKernel.IntegrationEvents.SalesEvents.Customer;
@@ -31,8 +34,23 @@ namespace SalesService.Tests.Handlers
                 "Juan",
                 "Perez",
                 "juan.perez@email.com",
-                "Córdoba 123",
-                "3511112222"
+                "3511112222",
+                new List<AddressDto>
+                {
+                    new AddressDto
+                    {
+                        Street = "Calle Falsa",
+                        Number = "123",
+                        City = "Springfield",
+                        Province = "SomeProvince",
+                        Country = "SomeCountry",
+                        PostalCode = "12345",
+                        FormattedAddress = "Calle Falsa 123, Springfield, SomeProvince, SomeCountry, 12345",
+                        Latitude = -34.6037,
+                        Longitude = -58.3816
+                    }
+                },
+                new List<PaymentType> { PaymentType.Promissory_Note, PaymentType.Cash }
             );
 
             _customerRepositoryMock
@@ -67,7 +85,6 @@ namespace SalesService.Tests.Handlers
                     e.FirstName == command.FirstName &&
                     e.Email == command.Email && 
                     e.PhoneNumber == command.PhoneNumber &&
-                    e.Address == command.Address &&
                     e.CreatedAt <= DateTime.UtcNow
                 ), "customer_registered_queue"), Times.Once);
         }
@@ -81,8 +98,23 @@ namespace SalesService.Tests.Handlers
                 "Lucía",
                 "González",
                 "lucia.gonzalez@email.com",
-                "Av. Siempre Viva 742",
-                "3512345678"
+                "3512345678",
+                new List<AddressDto>
+                {
+                    new AddressDto
+                    {
+                        Street = "Calle Falsa",
+                        Number = "123",
+                        City = "Springfield",
+                        Province = "SomeProvince",
+                        Country = "SomeCountry",
+                        PostalCode = "12345",
+                        FormattedAddress = "Calle Falsa 123, Springfield, SomeProvince, SomeCountry, 12345",
+                        Latitude = -34.6037,
+                        Longitude = -58.3816
+                    }
+                },
+                new List<PaymentType> { PaymentType.Promissory_Note, PaymentType.Cash }
             );
 
             _customerRepositoryMock
@@ -129,9 +161,38 @@ namespace SalesService.Tests.Handlers
                 "Juan",
                 "Perez",
                 "juan.perez@email.com",
-                "Córdoba 123",
-                "3511112222"
+                "3511112222",
+                new List<AddressDto>
+                {
+                    new AddressDto
+                    {
+                        Street = "Calle Falsa",
+                        Number = "123",
+                        City = "Springfield",
+                        Province = "SomeProvince",
+                        Country = "SomeCountry",
+                        PostalCode = "12345",
+                        FormattedAddress = "Calle Falsa 123, Springfield, SomeProvince, SomeCountry, 12345",
+                        Latitude = -34.6037,
+                        Longitude = -58.3816
+                    }
+                },
+                new List<PaymentType> { PaymentType.Promissory_Note, PaymentType.Cash }
             );
+
+            var newAddresses = command.Addresses.Select(a => new Address
+            {
+                Street = a.Street,
+                Number = a.Number,
+                Apartment = a.Apartment,
+                City = a.City,
+                Province = a.Province,
+                Country = a.Country,
+                PostalCode = a.PostalCode,
+                Latitude = a.Latitude,
+                Longitude = a.Longitude,
+                FormattedAddress = a.FormattedAddress,
+            }).ToList();
 
             var existingCustomer = new Customer
             {
@@ -140,7 +201,7 @@ namespace SalesService.Tests.Handlers
                 LastName = command.LastName,
                 Email = command.Email,
                 PhoneNumber = command.PhoneNumber,
-                Address = command.Address,
+                Addresses = newAddresses
             };
 
             _customerRepositoryMock

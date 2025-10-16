@@ -13,6 +13,7 @@ namespace LogisticService.Domain.Entities
         public int Id { get; set; }
 
         public OrderStatus Status { get; set; }
+        public DeliveryPriority? DeliveryPriority { get; set; } 
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
         public DateTime? DeliveryDate { get; set; }
         public DateTime? ModifiedStatusDate { get; set; }
@@ -46,5 +47,46 @@ namespace LogisticService.Domain.Entities
         // Trazabilidad con DepotService y SalesService
         public int DepotOrderId { get; set; }
         public int SalesOrderId { get; set; }
+
+
+        public void AssignToOperator(Guid operatorId, DeliveryTeam team)
+        {
+            if (Status != OrderStatus.PendingVerification && Status != OrderStatus.AssignedDelivery)
+                throw new InvalidOperationException("cannot assign employee to an order that is not pending verification or assigned to delivery.");
+
+            // Validar que el operador pertenezca al equipo
+            if (!team.DeliveryOperators.Any(a => a.OperatorUserId == operatorId))
+                throw new InvalidOperationException("El operador no pertenece al equipo proporcionado.");
+
+            if (Status == OrderStatus.Verified)
+            {
+                AssignedOperatorId = operatorId;
+                AssignedDeliveryTeam = team;
+                AssignedDeliveryTeamId = team.Id;
+                Status = OrderStatus.AssignedDelivery;
+            }
+        }
+
+        public void RemoveAssignment()
+        {
+            if (Status != OrderStatus.AssignedDelivery)
+                throw new InvalidOperationException("Cannot remove assignment from an order that is not assigned to a delivery operator.");
+            AssignedOperatorId = null;
+            AssignedDeliveryTeam = null;
+            AssignedDeliveryTeamId = null;
+            Status = OrderStatus.Verified;
+        }
+
+        public void CheckCash()
+        {
+            if (Status != OrderStatus.PendingCashVerification)
+                throw new InvalidOperationException("Solo se puede verificar el efectivo de una orden en estado 'PendingCashVerification'.");
+
+            if (PaymentType != Enums.PaymentType.Cash)
+                throw new InvalidOperationException("Solo las órdenes con tipo de pago 'Cash' pueden ser verificadas por efectivo.");
+
+            Status = OrderStatus.CashVerified;
+            ModifiedStatusDate = DateTime.UtcNow;
+        }
     }
 }

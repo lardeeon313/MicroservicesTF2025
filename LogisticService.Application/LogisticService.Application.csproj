@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\LogisticManager\LogisticOrder\" />
     <Folder Include="Utils\" />
     <Folder Include="Validators\OrderValidators\" />
   </ItemGroup>

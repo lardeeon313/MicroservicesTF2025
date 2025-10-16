@@ -29,6 +29,7 @@ namespace SalesService.Application.Queries.Orders.GetByIdCustomer
                 DeliveryDetail = order.DeliveryDetail,
                 DeliveryDate = order.DeliveryDate,
                 ModifiedStatusDate = order.ModifiedStatusDate,
+                PaymentType = order.PaymentType,
                 OrderDate = order.OrderDate,
                 Status = order.Status,
                 Items = order.Items.Select(item => new OrderItemDto

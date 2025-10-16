@@ -32,6 +32,7 @@ namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetP
                 {
                     Id = o.Id,
                     Status = o.Status,
+                    DeliveryPriority = o.DeliveryPriority,
                     OrderDate = o.OrderDate,
                     DeliveryDate = o.DeliveryDate,
                     ModifiedStatusDate = o.ModifiedStatusDate,

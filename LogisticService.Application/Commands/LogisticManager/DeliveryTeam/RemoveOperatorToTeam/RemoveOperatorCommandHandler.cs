@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace LogisticService.Application.Commands.LogisticManager.DeliveryTeam.RemoveOperatorToTeam
 {
-    public class RemoveOperatorCommandHandler(IDeliveryTeamRepository repository, ILogger<RemoveOperatorCommandHandler> logger) : IRemoveOperatorCommandHandler
+    public class RemoveOperatorToTeamCommandHandler(IDeliveryTeamRepository repository, ILogger<RemoveOperatorToTeamCommandHandler> logger) : IRemoveOperatorToTeamCommandHandler
     {
         private readonly IDeliveryTeamRepository _repository = repository;        
-        private readonly ILogger<RemoveOperatorCommandHandler> _logger = logger;
+        private readonly ILogger<RemoveOperatorToTeamCommandHandler> _logger = logger;
 
         /// <summary>
         /// Maneja el comando para remover un operario de un equipo.
         /// </summary>
-        public async Task<bool> RemoveOperatorAsync(RemoveOperatorCommand command)
+        public async Task<bool> RemoveOperatorAsync(RemoveOperatorToTeamCommand command)
         {
             // Validación de parámetros
             var team = await _repository.GetByIdAsync(command.TeamId);

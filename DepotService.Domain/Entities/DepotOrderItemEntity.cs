@@ -17,8 +17,8 @@ namespace DepotService.Domain.Entities
         public int SalesOrderItemId { get; set; }
 
         // Propiedades del producto
-        public string ProductName { get; set; } = null!;
-        public string ProductBrand { get; set; } = null!;
+        public string? ProductName { get; set; } = null!;
+        public string? ProductBrand { get; set; } = null!;
         public string? PackagingType { get; set; }
         public decimal? UnitPrice { get; set; }
         public int Quantity { get; set; }

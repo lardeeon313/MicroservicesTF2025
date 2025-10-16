@@ -1,6 +1,5 @@
 ﻿using LogisticService.Application.DTOs.DeliveryZoneDtos;
 using LogisticService.Application.DTOs.LogisticCustomerDtos;
-using LogisticService.Domain.Entities;
 using LogisticService.Domain.Enums;
 using System;
 using System.Collections.Generic;
@@ -14,6 +13,7 @@ namespace LogisticService.Application.DTOs.LogisticOrderDtos
     {
         public int Id { get; set; }
         public OrderStatus Status { get; set; }
+        public DeliveryPriority? DeliveryPriority { get; set; }
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
         public DateTime? DeliveryDate { get; set; }
         public DateTime? ModifiedStatusDate { get; set; }

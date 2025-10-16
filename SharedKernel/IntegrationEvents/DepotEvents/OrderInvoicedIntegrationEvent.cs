@@ -1,5 +1,7 @@
-﻿using SalesService.Domain.Entities.CustomerEntity;
+﻿using DepotService.Domain.Enums;
+using SalesService.Domain.Entities.CustomerEntity;
 using SharedKernel.IntegrationEvents.DepotEvents.DTOs;
+using SharedKernel.IntegrationEvents.PaymentTypes;
 using SharedKernel.IntegrationEvents.SalesEvents.DTOs;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,7 @@ namespace SharedKernel.IntegrationEvents.DepotEvents
         public Guid CustomerId { get; set; }
         public string CustomerName { get; set; } = string.Empty;
         public string CustomerEmail { get; set; } = string.Empty;
+        public PaymentTypeDto? PaymentType { get; set; }
         public string PhoneNumber { get; set; } = string.Empty;
         public DateTime RegistrationDate { get; set; }
 

@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using LogisticService.API.RequestDtos.DeliveryTeams;
 using LogisticService.API.RequestDtos.DeliveryZones;
+using LogisticService.API.RequestDtos.LogisticOrders;
 using LogisticService.API.Validators.DeliveryTeams;
 using LogisticService.API.Validators.DeliveryZones;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.ActiveDeliveryTeam;
@@ -17,11 +18,17 @@ using LogisticService.Application.Commands.LogisticManager.DeliveryZone.CreateDe
 using LogisticService.Application.Commands.LogisticManager.DeliveryZone.DeleteDeliveryZone;
 using LogisticService.Application.Commands.LogisticManager.DeliveryZone.DisableDeliveryZone;
 using LogisticService.Application.Commands.LogisticManager.DeliveryZone.UpdateDeliveryZone;
+using LogisticService.Application.Commands.LogisticManager.LogisticOrder.AssignOrder;
+using LogisticService.Application.Commands.LogisticManager.LogisticOrder.CheckCashOrder;
+using LogisticService.Application.Commands.LogisticManager.LogisticOrder.RemoveAssignOrder;
+using LogisticService.Application.Commands.LogisticManager.LogisticOrder.SetPriorityOrder;
+using LogisticService.Application.Commands.LogisticManager.LogisticOrder.VerifiedOrder;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetAllTeams;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetById;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetAllZones;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetByIdZone;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrders;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrdersByDeliveryPriority;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrderById;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByCustomerId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByDeliveryZoneId;
@@ -35,7 +42,7 @@ using Microsoft.AspNetCore.Mvc;
 
 /**************************************************************/
 /**************************************************************/
-///  CONTROLADOR PARA MANEJAR LOS CRUDS DE LOGISTIC SERVICE  ///
+//  CONTROLADOR PARA MANEJAR LOS CRUDS DE LOGISTIC SERVICE  ///
 /**************************************************************/
 /**************************************************************/
 namespace LogisticService.API.Controllers
@@ -48,15 +55,15 @@ namespace LogisticService.API.Controllers
         IUpdateDeliveryTeamCommandHandler updateDeliveryTeamCommandHandler,
         IDeleteDeliveryTeamCommandHandler deleteDeliveryTeamCommandHandler,
         IDisableDeliveryTeamCommandHandler disableDeliveryTeamCommandHandler,
-        IActiveDeliveryTeamCommandHandler activeDeliveryTeamCommandHandler,
-        IAssignOperatorCommandHandler assignOperatorCommandHandler,
-        IRemoveOperatorCommandHandler removeOperatorCommandHandlers,
+        IActiveDeliveryTeamCommandHandler activeDeliveryTeamCommandHandler,       
         IRemoveZoneFromTeamCommandHandler removeZoneFromTeamCommandHandler,
         IAssignZoneToTeamCommandHandler assignZoneToTeamCommandHandler,
         IGetAllTeamsQueryHandler getAllTeamsQueryHandler,
         IGetTeamByIdQueryHandler getTeamByIdQueryHandler,
         IValidator<CreateDeliveryTeamRequest> createDeliveryTeamRequestValidator,
         IValidator<UpdateDeliveryTeamRequest> updateDeliveryTeamRequestValidator,
+        IAssignOperatorToTeamCommandHandler assignOperatorToTeamCommandHandler,
+        IRemoveOperatorToTeamCommandHandler removeOperatorToTeamCommandHandler,
 
         ICreateDeliveryZoneCommandHandler createDeliveryZoneCommandHandler,
         IUpdateDeliveryZoneCommandHandler updateDeliveryZoneCommandHandler,
@@ -68,6 +75,12 @@ namespace LogisticService.API.Controllers
         IValidator<CreateDeliveryZoneRequest> createDeliveryZoneRequestValidator,
         IValidator<UpdateDeliveryZoneRequest> updateDeliveryZoneRequestValidator,
 
+        ICheckCashOrderCommandHandler checkCashOrderCommandHandler,
+        IAssignOrderCommandHandler assignOrderCommandHandler,
+        IRemoveAssignOrderCommandHandler removeAssignOrderCommandHandler,
+        ISetDeliveryPriorityOrderCommandHandler setPriorityOrderCommandHandler,
+        IVerifiedOrderCommandHandler verifiedOrderCommandHandler,
+        IGetOrdersByDeliveryPriorityQueryHandler getOrdersByDeliveryPriorityQueryHandler,
         IGetAllOrdersQueryHandler getAllOrdersQueryHandler,
         IGetOrderByIdCustomerQueryHandler getOrderByIdCustomerQueryHandler,
         IGetOrderByIdQueryHandler getOrderByIdQueryHandler,
@@ -80,8 +93,6 @@ namespace LogisticService.API.Controllers
     {
         private readonly IValidator<CreateDeliveryTeamRequest> _createDeliveryTeamRequestValidator = createDeliveryTeamRequestValidator;
         private readonly IValidator<UpdateDeliveryTeamRequest> _updateDeliveryTeamRequestValidator = updateDeliveryTeamRequestValidator;
-        private readonly IRemoveOperatorCommandHandler _removeOperatorCommandHandler = removeOperatorCommandHandlers;
-        private readonly IAssignOperatorCommandHandler _assignOperatorCommandHandler = assignOperatorCommandHandler;
         private readonly IAssignZoneToTeamCommandHandler _assignZoneToTeamCommandHandler = assignZoneToTeamCommandHandler;
         private readonly IRemoveZoneFromTeamCommandHandler _removeZoneToTeamCommandHandler = removeZoneFromTeamCommandHandler;
         private readonly ICreateDeliveryZoneCommandHandler _createDeliveryZoneCommandHandler = createDeliveryZoneCommandHandler;
@@ -91,6 +102,8 @@ namespace LogisticService.API.Controllers
         private readonly IDisableDeliveryZoneCommandHandler _disableDeliveryZoneCommandHandler = disableDeliveryZoneCommandHandler;
         private readonly IGetAllDeliveryZonesQueryHandler _getAllDeliveryZonesQueryHandler = getAllDeliveryZonesQueryHandler;
         private readonly IGetDeliveryZoneByIdQueryHandler _getDeliveryZoneByIdQueryHandler = getDeliveryZoneByIdQueryHandler;
+        private readonly IAssignOperatorToTeamCommandHandler _assignOperatorToTeamCommandHandler = assignOperatorToTeamCommandHandler;
+        private readonly IRemoveOperatorToTeamCommandHandler _removeOperatorToTeamCommandHandler = removeOperatorToTeamCommandHandler;
 
         private readonly IDeleteDeliveryTeamCommandHandler _deleteDeliveryTeamCommandHandler = deleteDeliveryTeamCommandHandler;
         private readonly IGetTeamByIdQueryHandler _getTeamByIdQueryHandler = getTeamByIdQueryHandler;
@@ -102,6 +115,12 @@ namespace LogisticService.API.Controllers
         private readonly IValidator<CreateDeliveryZoneRequest> _createDeliveryZoneRequestValidator = createDeliveryZoneRequestValidator;
         private readonly IValidator<UpdateDeliveryZoneRequest> _updateDeliveryZoneRequestValidator = updateDeliveryZoneRequestValidator;
 
+        private readonly ICheckCashOrderCommandHandler _checkCashOrderCommandHandler = checkCashOrderCommandHandler;
+        private readonly IRemoveAssignOrderCommandHandler _removeAssignOrderCommandHandler = removeAssignOrderCommandHandler;
+        private readonly IAssignOrderCommandHandler _assignOrderCommandHandler = assignOrderCommandHandler;
+        private readonly ISetDeliveryPriorityOrderCommandHandler _setPriorityOrderCommandHandler = setPriorityOrderCommandHandler;
+        private readonly IVerifiedOrderCommandHandler _verifiedOrderCommandHandler = verifiedOrderCommandHandler;
+        private readonly IGetOrdersByDeliveryPriorityQueryHandler _getOrdersByDeliveryPriorityQueryHandler = getOrdersByDeliveryPriorityQueryHandler;
         private readonly IGetAllOrdersQueryHandler _getAllOrdersQueryHandler = getAllOrdersQueryHandler;
         private readonly IGetOrderByIdCustomerQueryHandler _getOrderByIdCustomerQueryHandler = getOrderByIdCustomerQueryHandler;
         private readonly IGetOrderByIdQueryHandler _getOrderByIdQueryHandler = getOrderByIdQueryHandler;
@@ -291,9 +310,9 @@ namespace LogisticService.API.Controllers
 
         public async Task<IActionResult> AssignOperatorToTeam(int teamId, [FromBody] AssignOperatorToTeamRequest request)
         {
-            var command = new AssignOperatorCommand(request.OperatorUserId, teamId);
+            var command = new AssignOperatorToTeamCommand(request.OperatorUserId, teamId);
 
-            var result = await _assignOperatorCommandHandler.AssignOperatorAsync(command);
+            var result = await _assignOperatorToTeamCommandHandler.AssignOperatorAsync(command);
 
             if (!result)
                 return BadRequest("No se pudo asignar el operador.");
@@ -313,8 +332,8 @@ namespace LogisticService.API.Controllers
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RemoveOperator(int teamId, Guid operatorUserId)
         {
-            var command = new RemoveOperatorCommand(operatorUserId, teamId);
-            var result = await _removeOperatorCommandHandler.RemoveOperatorAsync(command);
+            var command = new RemoveOperatorToTeamCommand(operatorUserId, teamId);
+            var result = await _removeOperatorToTeamCommandHandler.RemoveOperatorAsync(command);
             if (!result)
                 return BadRequest("No se pudo remover el operador.");
 
@@ -365,6 +384,42 @@ namespace LogisticService.API.Controllers
                 return BadRequest("No se pudo remover la zona.");
 
             return Ok("Zona removido correctamente.");
+        }
+
+        /// <summary>
+        /// Endpoint para asignar un operador a un equipo
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("AssignOperatorToTeam")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> AssignOperatorToTeam([FromBody] AssignOperatorToTeamRequest request)
+        {
+            var command = new AssignOperatorToTeamCommand(request.OperatorUserId, request.TeamId);
+            var result = await _assignOperatorToTeamCommandHandler.AssignOperatorAsync(command);
+            if (!result)
+                return BadRequest("No se pudo asignar el operador.");
+            return Ok("Operador asignado correctamente.");
+        }
+
+        /// <summary>
+        /// Endpoint para remover un operador de un equipo
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("RemoveOperatorFromTeam")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RemoveOperatorFromTeam([FromBody] RemoveOperatorToTeamRequest request)
+        {
+            var command = new RemoveOperatorToTeamCommand(request.OperatorUserId, request.TeamId);
+            var result = await _removeOperatorToTeamCommandHandler.RemoveOperatorAsync(command);
+            if (!result)
+                return BadRequest("No se pudo asignar el operador.");
+            return Ok("Operador asignado correctamente.");
         }
 
         /**************************************************************/
@@ -527,9 +582,112 @@ namespace LogisticService.API.Controllers
 
         /**************************************************************/
         /**************************************************************/
-        /////    CONSULTAS DE ORDENES LOGISTICAS - LOGISTICORDERS /////
+        /////          ENDPOINTS DE ORDENES LOGISTICAS             /////
         /*************************************************************/
         /**************************************************************/
+
+        /// <summary>
+        /// Endpoint para asignar un operador a una orden logística
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("assign-operator")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> AssignOperator([FromBody] AssignOperatorRequest request)
+        {
+            var command = new AssignOrderCommand(request.LogisticOrderId, request.OperatorUserId);
+            var result = await _assignOrderCommandHandler.HandleAsync(command);
+            if (!result)
+                return BadRequest("No se pudo asignar el operador.");
+            return Ok("Operador asignado correctamente.");
+        }
+
+        [HttpPost("remove-operator")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RemoveOperator([FromBody] RemoveAssignOperatorRequest request)
+        {
+            var command = new RemoveAssignOrderCommand(request.LogisticOrderId, request.OperatorUserId);
+            var result = await _removeAssignOrderCommandHandler.RemoveAssignOrder(command);
+            if (!result)
+                return BadRequest("No se pudo remover el operador.");
+            return Ok("Operador removido correctamente.");
+        }
+
+        /// <summary>
+        /// Endpoint para establecer la prioridad de una orden logística
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("set-priority")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> SetPriority([FromBody] SetPriorityRequest request)
+        {            
+            var command = new SetDeliveryPriorityOrderCommand(request.LogisticOrderId, request.DeliveryPriority);
+            var result = await _setPriorityOrderCommandHandler.SetPriorityHandleAsync(command);
+
+            if (!result)
+                return BadRequest("No se pudo establecer la prioridad.");
+
+            return Ok("Prioridad establecida correctamente.");
+        }
+
+        /// <summary>
+        /// Endpoint para verificar una orden logística
+        /// </summary>
+        /// <param name="logisticOrderId"></param>
+        /// <returns></returns>
+        [HttpPost("verify-order/{logisticOrderId}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> VerifyOrder(int logisticOrderId)
+        {
+            var command = new VerifiedOrderCommand(logisticOrderId);
+            var result = await _verifiedOrderCommandHandler.VerifiedOrderHandleAsync(command);
+            if (!result)
+                return BadRequest("No se pudo verificar la orden.");
+            return Ok("Orden verificada correctamente.");
+        }
+
+        /// <summary>
+        /// Endpoint para verificar una orden logística de tipo Cash
+        /// </summary>
+        /// <param name="logisticOrderId"></param>
+        /// <returns></returns>
+        [HttpPost("check-cash-order/{logisticOrderId}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> CheckCashOrder(int logisticOrderId)
+        {
+            var command = new CheckCashOrderCommand(logisticOrderId);
+            var result = await _checkCashOrderCommandHandler.CheckCashHandleAsync(command);
+            if (!result)
+                return BadRequest("No se pudo verificar la orden con pago en efectivo.");
+            return Ok("Orden con pago en efectivo verificada correctamente.");
+        }
+
+        /// <summary>
+        /// Endpoint para retornar una lista de ordenes en base a su prioridad de entrega
+        /// </summary>
+        /// <param name="deliveryPriority"></param>
+        /// <returns></returns>
+        [HttpGet("get-orders-by-priority/{deliveryPriority}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetOrdersByDeliveryPriority(DeliveryPriority deliveryPriority)
+        {                            
+            var query = new GetOrdersByDeliveryPriorityQuery(deliveryPriority);
+            var orders = await _getOrdersByDeliveryPriorityQueryHandler.GetOrdersByDeliveryPriorityAsync(query);
+            return Ok(orders);
+        }
 
         /// <summary>
         /// Endpoint para retornar una lista de todas las órdenes logísticas
@@ -544,7 +702,6 @@ namespace LogisticService.API.Controllers
             var orders = await _getAllOrdersQueryHandler.GetAllHandleAsync();
             return Ok(orders);
         }
-
 
         /// <summary>
         /// endpoint para retornar una orden logística por su ID
@@ -661,5 +818,7 @@ namespace LogisticService.API.Controllers
             var orders = await _getOrdersByOperatorIdQueryHandler.HandleAsync(query);
             return Ok(orders);
         }
+
+
     }
 }

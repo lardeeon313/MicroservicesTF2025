@@ -1,4 +1,5 @@
 ﻿using SalesService.Domain.Enums;
+using SharedKernel.IntegrationEvents.PaymentTypes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

@@ -85,6 +85,12 @@ namespace DepotService.Infraestructure
                             DeliveryDate = evento.DeliveryDate,
                             OrderDate = evento.OrderDate,
                             Status = OrderStatus.Received,
+                            PaymentType = evento.PaymentType.HasValue
+                            ? (PaymentType)Enum.Parse(
+                                typeof(PaymentType),
+                                evento.PaymentType.Value.ToString()
+                              )
+                            : null,
                             DeliveryAddress = new OrderAddress
                             {
                                 Street = evento.DeliveryAddress.Street,
