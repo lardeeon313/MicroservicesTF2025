@@ -21,6 +21,7 @@ namespace DepotService.Domain.Entities
             public DateTime OrderDate { get; set; }
             public DateTime? DeliveryDate { get; set; }
             public OrderStatus Status { get; set; }
+            public PaymentType? PaymentType { get; set; }
             public decimal TotalAmount { get; set; } = 0;
 
             // Relacion con Items

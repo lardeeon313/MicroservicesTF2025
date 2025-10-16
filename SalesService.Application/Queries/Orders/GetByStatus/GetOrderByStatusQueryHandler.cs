@@ -31,6 +31,7 @@ namespace SalesService.Application.Queries.Orders.GetByStatus
                 DeliveryDate = order.DeliveryDate,
                 ModifiedStatusDate = order.ModifiedStatusDate,
                 OrderDate = order.OrderDate,
+                PaymentType = order.PaymentType,
                 Status = order.Status,
                 Items = order.Items.Select(item => new OrderItemDto
                 {

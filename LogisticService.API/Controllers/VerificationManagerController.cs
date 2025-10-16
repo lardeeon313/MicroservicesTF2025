@@ -19,8 +19,10 @@ using LogisticService.Application.Commands.LogisticManager.DeliveryZone.DeleteDe
 using LogisticService.Application.Commands.LogisticManager.DeliveryZone.DisableDeliveryZone;
 using LogisticService.Application.Commands.LogisticManager.DeliveryZone.UpdateDeliveryZone;
 using LogisticService.Application.Commands.LogisticManager.LogisticOrder.AssignOrder;
+using LogisticService.Application.Commands.LogisticManager.LogisticOrder.CheckCashOrder;
 using LogisticService.Application.Commands.LogisticManager.LogisticOrder.RemoveAssignOrder;
 using LogisticService.Application.Commands.LogisticManager.LogisticOrder.SetPriorityOrder;
+using LogisticService.Application.Commands.LogisticManager.LogisticOrder.VerifiedOrder;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetAllTeams;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetById;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetAllZones;
@@ -73,9 +75,11 @@ namespace LogisticService.API.Controllers
         IValidator<CreateDeliveryZoneRequest> createDeliveryZoneRequestValidator,
         IValidator<UpdateDeliveryZoneRequest> updateDeliveryZoneRequestValidator,
 
+        ICheckCashOrderCommandHandler checkCashOrderCommandHandler,
         IAssignOrderCommandHandler assignOrderCommandHandler,
         IRemoveAssignOrderCommandHandler removeAssignOrderCommandHandler,
         ISetDeliveryPriorityOrderCommandHandler setPriorityOrderCommandHandler,
+        IVerifiedOrderCommandHandler verifiedOrderCommandHandler,
         IGetOrdersByDeliveryPriorityQueryHandler getOrdersByDeliveryPriorityQueryHandler,
         IGetAllOrdersQueryHandler getAllOrdersQueryHandler,
         IGetOrderByIdCustomerQueryHandler getOrderByIdCustomerQueryHandler,
@@ -111,10 +115,11 @@ namespace LogisticService.API.Controllers
         private readonly IValidator<CreateDeliveryZoneRequest> _createDeliveryZoneRequestValidator = createDeliveryZoneRequestValidator;
         private readonly IValidator<UpdateDeliveryZoneRequest> _updateDeliveryZoneRequestValidator = updateDeliveryZoneRequestValidator;
 
-
+        private readonly ICheckCashOrderCommandHandler _checkCashOrderCommandHandler = checkCashOrderCommandHandler;
         private readonly IRemoveAssignOrderCommandHandler _removeAssignOrderCommandHandler = removeAssignOrderCommandHandler;
         private readonly IAssignOrderCommandHandler _assignOrderCommandHandler = assignOrderCommandHandler;
         private readonly ISetDeliveryPriorityOrderCommandHandler _setPriorityOrderCommandHandler = setPriorityOrderCommandHandler;
+        private readonly IVerifiedOrderCommandHandler _verifiedOrderCommandHandler = verifiedOrderCommandHandler;
         private readonly IGetOrdersByDeliveryPriorityQueryHandler _getOrdersByDeliveryPriorityQueryHandler = getOrdersByDeliveryPriorityQueryHandler;
         private readonly IGetAllOrdersQueryHandler _getAllOrdersQueryHandler = getAllOrdersQueryHandler;
         private readonly IGetOrderByIdCustomerQueryHandler _getOrderByIdCustomerQueryHandler = getOrderByIdCustomerQueryHandler;
@@ -630,6 +635,42 @@ namespace LogisticService.API.Controllers
                 return BadRequest("No se pudo establecer la prioridad.");
 
             return Ok("Prioridad establecida correctamente.");
+        }
+
+        /// <summary>
+        /// Endpoint para verificar una orden logística
+        /// </summary>
+        /// <param name="logisticOrderId"></param>
+        /// <returns></returns>
+        [HttpPost("verify-order/{logisticOrderId}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> VerifyOrder(int logisticOrderId)
+        {
+            var command = new VerifiedOrderCommand(logisticOrderId);
+            var result = await _verifiedOrderCommandHandler.VerifiedOrderHandleAsync(command);
+            if (!result)
+                return BadRequest("No se pudo verificar la orden.");
+            return Ok("Orden verificada correctamente.");
+        }
+
+        /// <summary>
+        /// Endpoint para verificar una orden logística de tipo Cash
+        /// </summary>
+        /// <param name="logisticOrderId"></param>
+        /// <returns></returns>
+        [HttpPost("check-cash-order/{logisticOrderId}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> CheckCashOrder(int logisticOrderId)
+        {
+            var command = new CheckCashOrderCommand(logisticOrderId);
+            var result = await _checkCashOrderCommandHandler.CheckCashHandleAsync(command);
+            if (!result)
+                return BadRequest("No se pudo verificar la orden con pago en efectivo.");
+            return Ok("Orden con pago en efectivo verificada correctamente.");
         }
 
         /// <summary>

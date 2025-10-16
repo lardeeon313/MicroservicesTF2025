@@ -1,15 +1,18 @@
-﻿using SalesService.Domain.Entities.OrderEntity;
+﻿using Microsoft.Extensions.Logging;
+using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Messaging.Publisher;
-using SharedKernel.IntegrationEvents.SalesEvents.Order;
+using SharedKernel.IntegrationEvents.PaymentTypes;
 using SharedKernel.IntegrationEvents.SalesEvents.DTOs;
+using SharedKernel.IntegrationEvents.SalesEvents.Order;
+using SharedKernel.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
 namespace SalesService.Application.Commands.Orders.UpdateStatus
 {
@@ -61,6 +64,7 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
                         DeliveryDate = existingOrder.DeliveryDate,
                         OrderDate = existingOrder.OrderDate,
                         Status = existingOrder.Status,
+                        PaymentType = existingOrder.PaymentType.ToDto(),
                         Items = existingOrder.Items.Select(i => new OrderItemsDto
                         {
                             Id = i.Id,

@@ -11,6 +11,7 @@ using SalesService.Application.Queries.Customers.GetAllCustomers;
 using SalesService.Application.Queries.Customers.GetCustomer;
 using SalesService.Application.Queries.Customers.GetCustomerByEmail;
 using SalesService.Application.Queries.Customers.GetCustomerById;
+using SalesService.Application.Queries.Customers.GetCustomerPaymentTypes;
 using SalesService.Application.Queries.Customers.GetPagedCustomers;
 
 
@@ -29,6 +30,7 @@ namespace SalesService.API.Controllers
         IGetCustomerByIdQueryHandler getCustomerByIdQueryHandler,
         IGetAllCustomersQueryHandler getAllCustomersQueryHandler,
         IGetPagedCustomersQueryHandler getPagedCustomersQueryHandler,
+        IGetCustomerPaymentTypesQueryHandler getCustomerPaymentTypesQueryHandler,
         IValidator<RegisterCustomerRequest> registerCustomerValidator,
         IValidator<UpdateCustomerRequest> updateCustomerValidator
         ) : ControllerBase
@@ -42,6 +44,7 @@ namespace SalesService.API.Controllers
         private readonly IGetCustomerByEmailQueryHandler _getCustomerByEmailQueryHandler = getCustomerByEmailQueryHandler;
         private readonly IGetCustomerByIdQueryHandler _getCustomerByIdQueryHandler = getCustomerByIdQueryHandler;
         private readonly IGetAllCustomersQueryHandler _getAllCustomersQueryHandler = getAllCustomersQueryHandler;
+        private readonly IGetCustomerPaymentTypesQueryHandler _getCustomerPaymentTypesQueryHandler = getCustomerPaymentTypesQueryHandler;
         private readonly IValidator<RegisterCustomerRequest> _registerCustomerValidator = registerCustomerValidator;
         private readonly IValidator<UpdateCustomerRequest> _updateCustomerValidator = updateCustomerValidator;
 
@@ -82,7 +85,8 @@ namespace SalesService.API.Controllers
                 request.LastName,
                 request.Email,
                 request.PhoneNumber,
-                addresses
+                addresses,
+                request.PaymentTypes
             );
 
             var result = await _customerRegisterCommandHandler.RegisterHandle(command);
@@ -132,7 +136,8 @@ namespace SalesService.API.Controllers
                 request.LastName,
                 request.Email,
                 request.PhoneNumber,
-                addresses
+                addresses,
+                request.PaymentTypes
             );
 
             var result = await _customerUpdateCommandHandler.UpdateHandle(command);
@@ -214,6 +219,23 @@ namespace SalesService.API.Controllers
             var query = new GetPagedCustomersQuery(pageNumber, pageSize);
             var result = await _getPagedCustomersQueryHandler.HandleAsync(query, cancellationToken);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// endpoint para obtener los tipos de pago de un cliente
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
+        [HttpGet("payment-types/{customerId:guid}")]        
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetCustomerPaymentTypes(Guid customerId)
+        {
+            var query = new GetCustomerPaymentTypesQuery(customerId);
+            var paymentTypes = await _getCustomerPaymentTypesQueryHandler.HandleAsync(query);
+            return paymentTypes is not null
+                ? Ok(paymentTypes)
+                : NotFound(new { message = "Customer not found or has no payment types." });
         }
 
         /// <summary>

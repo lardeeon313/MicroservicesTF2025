@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SalesService.Domain.Enums;
+using SharedKernel.IntegrationEvents.PaymentTypes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +16,8 @@ namespace SalesService.Application.DTOs.Customer
         public string Email { get; set; } = default!;
         public string PhoneNumber { get; set; } = default!;
         public DateTime RegistrationDate { get; set; }
-        public List<AddressDto> Addresses { get; set; } = new();
+        public List<AddressDto> Addresses { get; set; } = new();  
+        public List<PaymentType> PaymentTypes { get; set; } = new();
         public string Status { get; set; } = default!;
 
     }

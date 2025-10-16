@@ -1,5 +1,7 @@
 ﻿using SalesService.Application.DTOs.Customer;
 using SalesService.Domain.Entities;
+using SalesService.Domain.Enums;
+using SharedKernel.IntegrationEvents.PaymentTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +12,7 @@ namespace SalesService.Application.Commands.Customers.Update
 {
     public class UpdateCustomerCommand
     {
-        public UpdateCustomerCommand(Guid id, string? firstName, string? lastName, string? email, string? phoneNumber, List<AddressDto> addresses)
+        public UpdateCustomerCommand(Guid id, string? firstName, string? lastName, string? email, string? phoneNumber, List<AddressDto> addresses, List<PaymentType> paymentTypes)
         {
             Id = id;
             FirstName = firstName;
@@ -18,6 +20,7 @@ namespace SalesService.Application.Commands.Customers.Update
             Email = email;
             PhoneNumber = phoneNumber;
             Addresses = addresses;
+            PaymentTypes = paymentTypes;
         }
 
         public Guid Id { get; set; }
@@ -26,6 +29,7 @@ namespace SalesService.Application.Commands.Customers.Update
         public string? Email { get; set; } 
         public string? PhoneNumber { get; set; }
         public List<AddressDto> Addresses { get; set; } = new();
+        public List<PaymentType> PaymentTypes { get; set; } = new();
 
     }
 }

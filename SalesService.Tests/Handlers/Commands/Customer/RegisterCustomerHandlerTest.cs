@@ -4,6 +4,7 @@ using SalesService.Application.Commands.Customers.Register;
 using SalesService.Application.DTOs.Customer;
 using SalesService.Domain.Entities;
 using SalesService.Domain.Entities.CustomerEntity;
+using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Messaging.Publisher;
 using SharedKernel.IntegrationEvents.SalesEvents.Customer;
@@ -48,7 +49,8 @@ namespace SalesService.Tests.Handlers
                         Latitude = -34.6037,
                         Longitude = -58.3816
                     }
-                }
+                },
+                new List<PaymentType> { PaymentType.Promissory_Note, PaymentType.Cash }
             );
 
             _customerRepositoryMock
@@ -111,7 +113,8 @@ namespace SalesService.Tests.Handlers
                         Latitude = -34.6037,
                         Longitude = -58.3816
                     }
-                }
+                },
+                new List<PaymentType> { PaymentType.Promissory_Note, PaymentType.Cash }
             );
 
             _customerRepositoryMock
@@ -173,7 +176,8 @@ namespace SalesService.Tests.Handlers
                         Latitude = -34.6037,
                         Longitude = -58.3816
                     }
-                }
+                },
+                new List<PaymentType> { PaymentType.Promissory_Note, PaymentType.Cash }
             );
 
             var newAddresses = command.Addresses.Select(a => new Address

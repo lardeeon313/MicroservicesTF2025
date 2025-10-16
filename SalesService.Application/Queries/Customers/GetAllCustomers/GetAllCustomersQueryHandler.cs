@@ -38,7 +38,10 @@ namespace SalesService.Application.Queries.Customers.GetAllCustomers
                     Latitude = a.Latitude,
                     Longitude = a.Longitude,
                     FormattedAddress = a.FormattedAddress,
-                }).ToList()
+                }).ToList(),
+                PaymentTypes = c.PaymentTypes
+                    .Select(pt => pt.PaymentType)
+                    .ToList()
             });
         }
     }

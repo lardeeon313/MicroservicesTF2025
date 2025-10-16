@@ -1,6 +1,7 @@
 using FluentValidation;
 using LogisticService.API.RequestDtos.DeliveryTeams;
 using LogisticService.API.RequestDtos.DeliveryZones;
+using LogisticService.API.RequestDtos.LogisticOrders;
 using LogisticService.API.Validators.DeliveryTeams;
 using LogisticService.API.Validators.DeliveryZones;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.ActiveDeliveryTeam;
@@ -18,8 +19,10 @@ using LogisticService.Application.Commands.LogisticManager.DeliveryZone.DeleteDe
 using LogisticService.Application.Commands.LogisticManager.DeliveryZone.DisableDeliveryZone;
 using LogisticService.Application.Commands.LogisticManager.DeliveryZone.UpdateDeliveryZone;
 using LogisticService.Application.Commands.LogisticManager.LogisticOrder.AssignOrder;
+using LogisticService.Application.Commands.LogisticManager.LogisticOrder.CheckCashOrder;
 using LogisticService.Application.Commands.LogisticManager.LogisticOrder.RemoveAssignOrder;
 using LogisticService.Application.Commands.LogisticManager.LogisticOrder.SetPriorityOrder;
+using LogisticService.Application.Commands.LogisticManager.LogisticOrder.VerifiedOrder;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetAllTeams;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetById;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetAllZones;
@@ -124,6 +127,8 @@ builder.Services.AddScoped<IGetDeliveryZoneByIdQueryHandler, GetDeliveryZoneById
 builder.Services.AddScoped<IAssignOrderCommandHandler, AssignOrderCommandHandler>();
 builder.Services.AddScoped<IRemoveAssignOrderCommandHandler, RemoveAssignOrderCommandHandler>();
 builder.Services.AddScoped<ISetDeliveryPriorityOrderCommandHandler, SetDeliveryPriorityOrderCommandHandler>();
+builder.Services.AddScoped<IVerifiedOrderCommandHandler, VerifiedOrderCommandHandler>();
+builder.Services.AddScoped<ICheckCashOrderCommandHandler, CheckCashOrderCommandHandler>();
 
 //Queries LogisticOrders
 builder.Services.AddScoped<IGetOrdersByDeliveryPriorityQueryHandler, GetOrdersByDeliveryPriorityQueryHandler>();

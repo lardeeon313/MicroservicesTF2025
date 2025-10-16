@@ -34,8 +34,16 @@ namespace SalesService.Application.Commands.Customers.Register
                 FirstName = command.FirstName,
                 LastName = command.LastName,
                 Email = command.Email,
-                PhoneNumber = command.PhoneNumber,
+                PhoneNumber = command.PhoneNumber,                                
             };
+
+            customer.PaymentTypes = command.PaymentTypes
+                .Select(pt => new CustomerPaymentType
+                {
+                    CustomerId = customer.Id,
+                    PaymentType = pt
+                })
+                .ToList();
 
             customer.Addresses = command.Addresses.Select(a => new Address
             {
@@ -60,7 +68,8 @@ namespace SalesService.Application.Commands.Customers.Register
                 Id = customer.Id,
                 FirstName = customer.FirstName,
                 Email = customer.Email,
-                PhoneNumber = customer.PhoneNumber,
+                PhoneNumber = customer.PhoneNumber,                
+                PaymentTypes = command.PaymentTypes
             };
 
             customerCreatedEvent.Addresses = command.Addresses.Select(a => new AddressDto
@@ -75,7 +84,7 @@ namespace SalesService.Application.Commands.Customers.Register
                 Latitude = a.Latitude,
                 Longitude = a.Longitude,
                 FormattedAddress = a.FormattedAddress,
-                CustomerId = customer.Id
+                CustomerId = customer.Id    
             }).ToList();
 
             await _publisher.PublishAsync(customerCreatedEvent, "customer_registered_queue");

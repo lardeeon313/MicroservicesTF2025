@@ -2,6 +2,7 @@
 using SalesService.Application.DTOs.Order;
 using SalesService.Application.DTOs.Order.Request;
 using SalesService.Domain.Enums;
+using SharedKernel.IntegrationEvents.PaymentTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
