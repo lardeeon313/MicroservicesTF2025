@@ -7,15 +7,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
+using RabbitMQ.Client; // v7.1.2
 using RabbitMQ.Client.Events;
 using SharedKernel.IntegrationEvents.DepotEvents;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
+using static System.Collections.Specialized.BitVector32;
 
 namespace LogisticService.Infraestructure.Messaging.Consumer
 {
@@ -25,6 +26,12 @@ namespace LogisticService.Infraestructure.Messaging.Consumer
         private readonly IConfiguration _config;
         private readonly IServiceScopeFactory _scopeFactory;
 
+        private IConnection? _connection;
+        private IChannel? _channel;
+
+        private const string EXCHANGE_NAME = "order_invoiced_exchange";
+        private const string QUEUE_NAME = "logistic_order_invoiced_queue";
+
         public OrderInvoicedConsumer(ILogger<OrderInvoicedConsumer> logger, IConfiguration config, IServiceScopeFactory scopeFactory)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -32,12 +39,6 @@ namespace LogisticService.Infraestructure.Messaging.Consumer
             _scopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
         }
 
-        /// <summary>
-        /// Consumidor para procesar e instanciar la orden que ya ha sido facturada en Deposito - Lista para verificar.-
-        /// </summary>
-        /// <param name="stoppingToken"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var factory = new ConnectionFactory
@@ -48,83 +49,93 @@ namespace LogisticService.Infraestructure.Messaging.Consumer
                 Password = _config["RabbitMQ:Password"] ?? "guest"
             };
 
-            var connection = await factory.CreateConnectionAsync();
-            var channel = await connection.CreateChannelAsync();
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    _connection = await factory.CreateConnectionAsync();
+                    _channel = await _connection.CreateChannelAsync();
+                    _logger.LogInformation("RabbitMQ connection established for LogisticService (OrderInvoicedConsumer).");
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to connect to RabbitMQ. Retrying in 5s...");
+                    await Task.Delay(5000, stoppingToken);
+                }
+            }
 
-            await channel.QueueDeclareAsync("order_invoiced_queue", durable: true, exclusive: false, autoDelete: false);
+            if (stoppingToken.IsCancellationRequested || _channel == null) return;
 
-            var consumer = new AsyncEventingBasicConsumer(channel);
+            await _channel.ExchangeDeclareAsync(
+              exchange: EXCHANGE_NAME,
+              type: ExchangeType.Fanout,
+              durable: true,
+              autoDelete: false
+            );
+
+            await _channel.QueueDeclareAsync(
+              queue: QUEUE_NAME,
+              durable: true,
+              exclusive: false,
+              autoDelete: false
+            );
+
+            await _channel.QueueBindAsync(
+              queue: QUEUE_NAME,
+              exchange: EXCHANGE_NAME,
+              routingKey: ""
+            );
+
+            var consumer = new AsyncEventingBasicConsumer(_channel);
 
             consumer.ReceivedAsync += async (model, ea) =>
             {
                 var json = Encoding.UTF8.GetString(ea.Body.ToArray());
-                var evento = JsonSerializer.Deserialize<OrderInvoicedIntegrationEvent>(json);
+                OrderInvoicedIntegrationEvent? evento = null;
 
-                if (evento is not null)
+                try
                 {
-                    using var scope = _scopeFactory.CreateScope();
-                    var context = scope.ServiceProvider.GetRequiredService<LogisticDbContext>();
-                    var repository = scope.ServiceProvider.GetRequiredService<ILogisticOrderRepository>();
+                    evento = JsonSerializer.Deserialize<OrderInvoicedIntegrationEvent>(json);
 
-                    try
+                    if (evento is not null)
                     {
+                        using var scope = _scopeFactory.CreateScope();
+                        var context = scope.ServiceProvider.GetRequiredService<LogisticDbContext>();
+                        var repository = scope.ServiceProvider.GetRequiredService<ILogisticOrderRepository>();
+
+                        // PASO 1: Customer
                         var customer = await context.Customers
-                            .FirstOrDefaultAsync(c => c.Id == evento.CustomerId);
+                .FirstOrDefaultAsync(c => c.Id == evento.CustomerId, stoppingToken);
 
                         if (customer == null)
                         {
-                            customer = new LogisticCustomer
-                            {
-                                Id = evento.CustomerId,
-                                FirstName = evento.CustomerName.Split(" ").First(),
-                                LastName = evento.CustomerName.Split(" ").Last(),
-                                Email = evento.CustomerEmail,
-                                PhoneNumber = evento.PhoneNumber,
-                                RegistrationDate = evento.RegistrationDate,
-                            };
-                            await context.Customers.AddAsync(customer);
-                            await context.SaveChangesAsync();
+                            customer = new LogisticCustomer { Id = evento.CustomerId, FirstName = evento.CustomerName.Split(" ").First(), LastName = evento.CustomerName.Split(" ").Last(), Email = evento.CustomerEmail, PhoneNumber = evento.PhoneNumber, RegistrationDate = evento.RegistrationDate, };
+                            await context.Customers.AddAsync(customer, stoppingToken);
+                            await context.SaveChangesAsync(stoppingToken);
                         }
 
-                        // 2. Crear dirección de entrega
-                        var address = new LogisticAddress
-                        {
-                            Street = evento.DeliveryAddress.Street,        
-                            Number = evento.DeliveryAddress.Number,
-                            Apartment = evento.DeliveryAddress.Apartment,
-                            City = evento.DeliveryAddress.City,
-                            Province = evento.DeliveryAddress.Province,
-                            Country = evento.DeliveryAddress.Country,
-                            PostalCode = evento.DeliveryAddress.PostalCode,
-                            FormattedAddress = evento.DeliveryAddress.FormattedAddress,
-                            Latitude = evento.DeliveryAddress.Latitude,
-                            Longitude = evento.DeliveryAddress.Longitude,
-                            CreatedAt = DateTime.UtcNow,
-                        };
-                        await context.Addresses.AddAsync(address);
-                        await context.SaveChangesAsync();
+                        // PASO 2: Address
+                        var address = new LogisticAddress { Street = evento.DeliveryAddress.Street, Number = evento.DeliveryAddress.Number, Apartment = evento.DeliveryAddress.Apartment, City = evento.DeliveryAddress.City, Province = evento.DeliveryAddress.Province, Country = evento.DeliveryAddress.Country, PostalCode = evento.DeliveryAddress.PostalCode, FormattedAddress = evento.DeliveryAddress.FormattedAddress, Latitude = evento.DeliveryAddress.Latitude, Longitude = evento.DeliveryAddress.Longitude, CreatedAt = DateTime.UtcNow, };
+                        await context.Addresses.AddAsync(address, stoppingToken);
+                        await context.SaveChangesAsync(stoppingToken);
 
-                        // Crear nueva orden logística
+                        // PASO 3: LogisticOrder
                         var logisticOrder = new LogisticOrder
                         {
                             SalesOrderId = evento.SalesOrderId,
-                            DepotOrderId = evento.DepotOrderId, 
+                            DepotOrderId = evento.DepotOrderId,
                             CustomerId = customer.Id,
                             DeliveryAddressId = address.Id,
-                            Status = OrderStatus.PendingVerification, 
+                            Status = OrderStatus.PendingVerification,
                             TotalAmount = evento.TotalAmount,
                             DeliveryDate = evento.DeliveryDate,
                             OrderDate = evento.OrderDate,
-                            PaymentType = evento.PaymentType.HasValue
-                            ? (PaymentType)Enum.Parse(
-                                typeof(PaymentType),
-                                evento.PaymentType.Value.ToString()
-                              )
-                            : null,
+                            PaymentType = evento.PaymentType.HasValue ? (PaymentType)Enum.Parse(typeof(PaymentType), evento.PaymentType.Value.ToString()) : null,
                             Items = evento.OrderItems.Select(i => new LogisticOrderItem
                             {
                                 SalesOrderItemId = i.SalesOrderItemId,
-                                DepotOrderItemId = i.DepotOrderItemId,
+                                DepotOrderItemId = i.DepotOrderItemId, // Asegúrate que esta propiedad exista en tu entidad
                                 ProductName = i.ProductName,
                                 ProductBrand = i.ProductBrand,
                                 Quantity = i.Quantity,
@@ -133,35 +144,46 @@ namespace LogisticService.Infraestructure.Messaging.Consumer
                                 Total = i.Quantity * i.UnitPrice
                             }).ToList()
                         };
-
-                        // Insertar en DB
-                        await context.LogisticOrders.AddAsync(logisticOrder);
-                        await context.SaveChangesAsync();
+                        await context.LogisticOrders.AddAsync(logisticOrder, stoppingToken);
+                        await context.SaveChangesAsync(stoppingToken);
 
                         _logger.LogInformation("✅ Logistic order created with SalesOrderId {SalesOrderId}", evento.SalesOrderId);
-
+                        await _channel.BasicAckAsync(deliveryTag: ea.DeliveryTag, multiple: false);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        _logger.LogError(ex, "❌ Error creating logistic order from SalesOrderId {SalesOrderId}", evento.SalesOrderId);
+                        _logger.LogWarning("⚠️ Received empty or invalid OrderInvoicedIntegrationEvent. Rejecting message.");
+                        await _channel.BasicNackAsync(deliveryTag: ea.DeliveryTag, multiple: false, requeue: false);
                     }
-
                 }
-                else
+                catch (Exception ex)
                 {
-                    _logger.LogWarning("⚠️ Received empty or invalid OrderInvoicedIntegrationEvent.");
+                    _logger.LogError(ex, "❌ Error creating logistic order from SalesOrderId {SalesOrderId}. Rejecting message.", evento?.SalesOrderId ?? 0);
+                    await _channel.BasicNackAsync(deliveryTag: ea.DeliveryTag, multiple: false, requeue: false);
                 }
             };
 
-            await channel.BasicConsumeAsync(
-                queue: "order_invoiced_queue",
-                autoAck: true,
-                consumer: consumer
+            await _channel.BasicConsumeAsync(
+              queue: QUEUE_NAME,
+              autoAck: false,
+              consumer: consumer
             );
 
-            _logger.LogInformation("OrderInvoicedConsumer is running and waiting for messages.");
+            _logger.LogInformation("LogisticService (OrderInvoicedConsumer) is running and waiting for messages on queue '{queueName}'.", QUEUE_NAME);
 
-            await Task.CompletedTask;
+            try
+            {
+                await Task.Delay(Timeout.Infinite, stoppingToken);
+            }
+            catch (TaskCanceledException)
+            {
+                _logger.LogInformation("OrderInvoicedConsumer (Logistic) stopping.");
+              }
+            finally
+            {
+                if (_channel != null) await _channel.CloseAsync();
+                if (_connection != null) await _connection.CloseAsync();
+            }
         }
     }
 }
