@@ -13,20 +13,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading; // Añadido
+using System.Threading.Channels;
 using System.Threading.Tasks;
+
+// Asegúrate de tener el DbContext correcto si no está en este namespace
+// using SalesService.Infraestructure.Persistence; 
 
 namespace SalesService.Infraestructure.Messaging.Consumer
 {
-    /// <summary>
-    /// Consumidor para eventos de pedidos facturados.
-    /// </summary>
-    public class OrderInvoicedConsumer : BackgroundService
+    /// <summary>
+    /// Consumidor para eventos de pedidos facturados.
+    /// </summary>
+    public class OrderInvoicedConsumer : BackgroundService
     {
-        private readonly ILogger<OrderMissingConsumer> _logger;
+        // --- CAMBIO 1: Corregir el tipo de Logger ---
+        private readonly ILogger<OrderInvoicedConsumer> _logger;
         private readonly IConfiguration _config;
         private readonly IServiceScopeFactory _scopeFactory;
 
-        public OrderInvoicedConsumer(ILogger<OrderMissingConsumer> logger, IConfiguration config, IServiceScopeFactory scopeFactory)
+        // --- CAMBIO 2: Añadir campos para conexión y canal (nullable) ---
+        private IConnection? _connection;
+        private IChannel? _channel;
+
+        // --- CAMBIO 3: Definir nombres para el Exchange y la Cola ÚNICA ---
+        private const string EXCHANGE_NAME = "order_invoiced_exchange";
+        private const string QUEUE_NAME = "sales_order_invoiced_queue"; // ¡Cola única para Sales!
+
+        public OrderInvoicedConsumer(ILogger<OrderInvoicedConsumer> logger, IConfiguration config, IServiceScopeFactory scopeFactory)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -43,31 +57,65 @@ namespace SalesService.Infraestructure.Messaging.Consumer
                 Password = _config["RabbitMQ:Password"] ?? "guest"
             };
 
-            var connection = await factory.CreateConnectionAsync();
-            var channel = await connection.CreateChannelAsync();
+            // --- CAMBIO 4: Añadir bucle de reintento de conexión ---
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    _connection = await factory.CreateConnectionAsync();
+                    _channel = await _connection.CreateChannelAsync();
+                    _logger.LogInformation("RabbitMQ connection established for SalesService (OrderInvoicedConsumer).");
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to connect to RabbitMQ. Retrying in 5s...");
+                    await Task.Delay(5000, stoppingToken);
+                }
+            }
 
-            await channel.QueueDeclareAsync(
-                queue: "order_invoiced_queue",
+            if (stoppingToken.IsCancellationRequested || _channel == null) return;
+
+
+            // --- CAMBIO 5: Declarar el Exchange, declarar la Cola ÚNICA y BINDEAR ---
+            await _channel.ExchangeDeclareAsync(
+                exchange: EXCHANGE_NAME,
+                type: ExchangeType.Fanout, // Debe coincidir con el publicador
                 durable: true,
-                exclusive: false,
                 autoDelete: false
             );
 
-            var consumer = new AsyncEventingBasicConsumer(channel);
+            await _channel.QueueDeclareAsync(
+              queue: QUEUE_NAME, // Usar la cola única
+                      durable: true,
+              exclusive: false,
+              autoDelete: false
+            );
+
+            await _channel.QueueBindAsync(
+                queue: QUEUE_NAME,
+                exchange: EXCHANGE_NAME,
+                routingKey: "" // Fanout ignora el routing key
+            );
+            // --- Fin del cambio 5 ---
+
+            var consumer = new AsyncEventingBasicConsumer(_channel);
 
             consumer.ReceivedAsync += async (model, ea) =>
             {
                 var json = Encoding.UTF8.GetString(ea.Body.ToArray());
-                var evento = JsonSerializer.Deserialize<OrderInvoicedIntegrationEvent>(json);
+                OrderInvoicedIntegrationEvent? evento = null; // Marcar como nullable
 
-                if (evento is not null)
+                try
                 {
-                    using var scope = _scopeFactory.CreateScope();
-                    var context = scope.ServiceProvider.GetRequiredService<SalesDbContext>();
-                    var repository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
-
-                    try
+                    evento = JsonSerializer.Deserialize<OrderInvoicedIntegrationEvent>(json);
+                    if (evento is not null)
                     {
+                        using var scope = _scopeFactory.CreateScope();
+                        var context = scope.ServiceProvider.GetRequiredService<SalesDbContext>();
+                        var repository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
+
+
                         var salesOrder = await repository.GetByIdAsync(evento.SalesOrderId);
 
                         if (salesOrder != null)
@@ -81,17 +129,15 @@ namespace SalesService.Infraestructure.Messaging.Consumer
                             foreach (var itemEvento in evento.OrderItems)
                             {
                                 var orderItem = salesOrder.Items
-                                    .FirstOrDefault(i => i.Id == itemEvento.SalesOrderItemId);
+                                  .FirstOrDefault(i => i.Id == itemEvento.SalesOrderItemId);
 
                                 if (orderItem != null)
                                 {
                                     orderItem.PackagingType = itemEvento.PackagingType;
                                     orderItem.UnitPrice = itemEvento.UnitPrice;
-                                    // Total es propiedad calculada => no hace falta setearlo
                                 }
                                 else
                                 {
-                                    // En caso de que Depot haya agregado ítems adicionales (poco común, pero seguro)
                                     salesOrder.Items.Add(new OrderItem
                                     {
                                         Id = itemEvento.SalesOrderItemId,
@@ -104,12 +150,12 @@ namespace SalesService.Infraestructure.Messaging.Consumer
                                     });
                                 }
                             }
-                            
+
                             await repository.UpdateAsync(salesOrder);
-                            await context.SaveChangesAsync();
+                            await context.SaveChangesAsync(); // Primer SaveChanges
 
                             _logger.LogInformation("✅ Order {OrderId} updated as Invoiced with items.", salesOrder.Id);
-                            
+
                             var statusHistory = new OrderStatusHistory
                             {
                                 OrderId = salesOrder.Id,
@@ -119,34 +165,54 @@ namespace SalesService.Infraestructure.Messaging.Consumer
                             };
 
                             await context.OrderStatusHistories.AddAsync(statusHistory);
-                            await context.SaveChangesAsync();
+                            await context.SaveChangesAsync(); // Segundo SaveChanges
+
+                            // --- CAMBIO 6: Confirmar el mensaje (ACK) ---
+                            await _channel.BasicAckAsync(deliveryTag: ea.DeliveryTag, multiple: false);
                         }
                         else
                         {
                             _logger.LogWarning("⚠️ Order with ID {SalesOrderId} not found.", evento.SalesOrderId);
+                            // --- CAMBIO 7: Rechazar el mensaje (NACK) ---
+                            await _channel.BasicNackAsync(deliveryTag: ea.DeliveryTag, multiple: false, requeue: false);
                         }
+
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        _logger.LogError(ex, "❌ Error updating sales order from event {SalesOrderId}", evento.SalesOrderId);
+                        _logger.LogWarning("⚠️ Received an empty or invalid OrderInvoicedIntegrationEvent.");
+                        // --- CAMBIO 7: Rechazar el mensaje (NACK) ---
+                        await _channel.BasicNackAsync(deliveryTag: ea.DeliveryTag, multiple: false, requeue: false);
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    _logger.LogWarning("⚠️ Received an empty or invalid OrderInvoicedIntegrationEvent.");
+                    _logger.LogError(ex, "❌ Error updating sales order from event {SalesOrderId}", evento?.SalesOrderId ?? 0);
+                    // --- CAMBIO 7: Rechazar el mensaje (NACK) ---
+                    await _channel.BasicNackAsync(deliveryTag: ea.DeliveryTag, multiple: false, requeue: false);
                 }
             };
 
-            await channel.BasicConsumeAsync(
-                queue: "order_invoiced_queue",
-                autoAck: true,
-                consumer: consumer
-            );
+            await _channel.BasicConsumeAsync(
+              queue: QUEUE_NAME,
+              autoAck: false,
+               consumer: consumer);
+            _logger.LogInformation("SalesService (OrderInvoicedConsumer) is running and listening on queue '{queueName}'.", QUEUE_NAME);
 
-            _logger.LogInformation("OrderInPreparationConsumer is running and listening for messages on 'order_invoiced_queue'.");
-
-            await Task.CompletedTask;
-
+            // --- CAMBIO 8: Reemplazar Task.CompletedTask para MANTENER VIVO el servicio ---
+            try
+            {
+                await Task.Delay(Timeout.Infinite, stoppingToken);
+            }
+            catch (TaskCanceledException)
+            {
+                _logger.LogInformation("OrderInvoicedConsumer (Sales) stopping.");
+            }
+            finally
+            {
+                if (_channel != null) await _channel.CloseAsync();
+                if (_connection != null) await _connection.CloseAsync();
+            }
         }
     }
 }
