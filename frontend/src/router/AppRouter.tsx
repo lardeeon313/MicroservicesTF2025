@@ -64,7 +64,8 @@ import PendingOrdersVerificationPage from "../features/verification/pages/Pendin
 import PendingOrdersVerificationDetailsPage from "../features/verification/pages/PendingOrderVerificationDetailsPage";
 import OrdersInRoutePage from "../features/verification/pages/OrdersInRoutePage";
 import OrdersInRouteDetailsPage from "../features/verification/pages/OrdersInRouteDetailsPage";
-import { DashboardLogisticReportsPage } from "../features/verification/pages/reports/DashboardLogisticReportsPage";
+import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
+
 
 const AppRouter = () => {
   return (
@@ -178,7 +179,7 @@ const AppRouter = () => {
             <Route path="orders-in-route" element={<OrdersInRoutePage/> } />
             <Route path="orders-in-route/:id" element={<OrdersInRouteDetailsPage/> } />
             {/**reportes sector logistica*/}
-            <Route path="reports" element={<DashboardLogisticReportsPage/>} />
+            <Route path="reports" element={<VerificationDashboard/>} />
         </Route>
 
         {/* Admin */}

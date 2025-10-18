@@ -15,7 +15,7 @@ namespace DepotService.Application.Queries.DepotManager.GetTeamById
         private readonly ITeamRepository _repository = repository;
         private readonly ILogger<GetTeamByIdQueryHandler> _logger = logger;
 
-        public async Task<DepotTeamDto> GetByIdHandle(GetTeamByIdQuery query)
+        public async Task<DepotTeamDto?> GetByIdHandle(GetTeamByIdQuery query)
         {
             var team = await _repository.GetByIdAsync(query.TeamId);
             if (team == null)
