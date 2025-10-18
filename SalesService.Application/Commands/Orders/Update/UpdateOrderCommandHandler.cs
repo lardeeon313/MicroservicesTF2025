@@ -33,21 +33,35 @@ namespace SalesService.Application.Commands.Orders.Update
 
             if (command.Request.AddressRequest != null)
             {
-                // Reemplazamos la dirección completa
-                existingOrder.DeliveryAddress = new Address
+                if (command.Request.AddressRequest.Id > 0)
                 {
-                    Street = command.Request.AddressRequest.Street,
-                    Number = command.Request.AddressRequest.Number,
-                    Apartment = command.Request.AddressRequest.Apartment,
-                    City = command.Request.AddressRequest.City,
-                    Province = command.Request.AddressRequest.Province,
-                    Country = command.Request.AddressRequest.Country,
-                    PostalCode = command.Request.AddressRequest.PostalCode,
-                    Latitude = command.Request.AddressRequest.Latitude,
-                    Longitude = command.Request.AddressRequest.Longitude,
-                    FormattedAddress = command.Request.AddressRequest.FormattedAddress,
-                    CreatedAt = existingOrder.DeliveryAddress?.CreatedAt ?? DateTime.UtcNow
-                };
+                    // Reutilizamos la dirección existente si pertenece al cliente
+                    var existingAddress = existingOrder.Customer?.Addresses?
+                        .FirstOrDefault(a => a.Id == command.Request.AddressRequest.Id);
+
+                    if (existingAddress == null)
+                        throw new KeyNotFoundException($"Address with ID {command.Request.AddressRequest.Id} not found for this customer.");
+
+                    existingOrder.DeliveryAddress = existingAddress;
+                }
+                else
+                {
+                    // Se registró una nueva dirección manual
+                    existingOrder.DeliveryAddress = new Address
+                    {
+                        Street = command.Request.AddressRequest.Street,
+                        Number = command.Request.AddressRequest.Number,
+                        Apartment = command.Request.AddressRequest.Apartment,
+                        City = command.Request.AddressRequest.City,
+                        Province = command.Request.AddressRequest.Province,
+                        Country = command.Request.AddressRequest.Country,
+                        PostalCode = command.Request.AddressRequest.PostalCode,
+                        Latitude = command.Request.AddressRequest.Latitude,
+                        Longitude = command.Request.AddressRequest.Longitude,
+                        FormattedAddress = command.Request.AddressRequest.FormattedAddress,
+                        CustomerId = existingOrder.CustomerId
+                    };
+                }
             }
 
             // Eliminar Items que ya no están en la solicitud

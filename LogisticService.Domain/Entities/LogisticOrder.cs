@@ -43,6 +43,8 @@ namespace LogisticService.Domain.Entities
         public LogisticAddress DeliveryAddress { get; set; } = null!;
 
         public List<OrderStatusHistory> StatusHistory { get; set; } = new();
+        public List<DeliveryRejectionReason> RejectionReasons { get; set; } = new();
+        public List<DeliveryIncident> DeliveryIncidents { get; set; } = new();
 
         // Trazabilidad con DepotService y SalesService
         public int DepotOrderId { get; set; }

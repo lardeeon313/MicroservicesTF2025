@@ -1,7 +1,7 @@
 ﻿using LogisticService.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace LogisticService.API.RequestDtos.LogisticOrders
+namespace LogisticService.API.RequestDtos.VerificationManager.LogisticOrders
 {
     public class SetPriorityRequest
     {

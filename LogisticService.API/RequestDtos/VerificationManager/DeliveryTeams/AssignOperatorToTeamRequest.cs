@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LogisticService.API.RequestDtos.DeliveryTeams
+namespace LogisticService.API.RequestDtos.VerificationManager.DeliveryTeams
 {
     public class AssignOperatorToTeamRequest
     {

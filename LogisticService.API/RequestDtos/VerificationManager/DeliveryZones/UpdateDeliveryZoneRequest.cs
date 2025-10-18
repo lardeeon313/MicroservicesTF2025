@@ -1,4 +1,4 @@
-﻿namespace LogisticService.API.RequestDtos.DeliveryZones
+﻿namespace LogisticService.API.RequestDtos.VerificationManager.DeliveryZones
 {
     public class UpdateDeliveryZoneRequest
     {

@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LogisticService.API.RequestDtos.LogisticOrders
+namespace LogisticService.API.RequestDtos.VerificationManager.LogisticOrders
 {
-    public class AssignOperatorRequest
+    public class RemoveAssignOperatorRequest
     {
         /// <summary>
-        /// Identificador de la orden de depósito que se asignará al equipo.
+        /// Request para remover la asignación de una orden a un operario.
         /// </summary>
         [Required(ErrorMessage = "LogisticOrderId is required")]
         public int LogisticOrderId { get; set; }

@@ -1,4 +1,4 @@
-﻿namespace LogisticService.API.RequestDtos.DeliveryTeams
+﻿namespace LogisticService.API.RequestDtos.VerificationManager.DeliveryTeams
 {
     public class CreateDeliveryTeamRequest
     {

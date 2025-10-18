@@ -85,7 +85,7 @@ namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetA
                     Longitude = order.DeliveryAddress.Longitude,
                     FormattedAddress = order.DeliveryAddress.FormattedAddress
                 }
-            });
+            }).ToList();
         }
     }
 }

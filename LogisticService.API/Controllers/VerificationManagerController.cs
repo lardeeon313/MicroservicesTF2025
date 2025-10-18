@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
-using LogisticService.API.RequestDtos.DeliveryTeams;
-using LogisticService.API.RequestDtos.DeliveryZones;
-using LogisticService.API.RequestDtos.LogisticOrders;
+using LogisticService.API.RequestDtos.VerificationManager.DeliveryTeams;
+using LogisticService.API.RequestDtos.VerificationManager.DeliveryZones;
+using LogisticService.API.RequestDtos.VerificationManager.LogisticOrders;
 using LogisticService.API.Validators.DeliveryTeams;
 using LogisticService.API.Validators.DeliveryZones;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.ActiveDeliveryTeam;
@@ -42,7 +42,7 @@ using Microsoft.AspNetCore.Mvc;
 
 /**************************************************************/
 /**************************************************************/
-//  CONTROLADOR PARA MANEJAR LOS CRUDS DE LOGISTIC SERVICE  ///
+//    CONTROLADOR PARA LOS ENDPOINTS VERIFICATION MANAGER     //
 /**************************************************************/
 /**************************************************************/
 namespace LogisticService.API.Controllers
