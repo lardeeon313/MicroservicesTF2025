@@ -29,7 +29,7 @@ namespace DepotService.Application.Queries.DepotManager.GetAllOrders
             if (orders == null || !orders.Any())
             {
                 _logger.LogWarning("No orders found in the depot.");
-                throw new KeyNotFoundException("No orders found in the depot.");
+                return Enumerable.Empty<DepotOrderDto>();
             }
 
             _logger.LogInformation("Retrieved {Count} orders from the depot.", orders.Count());

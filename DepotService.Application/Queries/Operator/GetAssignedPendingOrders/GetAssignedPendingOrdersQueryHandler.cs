@@ -14,22 +14,20 @@ namespace DepotService.Application.Queries.Operator.GetAssignedPendingOrders
 {
     public class GetAssignedPendingOrdersQueryHandler(IDepotOrderRepository repository, DepotDbContext context, ILogger<GetAssignedPendingOrdersQueryHandler> logger) : IGetAssignedPendingOrdersQueryHandler
     {
-        private readonly IDepotOrderRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        private readonly DepotDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
+        private readonly IDepotOrderRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));        
         private readonly ILogger<GetAssignedPendingOrdersQueryHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         /// <summary>
         /// Handler para obtener los pedidos pendientes asignados a un operador del depósito.
         /// </summary>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <returns></returns>        
         public async Task<List<DepotOrderDto>> GetAssignedPendingOrders()
         {
             var orders = await _repository.GetAssignedPendingOrdersByOperatorIdAsync();
             if (orders == null)
             {
                 _logger.LogWarning("No pending orders found for the operator.");
-                throw new KeyNotFoundException(nameof(orders));
+                return new List<DepotOrderDto>();
             }
 
             _logger.LogInformation("Found {Count} pending orders for the operator.", orders.Count());

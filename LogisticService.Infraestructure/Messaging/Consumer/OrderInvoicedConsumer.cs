@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace LogisticService.Infraestructure.Messaging.Consumer
 {
-    internal class OrderInvoicedConsumer : BackgroundService
+    public class OrderInvoicedConsumer : BackgroundService
     {
         private readonly ILogger<OrderInvoicedConsumer> _logger;
         private readonly IConfiguration _config;

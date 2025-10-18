@@ -44,8 +44,7 @@ namespace LogisticService.Application.Commands.LogisticManager.LogisticOrder.Ass
             }
 
             try
-            {
-               
+            {               
                 order.AssignToOperator(command.OperatorUserId, team);
             }
             catch (InvalidOperationException ex)

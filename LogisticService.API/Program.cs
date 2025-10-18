@@ -174,7 +174,7 @@ builder.Services.AddScoped<IGetMyOnTheWayOrdersQueryHandler, GetMyOnTheWayOrders
 builder.Services.AddScoped<IEmailService, MailgunEmailService>();
 
 // RabbitMQ Consumer
- builder.Services.AddHostedService<OrderInvoicedConsumer>();
+builder.Services.AddHostedService<OrderInvoicedConsumer>();
 
 // Identity Service Client 
 builder.Services.AddHttpClient("IdentityService", client =>

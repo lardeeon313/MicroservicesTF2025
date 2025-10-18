@@ -54,7 +54,7 @@ namespace LogisticService.Domain.Entities
         // --- MÉTODOS DE LÓGICA DE DOMINIO ---
 
         /// <summary>
-        /// (NUEVO) ACCIÓN 1: Verifica la orden.
+        /// Verifica la orden.
         /// Cambia el estado de 'PendingVerification' (14) a 'Verified' (7).
         /// </summary>
         public void Verify()
@@ -79,7 +79,7 @@ namespace LogisticService.Domain.Entities
         }
 
         /// <summary>
-        /// (ACTUALIZADO) ACCIÓN 2: Asigna la orden a un operador y su equipo.
+        /// Asigna la orden a un operador y su equipo.
         /// Cambia el estado de 'Verified' (7) a 'AssignedDelivery' (15).
         /// </summary>
         public void AssignToOperator(Guid operatorId, DeliveryTeam team)
@@ -119,7 +119,7 @@ namespace LogisticService.Domain.Entities
         }
 
         /// <summary>
-        /// (ACTUALIZADO) Remueve la asignación de un operador.
+        /// Remueve la asignación de un operador.
         /// Cambia el estado de 'AssignedDelivery' (15) de vuelta a 'Verified' (7).
         /// </summary>
         public void RemoveAssignment()
@@ -145,7 +145,7 @@ namespace LogisticService.Domain.Entities
         }
 
         /// <summary>
-        /// (ACTUALIZADO) Verifica el pago en efectivo.
+        /// Verifica el pago en efectivo.
         /// </summary>
         public void CheckCash()
         {

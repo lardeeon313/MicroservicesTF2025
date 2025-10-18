@@ -9,6 +9,6 @@ namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetO
 {
     public interface IGetOrderByIdQueryHandler
     {
-        Task<LogisticOrderDto> GetOrderByIdHandleAsync(GetOrderByIdQuery query);
+        Task<LogisticOrderDto?> GetOrderByIdHandleAsync(GetOrderByIdQuery query);
     }
 }

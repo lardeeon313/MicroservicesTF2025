@@ -12,9 +12,8 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.BillingManager.GetInvoicedOrderById
 {
-    public class GetInvoicedOrderByIdQueryHandler(DepotDbContext context, IDepotOrderRepository repository, ILogger<GetInvoicedOrderByIdQueryHandler> logger) : IGetInvoicedOrderByIdQueryHandler
-    {
-        private readonly DepotDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
+    public class GetInvoicedOrderByIdQueryHandler(IDepotOrderRepository repository, ILogger<GetInvoicedOrderByIdQueryHandler> logger) : IGetInvoicedOrderByIdQueryHandler
+    {        
         private readonly IDepotOrderRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         private readonly ILogger<GetInvoicedOrderByIdQueryHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
@@ -22,16 +21,15 @@ namespace DepotService.Application.Queries.BillingManager.GetInvoicedOrderById
         /// Handler for the query to get an invoiced order by its ID.
         /// </summary>
         /// <param name="query"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public async Task<DepotOrderDto> GetInvoicedOrderByIdAsync(GetInvoicedOrderByIdQuery query)
+        /// <returns></returns>        
+        public async Task<DepotOrderDto?> GetInvoicedOrderByIdAsync(GetInvoicedOrderByIdQuery query)
         {
             var billingOrderId = await _repository.GetByIdAsync(query.BillingOrderId);
 
             if (billingOrderId == null)
             {
                 _logger.LogWarning("Invoiced order with ID {BillingOrderId} not found.", query.BillingOrderId);
-                throw new KeyNotFoundException($"Invoiced order with ID {query.BillingOrderId} not found.");
+                return null;
             }
 
             _logger.LogInformation("Retrieved invoiced order with ID {BillingOrderId}.", query.BillingOrderId);

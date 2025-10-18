@@ -14,10 +14,9 @@ using GetOrdersQuery = DepotService.Application.Queries.Operator.GetOrdersByOper
 
 namespace DepotService.Application.Queries.Operator.IGetOrdersMissingOrPreparing
 {
-    public class GetOrdersMissingOrPreparingHandler(IDepotOrderRepository repository, DepotDbContext context, ILogger<GetOrdersMissingOrPreparingHandler> logger) : IGetOrdersMissingOrPreparingHandler
+    public class GetOrdersMissingOrPreparingHandler(IDepotOrderRepository repository, ILogger<GetOrdersMissingOrPreparingHandler> logger) : IGetOrdersMissingOrPreparingHandler
     {
-        private readonly IDepotOrderRepository _repository = repository;
-        private readonly DepotDbContext _context = context;
+        private readonly IDepotOrderRepository _repository = repository;        
         private readonly ILogger<GetOrdersMissingOrPreparingHandler> _logger = logger;
 
         public async Task<IEnumerable<DepotOrderDto>> GetOrdersMissingByOperatorAsync(GetOrdersQuery query)
