@@ -51,34 +51,102 @@ namespace LogisticService.Domain.Entities
         public int SalesOrderId { get; set; }
 
 
+        // --- MÉTODOS DE LÓGICA DE DOMINIO ---
+
+        /// <summary>
+        /// (NUEVO) ACCIÓN 1: Verifica la orden.
+        /// Cambia el estado de 'PendingVerification' (14) a 'Verified' (7).
+        /// </summary>
+        public void Verify()
+        {
+            if (Status != OrderStatus.PendingVerification)
+            {
+                throw new InvalidOperationException(
+                    "Solo se puede verificar una orden en estado 'PendingVerification'.");
+            }
+
+            var oldStatus = Status;
+            Status = OrderStatus.Verified;
+            ModifiedStatusDate = DateTime.UtcNow;
+
+            // Añadir al historial
+            StatusHistory.Add(new OrderStatusHistory
+            {
+                OldStatus = oldStatus,
+                NewStatus = Status,
+                ChangedAt = ModifiedStatusDate.Value
+            });
+        }
+
+        /// <summary>
+        /// (ACTUALIZADO) ACCIÓN 2: Asigna la orden a un operador y su equipo.
+        /// Cambia el estado de 'Verified' (7) a 'AssignedDelivery' (15).
+        /// </summary>
         public void AssignToOperator(Guid operatorId, DeliveryTeam team)
         {
-            if (Status != OrderStatus.PendingVerification && Status != OrderStatus.AssignedDelivery)
-                throw new InvalidOperationException("cannot assign employee to an order that is not pending verification or assigned to delivery.");
+            // Validación de Estado: Solo permite asignar si está Verificada (7)
+            // o re-asignar si ya estaba Asignada (15).
+            if (Status != OrderStatus.Verified && Status != OrderStatus.AssignedDelivery)
+            {
+                throw new InvalidOperationException(
+                    "Solo se puede asignar un operador a una orden en estado 'Verified' o 'AssignedDelivery'.");
+            }
 
-            // Validar que el operador pertenezca al equipo
+            // Validación de Lógica
             if (!team.DeliveryOperators.Any(a => a.OperatorUserId == operatorId))
                 throw new InvalidOperationException("El operador no pertenece al equipo proporcionado.");
 
-            if (Status == OrderStatus.Verified)
+            var oldStatus = Status;
+            bool isFirstAssignment = (oldStatus == OrderStatus.Verified);
+
+            // Aplicar Cambios
+            AssignedOperatorId = operatorId;
+            AssignedDeliveryTeam = team;
+            AssignedDeliveryTeamId = team.Id; // El 'private set' permite esto
+            Status = OrderStatus.AssignedDelivery;
+            ModifiedStatusDate = DateTime.UtcNow;
+
+            // Añadir al historial solo si es la primera asignación (7 -> 15)
+            if (isFirstAssignment)
             {
-                AssignedOperatorId = operatorId;
-                AssignedDeliveryTeam = team;
-                AssignedDeliveryTeamId = team.Id;
-                Status = OrderStatus.AssignedDelivery;
+                StatusHistory.Add(new OrderStatusHistory
+                {
+                    OldStatus = oldStatus, // 'Verified'
+                    NewStatus = Status,  // 'AssignedDelivery'
+                    ChangedAt = ModifiedStatusDate.Value
+                });
             }
         }
 
+        /// <summary>
+        /// (ACTUALIZADO) Remueve la asignación de un operador.
+        /// Cambia el estado de 'AssignedDelivery' (15) de vuelta a 'Verified' (7).
+        /// </summary>
         public void RemoveAssignment()
         {
             if (Status != OrderStatus.AssignedDelivery)
                 throw new InvalidOperationException("Cannot remove assignment from an order that is not assigned to a delivery operator.");
+
+            var oldStatus = Status; // 'AssignedDelivery'
+
             AssignedOperatorId = null;
             AssignedDeliveryTeam = null;
-            AssignedDeliveryTeamId = null;
-            Status = OrderStatus.Verified;
+            AssignedDeliveryTeamId = null; // El 'private set' permite esto
+            Status = OrderStatus.Verified; // Vuelve a 'Verified'
+            ModifiedStatusDate = DateTime.UtcNow;
+
+            // Añadir al historial
+            StatusHistory.Add(new OrderStatusHistory
+            {
+                OldStatus = oldStatus,
+                NewStatus = Status,
+                ChangedAt = ModifiedStatusDate.Value
+            });
         }
 
+        /// <summary>
+        /// (ACTUALIZADO) Verifica el pago en efectivo.
+        /// </summary>
         public void CheckCash()
         {
             if (Status != OrderStatus.PendingCashVerification)
@@ -87,8 +155,18 @@ namespace LogisticService.Domain.Entities
             if (PaymentType != Enums.PaymentType.Cash)
                 throw new InvalidOperationException("Solo las órdenes con tipo de pago 'Cash' pueden ser verificadas por efectivo.");
 
+            var oldStatus = Status; // 'PendingCashVerification'
+
             Status = OrderStatus.CashVerified;
             ModifiedStatusDate = DateTime.UtcNow;
+
+            // Añadir al historial
+            StatusHistory.Add(new OrderStatusHistory
+            {
+                OldStatus = oldStatus,
+                NewStatus = Status,
+                ChangedAt = ModifiedStatusDate.Value
+            });
         }
     }
 }

@@ -30,8 +30,19 @@ namespace LogisticService.API.RequestDtos.LogisticOrders
                 _logger.LogWarning("No se encontró la orden logística con ID: {LogisticOrderId}", command.LogisticOrderId);
                 return false;
             }
-            
-            order.Status = OrderStatus.Verified;
+
+            try
+            {
+                order.Verify();
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Capturamos si la regla de negocio falló (ej: la orden no estaba en 14)
+                _logger.LogWarning(ex, "Error de validación al verificar la orden {LogisticOrderId}", command.LogisticOrderId);
+                return false; // Indicamos que la operación falló
+            }
+
+            // Guardamos los cambios en la base de datos
             await _repository.UpdateAsync(order);
 
             // Emitimos evento para notificar a DepotService y SalesService que la orden ha sido verificada.

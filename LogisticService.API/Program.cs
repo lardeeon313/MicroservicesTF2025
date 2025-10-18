@@ -51,6 +51,7 @@ using LogisticService.Application.Services.IdentityServiceClient;
 using LogisticService.Domain.Common.Interfaces;
 using LogisticService.Domain.IRepositories;
 using LogisticService.Infraestructure.Email;
+using LogisticService.Infraestructure.Messaging.Consumer;
 using LogisticService.Infraestructure.Messaging.Publisher;
 using LogisticService.Infraestructure.Persistence;
 using LogisticService.Infraestructure.Persistence.Repositories;
@@ -173,6 +174,7 @@ builder.Services.AddScoped<IGetMyOnTheWayOrdersQueryHandler, GetMyOnTheWayOrders
 builder.Services.AddScoped<IEmailService, MailgunEmailService>();
 
 // RabbitMQ Consumer
+ builder.Services.AddHostedService<OrderInvoicedConsumer>();
 
 // Identity Service Client 
 builder.Services.AddHttpClient("IdentityService", client =>
@@ -232,14 +234,23 @@ using (var scope = app.Services.CreateScope())
     dbContext.Database.Migrate();
 }
 
+
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Logistic Service API V1");
+        c.RoutePrefix = string.Empty;
+    });
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
