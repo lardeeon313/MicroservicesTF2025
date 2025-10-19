@@ -1,10 +1,10 @@
 import { useNavigate, useParams } from "react-router-dom";
 import EditOrderForm from "../../components/Forms/EditOrderForm";
 import { UpdateOrderRequest, Order } from "../../types/OrderTypes";
-import { AddressRequest, Address } from "../../types/CustomerTypes";
+import { AddressRequest } from "../../types/CustomerTypes";
+import { CustomerPaymenType } from "../../types/CustomerTypes";
 import { handleFormikError } from "../../../../components/ErrorHandler";
-import { getOrderById, updateOrder } from "../../services/OrderService";
-import { getCustomerAddresses } from "../../services/OrderService";
+import { getOrderById, updateOrder, getCustomerAddresses, getCustomerPaymentTypes } from "../../services/OrderService";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
@@ -15,34 +15,55 @@ const EditOrderPage = () => {
   const navigate = useNavigate();
   const [initialValues, setInitialValues] = useState<UpdateOrderRequest | null>(null);
   const [savedAddresses, setSavedAddresses] = useState<AddressRequest[]>([]);
+  const [paymentTypes, setPaymentTypes] = useState<CustomerPaymenType[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const fetchOrder = async () => {
+    const fetchOrderData = async () => {
       try {
         const orderId = parseInt(id!, 10);
         const order: Order = await getOrderById(orderId);
-        const addresses: Address[] = await getCustomerAddresses(order.customerId.toString());
-        const mappedAddresses: AddressRequest[] = addresses.map(addr => ({
+
+        const [addresses, payments] = await Promise.all([
+          getCustomerAddresses(order.customerId.toString()),
+          getCustomerPaymentTypes(order.customerId.toString()),
+        ]);
+
+        const mappedAddresses = addresses.map((addr) => ({
           ...addr,
           number: addr.number?.toString() ?? "",
         }));
+
         setSavedAddresses(mappedAddresses);
+        setPaymentTypes(payments);
+
         setInitialValues({
           orderId: order.id,
           customerId: order.customerId,
           deliveryDetail: order.deliveryDetail || "",
           deliveryDate: order.deliveryDate?.slice(0, 10) || "",
           status: order.status,
-          items: order.items.map(item => ({
+          paymentType: order.paymentType || payments[0]?.paymentType || "Cash" ,
+          items: order.items.map((item) => ({
             id: item.id,
             productName: item.productName,
             productBrand: item.productBrand,
             quantity: item.quantity,
           })),
           addressRequest: order.deliveryAddress
-            ? { ...order.deliveryAddress, number: order.deliveryAddress.number?.toString() ?? "" }
-            : { street: "", number: "", apartment: "", city: "", province: "", country: "", postalCode: "" },
+            ? {
+                ...order.deliveryAddress,
+                number: order.deliveryAddress.number?.toString() ?? "",
+              }
+            : {
+                street: "",
+                number: "",
+                apartment: "",
+                city: "",
+                province: "",
+                country: "",
+                postalCode: "",
+              },
         });
       } catch (error) {
         handleFormikError({
@@ -56,29 +77,25 @@ const EditOrderPage = () => {
         navigate("/sales/orders");
       }
     };
-    if (id) fetchOrder();
+
+    if (id) fetchOrderData();
   }, [id, navigate]);
 
-
-  const handleItemsChange = (items: Array<{ id: number; productName: string; productBrand: string; quantity: number }>) => {
-    
+  const handleItemsChange = (
+    items: Array<{ id: number; productName: string; productBrand: string; quantity: number }>
+  ) => {
     if (initialValues) {
-    const updatedValues = {
-      ...initialValues,
-      items: items,
-    };
-    console.log("Nuevos initialValues:", updatedValues);
-    setInitialValues(updatedValues);
-  }
+      const updatedValues = { ...initialValues, items };
+      console.log("Nuevos initialValues:", updatedValues);
+      setInitialValues(updatedValues);
+    }
   };
 
   const handleSubmit = async (values: UpdateOrderRequest) => {
     setIsSubmitting(true);
     try {
-      
-      const response = await updateOrder(values.orderId, values);
-      console.log("Respuesta del backend:", response);
-      toast.success("Órden actualizada correctamente");
+      await updateOrder(values.orderId, values);
+      toast.success("Orden actualizada correctamente");
       navigate("/sales/orders");
     } catch (error) {
       console.error("Error al actualizar la orden:", error);
@@ -94,7 +111,6 @@ const EditOrderPage = () => {
     }
   };
 
-
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
@@ -104,6 +120,7 @@ const EditOrderPage = () => {
           <EditOrderForm
             initialValues={initialValues}
             savedAddresses={savedAddresses}
+            paymentTypes={paymentTypes} // ✅ ahora coincide con el form
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
             onItemsChange={handleItemsChange}

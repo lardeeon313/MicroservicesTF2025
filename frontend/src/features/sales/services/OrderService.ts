@@ -7,6 +7,7 @@ import {
    CancelOrderRequest,
    DeleteOrderRequest } from "../types/OrderTypes";
 import { Address } from "../types/CustomerTypes";
+import { CustomerPaymenType } from "../types/CustomerTypes";
 
 // Obtener todas las órdenes
 export const getAllOrders = async (): Promise<Order[]> => {
@@ -34,13 +35,29 @@ export const getOrdersByCustomer = async (customerId: string): Promise<Order[]> 
 
 // Registrar una nueva orden
 export const registerOrder = async (data: RegisterOrderRequest): Promise<Order> => {
+  console.log("📦 [OrderService] Enviando orden al backend:", JSON.stringify(data, null, 2));
+  
   const response = await API.post("/sales/Order/register", data);
-  return response.data;
+  
+  console.log("📨 [OrderService] Respuesta recibida del backend:", response.data);
+  
+  return response.data
 };
 
 // Actualizar orden
 export const updateOrder = async (id: number, data: UpdateOrderRequest): Promise<Order> => {
+
+  console.log("--- Datos enviados al backend (updateOrder) ---");
+  console.log("ID del pedido:", id);
+  console.log("Datos del pedido:", data);
+  console.log("Productos en la solicitud:", data.items);
+
   const response = await API.put(`/sales/order/update/${id}`, data);
+
+  console.log("--- Respuesta del backend (updateOrder) ---");
+  console.log("Datos recibidos:", response.data);
+  console.log("Productos en la respuesta:", response.data.items)
+
   return response.data;
 };
 
@@ -138,4 +155,37 @@ export const getCustomerAddresses = async (customerId: string): Promise<Address[
   return response.data;
 };
 
+//Obtiene todos los tipos de pago segun el tipo de cliente: 
+
+export const getCustomerPaymentTypes = async (
+  customerId: string
+): Promise<CustomerPaymenType[]> => {
+  try {
+    const response = await API.get<CustomerPaymenType[]>(
+      `/sales/Customer/payment-types/${customerId}`
+    );
+
+    return response.data;
+  } catch (error: any) {
+    if (error.response) {
+      const { status, data } = error.response;
+
+      if (status === 404) {
+        // Manejo explícito del mensaje del backend
+        const message =
+          data?.message || "El cliente no no tiene los tipos de pago.";
+        console.warn(message);
+        return [];
+      }
+
+      if (status === 500) {
+        console.error("Internal Server Error:", data);
+        throw new Error("Internal Server Error");
+      }
+    }
+
+    console.error("Unexpected error while fetching customer payment types:", error);
+    throw error;
+  }
+};
 

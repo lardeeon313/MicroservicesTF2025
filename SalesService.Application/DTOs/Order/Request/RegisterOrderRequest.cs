@@ -29,5 +29,7 @@ namespace SalesService.Application.DTOs.Order.Request
         [Required]
         public AddressRequest DeliveryAddress { get; set; } = new();
 
+         public PaymentType? PaymentType { get; set; }
+
     }
 }

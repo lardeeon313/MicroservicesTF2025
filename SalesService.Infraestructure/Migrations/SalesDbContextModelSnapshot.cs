@@ -115,6 +115,25 @@ namespace SalesService.Infraestructure.Migrations
                     b.ToTable("Customers");
                 });
 
+            modelBuilder.Entity("SalesService.Domain.Entities.CustomerEntity.CustomerPaymentType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("PaymentType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("CustomerPaymentTypes");
+                });
+
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -147,8 +166,8 @@ namespace SalesService.Infraestructure.Migrations
                     b.Property<string>("PaymentReceipt")
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("PaymentType")
-                        .HasColumnType("int");
+                    b.Property<string>("PaymentType")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -179,11 +198,9 @@ namespace SalesService.Infraestructure.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("ProductBrand")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("ProductName")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("Quantity")
@@ -309,6 +326,17 @@ namespace SalesService.Infraestructure.Migrations
                     b.Navigation("Customer");
                 });
 
+            modelBuilder.Entity("SalesService.Domain.Entities.CustomerEntity.CustomerPaymentType", b =>
+                {
+                    b.HasOne("SalesService.Domain.Entities.CustomerEntity.Customer", "Customer")
+                        .WithMany("PaymentTypes")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.Order", b =>
                 {
                     b.HasOne("SalesService.Domain.Entities.CustomerEntity.Customer", "Customer")
@@ -383,6 +411,8 @@ namespace SalesService.Infraestructure.Migrations
             modelBuilder.Entity("SalesService.Domain.Entities.CustomerEntity.Customer", b =>
                 {
                     b.Navigation("Addresses");
+
+                    b.Navigation("PaymentTypes");
                 });
 
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.Order", b =>

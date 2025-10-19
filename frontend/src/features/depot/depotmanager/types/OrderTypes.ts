@@ -20,6 +20,8 @@ export interface DepotOrderDto {
     assignedDepotTeam?: DepotTeam;
     assignedDepotTeamId?: number;
     address?: OrderAddressDto;
+    paymentType: PaymentType;
+
 }
 
 export interface OrderAddressEntity{
@@ -133,6 +135,7 @@ export interface DepotOrderEntity {
     deliveryDetail?: string;
     orderDate: Date;
     status: OrderStatus;
+    paymentType: PaymentType;
     totalAmount: number;
     items: DepotOrderItemEntity[];
     missings: DepotOrderMissing[];
@@ -192,3 +195,15 @@ export interface OrderTableData {
         quantity: number;
     }[];
 }
+
+//TIPOS DE PAGO: 
+export enum PaymentType {
+  Transfer = "Transfer",
+  Credit_Card = "Credit_Card",
+  Debit_Card = "Debit_Card",
+  Cash = "Cash",
+  Current_Account = "Current_Account",
+  Check = "Check",
+  Promissory_Note = "Promissory_Note",
+}
+

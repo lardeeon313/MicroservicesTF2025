@@ -2,7 +2,6 @@ import { Eye, Pencil, Trash, User, Mail, Phone, MapPin } from "lucide-react";
 import { CustomerResponse } from "../../types/CustomerTypes";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
 
-
 interface Props {
   customers: CustomerResponse[];
   loading: boolean;
@@ -64,6 +63,7 @@ export default function CustomerTable({
                     <span>Sin dirección</span>
                   )}
                 </td>
+
                 <td className="px-4 py-2 text-center space-x-2">
                   <button onClick={() => onView(c.id)} title="Ver">
                     <Eye className="w-5 h-5 text-blue-600 hover:text-gray-700 transition-colors" />

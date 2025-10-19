@@ -11,10 +11,12 @@ import { useAuth } from "../../../auth/context/useAuth";
 import { getUserIdFromToken } from "../../../../utils/jwtUtils";
 import BackButton from "../../../../components/BackButton";
 
+
 const initialValues: RegisterOrderRequest = {
   customerId: "",
   deliveryDate: "",
   deliveryDetail: "",
+  paymentType: undefined, // 👈 inicializado como string del enum
   items: [{ productName: "", productBrand: "", quantity: 1 }],
   deliveryAddressId: null,
   deliveryAddress: {
@@ -31,7 +33,6 @@ const initialValues: RegisterOrderRequest = {
     formattedAddress: "",
   },
 };
-
 
 export default function RegisterOrderPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -55,6 +56,7 @@ export default function RegisterOrderPage() {
           registrationDate: new Date().toISOString(),
           descriptionsatisfaction: "",
           isActive: true,
+          paymentTypes: c.paymentTypes || [],
         }));
         setCustomers(mappedCustomers);
       } catch (error) {
@@ -66,32 +68,36 @@ export default function RegisterOrderPage() {
   }, []);
 
   const handleRegisterOrder = async (values: RegisterOrderRequest) => {
-  setIsSubmitting(true);
-  try {
-    // No modifiques el objeto values directamente, envíalo tal como está
-    const orderToSend = {
-      ...values,
-      createdByUserId: userId!,
-    };
-    console.log("Datos enviados al backend:", orderToSend);
-    const response = await registerOrder(orderToSend);
-    console.log("Respuesta del backend:", response);
-    toast.success("Orden registrada con éxito!");
-    navigate("/sales/orders");
-  } catch (error) {
-    handleFormikError({
-      error,
-      customMessages: {
-        400: "Datos inválidos, por favor verificá los campos.",
-        404: "Cliente no encontrado.",
-        500: "Error interno del servidor.",
-      },
-    });
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    setIsSubmitting(true);
+    try {
+      // 🧩 Construimos el objeto que se enviará al backend
+      const orderToSend = {
+        ...values,
+        createdByUserId: userId!,
+        paymentType: values.paymentType ?? undefined, // 👈 se envía el string del enum (por ej: "Cash")
+      };
+      // 📡 Envío al backend
+      const response = await registerOrder(orderToSend);
 
+      // 🔍 Log de respuesta
+      console.log("📨 Respuesta del backend:", response);
+
+      toast.success("Orden registrada con éxito!");
+      navigate("/sales/orders");
+    } catch (error) {
+      console.error("❌ Error al registrar la orden:", error);
+      handleFormikError({
+        error,
+        customMessages: {
+          400: "Datos inválidos, por favor verificá los campos.",
+          404: "Cliente no encontrado.",
+          500: "Error interno del servidor.",
+        },
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">

@@ -19,13 +19,13 @@ export enum OrderStatus {
 }
 
 export enum PaymentType {
-  Transfer = "Transferencia",
-  Credit_Card = "Tarjeta de Credito",
-  Debit_Card = "Tarjeta de Debito",
-  Cash = "Efectivo",
-  Current_Account = "Cuenta Corriente",
-  Check = "Cheque",
-  Promissory_Note = "Pagaré",
+  Transfer = "Transfer",
+  Credit_Card = "Credit_Card",
+  Debit_Card = "Debit_Card",
+  Cash = "Cash",
+  Current_Account = "Current_Account",
+  Check = "Check",
+  Promissory_Note = "Promissory_Note",
 }
 
 
@@ -57,6 +57,9 @@ export interface RegisterOrderRequest {
 
   // O se completa manualmente
   deliveryAddress?: AddressRequest;
+  //nuevo:
+  paymentType?: PaymentType;
+
 }
 
 export interface DeleteOrderRequest {
@@ -76,6 +79,8 @@ export interface UpdateOrderRequest {
   // 👉 El backend espera siempre un objeto AddressRequest
   addressRequest: AddressRequest;
   deliveryAddress?: AddressRequest;
+  //
+  paymentType?: PaymentType;
 }
 
 // Solo actualizar el estado
@@ -133,7 +138,7 @@ export interface OrderItem {
   unitPrice?: number;
   total?: number;
 }
-
+//
 export interface OrderTableData {
   id: number;
   status: OrderStatus;

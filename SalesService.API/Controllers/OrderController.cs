@@ -92,7 +92,7 @@ namespace SalesService.API.Controllers
                 return BadRequest(errors);
             }
 
-            var command = new RegisterOrderCommand(request.CustomerId, request.Items, request.DeliveryDate, request.DeliveryDetail, request.CreatedByUserId, request.DeliveryAddress);
+            var command = new RegisterOrderCommand(request.CustomerId, request.Items, request.DeliveryDate, request.DeliveryDetail, request.CreatedByUserId, request.DeliveryAddress, request.PaymentType);
 
             Console.WriteLine($"[RegisterOrder] Command mapeado: {System.Text.Json.JsonSerializer.Serialize(command)}");
 
@@ -110,8 +110,7 @@ namespace SalesService.API.Controllers
         public async Task<IActionResult> UpdateOrder(int id, [FromBody] UpdateOrderRequest request)
         {
 
-            Console.WriteLine($"[RegisterOrder] UPDATE recibido: {System.Text.Json.JsonSerializer.Serialize(request)}");
-
+            Console.WriteLine($"ID de la URL: {id}, ID del cuerpo: {request.OrderId}");
             if (id != request.OrderId)
                 return BadRequest(new { error = "Order ID in the URL does not match the Order ID in the request body." });
 
@@ -124,7 +123,6 @@ namespace SalesService.API.Controllers
 
             var command = new UpdateOrderCommand(id, request);
 
-            Console.WriteLine($"[RegisterOrder] UPDATE mapeado: {System.Text.Json.JsonSerializer.Serialize(command)}");
 
             var result = await _updateOrderCommandHandler.HandleAsync(command);
             return Ok(result);

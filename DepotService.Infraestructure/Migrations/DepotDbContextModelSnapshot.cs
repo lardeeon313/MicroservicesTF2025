@@ -55,6 +55,9 @@ namespace DepotService.Infraestructure.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<int?>("PaymentType")
+                        .HasColumnType("int");
+
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -100,11 +103,9 @@ namespace DepotService.Infraestructure.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("ProductBrand")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("ProductName")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("Quantity")
