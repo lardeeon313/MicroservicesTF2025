@@ -60,6 +60,9 @@ namespace LogisticService.Application.Commands.LogisticManager.LogisticOrder.Ass
             // Si el método de dominio fue exitoso, guardamos los cambios
             await _repository.UpdateAsync(order);
 
+            // Guardamos el cambio de estado en la base de datos
+
+
             _logger.LogInformation("✅ Orden {Id} asignada al operador {Operator}", order.DepotOrderId, order.AssignedOperatorId);
 
             // Publicar el evento de integración
@@ -71,9 +74,8 @@ namespace LogisticService.Application.Commands.LogisticManager.LogisticOrder.Ass
                 AssignDeliveryAt = DateTime.UtcNow,
             };
 
-            // Publicar el evento de orden confirmada
-            // (Considera agregar un try/catch aquí también si la publicación es crítica)
-            await _publisher.PublishAsync(integrationEvent, "order_assigndelivery_queue");
+            // Publicar el evento de orden confirmada            
+            await _publisher.PublishToExchangeAsync(integrationEvent, "order_assigned_delivery_exchange ");
 
             _logger.LogInformation("✅ Evento OrderAssignDeliveryIntegrationEvent publicado para la orden {DepotOrderId}", order.DepotOrderId);
             return true;

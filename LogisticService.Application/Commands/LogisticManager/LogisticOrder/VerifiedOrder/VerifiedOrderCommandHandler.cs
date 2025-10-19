@@ -66,8 +66,8 @@ namespace LogisticService.API.RequestDtos.LogisticOrders
                         ["DepotOrderId"] = order.DepotOrderId
                     });
 
-                    // Publicamos el evento en RabbitMQ
-                    await _publisher.PublishAsync(integrationEvent, "order_verified_queue");
+                    // Publicamos el evento en RabbitMQ                    
+                    await _publisher.PublishToExchangeAsync(integrationEvent, "order_verified_exchange");
                 }
             }
             catch (Exception ex)

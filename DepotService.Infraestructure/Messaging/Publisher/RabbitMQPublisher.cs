@@ -18,7 +18,7 @@ namespace DepotService.Infraestructure.Messaging.Publisher
         }
 
         /// <summary>
-        /// MÉTODO 1: El que ya tenías. Envía a una cola específica.
+        /// MÉTODO 1: Envía a una cola específica.
         /// </summary>
         public async Task PublishAsync<T>(T message, string queueName)
         {

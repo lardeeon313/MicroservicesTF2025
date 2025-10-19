@@ -1,8 +1,10 @@
-﻿using DepotService.Application.Queries.DepotManager.GetTeamByName;
+﻿using DepotService.Application.Queries.BillingManager.GetOrdersPendingBilling;
+using DepotService.Application.Queries.DepotManager.GetTeamByName;
 using DepotService.Domain.Entities;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -15,14 +17,14 @@ namespace DepotService.Test.Queries.DepotManager
     public class GetTeamByNameQueryHandlerTests
     {
         private readonly Mock<ITeamRepository> _repositoryMock;
-        private readonly DepotDbContext _context; // Si no usas en el handler, puedes pasar null
         private readonly GetTeamByNameQueryHandler _handler;
+        private readonly Mock<ILogger<GetTeamByNameQueryHandler>> _loggerMock;
 
         public GetTeamByNameQueryHandlerTests()
         {
-            _repositoryMock = new Mock<ITeamRepository>();
-            _context = null; // Pasa null o un mock si es necesario
-            _handler = new GetTeamByNameQueryHandler(_repositoryMock.Object, _context);
+            _loggerMock = new Mock<ILogger<GetTeamByNameQueryHandler>>();
+            _repositoryMock = new Mock<ITeamRepository>();            
+            _handler = new GetTeamByNameQueryHandler(_repositoryMock.Object, (ILogger<GetTeamByNameQueryHandler>)_loggerMock);
         }
 
         [Fact]
@@ -70,7 +72,7 @@ namespace DepotService.Test.Queries.DepotManager
             var teamName = "NonExistentTeam";
 
             _repositoryMock.Setup(r => r.GetByNameAsync(teamName))
-                .ReturnsAsync((DepotTeamEntity)null);
+                .ReturnsAsync((DepotTeamEntity?)null);
 
             var query = new GetTeamByNameQuery(teamName);
 

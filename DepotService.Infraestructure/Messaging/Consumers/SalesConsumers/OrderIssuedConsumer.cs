@@ -15,7 +15,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace DepotService.Infraestructure
+namespace DepotService.Infraestructure.Messaging.Consumers.SalesConsumers
 {
     /// <summary>
     /// Consumer para recibir eventos de órdenes emitidas desde RabbitMQ.

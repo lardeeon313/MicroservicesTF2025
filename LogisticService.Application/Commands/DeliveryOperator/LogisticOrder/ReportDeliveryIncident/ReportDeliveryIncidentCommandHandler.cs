@@ -1,7 +1,9 @@
 ﻿using LogisticService.Domain.Entities;
 using LogisticService.Domain.Enums;
 using LogisticService.Domain.IRepositories;
+using LogisticService.Infraestructure.Messaging.Publisher;
 using Microsoft.Extensions.Logging;
+using SharedKernel.IntegrationEvents.LogisticEvents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +12,9 @@ using System.Threading.Tasks;
 
 namespace LogisticService.Application.Commands.DeliveryOperator.LogisticOrder.ReportDeliveryIncident
 {
-    public class ReportDeliveryIncidentCommandHandler(ILogisticOrderRepository repository, ILogger<ReportDeliveryIncidentCommandHandler> logger) : IReportDeliveryIncidentCommandHandler
+    public class ReportDeliveryIncidentCommandHandler(IRabbitMQPublisher publisher ,ILogisticOrderRepository repository, ILogger<ReportDeliveryIncidentCommandHandler> logger) : IReportDeliveryIncidentCommandHandler
     {
+        private readonly IRabbitMQPublisher _publisher = publisher;
         private readonly ILogisticOrderRepository _repository = repository;
         private readonly ILogger<ReportDeliveryIncidentCommandHandler> _logger = logger;
 
@@ -67,6 +70,17 @@ namespace LogisticService.Application.Commands.DeliveryOperator.LogisticOrder.Re
 
             // TODO: Emitir evento de integración
             // e.g. await _eventPublisher.PublishAsync(new DeliveryIncidentReportedIntegrationEvent(order.Id, command.OperatorUserId, command.IncidentType));
+
+            var integrationEvent = new OrderDeliveryIncidentIntegrationEvent
+            {
+                LogisticOrderId = order.Id,
+                DepotOrderId = order.DepotOrderId,
+                SalesOrderId = order.SalesOrderId,
+                DeliveryIncidentAt = DateTime.UtcNow,
+            };
+
+            // Publicar el evento de notificacion de cambio de estado
+            await _publisher.PublishToExchangeAsync(integrationEvent, "order_delivery_incident_exchange");
 
             return true;
         }

@@ -1,8 +1,10 @@
-﻿using DepotService.Application.Queries.DepotManager.GetTeamById;
+﻿using DepotService.Application.Queries.BillingManager.GetOrdersPendingBilling;
+using DepotService.Application.Queries.DepotManager.GetTeamById;
 using DepotService.Domain.Entities;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -15,14 +17,14 @@ namespace DepotService.Test.Queries.DepotManager
     public class GetTeamByIdQueryHandlerTests
     {
         private readonly Mock<ITeamRepository> _repositoryMock;
-        private readonly DepotDbContext _context; // si no usas en el handler, puedes pasar null
         private readonly GetTeamByIdQueryHandler _handler;
+        private readonly Mock<ILogger<GetTeamByIdQueryHandler>> _loggerMock;
 
         public GetTeamByIdQueryHandlerTests()
         {
             _repositoryMock = new Mock<ITeamRepository>();
-            _context = null; // si no es usado, o crea mock si es necesario
-            _handler = new GetTeamByIdQueryHandler(_repositoryMock.Object, _context);
+            _loggerMock = new Mock<ILogger<GetTeamByIdQueryHandler>>();            
+            _handler = new GetTeamByIdQueryHandler(_repositoryMock.Object, (ILogger<GetTeamByIdQueryHandler>)_loggerMock);
         }
 
         [Fact]
@@ -70,7 +72,7 @@ namespace DepotService.Test.Queries.DepotManager
             var teamId = 999;
 
             _repositoryMock.Setup(r => r.GetByIdAsync(teamId))
-                .ReturnsAsync((DepotTeamEntity)null);
+                .ReturnsAsync((DepotTeamEntity?)null);
 
             var query = new GetTeamByIdQuery(teamId);
 

@@ -15,15 +15,15 @@ using SalesService.Domain.IRepositories;
 using SalesService.Domain.Enums;
 using SalesService.Domain.Entities.OrderEntity;
 
-namespace SalesService.Infraestructure.Messaging.Consumer
+namespace SalesService.Infraestructure.Messaging.Consumer.DepotConsumers
 {
-    public class OrderInPreparationConsumer : BackgroundService
+    public class OrderSentToBillingConsumer : BackgroundService
     {
         private readonly ILogger<OrderMissingConsumer> _logger;
         private readonly IConfiguration _config;
         private readonly IServiceScopeFactory _scopeFactory;
 
-        public OrderInPreparationConsumer(ILogger<OrderMissingConsumer> logger, IConfiguration config, IServiceScopeFactory scopeFactory)
+        public OrderSentToBillingConsumer(ILogger<OrderMissingConsumer> logger, IConfiguration config, IServiceScopeFactory scopeFactory)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -44,7 +44,7 @@ namespace SalesService.Infraestructure.Messaging.Consumer
             var channel = await connection.CreateChannelAsync();
 
             await channel.QueueDeclareAsync(
-                queue: "order_in_preparation_queue",
+                queue: "order_sent_billing_queue",
                 durable: true,
                 exclusive: false,
                 autoDelete: false
@@ -55,29 +55,28 @@ namespace SalesService.Infraestructure.Messaging.Consumer
             consumer.ReceivedAsync += async (model, ea) =>
             {
                 var json = Encoding.UTF8.GetString(ea.Body.ToArray());
-                var evento = JsonSerializer.Deserialize<OrderPreparedIntegrationEvent>(json);
+                var evento = JsonSerializer.Deserialize<OrderSentToBillingIntegrationEvent>(json);
 
-                if(evento is not null)
+                if (evento != null)
                 {
                     using var scope = _scopeFactory.CreateScope();
                     var context = scope.ServiceProvider.GetRequiredService<SalesDbContext>();
                     var repository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
 
-                    var salesOrder = await repository.GetByIdAsync(evento.SalesOrderId);
-
-                    if(salesOrder != null)
+                    var order = await repository.GetByIdAsync(evento.SalesOrderId);
+                    if (order != null)
                     {
-                        salesOrder.Status = OrderStatus.InPreparation;
-                        await repository.UpdateAsync(salesOrder);
+                        order.Status = OrderStatus.SentToBilling;
+                        await repository.UpdateAsync(order);
                         await context.SaveChangesAsync();
-                        _logger.LogInformation($"Order {salesOrder.Id} is now in preparation.");
+                        _logger.LogInformation($"Order {order.Id} sent to billing successfully.");
 
-
+                        // Guardar el historial de estado
                         var statusHistory = new OrderStatusHistory
                         {
-                            OrderId = salesOrder.Id,
-                            OldStatus = OrderStatus.Confirmed,
-                            NewStatus = OrderStatus.InPreparation,
+                            OrderId = order.Id,
+                            OldStatus = OrderStatus.Prepared,
+                            NewStatus = OrderStatus.SentToBilling,
                             ChangedAt = DateTime.UtcNow
                         };
                         await context.OrderStatusHistories.AddAsync(statusHistory);
@@ -90,19 +89,17 @@ namespace SalesService.Infraestructure.Messaging.Consumer
                 }
                 else
                 {
-                    _logger.LogWarning("Received an empty or invalid OrderPreparedIntegrationEvent.");
+                    _logger.LogWarning("Received an empty or null event.");
                 }
             };
 
             await channel.BasicConsumeAsync(
-                queue: "order_in_preparation_queue",
+                queue: "order_sent_billing_queue",
                 autoAck: true,
                 consumer: consumer
             );
-
-            _logger.LogInformation("OrderInPreparationConsumer is running and listening for messages on 'order_in_preparation_queue'.");
-
+            _logger.LogInformation("OrderSentToBillingConsumer started and listening for messages on 'order_sent_billing_queue'.");
             await Task.CompletedTask;
         }
-    }   
+    }
 }

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.Operator.GetAssignedPendingOrders
 {
-    public class GetAssignedPendingOrdersQueryHandler(IDepotOrderRepository repository, DepotDbContext context, ILogger<GetAssignedPendingOrdersQueryHandler> logger) : IGetAssignedPendingOrdersQueryHandler
+    public class GetAssignedPendingOrdersQueryHandler(IDepotOrderRepository repository, ILogger<GetAssignedPendingOrdersQueryHandler> logger) : IGetAssignedPendingOrdersQueryHandler
     {
         private readonly IDepotOrderRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));        
         private readonly ILogger<GetAssignedPendingOrdersQueryHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));

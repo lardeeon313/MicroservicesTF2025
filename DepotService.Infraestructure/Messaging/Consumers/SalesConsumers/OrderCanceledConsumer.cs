@@ -15,19 +15,19 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace DepotService.Infraestructure.Messaging.Consumers
+namespace DepotService.Infraestructure.Messaging.Consumers.SalesConsumers
 {
     /// <summary>
-    /// Consumer para recibir eventos de órdenes eliminadas desde RabbitMQ.
+    /// Consumer para recibir eventos de órdenes Canceladas desde SalesService.
     /// </summary>
-    public class OrderDeletedConsumer : BackgroundService
+    public class OrderCanceledConsumer : BackgroundService
     {
-        private readonly ILogger<OrderDeletedConsumer> _logger;
+        private readonly ILogger<OrderCanceledConsumer> _logger;
         private IConfiguration _config;
         private readonly IServiceScopeFactory _scopeFactory;
 
-        public OrderDeletedConsumer(
-            ILogger<OrderDeletedConsumer> logger,
+        public OrderCanceledConsumer(
+            ILogger<OrderCanceledConsumer> logger,
             IConfiguration config,
             IServiceScopeFactory scopeFactory)
         {
@@ -50,7 +50,7 @@ namespace DepotService.Infraestructure.Messaging.Consumers
             var channel = await connection.CreateChannelAsync();
 
             await channel.QueueDeclareAsync(
-                queue: "order_deleted_queue",
+                queue: "order_canceled_queue",
                 durable: true,
                 exclusive: false,
                 autoDelete: false
@@ -65,7 +65,7 @@ namespace DepotService.Infraestructure.Messaging.Consumers
                     var body = ea.Body.ToArray();
                     var json = Encoding.UTF8.GetString(body);
 
-                    var evento = JsonSerializer.Deserialize<OrderDeleteIntegrationEvent>(json);
+                    var evento = JsonSerializer.Deserialize<OrderCanceledIntegrationEvent>(json);
 
                     if (evento != null)
                     {
@@ -84,40 +84,41 @@ namespace DepotService.Infraestructure.Messaging.Consumers
 
                         _logger.LogInformation("🗑️ [DepotService] Procesando evento OrderDeletedIntegrationEvent para SalesOrderId {SalesOrderId}", evento.OrderId);
 
-                        // Guardamos el estado de la orden antes de eliminarla
+                        // Guardamos el estado de la orden antes de cancelarla
                         var statusHistory = new OrderStatusHistory
                         {
-                            OrderId = depotOrder.DepotOrderId, 
+                            OrderId = depotOrder.DepotOrderId,
                             OldStatus = depotOrder.Status,
-                            NewStatus = OrderStatus.Deleted,
+                            NewStatus = OrderStatus.Cancelled,
                             ChangedAt = DateTime.UtcNow,
                         };
 
                         await context.OrderStatusHistories.AddAsync(statusHistory);
                         await context.SaveChangesAsync();
 
-                        // Eliminamos la orden del depósito
-                        await repository.DeleteOrderByIdAsync(depotOrder.DepotOrderId);
+                        // Cambiamos el estado de la orden a Cancelled
+                        depotOrder.Status = OrderStatus.Cancelled;
+                        await repository.UpdateOrderAsync(depotOrder);
 
                         // ✅ Guardamos los cambios en la base de datos
                         await context.SaveChangesAsync(stoppingToken);
                     }
                     else
                     {
-                        _logger.LogWarning("📥 [DepotService] No se pudo deserializar el evento OrderIssuedIntegrationEvent");
+                        _logger.LogWarning("📥 [DepotService] No se pudo deserializar el evento OrderCancelledIntegrationEvent");
                     }
 
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "❌ Error al procesar el evento OrderIssuedIntegrationEvent");
+                    _logger.LogError(ex, "❌ Error al procesar el evento OrderCancelledIntegrationEvent");
                 }
 
                 await Task.Yield(); // mantener async
             };
 
 
-            await channel.BasicConsumeAsync(queue: "order_deleted_queue", autoAck: true, consumer: consumer, stoppingToken);
+            await channel.BasicConsumeAsync(queue: "order_canceled_queue", autoAck: true, consumer: consumer, stoppingToken);
             await Task.CompletedTask;
         }
     }

@@ -17,18 +17,15 @@ namespace DepotService.Test.Queries.BillingManager
     public class GetInvoicedOrderByIdQueryHandlerTests
     {
         private readonly Mock<IDepotOrderRepository> _repositoryMock;
-        private readonly Mock<DepotDbContext> _contextMock;
         private readonly Mock<ILogger<GetInvoicedOrderByIdQueryHandler>> _loggerMock;
         private readonly GetInvoicedOrderByIdQueryHandler _handler;
 
         public GetInvoicedOrderByIdQueryHandlerTests()
         {
             _repositoryMock = new Mock<IDepotOrderRepository>();
-            _contextMock = new Mock<DepotDbContext>(new DbContextOptions<DepotDbContext>());
             _loggerMock = new Mock<ILogger<GetInvoicedOrderByIdQueryHandler>>();
 
             _handler = new GetInvoicedOrderByIdQueryHandler(
-                _contextMock.Object,
                 _repositoryMock.Object,
                 _loggerMock.Object
             );

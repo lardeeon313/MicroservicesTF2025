@@ -1,7 +1,9 @@
 ﻿using LogisticService.Domain.Entities;
 using LogisticService.Domain.Enums;
 using LogisticService.Domain.IRepositories;
+using LogisticService.Infraestructure.Messaging.Publisher;
 using Microsoft.Extensions.Logging;
+using SharedKernel.IntegrationEvents.LogisticEvents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +12,11 @@ using System.Threading.Tasks;
 
 namespace LogisticService.Application.Commands.DeliveryOperator.LogisticOrder.ResolveDeliveryIncident
 {
-    public class ResolveDeliveryIncidentCommandHandler(ILogisticOrderRepository repository, ILogger<ResolveDeliveryIncidentCommandHandler> logger) : IResolveDeliveryIncidentCommandHandler
+    public class ResolveDeliveryIncidentCommandHandler(IRabbitMQPublisher publisher ,ILogisticOrderRepository repository, ILogger<ResolveDeliveryIncidentCommandHandler> logger) : IResolveDeliveryIncidentCommandHandler
     {
         private readonly ILogisticOrderRepository _repository = repository;
         private readonly ILogger<ResolveDeliveryIncidentCommandHandler> _logger = logger;
+        private readonly IRabbitMQPublisher _publisher = publisher;
 
         /// <summary>
         /// Handler para resolver un incidente en una orden logística.
@@ -80,6 +83,17 @@ namespace LogisticService.Application.Commands.DeliveryOperator.LogisticOrder.Re
 
             _logger.LogInformation("Incident {IncidentId} resolved with status {Status} for order {OrderId}",
                 command.IncidentId, command.ResolutionStatus, command.LogisticOrderId);
+
+            var integrationEvent = new OrderResolveIncidentIntegrationEvent
+            {
+                LogisticOrderId = command.LogisticOrderId,
+                DepotOrderId = order.DepotOrderId,
+                SalesOrderId = order.SalesOrderId,
+                ResolveIncidentAt = DateTime.UtcNow,
+            };
+
+            // Publicamos el evento de notificacion de cambio de estado
+            await _publisher.PublishToExchangeAsync(integrationEvent, "order_resolve_incident_exchange");
 
             return true;
 

@@ -53,7 +53,7 @@ public class UnmarkItemReadyCommandHandlerTests
 
         // Simulamos que FindAsync retorna null (no se encuentra el item)
         _contextMock.Setup(c => c.DepotOrderItems.FindAsync(command.OrderItemId))
-            .ReturnsAsync((DepotOrderItemEntity)null);
+            .ReturnsAsync((DepotOrderItemEntity?)null);
 
         // Act: llamamos al handler
         var result = await _handler.UnmarkItemReady(command);
@@ -83,9 +83,9 @@ public class UnmarkItemReadyCommandHandlerTests
         _contextMock.Setup(c => c.DepotOrderItems.FindAsync(command.OrderItemId))
             .ReturnsAsync(item);
 
-        // Simulamos que la orden no existe
-        _repositoryMock.Setup(r => r.GetByIdAsync(item.DepotOrderEntityId))
-            .ReturnsAsync((DepotOrderEntity)null);
+            // Simulamos que la orden no existe
+            _ = _repositoryMock.Setup(r => r.GetByIdAsync(item.DepotOrderEntityId))
+                .ReturnsAsync((DepotOrderEntity?)null);
 
         // Act
         var result = await _handler.UnmarkItemReady(command);
