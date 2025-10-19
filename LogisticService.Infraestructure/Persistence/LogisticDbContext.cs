@@ -26,12 +26,12 @@ namespace LogisticService.Infraestructure.Persistence
         public DbSet<LogisticOrder> LogisticOrders { get; set; }
         public DbSet<LogisticOrderItem> LogisticOrderItems { get; set; }
         public DbSet<OrderStatusHistory> OrderStatusHistories { get; set; }
+        public DbSet<DeliveryRejectionReason> DeliveryRejectionReasons { get; set; }    
+        public DbSet<DeliveryIncident> DeliveryIncidents { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // DELIVER TEAMS
-            // Relación muchos-a-muchos: DeliveryTeam <-> Operator (Assignment como entidad)
             modelBuilder.Entity<DeliveryTeamMemberAssignment>()
                 .HasOne(m => m.DeliveryTeam)
                 .WithMany(t => t.DeliveryOperators)
@@ -56,6 +56,18 @@ namespace LogisticService.Infraestructure.Persistence
                 .HasOne(o => o.Customer)
                 .WithMany()
                 .HasForeignKey(o => o.CustomerId);
+
+            modelBuilder.Entity<DeliveryRejectionReason>()
+                .HasOne(r => r.LogisticOrder)
+                .WithMany(o => o.RejectionReasons)
+                .HasForeignKey(r => r.LogisticOrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DeliveryIncident>()
+                .HasOne(i => i.LogisticOrder)
+                .WithMany(o => o.DeliveryIncidents)
+                .HasForeignKey(i => i.LogisticOrderId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<DeliveryTeam>(entity =>
             {

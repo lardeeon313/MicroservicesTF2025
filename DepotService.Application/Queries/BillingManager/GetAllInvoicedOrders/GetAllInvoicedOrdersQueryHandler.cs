@@ -14,15 +14,13 @@ namespace DepotService.Application.Queries.BillingManager.GetAllInvoicedOrders
 {
     public class GetAllInvoicedOrdersQueryHandler(IDepotOrderRepository repository, DepotDbContext context, ILogger<GetAllInvoicedOrdersQueryHandler> logger) : IGetAllInvoicedOrdersQueryHandler
     {
-        private readonly IDepotOrderRepository _repository = repository;
-        private readonly DepotDbContext _context = context;
+        private readonly IDepotOrderRepository _repository = repository;        
         private readonly ILogger<GetAllInvoicedOrdersQueryHandler> _logger = logger;
 
         /// <summary>
         /// Handler para obtener todos los pedidos facturados en el sistema de gestión de depósitos.
         /// </summary>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <returns></returns>        
         public async Task<List<DepotOrderDto>> GetAllInvoicedOrdersAsync()
         {
             var invoicedOrders = await _repository.GetAllInvoicedOrdersAsync();
@@ -30,7 +28,7 @@ namespace DepotService.Application.Queries.BillingManager.GetAllInvoicedOrders
             if (invoicedOrders == null || !invoicedOrders.Any())
             {
                 _logger.LogWarning("No invoiced orders found.");
-                throw new KeyNotFoundException("No invoiced orders found.");
+                return new List<DepotOrderDto>();
             }
 
             _logger.LogInformation("Found {Count} invoiced orders.", invoicedOrders.Count());

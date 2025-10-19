@@ -63,19 +63,6 @@ import PendingOrdersVerificationDetailsPage from "../features/verification/pages
 import OrdersInRoutePage from "../features/verification/pages/OrdersInRoutePage";
 import OrdersInRouteDetailsPage from "../features/verification/pages/OrdersInRouteDetailsPage";
 
-
-// Otros roles
-import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
-
-
-
-//import InvoiceDetailPage from "../features/depot/billingmanager/components/InvoiceListComponent";
-
-
-
-
-
-
 const AppRouter = () => {
   return (
       <Routes>
@@ -187,7 +174,7 @@ const AppRouter = () => {
             <Route path="orders-in-route" element={<OrdersInRoutePage/> } />
             <Route path="orders-in-route/:id" element={<OrdersInRouteDetailsPage/> } />
             {/**reportes sector logistica*/}
-            <Route path="reports" element={<DashboardLogisticReportsPage/>} />
+            <Route path="reports" element={<VerificationManagerDashboardPage/>} />
         </Route>
 
 

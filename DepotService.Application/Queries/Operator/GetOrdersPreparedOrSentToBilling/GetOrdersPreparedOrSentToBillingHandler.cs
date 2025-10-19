@@ -13,11 +13,10 @@ using GetOrdersQuery = DepotService.Application.Queries.Operator.GetOrdersByOper
 
 namespace DepotService.Application.Queries.Operator.GetOrdersPreparedOrSentToBilling
 {
-    public class GetOrdersPreparedOrSentToBillingHandler(IDepotOrderRepository repository,DepotDbContext context, ILogger<GetOrdersPreparedOrSentToBillingHandler> logger) : IGetOrdersPreparedOrSentToBillingHandler
+    public class GetOrdersPreparedOrSentToBillingHandler(IDepotOrderRepository repository, ILogger<GetOrdersPreparedOrSentToBillingHandler> logger) : IGetOrdersPreparedOrSentToBillingHandler
     {
 
-        private readonly IDepotOrderRepository _repository = repository;
-        private readonly DepotDbContext _context = context;
+        private readonly IDepotOrderRepository _repository = repository;        
         private readonly ILogger<GetOrdersPreparedOrSentToBillingHandler> _logger = logger;
 
         public async Task<IEnumerable<DepotOrderDto>> GetOrdersPreparedBillingByOperatorAsync(GetOrdersQuery query)

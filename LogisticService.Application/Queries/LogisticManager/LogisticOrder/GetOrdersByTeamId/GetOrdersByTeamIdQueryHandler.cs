@@ -28,7 +28,7 @@ namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetO
             if (!orders.Any())
             {
                 _logger.LogWarning("No logistic orders found for team ID {TeamId}", query.TeamId);
-                throw new KeyNotFoundException($"No logistic orders found for team ID {query.TeamId}");
+                return Enumerable.Empty<LogisticOrderDto>();
             }
 
             return orders.Select(order => new LogisticOrderDto

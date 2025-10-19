@@ -13,10 +13,9 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.DepotManager.GetOrdersByStatus
 {
-    public class GetOrdersByStatusQueryHandler(IDepotOrderRepository repository, DepotDbContext context, ILogger<GetOrdersByStatusQueryHandler> logger) : IGetOrdersByStatusQueryHandler
+    public class GetOrdersByStatusQueryHandler(IDepotOrderRepository repository, ILogger<GetOrdersByStatusQueryHandler> logger) : IGetOrdersByStatusQueryHandler
     {
-        private readonly IDepotOrderRepository _repository = repository;
-        private readonly DepotDbContext _context = context;
+        private readonly IDepotOrderRepository _repository = repository;        
         private readonly ILogger<GetOrdersByStatusQueryHandler> _logger = logger;
 
         /// <summary>

@@ -11,9 +11,8 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.BillingManager.GetInvoicedOrdersByCustomer
 {
-    public class GetInvoicedOrdersByCustomerQueryHandler(DepotDbContext context, IDepotOrderRepository repository, ILogger<GetInvoicedOrdersByCustomerQueryHandler> logger) : IGetInvoicedOrdersByCustomerQueryHandler
-    {
-        private readonly DepotDbContext _context = context;
+    public class GetInvoicedOrdersByCustomerQueryHandler(IDepotOrderRepository repository, ILogger<GetInvoicedOrdersByCustomerQueryHandler> logger) : IGetInvoicedOrdersByCustomerQueryHandler
+    {        
         private readonly IDepotOrderRepository _repository = repository;
         private readonly ILogger<GetInvoicedOrdersByCustomerQueryHandler> _logger = logger;
 
@@ -34,7 +33,7 @@ namespace DepotService.Application.Queries.BillingManager.GetInvoicedOrdersByCus
             if (!ordersByCustomer.Any())
             {
                 _logger.LogWarning("No invoiced orders found for customer with Name {CustomerName}.", query.CustomerName);
-                throw new KeyNotFoundException($"No invoiced orders found for customer with Name {query.CustomerName}.");
+                return new List<DepotOrderDto>();
             }
 
             _logger.LogInformation("Found {Count} invoiced orders for customer with Name {CustomerName}.", ordersByCustomer.Count(), query.CustomerName);

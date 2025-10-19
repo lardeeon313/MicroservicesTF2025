@@ -28,7 +28,7 @@ namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetO
             if (!orders.Any())
             {
                 _logger.LogWarning("No logistic orders found for delivery zone ID {DeliveryZoneId}", query.DeliveryZoneId);
-                throw new KeyNotFoundException($"No logistic orders found for delivery zone ID {query.DeliveryZoneId}");
+                return Enumerable.Empty<LogisticOrderDto>();
             }
 
             return orders.Select(order => new LogisticOrderDto

@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
-using LogisticService.API.RequestDtos.DeliveryTeams;
-using LogisticService.API.RequestDtos.DeliveryZones;
+using LogisticService.API.RequestDtos.VerificationManager.DeliveryZones;
 
 namespace LogisticService.API.Validators.DeliveryZones
 {

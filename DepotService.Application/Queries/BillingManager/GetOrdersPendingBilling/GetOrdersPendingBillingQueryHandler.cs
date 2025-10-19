@@ -12,9 +12,8 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.BillingManager.GetOrdersPendingBilling
 {
-    public class GetOrdersPendingBillingQueryHandler(DepotDbContext context, IDepotOrderRepository repository, ILogger<GetOrdersPendingBillingQueryHandler> logger) : IGetOrdersPendingBillingQueryHandler
-    {
-        private readonly DepotDbContext _context = context;
+    public class GetOrdersPendingBillingQueryHandler(IDepotOrderRepository repository, ILogger<GetOrdersPendingBillingQueryHandler> logger) : IGetOrdersPendingBillingQueryHandler
+    {        
         private readonly IDepotOrderRepository _repository = repository;
         private readonly ILogger<GetOrdersPendingBillingQueryHandler> _logger = logger;
 
@@ -24,7 +23,7 @@ namespace DepotService.Application.Queries.BillingManager.GetOrdersPendingBillin
             if (orders == null || !orders.Any())
             {
                 _logger.LogWarning("No pending billing orders found.");
-                throw new KeyNotFoundException("No pending billing orders found.");
+                return new List<DepotOrderDto>();
             }
 
             _logger.LogInformation("Found {Count} pending billing orders.", orders.Count());

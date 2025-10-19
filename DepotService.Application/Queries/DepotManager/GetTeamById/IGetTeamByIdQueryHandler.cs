@@ -9,6 +9,6 @@ namespace DepotService.Application.Queries.DepotManager.GetTeamById
 {
     public interface IGetTeamByIdQueryHandler
     {
-        Task<DepotTeamDto> GetByIdHandle(GetTeamByIdQuery query);
+        Task<DepotTeamDto?> GetByIdHandle(GetTeamByIdQuery query);
     }
 }

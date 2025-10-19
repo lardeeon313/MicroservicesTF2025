@@ -13,10 +13,9 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.BillingManager.GetBillingDetailsByOrder
 {
-    public class GetBillingDetailsByOrderIdQueryHandler(IDepotOrderRepository repository, DepotDbContext context, ILogger<GetBillingDetailsByOrderIdQueryHandler> logger) : IGetBillingDetailsByOrderIdQueryHandler
+    public class GetBillingDetailsByOrderIdQueryHandler(IDepotOrderRepository repository, ILogger<GetBillingDetailsByOrderIdQueryHandler> logger) : IGetBillingDetailsByOrderIdQueryHandler
     {
-        private readonly IDepotOrderRepository _repository = repository;
-        private readonly DepotDbContext _context = context;
+        private readonly IDepotOrderRepository _repository = repository;        
         private readonly ILogger<GetBillingDetailsByOrderIdQueryHandler> _logger = logger;
 
         /// <summary>
@@ -24,13 +23,13 @@ namespace DepotService.Application.Queries.BillingManager.GetBillingDetailsByOrd
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        public async Task<DepotOrderDto> GetBillingDetailsByOrderIdAsync(GetBillingDetailsByOrderIdQuery query)
+        public async Task<DepotOrderDto?> GetBillingDetailsByOrderIdAsync(GetBillingDetailsByOrderIdQuery query)
         {
             var order = await _repository.GetByIdAsync(query.DepotOrderId);
             if (order == null)
             {
                 _logger.LogWarning("Order with ID {OrderId} not found.", query.DepotOrderId);
-                throw new KeyNotFoundException($"Order with ID {query.DepotOrderId} not found.");
+                return null;
             }
 
             _logger.LogInformation("Retrieved billing details for order ID {OrderId}.", query.DepotOrderId);

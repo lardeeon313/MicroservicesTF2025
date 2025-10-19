@@ -12,6 +12,6 @@ namespace DepotService.Application.Queries.DepotManager.GetByIdOrder
     /// </summary>
     public interface IGetByIdOrderQueryHandler
     {
-        Task<DepotOrderDto> GetByIdOrderHandler(int depotOrderId);
+        Task<DepotOrderDto?> GetByIdOrderHandler(int depotOrderId);
     }
 }

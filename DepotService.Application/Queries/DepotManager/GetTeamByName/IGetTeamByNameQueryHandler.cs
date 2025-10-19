@@ -9,6 +9,6 @@ namespace DepotService.Application.Queries.DepotManager.GetTeamByName
 {
     public interface IGetTeamByNameQueryHandler
     {
-        Task<DepotTeamDto> GetTeamByNameHandler(GetTeamByNameQuery query);
+        Task<DepotTeamDto?> GetTeamByNameHandler(GetTeamByNameQuery query);
     }
 }

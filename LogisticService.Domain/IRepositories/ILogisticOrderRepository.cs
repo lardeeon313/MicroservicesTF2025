@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 namespace LogisticService.Domain.IRepositories
 {
     public interface ILogisticOrderRepository
-    {
+    {        
         Task<IEnumerable<LogisticOrder>> GetAllAsync();
         Task<LogisticOrder?> GetByIdAsync(int id);
         Task AddAsync(LogisticOrder order);
-        Task UpdateAsync(LogisticOrder order);
+        Task UpdateAsync(LogisticOrder order);        
         Task<IEnumerable<LogisticOrder>> GetOrdersByStatus(OrderStatus status);
         Task<(List<LogisticOrder> Orders, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
         Task<IEnumerable<LogisticOrder>> GetOrdersByCustomerIdAsync(Guid customerId);
@@ -22,5 +22,24 @@ namespace LogisticService.Domain.IRepositories
         Task<IEnumerable<LogisticOrder>> GetOrdersByDeliveryZoneId(int zoneId);
         Task AddStatusHistoryAsync(OrderStatusHistory statusHistory);
         Task<IEnumerable<LogisticOrder>> GetOrdersByDeliveryPriorityAsync(DeliveryPriority priority);
+
+
+        
+        // QUERIES PARA OPERADORES DE REPARTO
+        Task<List<LogisticOrder>> GetMyAssignedOrders(Guid operatorId);
+        Task<List<LogisticOrder>> GetMyDeliveredOrders(Guid operatorId);
+        Task<List<LogisticOrder>> GetMyPendingCashOrders(Guid operatorId);
+        Task<List<LogisticOrder>> GetMyPendingDeliveredOrders(Guid operatorId);
+        Task<List<LogisticOrder>> GetMyOnTheWayOrders(Guid operatorId);
+
+        // DELIVERY REJECTIONS REASONS
+        Task AddDeliveryRejectionAsync(DeliveryRejectionReason rejectionReason);
+        Task<IEnumerable<DeliveryRejectionReason>> GetRejectionReasonsByOrderIdAsync(int logisticOrderId);
+
+        // DELIVERY INCIDENTS
+        Task AddDeliveryIncidentAsync(DeliveryIncident incident);       
+        Task<DeliveryIncident?> GetDeliveryIncidentByIdAsync(int id);
+        Task<List<DeliveryIncident>> GetDeliveryIncidentByOrderIdAsync(int logisticOrderId);
+        Task UpdateDeliveryIncidentAsync(DeliveryIncident incident);
     }
 }

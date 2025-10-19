@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using LogisticService.API.RequestDtos.DeliveryTeams;
+using LogisticService.API.RequestDtos.VerificationManager.DeliveryTeams;
 
 namespace LogisticService.API.Validators.DeliveryTeams
 {

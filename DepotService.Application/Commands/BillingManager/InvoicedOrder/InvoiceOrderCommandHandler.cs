@@ -26,6 +26,8 @@ namespace DepotService.Application.Commands.BillingManager.InvoicedOrder
         private readonly IDepotOrderRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         private readonly ILogger<InvoiceOrderCommandHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
+        private const string ORDER_INVOICED_EXCHANGE = "order_invoiced_exchange";
+
         /// <summary>
         /// Handles the command to invoice an order.
         /// </summary>
@@ -107,7 +109,7 @@ namespace DepotService.Application.Commands.BillingManager.InvoicedOrder
                 OrderItems = orderItems
             };
 
-            await _publisher.PublishAsync(integrationEvent, "order_invoiced_queue");
+            await _publisher.PublishToExchangeAsync(integrationEvent, ORDER_INVOICED_EXCHANGE);
             _logger.LogInformation("Order invoiced event published for order ID {OrderId}.", command.DepotOrderId);
             return true;
         }

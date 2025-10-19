@@ -37,23 +37,32 @@ namespace SalesService.Application.Commands.Orders.Register
             var customer = await _customerRepository.GetByIdAsync(command.CustomerId)
                 ?? throw new KeyNotFoundException($"Customer with ID {command.CustomerId} not found.");
 
-            Console.WriteLine($"DeliveryAddress recibido: {JsonSerializer.Serialize(command.DeliveryAddress)}");
+            Address deliveryAddress;
 
-            // Crear el objeto Address (NO lo guardamos aparte, lo dejamos colgado del Order)
-            var deliveryAddress = new Address
+            // Si el usuario seleccionó una dirección existente
+            if (command.DeliveryAddress.Id > 0)
             {
-                Street = command.DeliveryAddress.Street,
-                Number = command.DeliveryAddress.Number,
-                Apartment = command.DeliveryAddress.Apartment,
-                City = command.DeliveryAddress.City,
-                Province = command.DeliveryAddress.Province,
-                Country = command.DeliveryAddress.Country,
-                PostalCode = command.DeliveryAddress.PostalCode,
-                Latitude = command.DeliveryAddress.Latitude,
-                Longitude = command.DeliveryAddress.Longitude,
-                FormattedAddress = command.DeliveryAddress.FormattedAddress,
-                CustomerId = command.CustomerId // opcional, si querés dejar la traza
-            };
+                deliveryAddress = customer.Addresses?.FirstOrDefault(a => a.Id == command.DeliveryAddress.Id)
+                    ?? throw new KeyNotFoundException($"Address with ID {command.DeliveryAddress.Id} not found for this customer.");
+            }
+            else
+            {
+                // Crear una nueva dirección manual
+                deliveryAddress = new Address
+                {
+                    Street = command.DeliveryAddress.Street,
+                    Number = command.DeliveryAddress.Number,
+                    Apartment = command.DeliveryAddress.Apartment,
+                    City = command.DeliveryAddress.City,
+                    Province = command.DeliveryAddress.Province,
+                    Country = command.DeliveryAddress.Country,
+                    PostalCode = command.DeliveryAddress.PostalCode,
+                    Latitude = command.DeliveryAddress.Latitude,
+                    Longitude = command.DeliveryAddress.Longitude,
+                    FormattedAddress = command.DeliveryAddress.FormattedAddress,
+                    CustomerId = command.CustomerId
+                };
+            }
 
             Console.WriteLine($"Address antes de guardar: {deliveryAddress.Id}, {deliveryAddress.Street}, {deliveryAddress.Number}");
 

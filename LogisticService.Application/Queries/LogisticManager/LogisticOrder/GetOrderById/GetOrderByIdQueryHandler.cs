@@ -21,10 +21,14 @@ namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetO
         /// <param name="query"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<LogisticOrderDto> GetOrderByIdHandleAsync(GetOrderByIdQuery query)
+        public async Task<LogisticOrderDto?> GetOrderByIdHandleAsync(GetOrderByIdQuery query)
         {
-            var order = await _repository.GetByIdAsync(query.Id)
-                ?? throw new KeyNotFoundException($"Logistic order with id {query.Id} not found");
+            var order = await _repository.GetByIdAsync(query.Id);
+            if (order == null)
+            {
+                _logger.LogWarning("Logistic order with ID {Id} not found.", query.Id);
+                return null;
+            }
 
             return new LogisticOrderDto
             {

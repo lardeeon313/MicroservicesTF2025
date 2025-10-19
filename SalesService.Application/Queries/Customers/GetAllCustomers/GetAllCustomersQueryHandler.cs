@@ -42,7 +42,7 @@ namespace SalesService.Application.Queries.Customers.GetAllCustomers
                 PaymentTypes = c.PaymentTypes
                     .Select(pt => pt.PaymentType)
                     .ToList()
-            });
+            }).ToList();
         }
     }
     

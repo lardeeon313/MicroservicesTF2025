@@ -1,4 +1,5 @@
 ﻿using DepotService.Application.DTOs.DepotManager;
+using DepotService.Application.DTOs.DepotOperator;
 using DepotService.Application.Services.IdentityServiceClient;
 using DepotService.Domain.IRepositories;
 using System;
@@ -16,26 +17,16 @@ namespace DepotService.Application.Queries.DepotManager.GetAllTeams
         public async Task<IEnumerable<DepotTeamDto>> HandleAsync()
         {
             var teams = await _repository.GetAllAsync();
-            var depotOperators = await identityServiceClient.GetUserWithRoleOperator();
-
-            // Check if depotOperators is null or empty
-            if (depotOperators == null || !depotOperators.Any())
-                throw new Exception("No operators found in Identity Service");
-
-            // Debug: Mostramos los IDs de los operadores
-            Console.WriteLine("IDs de operadores obtenidos:");
-            foreach (var operatorDto in depotOperators)
-            {
-                Console.WriteLine($"  -> {operatorDto.Id}");
-            }
-
-            // Check if teams are null or empty
             if (teams == null)
-                throw new Exception("No teams found");
+                return new List<DepotTeamDto>();
 
-            var operatorsById = depotOperators.ToDictionary(op => op.Id.ToLower());
+            var depotOperators = await identityServiceClient.GetUserWithRoleOperator()
+                ?? new List<DepotOperatorsDto>();
 
-            // Project to DTO
+            var operatorsById = depotOperators.Count > 0
+                ? depotOperators.ToDictionary(op => op.Id.ToLowerInvariant())
+                : new Dictionary<string, DepotOperatorsDto>();
+
             return teams.Select(t => new DepotTeamDto
             {
                 Id = t.Id,
@@ -43,10 +34,10 @@ namespace DepotService.Application.Queries.DepotManager.GetAllTeams
                 TeamDescription = t.TeamDescription,
                 CreatedAt = t.CreatedAt,
                 Operators = t.Assignments
-                    .Where(a => operatorsById.ContainsKey(a.OperatorUserId.ToString().ToLower()))
+                    .Where(a => operatorsById.ContainsKey(a.OperatorUserId.ToString().ToLowerInvariant()))
                     .Select(a =>
                     {
-                        var operatorData = operatorsById[a.OperatorUserId.ToString().ToLower()];
+                        var operatorData = operatorsById[a.OperatorUserId.ToString().ToLowerInvariant()];
                         return new OperatorsInTeamDto
                         {
                             OperatorByUserId = a.OperatorUserId,
