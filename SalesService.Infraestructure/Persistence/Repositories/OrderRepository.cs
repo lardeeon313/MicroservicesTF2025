@@ -71,6 +71,7 @@ namespace SalesService.Infraestructure.Persistence.Repositories
         {
             return await _context.Orders
                 .Include(o => o.Customer)
+                    .ThenInclude(c => c.Addresses)
                 .Include(o => o.DeliveryAddress)
                 .Include(o => o.Items)
                 .FirstOrDefaultAsync(o => o.Id == orderId);
@@ -135,6 +136,12 @@ namespace SalesService.Infraestructure.Persistence.Repositories
             }
             _context.Orders.Update(order);
             await _context.SaveChangesAsync();
+        }
+
+        public void AttachEntity<T>(T entity) where T : class
+        {
+            _context.Attach(entity);
+            _context.Entry(entity).State = EntityState.Unchanged;
         }
     }
 }

@@ -27,6 +27,8 @@ namespace SalesService.Domain.IRepositories
         Task<DateTime?> GetLastOrderDateByCustomerId(Guid customerId);
         Task<IEnumerable<Order>> GetAllWithItemsAsync();
         Task<IEnumerable<OrderMissing>> GetMissingOrdersAsync();
+        //
+        void AttachEntity<T>(T entity) where T : class;
 
     }
 }

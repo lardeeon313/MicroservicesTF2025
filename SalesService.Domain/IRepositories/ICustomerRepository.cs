@@ -20,6 +20,8 @@ namespace SalesService.Domain.IRepositories
         Task<Customer?> GetByIdWithAddressesAsync(Guid id);
         Task RemoveAddress(Address address);
         Task<List<CustomerPaymentType>> GetPaymentTypesByCustomerIdAsync(Guid customerId);
+        //
+        Task<Address?> GetAddressByIdAsync(int addressId);
 
     }
 }

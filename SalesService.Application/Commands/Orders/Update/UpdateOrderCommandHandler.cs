@@ -21,19 +21,18 @@ namespace SalesService.Application.Commands.Orders.Update
 
         public async Task<OrderDto?> HandleAsync(UpdateOrderCommand command)
         {
+            
             var existingOrder = await _orderRepository.GetByIdAsync(command.OrderId);
+            Console.WriteLine(existingOrder == null
+                ? $"❌ No se encontró la orden con ID {command.OrderId}"
+                : $"✅ Orden encontrada: ID {existingOrder.Id}");
             if (existingOrder == null)
             {
                 throw new KeyNotFoundException($"Order with ID {command.OrderId} not found.");
             }
 
-            // Log: Estado inicial del pedido
-            Console.WriteLine($"--- Estado inicial del pedido (ID: {existingOrder.Id}) ---");
-            Console.WriteLine($"EL Total de productos antes de la actualización: {existingOrder.Items.Count}");
-            foreach (var item in existingOrder.Items)
-            {
-                Console.WriteLine($"- Id: {item.Id}, Producto: {item.ProductName}, Cantidad: {item.Quantity}");
-            }
+
+
 
             // Se actualizan solo los campos modificables desde SalesService
             existingOrder.DeliveryDetail = command.Request.DeliveryDetail;
@@ -105,26 +104,9 @@ namespace SalesService.Application.Commands.Orders.Update
                 }
             }
 
-            // Log: Estado del pedido después de procesar los productos
-            Console.WriteLine($"\n--- Estado del pedido después de procesar los productos ---");
-            Console.WriteLine($"Total de productos después de procesar: {existingOrder.Items.Count}");
-            foreach (var item in existingOrder.Items)
-            {
-                Console.WriteLine($"- Id: {item.Id}, Producto: {item.ProductName}, Cantidad: {item.Quantity}");
-            }
-
-            // Guardar cambios en la base de datos
-            Console.WriteLine("\nGuardando cambios en la base de datos...");
 
             await _orderRepository.UpdateAsync(existingOrder);
 
-            // Log: Resultado final del pedido
-            Console.WriteLine($"\n--- Resultado final del pedido (ID: {existingOrder.Id}) ---");
-            Console.WriteLine($"Total de productos guardados: {existingOrder.Items.Count}");
-            foreach (var item in existingOrder.Items)
-            {
-                Console.WriteLine($"- Id: {item.Id}, Producto: {item.ProductName}, Cantidad: {item.Quantity}");
-            }
 
             return new OrderDto
             {

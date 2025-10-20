@@ -17,7 +17,7 @@ interface Props {
 }
 
 const getPaymentTypeLabel = (type?: string) => {
-  console.log("Valor de paymentType:", type);
+  
   if (!type) return "No especificado";
   switch (type.toLowerCase()) {
     case "cash":

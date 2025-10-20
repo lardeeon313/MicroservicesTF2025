@@ -66,6 +66,3 @@ export function normalizePaymentType(paymentType: string): PaymentType | undefin
   const normalizedPaymentType = paymentType.toLowerCase().replace(/\s+/g, "_");
   return paymentTypeMap[normalizedPaymentType];
 }
-
-
-//:

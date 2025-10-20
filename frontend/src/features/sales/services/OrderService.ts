@@ -35,11 +35,8 @@ export const getOrdersByCustomer = async (customerId: string): Promise<Order[]> 
 
 // Registrar una nueva orden
 export const registerOrder = async (data: RegisterOrderRequest): Promise<Order> => {
-  console.log("📦 [OrderService] Enviando orden al backend:", JSON.stringify(data, null, 2));
   
   const response = await API.post("/sales/Order/register", data);
-  
-  console.log("📨 [OrderService] Respuesta recibida del backend:", response.data);
   
   return response.data
 };
@@ -47,16 +44,7 @@ export const registerOrder = async (data: RegisterOrderRequest): Promise<Order> 
 // Actualizar orden
 export const updateOrder = async (id: number, data: UpdateOrderRequest): Promise<Order> => {
 
-  console.log("--- Datos enviados al backend (updateOrder) ---");
-  console.log("ID del pedido:", id);
-  console.log("Datos del pedido:", data);
-  console.log("Productos en la solicitud:", data.items);
-
   const response = await API.put(`/sales/order/update/${id}`, data);
-
-  console.log("--- Respuesta del backend (updateOrder) ---");
-  console.log("Datos recibidos:", response.data);
-  console.log("Productos en la respuesta:", response.data.items)
 
   return response.data;
 };

@@ -57,7 +57,7 @@ import InvoiceOneDetailPage from "../features/depot/billingmanager/pages/Invoice
 // Verification
 import TeamsPageVerification from "../features/verification/pages/TeamsPage";
 import VerificationManagerDashboardPage from "../features/verification/pages/VerificationManagerDashboard";
-import { DashboardLogisticReportsPage } from "../features/verification/pages/reports/DashboardLogisticReportsPage";
+//import { DashboardLogisticReportsPage } from "../features/verification/pages/reports/DashboardLogisticReportsPage";
 import PendingOrdersVerificationPage from "../features/verification/pages/PendingOrdersVerficationPage";
 import PendingOrdersVerificationDetailsPage from "../features/verification/pages/PendingOrderVerificationDetailsPage";
 import OrdersInRoutePage from "../features/verification/pages/OrdersInRoutePage";
@@ -149,6 +149,7 @@ const AppRouter = () => {
         </Route>
 
         {/* Delivery */}
+        {/** 
         <Route
             path="/delivery"
             element={
@@ -156,7 +157,7 @@ const AppRouter = () => {
                 <DeliveryDashboard />
             </ProtectedRoute>
             }
-        />
+        />*/}
 
         {/* Verificación */}
         <Route

@@ -40,10 +40,14 @@ namespace SalesService.Application.Commands.Orders.Register
             Address deliveryAddress;
 
             // Si el usuario seleccionó una dirección existente
-            if (command.DeliveryAddress.Id > 0)
+            if (command.DeliveryAddressId.HasValue && command.DeliveryAddressId > 0)
             {
-                deliveryAddress = customer.Addresses?.FirstOrDefault(a => a.Id == command.DeliveryAddress.Id)
-                    ?? throw new KeyNotFoundException($"Address with ID {command.DeliveryAddress.Id} not found for this customer.");
+                // Buscar la dirección existente desde el repositorio (mejor que desde la navegación)
+                deliveryAddress = await _customerRepository.GetAddressByIdAsync(command.DeliveryAddressId.Value)
+                    ?? throw new KeyNotFoundException($"Address with ID {command.DeliveryAddressId} not found for this customer.");
+
+                // Aseguramos que EF no intente volver a insertarla
+                _orderRepository.AttachEntity(deliveryAddress);
             }
             else
             {
@@ -64,7 +68,7 @@ namespace SalesService.Application.Commands.Orders.Register
                 };
             }
 
-            Console.WriteLine($"Address antes de guardar: {deliveryAddress.Id}, {deliveryAddress.Street}, {deliveryAddress.Number}");
+
 
             // Crear la orden directamente con el Address
             var order = new Order
@@ -85,12 +89,12 @@ namespace SalesService.Application.Commands.Orders.Register
                 DeliveryAddress = deliveryAddress // 🔑 asignación directa
             };
 
-            Console.WriteLine($"Order antes de guardar: {JsonSerializer.Serialize(order)}");
+           
 
             // Guardar todo en la DB (EF hace el insert de Address y Order en la misma transacción)
             await _orderRepository.AddAsync(order);
 
-            Console.WriteLine($"Order después de guardar: {JsonSerializer.Serialize(order)}");
+
 
             // Actualizar el estado del cliente a "Active"
             customer.Status = CustomerStatus.Active;

@@ -81,31 +81,31 @@ const RegisterOrderForm: React.FC<Props> = ({
 
         // Trae tipos de pago del cliente
         // ✅ Trae y mapea tipos de pago del cliente
-useEffect(() => {
-  const fetchPaymentTypes = async () => {
-    if (values.customerId) {
-      try {
-        const data = await getCustomerPaymentTypes(values.customerId);
-        console.log("Tipos de pago recibidos:", data);
+        useEffect(() => {
+          const fetchPaymentTypes = async () => {
+            if (values.customerId) {
+              try {
+                const data = await getCustomerPaymentTypes(values.customerId);
+  
 
-        // Mapeo correcto
-        const mapped = data.map((pt: any) => ({
-          id: pt.id,
-          paymentType: pt.paymentType, // el enum string (ej: "Cash")
-        }));
+                // Mapeo correcto
+                const mapped = data.map((pt: any) => ({
+                  id: pt.id,
+                  paymentType: pt.paymentType, // el enum string (ej: "Cash")
+                }));
 
-        setPaymentTypes(mapped);
-        setFieldValue("paymentType", ""); // antes era paymentTypeId
-      } catch (error) {
-        console.error("Error al traer tipos de pago:", error);
-        setPaymentTypes([]);
-      }
-    } else {
-      setPaymentTypes([]);
-    }
-  };
-  fetchPaymentTypes();
-}, [values.customerId, setFieldValue]);
+                setPaymentTypes(mapped);
+                setFieldValue("paymentType", ""); // antes era paymentTypeId
+              } catch (error) {
+                console.error("Error al traer tipos de pago:", error);
+                setPaymentTypes([]);
+              }
+            } else {
+              setPaymentTypes([]);
+            }
+          };
+          fetchPaymentTypes();
+        }, [values.customerId, setFieldValue]);
 
 
         const handleAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

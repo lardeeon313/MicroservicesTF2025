@@ -91,5 +91,13 @@ namespace SalesService.Infraestructure.Persistence.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        // 👇 nuevo método
+        public async Task<Address?> GetAddressByIdAsync(int addressId)
+        {
+            return await _context.Addresses
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a => a.Id == addressId);
+        }
     }
 }

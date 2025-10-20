@@ -11,6 +11,21 @@ namespace DepotService.Infraestructure.Documents.Word
 {
     public class InvoiceWordGenerator : IInvoiceWordGenerator
     {
+        private static string GetPaymentTypeName(int paymentType)
+        {
+            return paymentType switch
+            {
+                0 => "Transferencia",
+                1 => "Tarjeta de crédito",
+                2 => "Tarjeta de débito",
+                3 => "Efectivo",
+                4 => "Cuenta corriente",
+                5 => "Cheque",
+                6 => "Pagare",
+                _ => "Desconocido"
+            };
+        }
+
         public byte[] Generate(DepotOrderEntity order)
         {
             if (order == null)
@@ -137,6 +152,8 @@ namespace DepotService.Infraestructure.Documents.Word
             invoiceInfoCell.AppendChild(CreateInfoParagraph("INFORMACIÓN DE FACTURA", true, "B91C1C"));
             invoiceInfoCell.AppendChild(CreateInfoParagraph($"Factura N°: {order.DepotOrderId}", false, "000000", true));
             invoiceInfoCell.AppendChild(CreateInfoParagraph($"Fecha: {order.OrderDate:dd/MM/yyyy}", false, "000000"));
+            invoiceInfoCell.AppendChild(CreateInfoParagraph($"Tipo de pago: {GetPaymentTypeName((int)order.PaymentType)}", false, "000000"));
+
 
             // Columna derecha - Información del cliente
             TableCell clientInfoCell = new TableCell();

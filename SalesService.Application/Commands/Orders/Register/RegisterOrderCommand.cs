@@ -19,12 +19,13 @@ namespace SalesService.Application.Commands.Orders.Register
         public Guid CustomerId { get; set; }
         public List<RegisterOrderItemRequest> Items { get; set; } = new();
         public string? DeliveryDetail { get; set; }
+        public int? DeliveryAddressId { get; set; }
         public DateTime? DeliveryDate { get; set; }
         public string CreatedByUserId { get; set; } = string.Empty;
         public AddressRequest DeliveryAddress { get; set; } = new();
         public PaymentType? PaymentType { get; set; } 
 
-        public RegisterOrderCommand(Guid customerId, List<RegisterOrderItemRequest> items, DateTime? deliverDate, string? deliveryDetail, string createdByUserId, AddressRequest deliveryAddress, PaymentType? paymentType)
+        public RegisterOrderCommand(Guid customerId, List<RegisterOrderItemRequest> items, DateTime? deliverDate, string? deliveryDetail, string createdByUserId, AddressRequest deliveryAddress, PaymentType? paymentType, int? deliveryAddressId = null)
         {
             CustomerId = customerId;
             DeliveryDetail = deliveryDetail;
@@ -33,6 +34,7 @@ namespace SalesService.Application.Commands.Orders.Register
             CreatedByUserId = createdByUserId;
             DeliveryAddress = deliveryAddress;
             PaymentType = paymentType;
+            DeliveryAddressId = deliveryAddressId;
         }
 
     }
