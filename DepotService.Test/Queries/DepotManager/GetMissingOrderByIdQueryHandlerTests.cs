@@ -25,8 +25,7 @@ namespace DepotService.Test.Queries.DepotManager
 
             _handler = new GetMissingOrderByIdQueryHandler(
                 _repositoryMock.Object,
-                _loggerMock.Object,
-                context: null // No se usa en este handler
+                _loggerMock.Object
             );
         }
 
@@ -45,7 +44,6 @@ namespace DepotService.Test.Queries.DepotManager
                 MissingItems = new System.Collections.Generic.List<DepotOrderMissingItem>(),
                 DescriptionResolution = "Pendiente resolución",
                 MissingDate = DateTime.UtcNow,
-                DepotOrder = null
             };
 
             _repositoryMock.Setup(r => r.GetMissingOrderByIdAsync(missingOrderId))

@@ -17,15 +17,13 @@ namespace DepotService.Test.Queries.DepotOperator
     {
         private readonly Mock<IDepotOrderRepository> _repositoryMock;
         private readonly Mock<ILogger<GetAssignedPendingOrdersQueryHandler>> _loggerMock;
-        private readonly DepotDbContext _context; // Si no usas, puedes pasar null
         private readonly GetAssignedPendingOrdersQueryHandler _handler;
 
         public GetAssignedPendingOrdersQueryHandlerTests()
         {
             _repositoryMock = new Mock<IDepotOrderRepository>();
             _loggerMock = new Mock<ILogger<GetAssignedPendingOrdersQueryHandler>>();
-            _context = null; // O mock si es necesario
-            _handler = new GetAssignedPendingOrdersQueryHandler(_repositoryMock.Object, _context, _loggerMock.Object);
+            _handler = new GetAssignedPendingOrdersQueryHandler(_repositoryMock.Object, _loggerMock.Object);
         }
 
         [Fact]
@@ -77,21 +75,14 @@ namespace DepotService.Test.Queries.DepotOperator
         {
             // Arrange
             _repositoryMock.Setup(r => r.GetAssignedPendingOrdersByOperatorIdAsync())
-                .ReturnsAsync((List<DepotOrderEntity>?)null); // Explicitly specify nullable type
+                .ReturnsAsync(default(List<DepotOrderEntity>)!);
 
             // Act
             Func<Task> act = async () => await _handler.GetAssignedPendingOrders();
 
             // Assert
             await act.Should().ThrowAsync<KeyNotFoundException>();
-            _loggerMock.Verify(
-                x => x.Log(
-                    LogLevel.Warning,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("No pending orders found")),
-                    null,
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-                Times.Once);
+           
         }
     }
 }

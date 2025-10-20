@@ -14,10 +14,9 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery
 {
-    public class GetOrdersByOperatorQueryHandler(IDepotOrderRepository repository, DepotDbContext context, ILogger<GetOrdersByOperatorQueryHandler> logger) : IGetOrdersByOperatorQueryHandler
+    public class GetOrdersByOperatorQueryHandler(IDepotOrderRepository repository, ILogger<GetOrdersByOperatorQueryHandler> logger) : IGetOrdersByOperatorQueryHandler
     {
-        private readonly IDepotOrderRepository _repository = repository;
-        private readonly DepotDbContext _context = context;
+        private readonly IDepotOrderRepository _repository = repository;        
         private readonly ILogger<GetOrdersByOperatorQueryHandler> _logger = logger;
 
         public async Task<IEnumerable<DepotOrderDto>> GetOrdersByOperatorAsync(GetOrdersByOperatorQuery query)

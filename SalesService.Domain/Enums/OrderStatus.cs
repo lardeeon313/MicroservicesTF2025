@@ -22,6 +22,10 @@ namespace SalesService.Domain.Enums
         PendingResolution, // Pendiente de resolución
         ReIssued, // Reemitido
         PendingReissued,
-        PendingVerification // Pendiente de verificación
+        PendingVerification, // Pendiente de verificación
+        AssignedDelivery, // Asignado para entrega
+        PendingDelivered, // Pendiente de reparto
+        PendingIncidentResolution, // Pendiente de resolución de incidente
+        IncidentResolved, // Incidente resuelto
     }
 }   

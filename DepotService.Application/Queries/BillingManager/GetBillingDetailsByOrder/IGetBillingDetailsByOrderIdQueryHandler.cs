@@ -9,6 +9,6 @@ namespace DepotService.Application.Queries.BillingManager.GetBillingDetailsByOrd
 {
     public interface IGetBillingDetailsByOrderIdQueryHandler
     {
-        Task<DepotOrderDto> GetBillingDetailsByOrderIdAsync(GetBillingDetailsByOrderIdQuery query);
+        Task<DepotOrderDto?> GetBillingDetailsByOrderIdAsync(GetBillingDetailsByOrderIdQuery query);
     }
 }

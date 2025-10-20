@@ -53,6 +53,7 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
+
         public async Task<IEnumerable<LogisticOrder>> GetOrdersByCustomerIdAsync(Guid customerId)
         {
             return await _context.LogisticOrders
@@ -148,9 +149,134 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
             return (orders, totalCount);
         }
 
+
+
         public async Task UpdateAsync(LogisticOrder order)
         {
             _context.LogisticOrders.Update(order);
+            await _context.SaveChangesAsync();
+        }
+
+        //////////////////////////////////////////
+        /// QUERIES PARA OPERADORES DE REPARTO ///
+        //////////////////////////////////////////
+        public async Task<IEnumerable<DeliveryRejectionReason>> GetRejectionReasonsByOrderIdAsync(int logisticOrderId)
+        {
+            return await _context.DeliveryRejectionReasons
+                .Where(r => r.LogisticOrderId == logisticOrderId)
+                .ToListAsync();
+        }
+
+        public async Task<List<LogisticOrder>> GetMyAssignedOrders(Guid operatorId)
+        {
+            return await _context.LogisticOrders
+                    .Where(o => o.AssignedOperatorId == operatorId && o.Status == OrderStatus.AssignedDelivery)
+                    .Include(o => o.Customer)
+                    .Include(o => o.Items)
+                    .Include(o => o.AssignedDeliveryTeam)
+                    .Include(o => o.AssignedDeliveryZone)
+                    .Include(o => o.DeliveryAddress)
+                    .AsNoTracking()
+                    .ToListAsync();
+        }
+
+        public async Task<List<LogisticOrder>> GetMyDeliveredOrders(Guid operatorId)
+        {
+            return await _context.LogisticOrders
+                    .Where(o => o.AssignedOperatorId == operatorId && (o.Status == OrderStatus.Delivered
+                                                                      || o.Status == OrderStatus.CashVerified
+                                                                      || o.Status == OrderStatus.PendingCashVerification))
+                    .Include(o => o.Customer)
+                    .Include(o => o.Items)
+                    .Include(o => o.AssignedDeliveryTeam)
+                    .Include(o => o.AssignedDeliveryZone)
+                    .Include(o => o.DeliveryAddress)
+                    .AsNoTracking()
+                    .ToListAsync();
+        }
+
+        public async Task<List<LogisticOrder>> GetMyOnTheWayOrders(Guid operatorId)
+        {
+            return await _context.LogisticOrders
+                    .Where(o => o.AssignedOperatorId == operatorId && o.Status == OrderStatus.OnTheWay)
+                    .Include(o => o.Customer)
+                    .Include(o => o.Items)
+                    .Include(o => o.AssignedDeliveryTeam)
+                    .Include(o => o.AssignedDeliveryZone)
+                    .Include(o => o.DeliveryAddress)
+                    .AsNoTracking()
+                    .ToListAsync();
+        }
+
+        public async Task<List<LogisticOrder>> GetMyPendingCashOrders(Guid operatorId)
+        {
+            return await _context.LogisticOrders
+                    .Where(o => o.AssignedOperatorId == operatorId && o.Status == OrderStatus.PendingCashVerification && o.PaymentType == PaymentType.Cash)
+                    .Include(o => o.Customer)
+                    .Include(o => o.Items)
+                    .Include(o => o.AssignedDeliveryTeam)
+                    .Include(o => o.AssignedDeliveryZone)
+                    .Include(o => o.DeliveryAddress)
+                    .AsNoTracking()
+                    .ToListAsync();
+        }
+
+        public async Task<List<LogisticOrder>> GetMyPendingDeliveredOrders(Guid operatorId)
+        {
+            return await _context.LogisticOrders
+                    .Where(o => o.AssignedOperatorId == operatorId && o.Status == OrderStatus.PendingDelivery)
+                    .Include(o => o.Customer)
+                    .Include(o => o.Items)
+                    .Include(o => o.DeliveryAddress)
+                    .Include(o => o.Customer)
+                    .Include(o => o.Items)
+                    .Include(o => o.AssignedDeliveryTeam)
+                    .Include(o => o.AssignedDeliveryZone)
+                    .Include(o => o.DeliveryAddress)
+                    .AsNoTracking()
+                    .ToListAsync();                                        
+        }
+
+
+        public async Task AddDeliveryRejectionAsync(DeliveryRejectionReason rejectionReason)
+        {
+            await _context.DeliveryRejectionReasons.AddAsync(rejectionReason);
+            await _context.SaveChangesAsync();
+        }
+
+        //////////////////////////////////////////
+        /// QUERIES PARA INCIDENTES DE REPARTO ///
+        //////////////////////////////////////////
+
+        public async Task AddDeliveryIncidentAsync(DeliveryIncident incident)
+        {
+            await _context.DeliveryIncidents.AddAsync(incident);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<DeliveryIncident?> GetDeliveryIncidentByIdAsync(int id)
+        {
+            return await _context.DeliveryIncidents
+                    .AsNoTracking()
+                    .Include(i => i.LogisticOrder)
+                    .FirstOrDefaultAsync(i => i.Id == id);
+        }
+
+        public async Task<List<DeliveryIncident>> GetDeliveryIncidentByOrderIdAsync(int logisticOrderId)
+        {
+            return await _context.DeliveryIncidents
+                    .AsNoTracking()
+                    .Where(i => i.LogisticOrderId == logisticOrderId)
+                    .OrderByDescending(i => i.ReportedAt)
+                    .ToListAsync();
+        }
+
+        public async Task UpdateDeliveryIncidentAsync(DeliveryIncident incident)
+        {
+            await Task.Run(() => 
+            { 
+                _context.DeliveryIncidents.Update(incident);
+            });
             await _context.SaveChangesAsync();
         }
     }

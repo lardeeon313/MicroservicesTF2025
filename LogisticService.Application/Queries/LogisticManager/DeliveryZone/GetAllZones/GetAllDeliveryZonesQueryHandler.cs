@@ -15,11 +15,16 @@ namespace LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetAl
         /// <summary>
         /// Query para devolver todos las zonas
         /// </summary>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <returns></returns>        
         public async Task<IEnumerable<DeliveryZoneDto>> HandleAsync()
         {
             var zones = await _repository.GetAllAsync();
+
+            if (zones == null || !zones.Any())
+            {
+                return Enumerable.Empty<DeliveryZoneDto>();
+            }
+
             return zones.Select(z => new DeliveryZoneDto
             {
                 Id = z.Id,

@@ -32,8 +32,7 @@ namespace DepotService.Application.Commands.BillingManager.InvoicedOrder
         /// Handles the command to invoice an order.
         /// </summary>
         /// <param name="command"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <returns></returns>       
         public async Task<bool> HandleAsync(InvoiceOrderCommand command)
         {
             var order = await _repository.GetByIdAsync(command.DepotOrderId);

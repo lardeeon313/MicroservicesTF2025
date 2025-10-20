@@ -74,7 +74,7 @@ namespace DepotService.Test.Queries.DepotManager
         {
             // Arrange
             _repositoryMock.Setup(r => r.GetAllAsync())
-                .ReturnsAsync((List<DepotTeamEntity>?)null);
+                .ReturnsAsync(default(List<DepotTeamEntity>)!);
 
             // Act
             var act = async () => await _handler.HandleAsync();

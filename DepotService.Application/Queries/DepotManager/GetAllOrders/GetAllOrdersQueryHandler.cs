@@ -12,9 +12,8 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.DepotManager.GetAllOrders
 {
-    public class GetAllOrdersQueryHandler(DepotDbContext context, IDepotOrderRepository repository, ILogger<GetAllOrdersQueryHandler> logger) : IGetAllOrdersQueryHandler
+    public class GetAllOrdersQueryHandler(IDepotOrderRepository repository, ILogger<GetAllOrdersQueryHandler> logger) : IGetAllOrdersQueryHandler
     {
-        private readonly DepotDbContext _context = context;
         private readonly IDepotOrderRepository _repository = repository;
         private readonly ILogger<GetAllOrdersQueryHandler> _logger = logger;
 
@@ -29,7 +28,7 @@ namespace DepotService.Application.Queries.DepotManager.GetAllOrders
             if (orders == null || !orders.Any())
             {
                 _logger.LogWarning("No orders found in the depot.");
-                throw new KeyNotFoundException("No orders found in the depot.");
+                return Enumerable.Empty<DepotOrderDto>();
             }
 
             _logger.LogInformation("Retrieved {Count} orders from the depot.", orders.Count());

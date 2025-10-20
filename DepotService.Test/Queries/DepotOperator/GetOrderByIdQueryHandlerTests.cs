@@ -17,15 +17,13 @@ namespace DepotService.Test.Queries.DepotOperator
     {
         private readonly Mock<IDepotOrderRepository> _repositoryMock;
         private readonly Mock<ILogger<GetOrderByIdQueryHandler>> _loggerMock;
-        private readonly DepotDbContext _context; // Puedes pasar null o mock si no se usa
         private readonly GetOrderByIdQueryHandler _handler;
 
         public GetOrderByIdQueryHandlerTests()
         {
             _repositoryMock = new Mock<IDepotOrderRepository>();
             _loggerMock = new Mock<ILogger<GetOrderByIdQueryHandler>>();
-            _context = null;
-            _handler = new GetOrderByIdQueryHandler(_context, _repositoryMock.Object, _loggerMock.Object);
+            _handler = new GetOrderByIdQueryHandler(_repositoryMock.Object, _loggerMock.Object);
         }
 
         [Fact]
@@ -45,7 +43,6 @@ namespace DepotService.Test.Queries.DepotOperator
                 Status = Domain.Enums.OrderStatus.Assigned,
                 AssignedOperatorId = operatorUserId,
                 AssignedDepotTeam = null,
-                Missings = null,
                 DeliveryDetail = "Dirección X",
                 OrderDate = DateTime.UtcNow.AddDays(-2),
                 Items = new List<DepotOrderItemEntity>
@@ -81,7 +78,7 @@ namespace DepotService.Test.Queries.DepotOperator
             // Arrange
             var depotOrderId = 123;
             _repositoryMock.Setup(r => r.GetByIdAsync(depotOrderId))
-                .ReturnsAsync((DepotOrderEntity)null);
+                .ReturnsAsync((DepotOrderEntity?)null);
 
             var query = new GetOrderByIdQuery { DepotOrderId = 123, OperatorUserId = Guid.NewGuid() };
 

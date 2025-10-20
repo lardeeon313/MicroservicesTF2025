@@ -12,9 +12,8 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.BillingManager.GetInvoicedOrdersByDateRange
 {
-    public class GetInvoicedOrdersByDateRangeQueryHandler(DepotDbContext context, IDepotOrderRepository repository, ILogger<GetInvoicedOrdersByDateRangeQueryHandler> logger): IGetInvoicedOrdersByDateRangeQueryHandler
-    {
-        private readonly DepotDbContext _context = context;
+    public class GetInvoicedOrdersByDateRangeQueryHandler(IDepotOrderRepository repository, ILogger<GetInvoicedOrdersByDateRangeQueryHandler> logger): IGetInvoicedOrdersByDateRangeQueryHandler
+    {        
         private readonly IDepotOrderRepository _repository = repository;
         private readonly ILogger<GetInvoicedOrdersByDateRangeQueryHandler> _logger = logger;
 
@@ -31,7 +30,7 @@ namespace DepotService.Application.Queries.BillingManager.GetInvoicedOrdersByDat
             if (invoicedOrders == null || !invoicedOrders.Any())
             {
                 _logger.LogWarning("No invoiced orders found for the specified date range.");
-                throw new KeyNotFoundException("No invoiced orders found for the specified date range.");
+                return new List<DepotOrderDto>();
             }
 
             _logger.LogInformation("Found {Count} invoiced orders in the date range from {StartDate} to {EndDate}.", invoicedOrders.Count(), query.StartDate, query.EndDate);

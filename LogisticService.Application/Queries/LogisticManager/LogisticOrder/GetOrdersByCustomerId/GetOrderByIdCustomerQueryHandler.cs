@@ -2,6 +2,7 @@
 using LogisticService.Application.DTOs.DeliveryZoneDtos;
 using LogisticService.Application.DTOs.LogisticOrderDtos;
 using LogisticService.Domain.IRepositories;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,15 +14,19 @@ namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetO
     /// <summary>
     /// Manejador de la consulta GetOrderByIdCustomerQuery
     /// </summary>
-    public class GetOrderByIdCustomerQueryHandler(ILogisticOrderRepository repository) : IGetOrderByIdCustomerQueryHandler
+    public class GetOrderByIdCustomerQueryHandler(ILogisticOrderRepository repository, ILogger<GetOrderByIdCustomerQueryHandler> logger) : IGetOrderByIdCustomerQueryHandler
     {
+        private readonly ILogger<GetOrderByIdCustomerQueryHandler> _logger = logger;
         private ILogisticOrderRepository _repository = repository;
         public async Task<IEnumerable<LogisticOrderDto>> HandleAsync(GetOrderByIdCustomerQuery query)
         {
             var orders = await _repository.GetOrdersByCustomerIdAsync(query.CustomerId);
 
             if (!orders.Any())
-                throw new KeyNotFoundException($"No orders found for customer with id {query.CustomerId}");
+            {
+                _logger.LogWarning("No logistic orders found for customer ID {CustomerId}.", query.CustomerId);
+                return Enumerable.Empty<LogisticOrderDto>();
+            }                
 
             return orders.Select(order => new LogisticOrderDto 
             {

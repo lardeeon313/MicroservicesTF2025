@@ -13,9 +13,8 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.Operator.GetOrderById
 {
-    public class GetOrderByIdQueryHandler(DepotDbContext context, IDepotOrderRepository repository, ILogger<GetOrderByIdQueryHandler> logger) : IGetOrderByIdQueryHandler
-    {
-        private readonly DepotDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
+    public class GetOrderByIdQueryHandler(IDepotOrderRepository repository, ILogger<GetOrderByIdQueryHandler> logger) : IGetOrderByIdQueryHandler
+    {        
         private readonly IDepotOrderRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         private readonly ILogger<GetOrderByIdQueryHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
@@ -23,16 +22,15 @@ namespace DepotService.Application.Queries.Operator.GetOrderById
         /// handler para obtener una orden por su ID asociada a un operador específico.
         /// </summary>
         /// <param name="query"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public async Task<DepotOrderDto> GetOrderByIdHandler(GetOrderByIdQuery query)
+        /// <returns></returns>        
+        public async Task<DepotOrderDto?> GetOrderByIdHandler(GetOrderByIdQuery query)
         {
             var order = await _repository.GetByIdAsync(query.DepotOrderId);
 
             if (order == null)
             {
                 _logger.LogError($"Order with ID {query.DepotOrderId} not found.");
-                throw new KeyNotFoundException($"Order with ID {query.DepotOrderId} not found.");
+                return null;
             }
 
             if (order.AssignedOperatorId != query.OperatorUserId)

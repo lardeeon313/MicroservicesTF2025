@@ -9,5 +9,6 @@ namespace LogisticService.Infraestructure.Messaging.Publisher
     public interface IRabbitMQPublisher
     {
         Task PublishAsync<T>(T message, string queueName);
+        Task PublishToExchangeAsync<T>(T message, string exchangeName, string type = "fanout", string routingKey = "");
     }
 }

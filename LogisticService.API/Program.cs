@@ -1,9 +1,15 @@
 using FluentValidation;
-using LogisticService.API.RequestDtos.DeliveryTeams;
-using LogisticService.API.RequestDtos.DeliveryZones;
 using LogisticService.API.RequestDtos.LogisticOrders;
+using LogisticService.API.RequestDtos.VerificationManager.DeliveryTeams;
+using LogisticService.API.RequestDtos.VerificationManager.DeliveryZones;
 using LogisticService.API.Validators.DeliveryTeams;
 using LogisticService.API.Validators.DeliveryZones;
+using LogisticService.Application.Commands.DeliveryOperator.LogisticOrder.ConfirmAssignedOrder;
+using LogisticService.Application.Commands.DeliveryOperator.LogisticOrder.MarkOrderDelivered;
+using LogisticService.Application.Commands.DeliveryOperator.LogisticOrder.MarkOrderOnTheWay;
+using LogisticService.Application.Commands.DeliveryOperator.LogisticOrder.RejectAssignedOrder;
+using LogisticService.Application.Commands.DeliveryOperator.LogisticOrder.ReportDeliveryIncident;
+using LogisticService.Application.Commands.DeliveryOperator.LogisticOrder.ResolveDeliveryIncident;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.ActiveDeliveryTeam;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.AssignOperatorToTeam;
 using LogisticService.Application.Commands.LogisticManager.DeliveryTeam.AssignZoneToTeam;
@@ -23,6 +29,11 @@ using LogisticService.Application.Commands.LogisticManager.LogisticOrder.CheckCa
 using LogisticService.Application.Commands.LogisticManager.LogisticOrder.RemoveAssignOrder;
 using LogisticService.Application.Commands.LogisticManager.LogisticOrder.SetPriorityOrder;
 using LogisticService.Application.Commands.LogisticManager.LogisticOrder.VerifiedOrder;
+using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyAssignedOrders;
+using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyDeliveredOrders;
+using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyOnTheWayOrders;
+using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyPendingCashOrders;
+using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyPendingDeliveredOrders;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetAllTeams;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetById;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetAllZones;
@@ -142,12 +153,28 @@ builder.Services.AddScoped<IGetOrdersByDeliveryZoneIdQueryHandler, GetOrdersByDe
 builder.Services.AddScoped<IGetOrdersByOperatorIdQueryHandler, GetOrdersByOperatorIdQueryHandler>();
 builder.Services.AddScoped<IGetOrdersByTeamIdQueryHandler, GetOrdersByTeamIdQueryHandler>();
 
+//Commands DeliveryOperator
+builder.Services.AddScoped<IConfirmAssignedOrderCommandHandler, ConfirmAssignedOrderCommandHandler>();
+builder.Services.AddScoped<IRejectAssignedOrderCommandHandler, RejectAssignedOrderCommandHandler>();
+builder.Services.AddScoped<IMarkOrderDeliveredCommandHandler, MarkOrderDeliveredCommandHandler>();
+builder.Services.AddScoped<IMarkOrderOnTheWayCommandHandler, MarkOrderOnTheWayCommandHandler>();
+builder.Services.AddScoped<IReportDeliveryIncidentCommandHandler, ReportDeliveryIncidentCommandHandler>();
+builder.Services.AddScoped<IResolveDeliveryIncidentCommandHandler, ResolveDeliveryIncidentCommandHandler>();
+
+//Queries DeliveryOperator
+builder.Services.AddScoped<IGetMyAssignedOrdersQueryHandler, GetMyAssignedOrdersQueryHandler>();
+builder.Services.AddScoped<IGetMyPendingCashOrdersQueryHandler, GetMyPendingCashOrdersQueryHandler>();
+builder.Services.AddScoped<IGetMyDeliveredOrdersQueryHandler, GetMyDeliveredOrdersQueryHandler>();
+builder.Services.AddScoped<IGetMyPendingDeliveredOrdersQueryHandler, GetMyPendingDeliveredOrdersQueryHandler>();
+builder.Services.AddScoped<IGetMyOnTheWayOrdersQueryHandler, GetMyOnTheWayOrdersQueryHandler>();
+
+
 
 // Add EmailService
 builder.Services.AddScoped<IEmailService, MailgunEmailService>();
 
 // RabbitMQ Consumer
- builder.Services.AddHostedService<OrderInvoicedConsumer>();
+builder.Services.AddHostedService<OrderInvoicedConsumer>();
 
 // Identity Service Client 
 builder.Services.AddHttpClient("IdentityService", client =>

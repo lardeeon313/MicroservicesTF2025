@@ -10,11 +10,10 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.DepotManager.GetMissingOrderById
 {
-    public class GetMissingOrderByIdQueryHandler(IDepotOrderRepository repository, ILogger<GetMissingOrderByIdQueryHandler> logger, DepotDbContext context) : IGetMissingOrderByIdQueryHandler
+    public class GetMissingOrderByIdQueryHandler(IDepotOrderRepository repository, ILogger<GetMissingOrderByIdQueryHandler> logger) : IGetMissingOrderByIdQueryHandler
     {
         private readonly IDepotOrderRepository _repository = repository;
-        private readonly ILogger<GetMissingOrderByIdQueryHandler> _logger = logger;
-        private readonly DepotDbContext _context = context;
+        private readonly ILogger<GetMissingOrderByIdQueryHandler> _logger = logger;        
 
         /// <summary>
         /// Handler para devolver una orden faltante por su ID.
@@ -28,7 +27,7 @@ namespace DepotService.Application.Queries.DepotManager.GetMissingOrderById
             if (orderExist == null)
             {
                 _logger.LogError($"Missing order with ID {id} not found.");
-                throw new Exception($"Missing order with ID {id} not found.");
+                return null;
             }
 
             var orderMissingDto = new DepotOrderMissingDto
