@@ -1,4 +1,4 @@
-import { CalendarDays, User, BadgeCheck, Eye, AlertCircle, DollarSign } from "lucide-react";
+import { CalendarDays, User, BadgeCheck, Eye, AlertCircle, DollarSign, FileText, RefreshCw } from "lucide-react";
 import formatDate from "../../../../utils/formateDate";
 import { normalizeOrderStatus, normalizePaymentType } from "../../utils/normalize";
 import { OrderStatus } from "../../types/OrderTypes";
@@ -13,10 +13,12 @@ interface Props {
   error: string | null;
   onRefetch: () => void;
   onView: (id: number) => void;
-  activeTab: 'pending' | 'verified' | 'assigned';
+  activeTab: 'pending' | 'verified' | 'assigned' | 'rejected' | 'onTheWay' | 'delivered' | 'pendingCash' | 'cashVerified' | 'pendingIncident' | 'incidentResolved';
   emptyMessageTitle?: string;
   emptyMessageBody?: string;
   onVerifyCash?: (orderId: number) => void;
+  onViewIncidents?: (orderId: number) => void;
+  onViewRejectionReasons?: (orderId: number) => void;
 }
 
 export default function OrderTable({
@@ -27,7 +29,9 @@ export default function OrderTable({
   activeTab,
   emptyMessageTitle,
   emptyMessageBody,
-  onVerifyCash
+  onVerifyCash,
+  onViewIncidents,
+  onViewRejectionReasons
 }: Props) {
   if (loading)
     return (
@@ -93,6 +97,32 @@ export default function OrderTable({
                           title="Verificar efectivo"
                         >
                           <DollarSign className="w-5 h-5 text-yellow-600 hover:text-yellow-700 transition-colors" />
+                        </button>
+                      )}
+                      {onViewIncidents && (() => {
+                                const s = normalizeOrderStatus(order.status);
+                                const shouldShow = s === OrderStatus.PendingIncidentResolution || s === OrderStatus.IncidentResolved;
+                                console.log('Order ID:', order.id, 'Status:', order.status, 'Normalized:', s, 'Should show button:', shouldShow);
+                                return shouldShow;
+                              })() && (
+                        <button 
+                          onClick={() => onViewIncidents(order.id)}
+                          className="p-1 hover:bg-orange-100 rounded transition-colors"
+                          title="Ver reporte de incidentes"
+                        >
+                          <FileText className="w-5 h-5 text-orange-600 hover:text-orange-700 transition-colors" />
+                        </button>
+                      )}
+                      {onViewRejectionReasons && (() => {
+                                const s = normalizeOrderStatus(order.status);
+                                return s === OrderStatus.AssignmentCancelled;
+                              })() && (
+                        <button 
+                          onClick={() => onViewRejectionReasons(order.id)}
+                          className="p-1 hover:bg-red-100 rounded transition-colors"
+                          title="Ver motivos de cancelación y reasignar"
+                        >
+                          <RefreshCw className="w-5 h-5 text-red-600 hover:text-red-700 transition-colors" />
                         </button>
                       )}
                     </div>

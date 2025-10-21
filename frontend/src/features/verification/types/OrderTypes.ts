@@ -19,9 +19,13 @@ export enum OrderStatus {
   ReIssued = 12, // Reemitido
   PendingReissued = 13, // Pendiente de reemisión
   PendingVerification = 14, // Pendiente de verificación
-  AssignedDelivery = 15, // Asignado a reparto
-  PendingCashVerification = 16, // Efectivo pendiente de verificacion
-  CashVerified = 17, // Efectivo Verificado
+  PendingDelivery = 15, // Pendiente de reparto
+  AssignmentCancelled = 16, // Asignación cancelada
+  AssignedDelivery = 17, // Asignado a reparto
+  PendingCashVerification = 18, // Efectivo pendiente de verificacion
+  CashVerified = 19, // Efectivo Verificado
+  PendingIncidentResolution = 20, // Pendiente de resolución de incidente
+  IncidentResolved = 21, // Incidente resuelto
 }
 
 export enum DeliveryPriority {
@@ -38,6 +42,13 @@ export enum PaymentType {
   Current_Account = "Cuenta Corriente",
   Check = "Cheque",
   Promissory_Note = "Pagaré",
+}
+
+export enum DeliveryIncidentStatus {
+  Open = 0, // Abierto
+  InProgress = 1, // En progreso
+  Resolved = 2, // Resuelto
+  Closed = 3, // Cerrado
 }
 
 // Main Order DTO
@@ -58,6 +69,11 @@ export interface LogisticOrderDto {
   assignedDeliveryTeam: DeliveryTeamDto;
   assignedDeliveryZone: DeliveryZoneDto;
   deliveryAddress?: LogisticAddressDto;
+  statusHistory: LogisticOrderStatusHistoryDto[];
+  rejectionReasons: DeliveryRejectionReasonDto[];
+  deliveryIncidents: DeliveryIncidentDto[];
+  depotOrderId: number;
+  salesOrderId: number;
 }
 
 // Order Item DTO
@@ -78,6 +94,29 @@ export interface LogisticOrderStatusHistoryDto {
   newStatus: OrderStatus;
   changedAt: string; // ISO date string
   averageDuration: number; // Tiempo promedio de procesamiento del pedido en segundos
+}
+
+// Delivery Incident DTO
+export interface DeliveryIncidentDto {
+  id: number;
+  logisticOrderId: number;
+  reportedByOperatorId: string; // GUID as string
+  incidentType: string;
+  description: string;
+  reportedAt: string; // ISO date string
+  resolved: boolean;
+  resolvedAt?: string; // ISO date string
+  resolutionNote?: string;
+  deliveryIncidentStatus: DeliveryIncidentStatus;
+}
+
+// Delivery Rejection Reason DTO
+export interface DeliveryRejectionReasonDto {
+  id: number;
+  logisticOrderId: number;
+  deliveryOperatorId: string; // GUID as string
+  reason: string;
+  rejectedAt: string; // ISO date string
 }
 
 // Paged Orders DTO
@@ -114,4 +153,23 @@ export interface RemoveAssignOperatorRequest {
    * Identificador del operador al que se asignará la orden de depósito.
    */
   operatorUserId: string; // GUID as string
+}
+
+export interface ReportIncidentRequest {
+  logisticOrderId: number;
+  incidentType: string;
+  description: string;
+  reportedByOperatorId: string; // GUID as string
+}
+
+export interface ResolveIncidentRequest {
+  incidentId: number;
+  resolutionNote: string;
+  resolvedByOperatorId: string; // GUID as string
+}
+
+export interface RejectOrderRequest {
+  logisticOrderId: number;
+  reason: string;
+  deliveryOperatorId: string; // GUID as string
 }

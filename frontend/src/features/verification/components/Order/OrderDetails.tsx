@@ -2,6 +2,8 @@ import { LogisticOrderDto } from "../../types/OrderTypes";
 import { OrderItemsTable } from "../../../../components/OrderItemsTable";
 import { OrderStatusLabels } from "../../constants/OrderStatusLabel";
 import { DeliveryPriorityLabels } from "../../constants/PriorityOrderLabel";
+import RejectionReasonsSection from "./RejectionReasonsSection";
+import DeliveryIncidentsSection from "./DeliveryIncidentsSection";
 
 type Props = {
   order: LogisticOrderDto;
@@ -97,6 +99,12 @@ export default function OrderDetails({ order }: Props) {
         <h3 className="text-lg font-medium text-gray-900">Items del Pedido</h3>
         <OrderItemsTable items={order.items} />
       </div>
+
+      {/* Sección de motivos de rechazo */}
+      <RejectionReasonsSection rejectionReasons={order.rejectionReasons} />
+
+      {/* Sección de incidentes de entrega */}
+      <DeliveryIncidentsSection deliveryIncidents={order.deliveryIncidents} />
     </div>
   );
 }

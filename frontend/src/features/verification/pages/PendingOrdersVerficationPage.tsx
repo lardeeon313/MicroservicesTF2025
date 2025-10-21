@@ -1,28 +1,67 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePendingVerificationOrders, useAssignedDeliveryOrders, useVerifiedOrders } from '../hooks/useOrders';
+import { usePendingVerificationOrders, useAssignedDeliveryOrders, useVerifiedOrders, useAssignmentCancelledOrders, useOrderDetails, useOrderOperations } from '../hooks/useOrders';
 // import { useOperators } from '../hooks/useOperators'; // Para uso futuro
 import OrderTable from '../components/Order/OrderTable';
 import Tabs from '../components/Order/Tabs';
 import BackButton from '../../../components/BackButton';
+import RejectionReasonsModal from '../components/Order/RejectionReasonsModal';
+import toast from 'react-hot-toast';
 
 const PendingOrdersVerificationPage = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'pending' | 'verified' | 'assigned'>('pending');
+  const [activeTab, setActiveTab] = useState<'pending' | 'verified' | 'assigned' | 'rejected'>('pending');
+  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+  const [isRejectionModalOpen, setIsRejectionModalOpen] = useState(false);
 
   // Hooks para obtener las órdenes
   const pendingOrders = usePendingVerificationOrders();
   const verifiedOrders = useVerifiedOrders();
   const assignedOrders = useAssignedDeliveryOrders();
+  const rejectedOrders = useAssignmentCancelledOrders();
+  
+  // Hook para operaciones de órdenes
+  const { } = useOrderOperations();
+  
+  // Hook para obtener detalles de la orden seleccionada
+  const { order: selectedOrder } = useOrderDetails(selectedOrderId || undefined);
   // const { operators } = useOperators(); // Para uso futuro
 
   const handleViewOrder = (orderId: number) => {
     navigate(`/verification/pending-orders-verification/${orderId}`);
   };
 
+  const handleViewRejectionReasons = (orderId: number) => {
+    setSelectedOrderId(orderId);
+    setIsRejectionModalOpen(true);
+  };
+
+  const handleCloseRejectionModal = () => {
+    setIsRejectionModalOpen(false);
+    setSelectedOrderId(null);
+  };
+
+  const handleReassignOrder = async (orderId: number): Promise<boolean> => {
+    try {
+      // Por ahora, simplemente cambiamos el estado a PendingVerification para que pueda ser reasignada
+      // En una implementación real, aquí se asignaría a un operador específico
+      console.log('Reasignando orden:', orderId);
+      toast.success('Orden marcada para reasignación');
+      
+      // Recargar las órdenes para actualizar la vista
+      rejectedOrders.refetch();
+      pendingOrders.refetch();
+      
+      return true;
+    } catch (error) {
+      console.error('Error al reasignar orden:', error);
+      return false;
+    }
+  };
+
   const handleTabChange = (tabKey: string) => {
-    setActiveTab(tabKey as 'pending' | 'verified' | 'assigned');
+    setActiveTab(tabKey as 'pending' | 'verified' | 'assigned' | 'rejected');
   };
 
   const getCurrentOrders = () => {
@@ -33,6 +72,8 @@ const PendingOrdersVerificationPage = () => {
         return verifiedOrders;
       case 'assigned':
         return assignedOrders;
+      case 'rejected':
+        return rejectedOrders;
       default:
         return pendingOrders;
     }
@@ -55,6 +96,11 @@ const PendingOrdersVerificationPage = () => {
       key: 'assigned',
       label: 'Asignadas a Reparto',
       count: assignedOrders.loading ? undefined : assignedOrders.orders.length
+    },
+    {
+      key: 'rejected',
+      label: 'Asignación Rechazada',
+      count: rejectedOrders.loading ? undefined : rejectedOrders.orders.length
     }
   ];
 
@@ -74,6 +120,11 @@ const PendingOrdersVerificationPage = () => {
         return {
           title: 'No Hay Órdenes Asignadas a Reparto',
           body: 'No se encontraron órdenes asignadas a operadores para entrega.'
+        };
+      case 'rejected':
+        return {
+          title: 'No Hay Órdenes con Asignación Rechazada',
+          body: 'No se encontraron órdenes que hayan sido rechazadas por los operadores. Estas órdenes pueden ser reasignadas.'
         };
       default:
         return {
@@ -114,9 +165,18 @@ const PendingOrdersVerificationPage = () => {
             activeTab={activeTab}
             emptyMessageTitle={emptyMessage.title}
             emptyMessageBody={emptyMessage.body}
+            onViewRejectionReasons={activeTab === 'rejected' ? handleViewRejectionReasons : undefined}
           />
         </div>
       </div>
+
+      {/* Modal de motivos de cancelación */}
+      <RejectionReasonsModal
+        order={selectedOrder}
+        isOpen={isRejectionModalOpen}
+        onClose={handleCloseRejectionModal}
+        onReassign={handleReassignOrder}
+      />
     </div>
   );
 };

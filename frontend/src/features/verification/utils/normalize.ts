@@ -37,6 +37,14 @@ export function normalizeOrderStatus(s: any): OrderStatus | undefined {
       'pendingcashverification': OrderStatus.PendingCashVerification,
       'efectivo verificado': OrderStatus.CashVerified,
       'cashverified': OrderStatus.CashVerified,
+      'pendiente de resolución de incidente': OrderStatus.PendingIncidentResolution,
+      'pendingincidentresolution': OrderStatus.PendingIncidentResolution,
+      'incidente resuelto': OrderStatus.IncidentResolved,
+      'incidentresolved': OrderStatus.IncidentResolved,
+      'asignación cancelada': OrderStatus.AssignmentCancelled,
+      'assignmentcancelled': OrderStatus.AssignmentCancelled,
+      'pendiente de reparto': OrderStatus.PendingDelivery,
+      'pendingdelivery': OrderStatus.PendingDelivery,
     };
     const key = s.toLowerCase().trim();
     if (map[key] !== undefined) return map[key];
