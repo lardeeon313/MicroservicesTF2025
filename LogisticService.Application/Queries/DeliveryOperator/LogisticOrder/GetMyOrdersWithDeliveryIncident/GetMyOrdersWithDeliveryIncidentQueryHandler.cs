@@ -8,27 +8,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
-namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrders
+namespace LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyOrdersWithDeliveryIncident
 {
-    public class GetAllOrdersQueryHandler(ILogisticOrderRepository repository, ILogger<GetAllOrdersQueryHandler> logger) : IGetAllOrdersQueryHandler
+    public class GetMyOrdersWithDeliveryIncidentQueryHandler(ILogisticOrderRepository repository, ILogger<GetMyOrdersWithDeliveryIncidentQueryHandler> logger) : IGetMyOrdersWithDeliveryIncidentQueryHandler
     {
         private readonly ILogisticOrderRepository _repository = repository;
-        private readonly ILogger<GetAllOrdersQueryHandler> _logger = logger;
+        private readonly ILogger<GetMyOrdersWithDeliveryIncidentQueryHandler> _logger = logger;
 
         /// <summary>
-        /// Query para obtener todas las órdenes logísticas.
+        /// Query para devolver las ordenes de un operador que sufrieron una incidencia
         /// </summary>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public async Task<IEnumerable<LogisticOrderDto>> GetAllHandleAsync()
+        /// <param name="operatorUserId"></param>
+        /// <returns></returns>        
+        public async Task<List<LogisticOrderDto>> GetMyOrdersWithDeliveryIncidentAsync(Guid operatorUserId)
         {
-            var orders = await _repository.GetAllAsync();
-
-            if (!orders.Any())
+            var orders = await _repository.GetMyOrdersWithDeliveryIncident(operatorUserId);
+            if (orders == null)
             {
-                _logger.LogWarning("No logistic orders found.");
-                return Enumerable.Empty<LogisticOrderDto>();
+                _logger.LogWarning("No Orders-with-deliveryIncident found for operator {OperatorId}", operatorUserId);
+                return new List<LogisticOrderDto>();
             }
 
             return orders.Select(order => new LogisticOrderDto
@@ -51,13 +51,6 @@ namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetA
                     Email = order.Customer.Email,
                     PhoneNumber = order.Customer.PhoneNumber
                 },
-                DeliveryRejections = order.RejectionReasons.Select(rejection => new DeliveryRejectionReasonDto
-                {
-                    Id = rejection.Id,
-                    Reason = rejection.Reason,
-                    DeliveryOperatorId = rejection.DeliveryOperatorId,
-                    RejectedAt = rejection.RejectedAt,
-                }).ToList(),
                 DeliveryIncidents = order.DeliveryIncidents.Select(incident => new DeliveryIncidentDto
                 {
                     Id = incident.Id,

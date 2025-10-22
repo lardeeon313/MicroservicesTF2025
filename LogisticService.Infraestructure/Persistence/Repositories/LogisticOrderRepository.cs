@@ -33,11 +33,15 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         public async Task<IEnumerable<LogisticOrder>> GetAllAsync()
         {
             return await _context.LogisticOrders
+                .Where(o => _context.DeliveryIncidents.Any(r => r.LogisticOrderId == o.Id))
+                .Where(o => _context.DeliveryRejectionReasons.Any(r => r.LogisticOrderId == o.Id))
                 .Include(o => o.Customer)
                 .Include(o => o.Items)
                 .Include(o => o.AssignedDeliveryTeam)
                 .Include(o => o.AssignedDeliveryZone)
                 .Include(o => o.DeliveryAddress)
+                .Include(o => o.DeliveryIncidents)
+                .Include(o => o.RejectionReasons)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -45,11 +49,15 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         public async Task<LogisticOrder?> GetByIdAsync(int id)
         {
             return await _context.LogisticOrders
+                .Where(o => _context.DeliveryIncidents.Any(r => r.LogisticOrderId == o.Id))
+                .Where(o => _context.DeliveryRejectionReasons.Any(r => r.LogisticOrderId == o.Id))
                 .Include(o => o.Customer)
                 .Include(o => o.Items)
                 .Include(o => o.AssignedDeliveryTeam)
                 .Include(o => o.AssignedDeliveryZone)
                 .Include(o => o.DeliveryAddress)
+                .Include(o => o.DeliveryIncidents)
+                .Include(o => o.RejectionReasons)
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
@@ -58,10 +66,15 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         {
             return await _context.LogisticOrders
                 .Where(o => o.CustomerId == customerId)
+                .Where(o => _context.DeliveryIncidents.Any(r => r.LogisticOrderId == o.Id))
+                .Where(o => _context.DeliveryRejectionReasons.Any(r => r.LogisticOrderId == o.Id))
                 .Include(o => o.Items)
                 .Include(o => o.AssignedDeliveryTeam)
                 .Include(o => o.AssignedDeliveryZone)
                 .Include(o => o.DeliveryAddress)
+                .Include(o => o.DeliveryIncidents)
+                .Include(o => o.RejectionReasons)
+                .Include(o => o.Customer)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -70,9 +83,15 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         {
             return await _context.LogisticOrders
                 .Where(o => o.DeliveryPriority == priority)
-                .Include(o => o.Customer)
+                .Where(o => _context.DeliveryIncidents.Any(r => r.LogisticOrderId == o.Id))
+                .Where(o => _context.DeliveryRejectionReasons.Any(r => r.LogisticOrderId == o.Id))
                 .Include(o => o.Items)
                 .Include(o => o.AssignedDeliveryTeam)
+                .Include(o => o.AssignedDeliveryZone)
+                .Include(o => o.DeliveryAddress)
+                .Include(o => o.DeliveryIncidents)
+                .Include(o => o.RejectionReasons)
+                .Include(o => o.Customer)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -81,11 +100,15 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         {
             return await _context.LogisticOrders
                 .Where(o => o.AssignedDeliveryZoneId == zoneId)
-                .Include(o => o.Customer)
+                .Where(o => _context.DeliveryIncidents.Any(r => r.LogisticOrderId == o.Id))
+                .Where(o => _context.DeliveryRejectionReasons.Any(r => r.LogisticOrderId == o.Id))
                 .Include(o => o.Items)
                 .Include(o => o.AssignedDeliveryTeam)
                 .Include(o => o.AssignedDeliveryZone)
                 .Include(o => o.DeliveryAddress)
+                .Include(o => o.DeliveryIncidents)
+                .Include(o => o.RejectionReasons)
+                .Include(o => o.Customer)
                 .ToListAsync();
         }
 
@@ -93,11 +116,15 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         {
             return await _context.LogisticOrders
                 .Where(o => o.AssignedOperatorId == operatorId)
-                .Include(o => o.Customer)
+                .Where(o => _context.DeliveryIncidents.Any(r => r.LogisticOrderId == o.Id))
+                .Where(o => _context.DeliveryRejectionReasons.Any(r => r.LogisticOrderId == o.Id))
                 .Include(o => o.Items)
                 .Include(o => o.AssignedDeliveryTeam)
                 .Include(o => o.AssignedDeliveryZone)
                 .Include(o => o.DeliveryAddress)
+                .Include(o => o.DeliveryIncidents)
+                .Include(o => o.RejectionReasons)
+                .Include(o => o.Customer)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -105,12 +132,15 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         public async Task<IEnumerable<LogisticOrder>> GetOrdersByStatus(OrderStatus status)
         {
             return await _context.LogisticOrders
-                .Where(o => o.Status == status)
-                .Include(o => o.Customer)
+                .Where(o => _context.DeliveryIncidents.Any(r => r.LogisticOrderId == o.Id))
+                .Where(o => _context.DeliveryRejectionReasons.Any(r => r.LogisticOrderId == o.Id))
                 .Include(o => o.Items)
                 .Include(o => o.AssignedDeliveryTeam)
                 .Include(o => o.AssignedDeliveryZone)
                 .Include(o => o.DeliveryAddress)
+                .Include(o => o.DeliveryIncidents)
+                .Include(o => o.RejectionReasons)
+                .Include(o => o.Customer)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -119,11 +149,15 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         {
             return await _context.LogisticOrders
                 .Where(o => o.AssignedDeliveryTeamId == teamId)
+                .Where(o => _context.DeliveryIncidents.Any(r => r.LogisticOrderId == o.Id))
+                .Where(o => _context.DeliveryRejectionReasons.Any(r => r.LogisticOrderId == o.Id))
                 .Include(o => o.Customer)
                 .Include(o => o.Items)
                 .Include(o => o.AssignedDeliveryTeam)
                 .Include(o => o.AssignedDeliveryZone)
                 .Include(o => o.DeliveryAddress)
+                .Include(o => o.DeliveryIncidents)
+                .Include(o => o.RejectionReasons)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -131,11 +165,15 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         public async Task<(List<LogisticOrder> Orders, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var query = _context.LogisticOrders
+                .Where(o => _context.DeliveryIncidents.Any(r => r.LogisticOrderId == o.Id))
+                .Where(o => _context.DeliveryRejectionReasons.Any(r => r.LogisticOrderId == o.Id))
                 .Include(o => o.Customer)
                 .Include(o => o.Items)
                 .Include(o => o.AssignedDeliveryTeam)
                 .Include(o => o.AssignedDeliveryZone)
                 .Include(o => o.DeliveryAddress)
+                .Include(o => o.DeliveryIncidents)
+                .Include(o => o.RejectionReasons)
                 .AsNoTracking();
 
             var totalCount = await query.CountAsync(cancellationToken);
@@ -186,11 +224,13 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
                     .Where(o => o.AssignedOperatorId == operatorId && (o.Status == OrderStatus.Delivered
                                                                       || o.Status == OrderStatus.CashVerified
                                                                       || o.Status == OrderStatus.PendingCashVerification))
+                    .Where(o => _context.DeliveryIncidents.Any(r => r.LogisticOrderId == o.Id))
                     .Include(o => o.Customer)
                     .Include(o => o.Items)
                     .Include(o => o.AssignedDeliveryTeam)
                     .Include(o => o.AssignedDeliveryZone)
                     .Include(o => o.DeliveryAddress)
+                    .Include(o => o.DeliveryIncidents)
                     .AsNoTracking()
                     .ToListAsync();
         }
@@ -199,11 +239,13 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         {
             return await _context.LogisticOrders
                     .Where(o => o.AssignedOperatorId == operatorId && o.Status == OrderStatus.OnTheWay)
+                    .Where(o => _context.DeliveryIncidents.Any(r => r.LogisticOrderId == o.Id))
                     .Include(o => o.Customer)
                     .Include(o => o.Items)
                     .Include(o => o.AssignedDeliveryTeam)
                     .Include(o => o.AssignedDeliveryZone)
                     .Include(o => o.DeliveryAddress)
+                    .Include(o => o.DeliveryIncidents)
                     .AsNoTracking()
                     .ToListAsync();
         }
@@ -212,11 +254,13 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         {
             return await _context.LogisticOrders
                     .Where(o => o.AssignedOperatorId == operatorId && o.Status == OrderStatus.PendingCashVerification && o.PaymentType == PaymentType.Cash)
+                    .Where(o => _context.DeliveryIncidents.Any(r => r.LogisticOrderId == o.Id))
                     .Include(o => o.Customer)
                     .Include(o => o.Items)
                     .Include(o => o.AssignedDeliveryTeam)
                     .Include(o => o.AssignedDeliveryZone)
                     .Include(o => o.DeliveryAddress)
+                    .Include(o => o.DeliveryIncidents)
                     .AsNoTracking()
                     .ToListAsync();
         }
@@ -224,7 +268,8 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         public async Task<List<LogisticOrder>> GetMyPendingDeliveredOrders(Guid operatorId)
         {
             return await _context.LogisticOrders
-                    .Where(o => o.AssignedOperatorId == operatorId && o.Status == OrderStatus.PendingDelivery)
+                    .Where(o => o.AssignedOperatorId == operatorId && o.Status == OrderStatus.PendingDelivery)                    
+                    .Where(o => _context.DeliveryRejectionReasons.Any(r => r.LogisticOrderId == o.Id))
                     .Include(o => o.Customer)
                     .Include(o => o.Items)
                     .Include(o => o.DeliveryAddress)
@@ -233,6 +278,7 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
                     .Include(o => o.AssignedDeliveryTeam)
                     .Include(o => o.AssignedDeliveryZone)
                     .Include(o => o.DeliveryAddress)
+                    .Include(o => o.RejectionReasons)
                     .AsNoTracking()
                     .ToListAsync();                                        
         }
@@ -242,6 +288,42 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         {
             await _context.DeliveryRejectionReasons.AddAsync(rejectionReason);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<LogisticOrder>> GetMyOrdersWithDeliveryIncident(Guid operatorId)
+        {
+            return await _context.LogisticOrders
+                    .Where(o => o.AssignedOperatorId == operatorId)
+                    .Where(o => _context.DeliveryIncidents.Any(r => r.LogisticOrderId == o.Id))
+                    .Include(o => o.Customer)
+                    .Include(o => o.Items)
+                    .Include(o => o.DeliveryAddress)
+                    .Include(o => o.Customer)
+                    .Include(o => o.Items)
+                    .Include(o => o.AssignedDeliveryTeam)
+                    .Include(o => o.AssignedDeliveryZone)
+                    .Include(o => o.DeliveryAddress)
+                    .Include(o => o.DeliveryIncidents)
+                    .AsNoTracking()
+                    .ToListAsync();
+        }
+
+        public async Task<List<LogisticOrder>> GetMyRejectOrders(Guid operatorId)
+        {
+            return await _context.LogisticOrders                    
+                    .Where(o => _context.DeliveryRejectionReasons.Any(r => r.LogisticOrderId == o.Id && r.DeliveryOperatorId == operatorId))
+                    .Include(o => o.Customer)
+                    .Include(o => o.Items)
+                    .Include(o => o.DeliveryAddress)
+                    .Include(o => o.Customer)
+                    .Include(o => o.Items)
+                    .Include(o => o.AssignedDeliveryTeam)
+                    .Include(o => o.AssignedDeliveryZone)
+                    .Include(o => o.DeliveryAddress)
+                    .Include(o => o.RejectionReasons)
+                    .Include(o => o.DeliveryIncidents)
+                    .AsNoTracking()
+                    .ToListAsync();
         }
 
         //////////////////////////////////////////
@@ -279,5 +361,43 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
             });
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<LogisticOrder>> GetOrdersWithDeliveryRejectionsAsync()
+        {
+            return await _context.LogisticOrders
+                    .Where(o => _context.DeliveryRejectionReasons.Any(r => r.LogisticOrderId == o.Id))
+                    .Include(o => o.Customer)
+                    .Include(o => o.Items)
+                    .Include(o => o.DeliveryAddress)
+                    .Include(o => o.Customer)
+                    .Include(o => o.Items)
+                    .Include(o => o.AssignedDeliveryTeam)
+                    .Include(o => o.AssignedDeliveryZone)
+                    .Include(o => o.DeliveryAddress)
+                    .Include(o => o.RejectionReasons)
+                    .AsNoTracking()
+                    .ToListAsync();
+        }
+
+        public async Task<List<LogisticOrder>> GetOrdersWithDeliveryIncidentsAsync()
+        {
+            return await _context.LogisticOrders
+                    .Where(o => _context.DeliveryIncidents.Any(r => r.LogisticOrderId == o.Id))
+                    .Where(o => _context.DeliveryRejectionReasons.Any(r => r.LogisticOrderId == o.Id))
+                    .Include(o => o.Customer)
+                    .Include(o => o.Items)
+                    .Include(o => o.DeliveryAddress)
+                    .Include(o => o.Customer)
+                    .Include(o => o.Items)
+                    .Include(o => o.AssignedDeliveryTeam)
+                    .Include(o => o.AssignedDeliveryZone)
+                    .Include(o => o.DeliveryAddress)
+                    .Include(o => o.RejectionReasons)
+                    .Include(o => o.DeliveryIncidents)
+                    .AsNoTracking()
+                    .ToListAsync();
+        }
+
+
     }
 }

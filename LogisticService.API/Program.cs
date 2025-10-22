@@ -32,20 +32,24 @@ using LogisticService.Application.Commands.LogisticManager.LogisticOrder.Verifie
 using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyAssignedOrders;
 using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyDeliveredOrders;
 using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyOnTheWayOrders;
+using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyOrdersWithDeliveryIncident;
 using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyPendingCashOrders;
 using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyPendingDeliveredOrders;
+using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyRejectOrders;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetAllTeams;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetById;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetAllZones;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetByIdZone;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrders;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrdersByDeliveryPriority;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetDRReasonByOrderId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrderById;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByCustomerId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByDeliveryZoneId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByOperatorId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByStatus;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByTeamId;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersWithDeliveryIncident;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetPagedOrders;
 using LogisticService.Application.Services.IdentityServiceClient;
 using LogisticService.Domain.Common.Interfaces;
@@ -152,6 +156,8 @@ builder.Services.AddScoped<IGetPagedOrdersQueryHandler, GetPagedOrdersQueryHandl
 builder.Services.AddScoped<IGetOrdersByDeliveryZoneIdQueryHandler, GetOrdersByDeliveryZoneIdQueryHandler>();
 builder.Services.AddScoped<IGetOrdersByOperatorIdQueryHandler, GetOrdersByOperatorIdQueryHandler>();
 builder.Services.AddScoped<IGetOrdersByTeamIdQueryHandler, GetOrdersByTeamIdQueryHandler>();
+builder.Services.AddScoped<IGetOrdersDeliveryRejectionsQueryHandler, GetOrdersDeliveryRejectionsQueryHandler>();
+builder.Services.AddScoped<IGetOrdersWithDeliveryIncidentQueryHandler, GetOrdersWithDeliveryIncidentQueryHandler>();
 
 //Commands DeliveryOperator
 builder.Services.AddScoped<IConfirmAssignedOrderCommandHandler, ConfirmAssignedOrderCommandHandler>();
@@ -167,6 +173,8 @@ builder.Services.AddScoped<IGetMyPendingCashOrdersQueryHandler, GetMyPendingCash
 builder.Services.AddScoped<IGetMyDeliveredOrdersQueryHandler, GetMyDeliveredOrdersQueryHandler>();
 builder.Services.AddScoped<IGetMyPendingDeliveredOrdersQueryHandler, GetMyPendingDeliveredOrdersQueryHandler>();
 builder.Services.AddScoped<IGetMyOnTheWayOrdersQueryHandler, GetMyOnTheWayOrdersQueryHandler>();
+builder.Services.AddScoped<IGetMyOrdersWithDeliveryIncidentQueryHandler,  GetMyOrdersWithDeliveryIncidentQueryHandler>();
+builder.Services.AddScoped<IGetMyRejectOrdersQueryHandler , GetMyRejectOrdersQueryHandler>();
 
 
 

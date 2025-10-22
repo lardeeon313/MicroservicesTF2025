@@ -29,12 +29,14 @@ using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetAllZon
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetByIdZone;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrders;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrdersByDeliveryPriority;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetDRReasonByOrderId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrderById;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByCustomerId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByDeliveryZoneId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByOperatorId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByStatus;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByTeamId;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersWithDeliveryIncident;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetPagedOrders;
 using LogisticService.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
@@ -55,7 +57,7 @@ namespace LogisticService.API.Controllers
         IUpdateDeliveryTeamCommandHandler updateDeliveryTeamCommandHandler,
         IDeleteDeliveryTeamCommandHandler deleteDeliveryTeamCommandHandler,
         IDisableDeliveryTeamCommandHandler disableDeliveryTeamCommandHandler,
-        IActiveDeliveryTeamCommandHandler activeDeliveryTeamCommandHandler,       
+        IActiveDeliveryTeamCommandHandler activeDeliveryTeamCommandHandler,
         IRemoveZoneFromTeamCommandHandler removeZoneFromTeamCommandHandler,
         IAssignZoneToTeamCommandHandler assignZoneToTeamCommandHandler,
         IGetAllTeamsQueryHandler getAllTeamsQueryHandler,
@@ -88,7 +90,9 @@ namespace LogisticService.API.Controllers
         IGetPagedOrdersQueryHandler getPagedOrdersQueryHandler,
         IGetOrdersByDeliveryZoneIdQueryHandler getOrdersByDeliveryZoneIdQueryHandler,
         IGetOrdersByTeamIdQueryHandler getOrdersByTeamIdQueryHandler,
-        IGetOrdersByOperatorIdQueryHandler getOrdersByOperatorIdQueryHandler
+        IGetOrdersByOperatorIdQueryHandler getOrdersByOperatorIdQueryHandler,
+        IGetOrdersDeliveryRejectionsQueryHandler getOrdersDeliveryRejectionsQueryHandler,
+        IGetOrdersWithDeliveryIncidentQueryHandler getOrdersWithDeliveryIncidentQueryHandler
         ) : ControllerBase
     {
         private readonly IValidator<CreateDeliveryTeamRequest> _createDeliveryTeamRequestValidator = createDeliveryTeamRequestValidator;
@@ -129,6 +133,8 @@ namespace LogisticService.API.Controllers
         private readonly IGetOrdersByDeliveryZoneIdQueryHandler _getOrdersByDeliveryZoneIdQueryHandler = getOrdersByDeliveryZoneIdQueryHandler;
         private readonly IGetOrdersByTeamIdQueryHandler _getOrdersByTeamIdQueryHandler = getOrdersByTeamIdQueryHandler;
         private readonly IGetOrdersByOperatorIdQueryHandler _getOrdersByOperatorIdQueryHandler = getOrdersByOperatorIdQueryHandler;
+        private readonly IGetOrdersDeliveryRejectionsQueryHandler _getOrdersDeliveryRejectionsQueryHandler = getOrdersDeliveryRejectionsQueryHandler;
+        private readonly IGetOrdersWithDeliveryIncidentQueryHandler _getOrdersWithDeliveryIncidentQueryHandler = getOrdersWithDeliveryIncidentQueryHandler;
 
         /**************************************************************/
         /**************************************************************/
@@ -627,7 +633,7 @@ namespace LogisticService.API.Controllers
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> SetPriority([FromBody] SetPriorityRequest request)
-        {            
+        {
             var command = new SetDeliveryPriorityOrderCommand(request.LogisticOrderId, request.DeliveryPriority);
             var result = await _setPriorityOrderCommandHandler.SetPriorityHandleAsync(command);
 
@@ -683,7 +689,7 @@ namespace LogisticService.API.Controllers
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetOrdersByDeliveryPriority(DeliveryPriority deliveryPriority)
-        {                            
+        {
             var query = new GetOrdersByDeliveryPriorityQuery(deliveryPriority);
             var orders = await _getOrdersByDeliveryPriorityQueryHandler.GetOrdersByDeliveryPriorityAsync(query);
             return Ok(orders);
@@ -747,7 +753,7 @@ namespace LogisticService.API.Controllers
         public async Task<IActionResult> GetOrdersByStatus(string status)
         {
             if (!Enum.TryParse<OrderStatus>(status, true, out var parsedStatus))
-              return BadRequest(new { message = $"Invalid order status: {status}" });
+                return BadRequest(new { message = $"Invalid order status: {status}" });
             var query = new GetOrdersByStatusQuery(parsedStatus);
             var orders = await _getOrdersByStatusQueryHandler.GetOrdersByStatusHandleAsync(query);
             return Ok(orders);
@@ -819,6 +825,32 @@ namespace LogisticService.API.Controllers
             return Ok(orders);
         }
 
+        /// <summary>
+        /// Endpoint para retornar una lista de órdenes logísticas con rechazos de entrega
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("get-orders-with-delivery-rejections")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetOrdersWithDeliveryRejections()
+        {
+            var orders = await _getOrdersDeliveryRejectionsQueryHandler.GetOrdersDeliveryRejectionsAsync();
+            return Ok(orders);
+        }
 
+        /// <summary>
+        /// Endpoint para retornar una lista de órdenes logísticas con incidentes de entrega
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("get-orders-with-delivery-incidents")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetOrdersWithDeliveryIncidents()
+        {
+            var orders = await _getOrdersWithDeliveryIncidentQueryHandler.GetOrdersWithDeliveryIncidentAsync();
+            return Ok(orders);
+        }
     }
 }

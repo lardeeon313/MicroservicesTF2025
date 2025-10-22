@@ -1,6 +1,8 @@
-﻿using LogisticService.Application.DTOs;
+﻿
+using LogisticService.Application.DTOs;
 using LogisticService.Application.DTOs.DeliveryZoneDtos;
 using LogisticService.Application.DTOs.LogisticOrderDtos;
+using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyOrdersWithDeliveryIncident;
 using LogisticService.Domain.IRepositories;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,26 +11,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrders
+namespace LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyRejectOrders
 {
-    public class GetAllOrdersQueryHandler(ILogisticOrderRepository repository, ILogger<GetAllOrdersQueryHandler> logger) : IGetAllOrdersQueryHandler
+    public class GetMyRejectOrdersQueryHandler(ILogisticOrderRepository repository, ILogger<GetMyRejectOrdersQueryHandler> logger) : IGetMyRejectOrdersQueryHandler
     {
         private readonly ILogisticOrderRepository _repository = repository;
-        private readonly ILogger<GetAllOrdersQueryHandler> _logger = logger;
+        private readonly ILogger<GetMyRejectOrdersQueryHandler> _logger = logger;
 
         /// <summary>
-        /// Query para obtener todas las órdenes logísticas.
+        /// Query para devolver las ordenes rechazadas por un operario.
         /// </summary>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public async Task<IEnumerable<LogisticOrderDto>> GetAllHandleAsync()
+        /// <param name="OperatorUserId"></param>
+        /// <returns></returns>        
+        public async Task<List<LogisticOrderDto>> GetMyRejectOrdersAsync(Guid OperatorUserId)
         {
-            var orders = await _repository.GetAllAsync();
-
-            if (!orders.Any())
+            var orders = await _repository.GetMyRejectOrders(OperatorUserId);
+            if (orders == null)
             {
-                _logger.LogWarning("No logistic orders found.");
-                return Enumerable.Empty<LogisticOrderDto>();
+                _logger.LogWarning("No RejectionOrders found for operator {OperatorId}", OperatorUserId);
+                return new List<LogisticOrderDto>();
             }
 
             return orders.Select(order => new LogisticOrderDto
@@ -57,18 +58,6 @@ namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetA
                     Reason = rejection.Reason,
                     DeliveryOperatorId = rejection.DeliveryOperatorId,
                     RejectedAt = rejection.RejectedAt,
-                }).ToList(),
-                DeliveryIncidents = order.DeliveryIncidents.Select(incident => new DeliveryIncidentDto
-                {
-                    Id = incident.Id,
-                    IncidentType = incident.IncidentType,
-                    Description = incident.Description,
-                    ReportedAt = incident.ReportedAt,
-                    ReportedByOperatorId = incident.ReportedByOperatorId,
-                    Resolved = incident.Resolved,
-                    ResolvedAt = incident.ResolvedAt,
-                    ResolutionNote = incident.ResolutionNote,
-                    DeliveryIncidentStatus = incident.DeliveryIncidentStatus
                 }).ToList(),
                 Items = order.Items.Select(item => new LogisticOrderItemDto
                 {
