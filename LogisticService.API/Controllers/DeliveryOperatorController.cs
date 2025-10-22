@@ -9,8 +9,10 @@ using LogisticService.Application.Commands.DeliveryOperator.LogisticOrder.Resolv
 using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyAssignedOrders;
 using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyDeliveredOrders;
 using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyOnTheWayOrders;
+using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyOrdersWithDeliveryIncident;
 using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyPendingCashOrders;
 using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyPendingDeliveredOrders;
+using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyRejectOrders;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrderById;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByStatus;
 using LogisticService.Domain.Enums;
@@ -41,7 +43,9 @@ namespace LogisticService.API.Controllers
         IGetOrderByIdQueryHandler getOrderByIdQueryHandler,
         IGetOrdersByStatusQueryHandler getOrdersByStatusQueryHandler,
         IGetMyPendingDeliveredOrdersQueryHandler getMyPendingDeliveredOrdersQueryHandler,
-        IGetMyOnTheWayOrdersQueryHandler getMyOnTheWayOrdersQueryHandler
+        IGetMyOnTheWayOrdersQueryHandler getMyOnTheWayOrdersQueryHandler,
+        IGetMyRejectOrdersQueryHandler getMyRejectOrdersQueryHandler,
+        IGetMyOrdersWithDeliveryIncidentQueryHandler getMyOrdersWithDeliveryIncidentQueryHandler
 
         ) : ControllerBase
     {
@@ -59,6 +63,8 @@ namespace LogisticService.API.Controllers
         private readonly IGetMyPendingCashOrdersQueryHandler _getMyPendingCashOrdersQueryHandler = getMyPendingCashOrdersQueryHandler;
         private readonly IGetMyPendingDeliveredOrdersQueryHandler _getMyPendingDeliveredOrdersQueryHandler = getMyPendingDeliveredOrdersQueryHandler;
         private readonly IGetMyOnTheWayOrdersQueryHandler _getMyOnTheWayOrdersQueryHandler = getMyOnTheWayOrdersQueryHandler;
+        private readonly IGetMyRejectOrdersQueryHandler _getMyRejectOrdersQueryHandler = getMyRejectOrdersQueryHandler;
+        private readonly IGetMyOrdersWithDeliveryIncidentQueryHandler _getMyOrdersWithDeliveryIncidentQueryHandler = getMyOrdersWithDeliveryIncidentQueryHandler;
 
 
         /**************************************************************/
@@ -351,6 +357,48 @@ namespace LogisticService.API.Controllers
             }
             return Ok(result);
         }
+
+        /// <summary>
+        /// Endpoint para devolver las ordenes rechazadas de un Operador especifico
+        /// </summary>
+        /// <param name="operatorId"></param>
+        /// <returns></returns>
+        [HttpGet("get-my-reject-orders/{operatorId}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetMyRejectOrders(Guid operatorId)
+        {
+            var result = await _getMyRejectOrdersQueryHandler.GetMyRejectOrdersAsync(operatorId);
+            if (result == null || !result.Any())
+            {
+                return NotFound("No 'Reject Orders' found.");
+            }
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Endpoint para devolver las ordenes de un operador en especifico, que hayan sufrido una incidencia. 
+        /// </summary>
+        /// <param name="operatorId"></param>
+        /// <returns></returns>
+        [HttpGet("get-my-orders-with-incident/{operadorId}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetMyOrdersWithDeliveryIncident(Guid operatorId)
+        {
+            var result = await _getMyOrdersWithDeliveryIncidentQueryHandler.GetMyOrdersWithDeliveryIncidentAsync(operatorId);
+            if (result == null || !result.Any())
+            {
+                return NotFound("No 'Orders With Delivery Incident' found.");
+            }
+            return Ok(result);
+        }
+
+
+
+
 
     }
 }

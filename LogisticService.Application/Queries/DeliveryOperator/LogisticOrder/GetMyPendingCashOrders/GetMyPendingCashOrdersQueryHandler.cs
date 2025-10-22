@@ -50,7 +50,19 @@ namespace LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.Get
                     LastName = order.Customer.LastName,
                     Email = order.Customer.Email,
                     PhoneNumber = order.Customer.PhoneNumber
-                },
+                },                
+                DeliveryIncidents = order.DeliveryIncidents.Select(incident => new DeliveryIncidentDto
+                {
+                    Id = incident.Id,
+                    IncidentType = incident.IncidentType,
+                    Description = incident.Description,
+                    ReportedAt = incident.ReportedAt,
+                    ReportedByOperatorId = incident.ReportedByOperatorId,
+                    Resolved = incident.Resolved,
+                    ResolvedAt = incident.ResolvedAt,
+                    ResolutionNote = incident.ResolutionNote,
+                    DeliveryIncidentStatus = incident.DeliveryIncidentStatus
+                }).ToList(),
                 Items = order.Items.Select(item => new LogisticOrderItemDto
                 {
                     Id = item.Id,

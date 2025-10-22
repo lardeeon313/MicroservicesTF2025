@@ -9,26 +9,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrders
+namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersWithDeliveryIncident
 {
-    public class GetAllOrdersQueryHandler(ILogisticOrderRepository repository, ILogger<GetAllOrdersQueryHandler> logger) : IGetAllOrdersQueryHandler
+    public class GetOrdersWithDeliveryIncidentQueryHandler(ILogisticOrderRepository repository, ILogger <GetOrdersWithDeliveryIncidentQueryHandler> logger) : IGetOrdersWithDeliveryIncidentQueryHandler
     {
         private readonly ILogisticOrderRepository _repository = repository;
-        private readonly ILogger<GetAllOrdersQueryHandler> _logger = logger;
+        private readonly ILogger<GetOrdersWithDeliveryIncidentQueryHandler> _logger = logger;
 
         /// <summary>
-        /// Query para obtener todas las órdenes logísticas.
+        /// Query para obtener todas las órdenes logísticas con incidentes de entrega.
         /// </summary>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public async Task<IEnumerable<LogisticOrderDto>> GetAllHandleAsync()
+        /// <returns></returns>        
+        public async Task<List<LogisticOrderDto>> GetOrdersWithDeliveryIncidentAsync()
         {
-            var orders = await _repository.GetAllAsync();
-
+            var orders = await _repository.GetOrdersWithDeliveryIncidentsAsync();
             if (!orders.Any())
             {
-                _logger.LogWarning("No logistic orders found.");
-                return Enumerable.Empty<LogisticOrderDto>();
+                _logger.LogWarning("No logistic orders with delivery incidents found.");
+                return new List<LogisticOrderDto>();
             }
 
             return orders.Select(order => new LogisticOrderDto

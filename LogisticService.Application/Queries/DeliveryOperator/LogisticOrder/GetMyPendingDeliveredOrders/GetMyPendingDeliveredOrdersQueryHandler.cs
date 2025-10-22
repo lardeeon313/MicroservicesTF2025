@@ -21,8 +21,7 @@ namespace LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.Get
         /// Query para obtener los pedidos pendientes de entrega de un operador de logística.
         /// </summary>
         /// <param name="operatorUserId"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <returns></returns>        
         public async Task<List<LogisticOrderDto>> GetMyPendingDeliveredOrdersAsync(GetMyPendingDeliveredOrdersQuery query)
             {
                 var orders = await _repository.GetMyPendingDeliveredOrders(query.OperatorUserId);
@@ -54,6 +53,13 @@ namespace LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.Get
                     Email = order.Customer.Email,
                     PhoneNumber = order.Customer.PhoneNumber
                 },
+                DeliveryRejections = order.RejectionReasons.Select(rejection => new DeliveryRejectionReasonDto
+                {
+                    Id = rejection.Id,
+                    Reason = rejection.Reason,
+                    DeliveryOperatorId = rejection.DeliveryOperatorId,
+                    RejectedAt = rejection.RejectedAt,
+                }).ToList(),
                 Items = order.Items.Select(item => new LogisticOrderItemDto
                 {
                     Id = item.Id,
