@@ -5,6 +5,7 @@ import API from "../../../services/axios";
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
   try {
     const response = await API.post<LoginResponse>("api/auth/login", credentials);
+    console.log("RESPUESTA BACKEND:", response.data);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {

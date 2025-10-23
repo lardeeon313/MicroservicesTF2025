@@ -1,4 +1,4 @@
-import { LogisticOrder } from "../types/DeliveryOrderTypeDto";
+/*import { LogisticOrder } from "../types/DeliveryOrderTypeDto";
 import { PaymentType, OrderStatus } from "../types/DeliveryOrderTypeDto";
 import { PriorityType } from "../types/DeliveryOrderTypeDto";
 
@@ -444,3 +444,4 @@ export const mockOrders: LogisticOrder[] = [
     priority: PriorityType.HIGH,
   }
 ];
+*/

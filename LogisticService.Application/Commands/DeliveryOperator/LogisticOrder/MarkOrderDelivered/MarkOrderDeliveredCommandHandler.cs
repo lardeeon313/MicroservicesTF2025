@@ -47,6 +47,7 @@ namespace LogisticService.Application.Commands.DeliveryOperator.LogisticOrder.Ma
                 var statusHistory = new OrderStatusHistory
                 {
                     OrderId = order.DepotOrderId,
+                    LogisticOrder = order,
                     OldStatus = order.Status,
                     NewStatus = OrderStatus.PendingCashVerification,
                     ChangedAt = DateTime.UtcNow,
@@ -60,6 +61,7 @@ namespace LogisticService.Application.Commands.DeliveryOperator.LogisticOrder.Ma
                 var statusHistory = new OrderStatusHistory
                 {
                     OrderId = order.DepotOrderId,
+                    LogisticOrder = order,
                     OldStatus = order.Status,
                     NewStatus = OrderStatus.Delivered,
                     ChangedAt = DateTime.UtcNow,

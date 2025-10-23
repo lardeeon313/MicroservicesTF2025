@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+/*import React, { useState } from "react";
 import { View, FlatList, StyleSheet, Text } from "react-native";
 
 import NavbarDelivery from "../../components/Navbar/NavbarDelivery";
@@ -98,4 +98,4 @@ const styles = StyleSheet.create({
     color: "#333",
     textAlign: "center",
   },
-});
+}) */

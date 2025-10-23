@@ -6,7 +6,7 @@ export type DeliveryStackParamList = {
   OrdersToDistribute: undefined;
   OrdersToDelivered: undefined;
   OrdersToIncidents: undefined;
-  OrdersToVerified: undefined;
+  OrdersOnTheWay: undefined;
   OrderDetail: {
     order: LogisticOrder;
   };
@@ -30,6 +30,13 @@ export type DeliveryStackParamList = {
   };
   /** ✅ Nuevo correctamente definido */
   OrderStatusChange: {
+    order: LogisticOrder;
+  };
+  // ✅ Agrega esta línea:
+  ConfirmAssignedOrder: {
+    order: LogisticOrder;
+  };
+  RejectAssignedOrder: {
     order: LogisticOrder;
   };
 };

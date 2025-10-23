@@ -14,6 +14,7 @@ using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyPe
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrderById;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByStatus;
 using LogisticService.Domain.Enums;
+using LogisticService.Domain.IRepositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,7 +42,8 @@ namespace LogisticService.API.Controllers
         IGetOrderByIdQueryHandler getOrderByIdQueryHandler,
         IGetOrdersByStatusQueryHandler getOrdersByStatusQueryHandler,
         IGetMyPendingDeliveredOrdersQueryHandler getMyPendingDeliveredOrdersQueryHandler,
-        IGetMyOnTheWayOrdersQueryHandler getMyOnTheWayOrdersQueryHandler
+        IGetMyOnTheWayOrdersQueryHandler getMyOnTheWayOrdersQueryHandler,
+        IDeliveryTeamRepository deliveryTeamRepository
 
         ) : ControllerBase
     {
@@ -59,6 +61,8 @@ namespace LogisticService.API.Controllers
         private readonly IGetMyPendingCashOrdersQueryHandler _getMyPendingCashOrdersQueryHandler = getMyPendingCashOrdersQueryHandler;
         private readonly IGetMyPendingDeliveredOrdersQueryHandler _getMyPendingDeliveredOrdersQueryHandler = getMyPendingDeliveredOrdersQueryHandler;
         private readonly IGetMyOnTheWayOrdersQueryHandler _getMyOnTheWayOrdersQueryHandler = getMyOnTheWayOrdersQueryHandler;
+        //
+        private readonly IDeliveryTeamRepository _deliveryTemaRepository = deliveryTeamRepository;
 
 
         /**************************************************************/
@@ -80,14 +84,52 @@ namespace LogisticService.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ConfirmAssignedOrder([FromBody] ConfirmAssignedOrderRequest request)
         {
-            var command = new ConfirmAssignedOrderCommand(request.LogisticOrderId, request.OperatorUserId);
-            if (command == null || command.LogisticOrderId <= 0 || command.OperatorUserId == Guid.Empty)
+            try
             {
-                return BadRequest("Invalid command parameters.");
-            }
-            await _confirmAssignedOrderCommandHandler.ConfirmAssignedOrderAsync(command);
+                // 🟩 Paso 1: Verificamos qué llega del front
+                Console.WriteLine("===== 📩 ConfirmAssignedOrder recibido =====");
+                Console.WriteLine($"LogisticOrderId: {request.LogisticOrderId}");
+                Console.WriteLine($"OperatorUserId (raw): {request.OperatorUserId}");
+                Console.WriteLine("===========================================");
 
-            return Ok("Order confirmed successfully.");
+                // 🟦 Paso 2: Validar GUID (por si viene como string vacío o inválido)
+                if (!Guid.TryParse(request.OperatorUserId.ToString(), out var operatorGuid))
+                {
+                    Console.WriteLine("❌ OperatorUserId tiene formato inválido (no es un GUID)");
+                    return BadRequest("OperatorUserId tiene un formato inválido.");
+                }
+
+                // 🟨 Paso 3: Crear el comando con valores ya verificados
+                var command = new ConfirmAssignedOrderCommand(request.LogisticOrderId, operatorGuid);
+
+                Console.WriteLine($"✅ Command creado con: LogisticOrderId={command.LogisticOrderId}, OperatorUserId={command.OperatorUserId}");
+
+                // 🟧 Paso 4: Validar parámetros
+                if (command.LogisticOrderId <= 0 || command.OperatorUserId == Guid.Empty)
+                {
+                    Console.WriteLine("⚠️ Command inválido, faltan parámetros requeridos.");
+                    return BadRequest("Invalid command parameters.");
+                }
+
+                // 🟦 Paso 5: Ejecutar handler
+                Console.WriteLine("🚀 Ejecutando handler ConfirmAssignedOrderAsync...");
+                await _confirmAssignedOrderCommandHandler.ConfirmAssignedOrderAsync(command);
+                Console.WriteLine("✅ Handler ejecutado correctamente.");
+
+                return Ok("Order confirmed successfully.");
+            }
+            catch (Exception ex)
+            {
+                // 🟥 Loguear el error completo, incluyendo inner exception
+                Console.WriteLine("💥 ERROR al confirmar pedido:");
+                Console.WriteLine($"Tipo: {ex.GetType().Name}");
+                Console.WriteLine($"Mensaje: {ex.Message}");
+                if (ex.InnerException != null)
+                    Console.WriteLine($"➡️ InnerException: {ex.InnerException.Message}");
+                Console.WriteLine($"StackTrace: {ex.StackTrace}");
+
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -350,6 +392,20 @@ namespace LogisticService.API.Controllers
                 return NotFound("No 'On The Way' orders found.");
             }
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Endpoint para obtener el equipo al que pertence el DeliveryOperator
+        /// </summary>
+        [HttpGet("teams/by-delivery/{operatorUserId}")]
+        public async Task<IActionResult> GetTeamByDelivery(Guid operatorUserId)
+        {
+            var team = await _deliveryTemaRepository.GetTeamByOperatorAsync(operatorUserId);
+
+            if (team == null)
+                return NotFound(new { message = "El operador no tiene equipo asignado." });
+
+            return Ok(new { teamName = team.TeamName });
         }
 
     }

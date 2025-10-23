@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, Dimensions } from "react-native";
-import { MapPin, CheckCircle, AlertTriangle, CircleDollarSign } from "lucide-react-native";
+import { MapPin, CheckCircle, AlertTriangle, Bus,Search  } from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { DeliveryStackParamList } from "../types/DeliveryStackType";
 import { useAuth } from "../Login/context/useAuth";
 import NavbarDelivery from "../components/Navbar/NavbarDelivery";
 import Footer from "../../components/Footer";
+import { OrdersSearchModal } from "../pages/OrderFindedPage/OrderFindedPage";
+
+
 
 type CardItem = {
   title: string;
@@ -24,10 +27,11 @@ const cards: CardItem[] = [
     path: "OrdersToDistribute",
   },
   {
-    title: "Pedidos entregados",
-    description: "Consulta todos los pedidos que ya han sido entregados.",
-    icon: CheckCircle,
-    path: "OrdersToDelivered",
+    title: "Pedidos en \ncamino",
+    description:
+      "Revisa los pedidos que ya confirmaste y que se encuentran en camino.",
+    icon: Bus,
+    path: "OrdersOnTheWay",
   },
   {
     title: "Pedidos con incidentes",
@@ -37,23 +41,23 @@ const cards: CardItem[] = [
     path: "OrdersToIncidents",
   },
   {
-    title: "Pedidos Verificados",
-    description:
-      "Revisa los pedidos que ya han sido verificados por tesorería para completar el proceso.",
-    icon: CircleDollarSign,
-    path: "OrdersToVerified",
+    title: "Pedidos entregados",
+    description: "Consulta todos los pedidos que ya han sido entregados.",
+    icon: CheckCircle,
+    path: "OrdersToDelivered",
   },
 ];
 
 const DeliveryDashboardComponent = () => {
   const navigation = useNavigation<NativeStackNavigationProp<DeliveryStackParamList>>();
   const { userId, name, role, team, loading: authLoading, token, isAuthenticated, logout } = useAuth();
+  const [modalVisible, setModalVisible] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
 
   // 🔄 Forzar recarga si cambia usuario o token
   useEffect(() => {
     if (userId && token) {
-      setReloadKey(prev => prev + 1);
+      setReloadKey((prev) => prev + 1);
     }
   }, [userId, token]);
 
@@ -65,21 +69,37 @@ const DeliveryDashboardComponent = () => {
     return <Text style={{ textAlign: "center", marginTop: 50 }}>Error: No hay sesión activa</Text>;
   }
 
-  // ✅ Usuario garantizado a esta altura
+  if (!isAuthenticated || !userId || !name || !role) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Debes iniciar sesión para ver los pedidos con faltantes.</Text>
+      </View>
+    );
+  }
+  console.log("TEAM DESDE AUTH:", team);
+
+  const teamName = typeof team === "object" ? team?.teamName : team;
+
   const user = {
     name: name ?? "",
     role: role ?? "",
-    team: team ?? null,
+    team: teamName ?? null,
   };
 
   const numColumns = 2;
   const cardWidth = Dimensions.get("window").width / numColumns - 24;
 
+  console.log("EL USUARIO " ,user)
+
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }} key={reloadKey}>
-      {/* 🔝 Navbar con datos reales */}
+      {/* Navbar */}
       <NavbarDelivery user={user} isAuthenticated={isAuthenticated} logout={logout} />
 
+      {/* Modal */}
+      <OrdersSearchModal visible={modalVisible} onClose={() => setModalVisible(false)} />
+
+      {/* Bienvenida */}
       <Text
         style={{
           fontSize: 24,
@@ -98,9 +118,57 @@ const DeliveryDashboardComponent = () => {
         ¡Bienvenido {user.name}!
       </Text>
 
+
+      {/* Botón para abrir modal */}
+      <TouchableOpacity
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 16,
+          backgroundColor: '#ffffffff',
+          borderRadius: 12,
+          marginHorizontal: 16,
+          marginBottom: 16,
+          shadowColor: '#520404ff',
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.50,
+          shadowRadius: 3.84,
+          elevation: 5,
+        }}
+        onPress={() => setModalVisible(true)}
+        activeOpacity={0.8}
+      >
+        <Search 
+          color="#111111ff" 
+          size={20} 
+          strokeWidth={2.5}
+          style={{ marginRight: 8 }}
+        />
+        <Text 
+          style={{ 
+            color: '#5a5a5aff', 
+            fontWeight: 'bold', 
+            fontSize: 16,
+            letterSpacing: 0.3
+          }}
+        >
+          Buscar pedidos por su estado
+        </Text>
+      </TouchableOpacity>
+
       {/* 📦 Cards dinámicas */}
       <View style={{ flex: 1, padding: 16 }}>
-        <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}>
+        <View
+          style={{
+            flexDirection: "row",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+          }}
+        >
           {cards.map((card, index) => (
             <TouchableOpacity
               key={index}
@@ -122,14 +190,14 @@ const DeliveryDashboardComponent = () => {
                   case "OrdersToDistribute":
                     navigation.navigate("OrdersToDistribute");
                     break;
-                  case "OrdersToDelivered":
-                    navigation.navigate("OrdersToDelivered");
+                  case "OrdersOnTheWay":
+                    navigation.navigate("OrdersOnTheWay");
                     break;
                   case "OrdersToIncidents":
                     navigation.navigate("OrdersToIncidents");
                     break;
-                  case "OrdersToVerified":
-                    navigation.navigate("OrdersToVerified");
+                  case "OrdersToDelivered":
+                    navigation.navigate("OrdersToDelivered");
                     break;
                   default:
                     console.warn("Ruta no reconocida:", card.path);
@@ -137,15 +205,26 @@ const DeliveryDashboardComponent = () => {
               }}
             >
               <card.icon size={32} color="#8b0000" style={{ marginBottom: 8 }} />
-              <Text style={{ fontSize: 15, fontWeight: "600", color: "#111827", textAlign: "center", marginBottom: 6 }}>
+              <Text
+                style={{
+                  fontSize: 15,
+                  fontWeight: "600",
+                  color: "#111827",
+                  textAlign: "center",
+                  marginBottom: 6,
+                }}
+              >
                 {card.title}
               </Text>
-              <Text style={{ fontSize: 12, color: "#6B7280", textAlign: "center" }}>{card.description}</Text>
+              <Text style={{ fontSize: 12, color: "#6B7280", textAlign: "center" }}>
+                {card.description}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
       </View>
 
+      {/* Footer */}
       <Footer />
     </View>
   );

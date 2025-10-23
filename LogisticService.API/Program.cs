@@ -195,7 +195,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // Registrar el DbContext
 builder.Services.AddDbContext<LogisticDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-        b => b.MigrationsAssembly("LogisticService.API")));
+        b => b.MigrationsAssembly("LogisticService.Infraestructure")));
 
 /////////////////// Configuracion JWT ////////////////////
 
@@ -215,7 +215,9 @@ builder.Services.AddAuthentication("Bearer")
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey!)),
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
+            ClockSkew = TimeSpan.Zero,
+
+            RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
         };
     });
 

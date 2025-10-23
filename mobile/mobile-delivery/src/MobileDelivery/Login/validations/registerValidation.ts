@@ -22,5 +22,5 @@ export const registerValidationSchema = Yup.object({
         .oneOf([Yup.ref("password")], "Las contraseñas no coinciden"),
     role: Yup.string()
         .required("Seleccionar un rol es obligatorio.")
-        .oneOf(["Admin", "SalesStaff", "BillingManager","DepotManager","DepotOperator", "Delivery", "VerificationStaff"], "Rol inválido")
+        .oneOf(["Admin", "SalesStaff", "BillingManager","DepotManager","DepotOperator", "DeliveryOperator", "VerificationStaff"], "Rol inválido")
 });

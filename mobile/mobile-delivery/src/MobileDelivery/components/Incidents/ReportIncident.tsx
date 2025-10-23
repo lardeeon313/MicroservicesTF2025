@@ -1,14 +1,19 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
-import { LogisticOrder } from "../../types/DeliveryOrderTypeDto";
+import { View, Text, TextInput, TouchableOpacity, Image, ActivityIndicator } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import { LogisticOrder, DeliveryIncidentStatus } from "../../types/DeliveryOrderTypeDto";
 
 type Props = {
   order: LogisticOrder;
-  onSubmit: (notes: string) => void;
+  onSubmit: (incidentType: DeliveryIncidentStatus, notes: string) => void;
+  isLoading: boolean;
 };
 
-export default function ReportIncidentComponent({ order, onSubmit }: Props) {
+export default function ReportIncidentComponent({ order, onSubmit, isLoading }: Props) {
   const [notes, setNotes] = useState("");
+  const [incidentType, setIncidentType] = useState<DeliveryIncidentStatus>(
+    DeliveryIncidentStatus.Pending
+  );
 
   return (
     <View
@@ -23,31 +28,48 @@ export default function ReportIncidentComponent({ order, onSubmit }: Props) {
         marginBottom: 40,
       }}
     >
-      {/* 👇 Imagen cargada con require */}
-        <Image
-            source={require("../../../assetsImages/LogoVerona.png")}
-            style={{ width: 80, height: 80, alignSelf: "center", marginBottom: 16 }}
-            resizeMode="contain"
-        />
+      <Image
+        source={require("../../../assetsImages/LogoVerona.png")}
+        style={{ width: 80, height: 80, alignSelf: "center", marginBottom: 16 }}
+        resizeMode="contain"
+      />
 
-        <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 12, color: "#111" }}>
-            Emitir notificacion del Incidente - Pedido #{order.id}
-        </Text>
+      <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 12 }}>
+        Reportar incidente - Pedido #{order.id}
+      </Text>
 
-        <Text style={{ fontSize: 16, marginBottom: 4, color: "#333" }}>
-            Cliente: {order.customer.firstName}{order.customer.lastName}
-        </Text>
+      <Text style={{ fontSize: 16, marginBottom: 4 }}>
+        Cliente: {order.customer.firstName} {order.customer.lastName}
+      </Text>
 
-        <Text style={{ marginBottom: 6, fontWeight: "500", color: "#444" }}>
-            Informar a Tesoreria:
-        </Text>
-        <Text style={{ marginBottom: 6, fontWeight: "500", color: "#444" }}>
-            Detalle los incidentes con una breve descripcion:
-        </Text>
+      <Text style={{ marginBottom: 6, fontWeight: "500" }}>Tipo de incidente:</Text>
+      <View
+        style={{
+          borderWidth: 1,
+          borderColor: "#ccc",
+          borderRadius: 10,
+          marginBottom: 16,
+        }}
+      >
+        <Picker
+          selectedValue={incidentType}
+          onValueChange={(value) =>
+            setIncidentType(value as DeliveryIncidentStatus)
+          }
+        >
+          <Picker.Item label="Pendiente" value={DeliveryIncidentStatus.Pending} />
+          <Picker.Item label="Resuelto" value={DeliveryIncidentStatus.Resolved} />
+          <Picker.Item label="Entregado" value={DeliveryIncidentStatus.Delivered} />
+        </Picker>
+      </View>
+
+      <Text style={{ marginBottom: 6, fontWeight: "500" }}>
+        Describa brevemente el incidente:
+      </Text>
       <TextInput
         value={notes}
         onChangeText={setNotes}
-        placeholder="Coloque el texto aqui..."
+        placeholder="Escriba aquí..."
         style={{
           borderWidth: 1,
           borderColor: "#ccc",
@@ -55,28 +77,38 @@ export default function ReportIncidentComponent({ order, onSubmit }: Props) {
           padding: 12,
           marginBottom: 16,
           fontSize: 14,
-          color: "#333",
         }}
         multiline
       />
 
       <TouchableOpacity
+        disabled={isLoading}
         style={{
-          backgroundColor: "#EF4444",
+          backgroundColor: isLoading ? "#ccc" : "#EF4444",
           paddingVertical: 12,
-          paddingHorizontal: 24,
           borderRadius: 10,
           alignItems: "center",
-          alignSelf: "center",
-          maxWidth: 250,
-          width: "100%",
+          flexDirection: "row",
+          justifyContent: "center",
         }}
-        onPress={() => onSubmit(notes)}
+        onPress={() => onSubmit(incidentType, notes)}
       >
-        <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>
-          Enviar Incidente
-        </Text>
+        {isLoading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>
+            Enviar Incidente
+          </Text>
+        )}
       </TouchableOpacity>
+
+
+      <View style={{flexDirection: "row",alignItems: "flex-start",marginTop: 20,padding: 12,backgroundColor: "#f0f7ff",borderRadius: 10,borderLeftWidth: 3,borderLeftColor: "#2196F3",}}>
+        <Text style={{fontSize: 16,marginRight: 8,marginTop: 1,}}>ℹ️</Text>
+        <Text style={{flex: 1,fontSize: 13,color: "#555",lineHeight: 18,}}>
+          Esta acción notificará al sistema.
+        </Text>
+      </View>
     </View>
   );
 }

@@ -52,6 +52,7 @@ namespace LogisticService.Application.Commands.DeliveryOperator.LogisticOrder.Co
             var statusHistory = new OrderStatusHistory
             {
                 OrderId = order.DepotOrderId,
+                LogisticOrder = order,
                 OldStatus = oldStatus,
                 NewStatus = order.Status,
                 ChangedAt = DateTime.UtcNow,                

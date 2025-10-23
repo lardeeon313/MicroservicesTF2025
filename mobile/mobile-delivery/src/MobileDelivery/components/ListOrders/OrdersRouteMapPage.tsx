@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+/*import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -117,7 +117,7 @@ export default function OrdersRouteMapPage() {
     <View style={styles.container}>
       <MapWithDirections orders={orders} />
 
-      {/* Header con gradiente y sombra mejorada */}
+      {/* Header con gradiente y sombra mejorada 
       <View style={styles.headerContainer}>
         <View style={styles.headerGradient}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
@@ -152,7 +152,7 @@ export default function OrdersRouteMapPage() {
         </View>
       </View>
 
-      {/* Bottom sheet mejorado */}
+      {/* Bottom sheet mejorado 
       <Animated.View style={[styles.bottomSheet, { height: bottomHeight }]}>
         <View style={styles.handleContainer}>
           <View style={styles.handle} />
@@ -224,7 +224,7 @@ export default function OrdersRouteMapPage() {
         )}
       </Animated.View>
 
-      {/* Modal mejorado */}
+      {/* Modal mejorado 
       <Modal
         transparent
         visible={modalVisible}
@@ -560,4 +560,4 @@ const styles = StyleSheet.create({
     fontSize: 15,
     letterSpacing: 0.5,
   },
-});
+}) */
