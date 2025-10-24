@@ -32,7 +32,14 @@ enum AuxiliarPaymentType {
 
 enum AxuziliarStatusType{
   Delivered = "Entregado",
-  Unknown = "Desconocido", 
+  OnTheWay = "En camino",
+  PendingDelivery = "Confirmado",
+  AssignedDelivery = "Asignado",
+  CashVerified = "¡Verificado por Tesoreria!",
+  PendingCashVerification = "En espera de Verificacion...",
+  PendingIncidentResolution = "Pendiente con Incidente No resuelto",
+  Unknown = "Desconocido",
+
 }
 
 const mapPriority = (priority: string | undefined): AulixiliarPriorityType => {
@@ -73,6 +80,18 @@ const mayStatusToSpanish = (status: string | undefined) : AxuziliarStatusType =>
   switch(status?.toLowerCase()){
     case "delivered": 
       return AxuziliarStatusType.Delivered;
+    case "ontheway":
+      return AxuziliarStatusType.OnTheWay;
+    case "assigneddelivery":
+      return AxuziliarStatusType.AssignedDelivery;
+    case "pendingdelivery":
+      return AxuziliarStatusType.PendingDelivery;
+    case "cashverified":
+      return AxuziliarStatusType.CashVerified;
+    case "pendingcashverification":
+      return AxuziliarStatusType.PendingCashVerification;
+    case "pendingincidentresolution":
+      return AxuziliarStatusType.PendingIncidentResolution
     default: 
       return AxuziliarStatusType.Unknown;
   }

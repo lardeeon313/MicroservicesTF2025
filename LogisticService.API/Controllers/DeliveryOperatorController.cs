@@ -407,7 +407,6 @@ namespace LogisticService.API.Controllers
         }
 
         /// <summary>
-
         /// Endpoint para obtener el equipo al que pertence el DeliveryOperator
         /// </summary>
         [HttpGet("teams/by-delivery/{operatorUserId}")]
@@ -421,7 +420,7 @@ namespace LogisticService.API.Controllers
             return Ok(new { teamName = team.TeamName });
         }
 
-
+        /// <summary>
         /// Endpoint para devolver las ordenes rechazadas de un Operador especifico
         /// </summary>
         /// <param name="operatorId"></param>
@@ -440,12 +439,13 @@ namespace LogisticService.API.Controllers
             return Ok(result);
         }
 
+
         /// <summary>
         /// Endpoint para devolver las ordenes de un operador en especifico, que hayan sufrido una incidencia. 
         /// </summary>
         /// <param name="operatorId"></param>
         /// <returns></returns>
-        [HttpGet("get-my-orders-with-incident/{operadorId}")]
+        [HttpGet("get-my-orders-with-incident/{operatorId}")]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -458,11 +458,6 @@ namespace LogisticService.API.Controllers
             }
             return Ok(result);
         }
-
-
-
-
-
 
     }
 }

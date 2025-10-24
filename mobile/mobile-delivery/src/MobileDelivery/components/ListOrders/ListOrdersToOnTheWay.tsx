@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet , Image} from "react-native";
 import { LogisticOrder, PriorityType } from "../../types/DeliveryOrderTypeDto";
 
 type Props = {
@@ -98,7 +98,13 @@ export default function ListOrdersToOnTheWayComponent({
             style={[styles.button, styles.locationButton, styles.flexButton]}
             onPress={onSeeLocation}
           >
-            <Text style={styles.buttonText}>Ver Ubicación</Text>
+            <View style={{flexDirection: "row",alignItems: "center",}}>
+              <Image
+                source={require("../../../assetsImages/GoogleLogo.png")}
+                style={styles.googleLogo}
+              />
+            <Text style={styles.buttonText}>Abrir en Google Maps</Text>
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -225,7 +231,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#3B82F6",
   },
   locationButton: {
-    backgroundColor: "#F59E0B",
+    backgroundColor: "#e7af34ff",
   },
   confirmButton: {
     backgroundColor: "#10B981",
@@ -239,4 +245,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
   },
+  googleLogo: {
+    width: 18,
+    height: 18,
+    marginRight: 8,
+    resizeMode: "contain",
+  },
 });
+
+/**
+ *   mapContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+ */

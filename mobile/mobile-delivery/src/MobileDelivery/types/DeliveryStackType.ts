@@ -1,5 +1,6 @@
 import { LogisticOrder } from "./DeliveryOrderTypeDto";
 import { OrderStatus } from "./DeliveryOrderTypeDto";
+import { DeliveryIncident } from "./DeliveryOrderTypeDto";
 
 export type DeliveryStackParamList = {
   Dashboard: undefined;
@@ -7,6 +8,8 @@ export type DeliveryStackParamList = {
   OrdersToDelivered: undefined;
   OrdersToIncidents: undefined;
   OrdersOnTheWay: undefined;
+  OrdersReject: undefined; 
+  OrdersPendingCashVerification: undefined;
   OrderDetail: {
     order: LogisticOrder;
   };
@@ -38,5 +41,9 @@ export type DeliveryStackParamList = {
   };
   RejectAssignedOrder: {
     order: LogisticOrder;
+  };
+  ResolveDeliveryIncident: {
+    order: LogisticOrder;
+    incident: DeliveryIncident | null; // 👈 agregamos el incidente
   };
 };

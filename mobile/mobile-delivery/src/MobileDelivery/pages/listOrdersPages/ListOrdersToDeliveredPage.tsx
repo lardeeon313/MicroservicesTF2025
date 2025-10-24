@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, FlatList, StyleSheet, Text, ActivityIndicator } from "react-native";
+import { View, FlatList, StyleSheet, Text, ActivityIndicator,TouchableOpacity } from "react-native";
 import NavbarDelivery from "../../components/Navbar/NavbarDelivery";
 import GetBack from "../../../components/GetBack";
 import Footer from "../../../components/Footer";
@@ -11,6 +11,7 @@ import ListOrdersToDeliveredComponent from "../../components/ListOrders/ListOrde
 import { useAuth } from "../../Login/context/useAuth";
 import { useMyDeliveredOrders } from "../../hocks/useOrdersToDelivered";
 import { PriorityType } from "../../types/DeliveryOrderTypeDto";
+import { Banknote } from 'lucide-react-native';
 
 type DeliveryNavigationProp = NativeStackNavigationProp<DeliveryStackParamList>;
 
@@ -43,6 +44,9 @@ const mapStatusToSpanish = (status?: string | null ) : string => {
     case "ontheway" : return "En camino";
     case "assigneddelivery" : return "Asignado";
     case "pendingdelivery" : return "Confirmado";
+    case "pendingincidentresolution": return "Pedido con Incidente No resuelto";
+    case "pendingcashverification": return "En espera de verificacion...";
+    case "cashverified" : return "¡Verificado por tesoreria!"
     default: return "Desconocido"
   }
 }
@@ -103,6 +107,21 @@ export default function ListOrdersToDeliveredPage() {
       </View>
 
       <Text style={styles.title}>Pedidos Entregados</Text>
+
+      {/* 🔹 Botón arriba del listado */}
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate("OrdersPendingCashVerification")}
+        activeOpacity={0.8}
+      >
+        <View style={styles.buttonContent}>
+          <Banknote size={20} color="#fff" style={styles.icon} />
+          <Text style={styles.buttonText}>
+            Revisa los pedidos en proceso de verificación por tesorería que hayan sido pagados en efectivo
+          </Text>
+          <Banknote size={20} color="#fff" style={styles.icon} />
+        </View>
+      </TouchableOpacity>
 
       {loading && (
         <View style={styles.center}>
@@ -173,5 +192,39 @@ const styles = StyleSheet.create({
     color: "#2E7D32",
     textAlign: "center",
     fontWeight: "600",
+  },
+    button: {
+    backgroundColor: "#3B82F6",
+    alignSelf: "center",
+    width: "90%",
+    marginBottom: 15,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    shadowColor: "#3B82F6",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  buttonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 15,
+    fontWeight: "600",
+    textAlign: "center",
+    flex: 1,
+    lineHeight: 20,
+  },
+  icon: {
+    marginHorizontal: 4,
   },
 });

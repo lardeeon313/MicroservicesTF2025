@@ -82,7 +82,7 @@ export interface LogisticOrder {
 
   //Historial y trazabilidad: 
   statusHistory: OrderStatusHistory[];
-  rejectionReasons: DeliveryRejectionReason[];
+  deliveryRejections: DeliveryRejectionReason[];
   deliveryIncidents: DeliveryIncident[];
 
   // Trazabilidad
@@ -93,6 +93,7 @@ export interface LogisticOrder {
   deliveryPriority?: string
   deliveryPayment?: string;
   deliveryStatus?: string; 
+  deliveryIncidentStatus?:string; 
 }
 
 
@@ -193,3 +194,9 @@ export interface DeliveryTeam {
   isActive: boolean;
 }
 
+
+export enum DeliveryResolvedIncidentStatus {
+  Pending = 0,
+  Resolved = 1,
+  Delivered = 2,
+}

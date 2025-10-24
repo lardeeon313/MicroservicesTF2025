@@ -1,35 +1,24 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
-import CountIncident from "../Incidents/CountIncident";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 type Props = {
   id: number;
   customer: string;
   address: string;
   status: string;
-  incidentstatus:string; 
-  priority?: string;
-  payment?: string;
-  incidentCount: number;
+  priority: string;
+  payment: string;
   onSeeDetail: () => void;
-  onResolveIncident: () => void;
-  onViewIncidents: () => void;
-  onOpenInMap: () => void;
 };
 
-export default function ListOrdersToIncidentComponent({
+export default function ListPendingCashOrdersComponent({
   id,
   customer,
   address,
   status,
-  incidentstatus,
   priority,
   payment,
-  incidentCount,
   onSeeDetail,
-  onResolveIncident,
-  onViewIncidents,
-  onOpenInMap,
 }: Props) {
   const isUrgent = priority === "Urgente";
 
@@ -40,7 +29,7 @@ export default function ListOrdersToIncidentComponent({
         isUrgent && { backgroundColor: "#fff5f5", borderColor: "#e11d48" },
       ]}
     >
-      {/* 🔹 Header */}
+      {/* Header Section */}
       <View style={styles.headerSection}>
         <Text style={styles.orderId}>Pedido #{id}</Text>
         {isUrgent && (
@@ -50,7 +39,7 @@ export default function ListOrdersToIncidentComponent({
         )}
       </View>
 
-      {/* 🔹 Información */}
+      {/* Info Section */}
       <View style={styles.infoSection}>
         <View style={styles.infoRow}>
           <Text style={styles.label}>Cliente:</Text>
@@ -63,18 +52,13 @@ export default function ListOrdersToIncidentComponent({
         </View>
 
         <View style={styles.infoRow}>
-          <Text style={styles.label}>Tipo de incidente provocado:</Text>
-          <Text style={styles.value}>{incidentstatus}</Text>
-        </View>
-
-        <View style={styles.infoRow}>
           <Text style={styles.label}>Dirección:</Text>
           <Text style={styles.addressValue}>{address}</Text>
         </View>
 
         <View style={styles.infoRow}>
-          <Text style={styles.label}>Tipo de pago:</Text>
-          <Text style={styles.value}>{payment ?? "No especificado"}</Text>
+          <Text style={styles.label}>Pago:</Text>
+          <Text style={styles.value}>{payment}</Text>
         </View>
 
         <View style={styles.infoRow}>
@@ -88,54 +72,18 @@ export default function ListOrdersToIncidentComponent({
             {priority}
           </Text>
         </View>
-
-        <View style={styles.infoRow}>
-          <Text style={styles.label}>Incidentes:</Text>
-          <Text style={styles.value}>
-            Total de reportes de incidentes: {incidentCount}
-          </Text>
-        </View>
       </View>
 
-      {/* 🔹 Divider */}
+      {/* Divider */}
       <View style={styles.divider} />
 
-      {/* 🔹 Botones de acción */}
+      {/* Button Section */}
       <View style={styles.actionsSection}>
-        <View style={styles.buttonRow}>
-          <TouchableOpacity
-            style={[styles.button, styles.detail, styles.flexButton]}
-            onPress={onSeeDetail}
-          >
-            <Text style={styles.buttonText}>Ver Detalle</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, styles.resolve, styles.flexButton]}
-            onPress={onResolveIncident}
-          >
-            <Text style={styles.buttonText}>Resolver Incidente</Text>
-          </TouchableOpacity>
-        </View>
-
         <TouchableOpacity
-          style={[styles.button, styles.map, styles.fullButton]}
-          onPress={onOpenInMap}
+          style={[styles.button, styles.detailButton]}
+          onPress={onSeeDetail}
         >
-          <View style={styles.mapContent}>
-            <Image
-              source={require("../../../assetsImages/GoogleLogo.png")}
-              style={styles.googleLogo}
-            />
-            <Text style={styles.buttonText}>Abrir en Google Maps</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.button, styles.viewIncidents, styles.fullButton]}
-          onPress={onViewIncidents}
-        >
-          <Text style={styles.buttonText}>⚠️ Revisar incidentes</Text>
+          <Text style={styles.buttonText}>Ver Detalle</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -198,7 +146,7 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   value: {
-    fontSize: 20,
+    fontSize: 15,
     color: "#1f2937",
     flex: 1,
   },
@@ -222,11 +170,6 @@ const styles = StyleSheet.create({
   actionsSection: {
     paddingHorizontal: 16,
     paddingBottom: 16,
-    gap: 8,
-  },
-  buttonRow: {
-    flexDirection: "row",
-    gap: 8,
   },
   button: {
     paddingVertical: 12,
@@ -235,36 +178,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  flexButton: {
-    flex: 1,
-  },
-  fullButton: {
-    width: "100%",
-  },
-  detail: {
+  detailButton: {
     backgroundColor: "#3B82F6",
-  },
-  resolve: {
-    backgroundColor: "#e11d48",
-  },
-  map: {
-    backgroundColor: "#10B981",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  mapContent: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  googleLogo: {
-    width: 18,
-    height: 18,
-    marginRight: 8,
-    resizeMode: "contain",
-  },
-  viewIncidents: {
-    backgroundColor: "#b91c1c",
   },
   buttonText: {
     color: "#fff",

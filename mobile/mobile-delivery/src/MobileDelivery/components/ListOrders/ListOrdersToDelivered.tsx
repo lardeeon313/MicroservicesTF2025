@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   value: {
-    fontSize: 15,
+    fontSize: 20,
     color: '#1f2937',
     flex: 1,
   },

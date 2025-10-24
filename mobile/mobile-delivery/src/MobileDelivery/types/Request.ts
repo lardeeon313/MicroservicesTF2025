@@ -1,3 +1,5 @@
+import { DeliveryResolvedIncidentStatus } from "./DeliveryOrderTypeDto";
+
 export interface ConfirmAssignedOrderRequest{
     logisticOrderId: number;
     operatorUserId: string;
@@ -24,7 +26,7 @@ export interface ReportDeliveryIncidentRequest {
 export interface ResolveDeliveryIncidentRequest {
     incidentId: number; 
     logisticOrderId: number; 
-    resolutionStatus: string; 
+    resolutionStatus: DeliveryResolvedIncidentStatus; 
     resolutionNotes: string; 
 }
 
