@@ -1,6 +1,8 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet , Image} from "react-native";
 import { LogisticOrder, PriorityType } from "../../types/DeliveryOrderTypeDto";
+import { ListCollapse,PackageCheck,OctagonAlert } from 'lucide-react-native';
+
 
 type Props = {
   id: number;
@@ -91,7 +93,10 @@ export default function ListOrdersToOnTheWayComponent({
             style={[styles.button, styles.detailButton, styles.flexButton]}
             onPress={onSeeDetail}
           >
-            <Text style={styles.buttonText}>Ver Detalle</Text>
+            <View style={{flexDirection: "row",alignItems: "center",}}>
+              <ListCollapse size={20} color="#fff"/>
+              <Text style={styles.buttonText}>Ver detalle</Text>
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -103,7 +108,7 @@ export default function ListOrdersToOnTheWayComponent({
                 source={require("../../../assetsImages/GoogleLogo.png")}
                 style={styles.googleLogo}
               />
-            <Text style={styles.buttonText}>Abrir en Google Maps</Text>
+              <Text style={styles.buttonText}>Abrir en Google Maps</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -113,14 +118,20 @@ export default function ListOrdersToOnTheWayComponent({
             style={[styles.button, styles.confirmButton, styles.flexButton]}
             onPress={onConfirmReception}
           >
-            <Text style={styles.buttonText}>Confirmar Recepción</Text>
+            <View style={{flexDirection: "row",alignItems: "center",}}>
+              <PackageCheck size={20} color="#fff"/>
+              <Text style={styles.buttonText}>Confirmar Recepción</Text>
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, styles.incidentButton, styles.flexButton]}
             onPress={onReportIncident}
           >
-            <Text style={styles.buttonText}>Reportar Incidente</Text>
+            <View style={{flexDirection: "row",alignItems: "center",}}>
+              <OctagonAlert size={20} color="#fff"/>
+              <Text style={styles.buttonText}>Reportar Incidente</Text>
+            </View>
           </TouchableOpacity>
         </View>
       </View>

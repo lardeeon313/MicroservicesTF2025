@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { PaymentType, PriorityType } from "../../types/DeliveryOrderTypeDto";
+import { ListCollapse,PackageCheck,Bus,XIcon,BookmarkCheck } from 'lucide-react-native';
 
 type Props = {
   id: number;
@@ -88,14 +89,20 @@ export default function ListOrdersToDistributeComponent({
               style={[styles.button, styles.confirm, styles.flexButton]}
               onPress={onConfirm}
             >
-              <Text style={styles.buttonText}>Confirmar</Text>
+              <View style={{flexDirection: "row",alignItems: "center",}}>
+                <BookmarkCheck size={20} color="#fff"/>
+                <Text style={styles.buttonText}>Confirmar</Text>
+              </View>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[styles.button, styles.reject, styles.flexButton]}
               onPress={onReject}
             >
-              <Text style={styles.buttonText}>Rechazar</Text>
+              <View style={{flexDirection: "row",alignItems: "center",}}>
+                <XIcon size={20} color="#fff"/>
+                <Text style={styles.buttonText}>Rechazar</Text>
+              </View>
             </TouchableOpacity>
           </View>
 
@@ -103,7 +110,10 @@ export default function ListOrdersToDistributeComponent({
             style={[styles.button, styles.detail, styles.fullButton]}
             onPress={onSeeDetail}
           >
-            <Text style={styles.buttonText}>Ver Detalle</Text>
+            <View style={{flexDirection: "row",alignItems: "center",}}>
+              <ListCollapse size={20} color="#fff"/>
+              <Text style={styles.buttonText}>Ver Detalle</Text>
+            </View>
           </TouchableOpacity>
         </View>
       )}
@@ -115,14 +125,20 @@ export default function ListOrdersToDistributeComponent({
               style={[styles.button, styles.detail, styles.flexButton]}
               onPress={onSeeDetail}
             >
-              <Text style={styles.buttonText}>Ver Detalle</Text>
+              <View style={{flexDirection: "row",alignItems: "center",}}>
+                <ListCollapse size={20} color="#fff"/>
+                <Text style={styles.buttonText}>Ver Detalle</Text>
+              </View>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[styles.button, styles.onTheWay, styles.flexButton]}
               onPress={onMarkOnTheWay}
             >
-              <Text style={styles.buttonText}>Marcar en camino</Text>
+              <View style={{flexDirection: "row",alignItems: "center",}}>
+                <Bus size={20} color="#fff"/>
+                <Text style={styles.buttonText}>Marcar en camino</Text>
+              </View>
             </TouchableOpacity>
           </View>
         </View>

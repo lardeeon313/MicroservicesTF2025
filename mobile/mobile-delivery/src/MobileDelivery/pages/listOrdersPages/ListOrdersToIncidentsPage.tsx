@@ -185,7 +185,7 @@ export default function ListOrdersToIncidentPage() {
                     )}
                     <Text style={styles.incidentText}>
                       <Text style={styles.bold}>Fecha:</Text>{" "}
-                      {new Date(incident.createdAt).toLocaleString("es-AR")}
+                      {new Date(incident.reportedAt).toLocaleString("es-AR")}
                     </Text>
                   </View>
                 ))

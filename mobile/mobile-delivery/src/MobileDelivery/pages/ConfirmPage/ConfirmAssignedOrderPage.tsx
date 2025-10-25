@@ -29,8 +29,8 @@ export default function ConfirmAssignedOrderPage() {
         );
     }
 
-    const teamName = typeof team === 'object' ? team?.teamName : team;
-    const user = { id: userId, name, role, team: teamName ?? null };
+    const teamName = typeof team === "object" ? team?.teamName : team;
+    const user = { name: name ?? "", role: role ?? "", team: teamName ?? null };
 
     const handleConfirmOrder = async () => {
         if (!order) {

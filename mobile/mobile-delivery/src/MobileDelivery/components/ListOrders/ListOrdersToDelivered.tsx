@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { LogisticOrder, PriorityType } from "../../types/DeliveryOrderTypeDto";
+import { ListCollapse,PackageCheck,OctagonAlert } from 'lucide-react-native';
 
 type Props = {
   id: number;
@@ -84,7 +85,10 @@ export default function ListOrdersToDeliveredComponent({
           style={[styles.button, styles.detailButton]}
           onPress={onSeeDetail}
         >
-          <Text style={styles.buttonText}>Ver Detalle</Text>
+          <View style={{flexDirection: "row",alignItems: "center",}}>
+            <ListCollapse size={20} color="#fff"/>
+            <Text style={styles.buttonText}>Ver Detalle</Text>
+          </View>
         </TouchableOpacity>
       </View>
     </View>
