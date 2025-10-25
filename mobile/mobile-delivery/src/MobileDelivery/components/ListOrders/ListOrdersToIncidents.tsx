@@ -5,6 +5,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 >>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))
 import CountIncident from "../Incidents/CountIncident";
+import { ListCollapse,BugOff} from 'lucide-react-native';
 
 type Props = {
   id: number;
@@ -127,14 +128,20 @@ export default function ListOrdersToIncidentComponent({
             style={[styles.button, styles.detail, styles.flexButton]}
             onPress={onSeeDetail}
           >
-            <Text style={styles.buttonText}>Ver Detalle</Text>
+            <View style={{flexDirection: "row",alignItems: "center",}}>
+              <ListCollapse size={20} color="#fff"/>
+              <Text style={styles.buttonText}>Ver Detalle</Text>
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, styles.resolve, styles.flexButton]}
             onPress={onResolveIncident}
           >
-            <Text style={styles.buttonText}>Resolver Incidente</Text>
+            <View style={{flexDirection: "row",alignItems: "center",}}>
+              <BugOff size={20} color="#fff"/>
+              <Text style={styles.buttonText}>Resolver Incidente</Text>
+            </View>
           </TouchableOpacity>
         </View>
 
