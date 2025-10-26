@@ -97,7 +97,7 @@ export function useVerifiedOrders() {
   return { orders, loading, error, refetch: fetchOrders };
 }
 
-// Hook para órdenes asignadas a reparto (estado 15)
+// Hook para órdenes asignadas a reparto (estado 17)
 export function useAssignedDeliveryOrders() {
   const [orders, setOrders] = useState<LogisticOrderDto[]>([]);
   const [loading, setLoading] = useState(true);
@@ -110,6 +110,81 @@ export function useAssignedDeliveryOrders() {
       .then(setOrders)
       .catch(() => {
         setError('Error al cargar las órdenes asignadas a reparto.');
+        setOrders([]);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  return { orders, loading, error, refetch: fetchOrders };
+}
+
+// Hook para órdenes con asignación cancelada (estado 16)
+export function useAssignmentCancelledOrders() {
+  const [orders, setOrders] = useState<LogisticOrderDto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchOrders = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    getOrdersByStatus(OrderStatus.AssignmentCancelled)
+      .then(setOrders)
+      .catch(() => {
+        setError('Error al cargar las órdenes con asignación cancelada.');
+        setOrders([]);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  return { orders, loading, error, refetch: fetchOrders };
+}
+
+// Hook para órdenes con incidentes pendientes de resolución (estado 20)
+export function usePendingIncidentResolutionOrders() {
+  const [orders, setOrders] = useState<LogisticOrderDto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchOrders = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    getOrdersByStatus(OrderStatus.PendingIncidentResolution)
+      .then(setOrders)
+      .catch(() => {
+        setError('Error al cargar las órdenes con incidentes pendientes.');
+        setOrders([]);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  return { orders, loading, error, refetch: fetchOrders };
+}
+
+// Hook para órdenes con incidentes resueltos (estado 21)
+export function useIncidentResolvedOrders() {
+  const [orders, setOrders] = useState<LogisticOrderDto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchOrders = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    getOrdersByStatus(OrderStatus.IncidentResolved)
+      .then(setOrders)
+      .catch(() => {
+        setError('Error al cargar las órdenes con incidentes resueltos.');
         setOrders([]);
       })
       .finally(() => setLoading(false));

@@ -16,7 +16,11 @@ export const OrderStatusLabels: Record<OrderStatus, string> = {
   [OrderStatus.ReIssued]: 'Reemitido',
   [OrderStatus.PendingReissued]: 'Pendiente de reemisión',
   [OrderStatus.PendingVerification]: 'Pendiente de verificación',
+  [OrderStatus.PendingDelivery]: 'Pendiente de reparto',
+  [OrderStatus.AssignmentCancelled]: 'Asignación cancelada',
   [OrderStatus.AssignedDelivery]: 'Asignado a reparto',
   [OrderStatus.PendingCashVerification]: 'Efectivo pendiente de verificación',
   [OrderStatus.CashVerified]: 'Efectivo Verificado',
+  [OrderStatus.PendingIncidentResolution]: 'Pendiente de resolución de incidente',
+  [OrderStatus.IncidentResolved]: 'Incidente resuelto',
 };
