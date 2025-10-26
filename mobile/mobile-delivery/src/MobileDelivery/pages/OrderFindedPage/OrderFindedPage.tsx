@@ -59,7 +59,7 @@ export const OrdersSearchModal: React.FC<Props> = ({ visible, onClose }) => {
     "en espera de verificacion": OrderStatus.PendingCashVerification,
     "verificado por tesoreria": OrderStatus.CashVerified,
     "pedido con incidente no resuelto": OrderStatus.PendingIncidentResolution,
-    "incidente resuelto": OrderStatus.IncidentResolved,
+    "pedido con incidente resuelto": OrderStatus.IncidentResolved,
   };
 
   const handleSearch = () => {
