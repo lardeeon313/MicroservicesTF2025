@@ -21,16 +21,18 @@ namespace SalesService.Application.Commands.Orders.Register
         public string? DeliveryDetail { get; set; }
         public DateTime? DeliveryDate { get; set; }
         public string CreatedByUserId { get; set; } = string.Empty;
-        public AddressRequest DeliveryAddress { get; set; } = new();
+        public int? DeliveryAddressId { get; set; }
+        public AddressRequest? DeliveryAddress { get; set; } = new();
         public PaymentType? PaymentType { get; set; } 
 
-        public RegisterOrderCommand(Guid customerId, List<RegisterOrderItemRequest> items,DateTime? deliverDate, string? deliveryDetail, string createdByUserId, AddressRequest deliveryAddress)
+        public RegisterOrderCommand(Guid customerId, List<RegisterOrderItemRequest> items,DateTime? deliverDate, string? deliveryDetail, string createdByUserId,int? deliveryAddresId, AddressRequest? deliveryAddress)
         {
             CustomerId = customerId;
             DeliveryDetail = deliveryDetail;
             DeliveryDate = deliverDate;
             Items = items;
             CreatedByUserId = createdByUserId;
+            DeliveryAddressId = deliveryAddresId;
             DeliveryAddress = deliveryAddress;
         }
             

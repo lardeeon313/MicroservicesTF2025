@@ -8,6 +8,7 @@ namespace SharedKernel.IntegrationEvents.SalesEvents.DTOs
 {
     public class AddressDto
     {
+        public int? Id { get; set; }    
         public string Street { get; set; } = string.Empty;
         public string Number { get; set; } = string.Empty;
         public string? Apartment { get; set; }

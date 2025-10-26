@@ -91,5 +91,10 @@ namespace SalesService.Infraestructure.Persistence.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        public async Task<bool> IsAddressReferencedInOrdersAsync(int addressId)
+        {
+            return await _context.Orders.AnyAsync(o => o.DeliveryAddressId == addressId);
+        }
     }
 }
