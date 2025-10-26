@@ -28,8 +28,14 @@ export default function ViewOrderPage() {
       try {
         if (!id) return;
         const data = await getOrderById(Number(id));
-        console.log(data)
-        setOrder(data);
+        console.log(data);
+        
+        const mappedOrder = {
+          ...data,
+          deliveryAddress: data.address,
+        };
+        setOrder(mappedOrder);
+
       } catch (error) {
         handleFormikError({
           error,
@@ -98,6 +104,15 @@ export default function ViewOrderPage() {
                     {order.deliveryDetail || "No especificado"}
                   </p>
                 </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Dirección de entrega:</label>
+                  <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">
+                    {order.deliveryAddress
+                      ? `${order.deliveryAddress.street}, ${order.deliveryAddress.number},${order.deliveryAddress.apartment} , ${order.deliveryAddress.city}, ${order.deliveryAddress.province}`
+                      : 'No especificado'}
+                  </p>
+                </div>
+                
               </div>
 
               {/* Tabla de productos */}
