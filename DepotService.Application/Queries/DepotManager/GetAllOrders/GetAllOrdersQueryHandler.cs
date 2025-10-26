@@ -53,7 +53,9 @@ namespace DepotService.Application.Queries.DepotManager.GetAllOrders
                 PhoneNumber = order.PhoneNumber,
                 DeliveryDetail = order.DeliveryDetail,
                 OrderDate = order.OrderDate,
-                Address = new OrderAddressDto
+                Address = order.DeliveryAddress == null
+                ? null 
+                : new OrderAddressDto
                 {
                     Street = order.DeliveryAddress.Street,
                     Number = order.DeliveryAddress.Number,

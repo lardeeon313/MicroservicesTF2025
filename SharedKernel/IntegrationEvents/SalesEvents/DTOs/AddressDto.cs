@@ -18,7 +18,7 @@ namespace SharedKernel.IntegrationEvents.SalesEvents.DTOs
         public string Country { get; set; } = string.Empty;
         public string? PostalCode { get; set; }
 
-        public double? Latitude { get; set; }
+        public double? Latitude { get; set; }   
         public double? Longitude { get; set; }
         public string? FormattedAddress { get; set; }
         public Guid CustomerId { get; set; }

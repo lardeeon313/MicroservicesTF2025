@@ -47,7 +47,9 @@ namespace DepotService.Application.Queries.DepotManager.GetByIdOrder
                 }).ToList(),
                 Missings = orderExist.Missings,
                 AssignedDepotTeam = orderExist.AssignedDepotTeam,
-                Address = new OrderAddressDto
+                Address = orderExist.DeliveryAddress == null
+                ? null
+                : new OrderAddressDto
                 {
                     Street = orderExist.DeliveryAddress.Street,
                     Number = orderExist.DeliveryAddress.Number,

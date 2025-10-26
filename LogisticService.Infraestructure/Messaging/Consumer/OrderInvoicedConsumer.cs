@@ -116,7 +116,7 @@ namespace LogisticService.Infraestructure.Messaging.Consumer
                         }
 
                         // PASO 2: Address
-                        var address = new LogisticAddress { Street = evento.DeliveryAddress.Street, Number = evento.DeliveryAddress.Number, Apartment = evento.DeliveryAddress.Apartment, City = evento.DeliveryAddress.City, Province = evento.DeliveryAddress.Province, Country = evento.DeliveryAddress.Country, PostalCode = evento.DeliveryAddress.PostalCode, FormattedAddress = evento.DeliveryAddress.FormattedAddress, Latitude = evento.DeliveryAddress.Latitude, Longitude = evento.DeliveryAddress.Longitude, CreatedAt = DateTime.UtcNow, };
+                        var address = new LogisticAddress { Street = evento.DeliveryAddress!.Street, Number = evento.DeliveryAddress.Number, Apartment = evento.DeliveryAddress.Apartment, City = evento.DeliveryAddress.City, Province = evento.DeliveryAddress.Province, Country = evento.DeliveryAddress.Country, PostalCode = evento.DeliveryAddress.PostalCode, FormattedAddress = evento.DeliveryAddress.FormattedAddress, Latitude = evento.DeliveryAddress.Latitude, Longitude = evento.DeliveryAddress.Longitude, CreatedAt = DateTime.UtcNow, };
                         await context.Addresses.AddAsync(address, stoppingToken);
                         await context.SaveChangesAsync(stoppingToken);
 

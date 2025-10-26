@@ -46,7 +46,9 @@ namespace DepotService.Application.Queries.BillingManager.GetInvoicedOrdersByCus
                 CustomerEmail = o.CustomerEmail,
                 TotalAmount = o.TotalAmount,
                 Status = o.Status,
-                Address = new OrderAddressDto
+                Address = o.DeliveryAddress == null
+                ? null
+                : new OrderAddressDto
                 {
                     Street = o.DeliveryAddress.Street,
                     Number = o.DeliveryAddress.Number,

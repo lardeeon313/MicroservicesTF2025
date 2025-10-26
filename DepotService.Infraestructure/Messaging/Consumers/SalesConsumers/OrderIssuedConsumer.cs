@@ -91,7 +91,9 @@ namespace DepotService.Infraestructure.Messaging.Consumers.SalesConsumers
                                 evento.PaymentType.Value.ToString()
                               )
                             : null,
-                            DeliveryAddress = new OrderAddress
+                            DeliveryAddress = evento.DeliveryAddress == null
+                            ? null
+                            : new OrderAddress
                             {
                                 Street = evento.DeliveryAddress.Street,
                                 Number = evento.DeliveryAddress.Number,

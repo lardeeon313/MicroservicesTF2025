@@ -73,7 +73,9 @@ namespace SalesService.Application.Commands.Orders.UpdateStatus
                             ProductName = i.ProductName,
                             Quantity = i.Quantity
                         }).ToList(),
-                        DeliveryAddress = new AddressDto
+                        DeliveryAddress = existingOrder.DeliveryAddress == null
+                        ? null
+                        : new AddressDto
                         {
                             Street = existingOrder.DeliveryAddress.Street,
                             Number = existingOrder.DeliveryAddress.Number,

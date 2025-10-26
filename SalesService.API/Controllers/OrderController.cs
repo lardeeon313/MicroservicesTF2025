@@ -89,7 +89,7 @@ namespace SalesService.API.Controllers
                 return BadRequest(errors);
             }
 
-            var command = new RegisterOrderCommand(request.CustomerId, request.Items, request.DeliveryDate, request.DeliveryDetail, request.CreatedByUserId, request.DeliveryAddressId, request.DeliveryAddress);
+            var command = new RegisterOrderCommand(request.CustomerId, request.Items, request.DeliveryDate, request.DeliveryDetail, request.CreatedByUserId, request.DeliveryAddressId, request.DeliveryAddress, request.PaymentType);
             var result = await _registerOrderCommandHandler.HandleAsync(command);
             return Ok(result);
 
