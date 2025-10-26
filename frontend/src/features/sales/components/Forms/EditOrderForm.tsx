@@ -51,8 +51,25 @@ export default function EditOrderForm({
     return labels[normalized] ?? paymentType;
   };
 
-  const handleSavedAddressChange = (id: number) => {
+  const handleSavedAddressChange = (id: number, setFieldValue: any) => {
     setSelectedSavedAddressId(id);
+    if (id != null) {
+      const savedAddress = savedAddresses.find((addr) => addr.id === id);
+      if (savedAddress) {
+        setFieldValue("addressRequest", { ...savedAddress }); // 🟢 aquí rellenamos el objeto
+      }
+    } else {
+      // Si el usuario decide ingresar manualmente, limpiamos addressRequest
+      setFieldValue("addressRequest", {
+        street: "",
+        number: "",
+        city: "",
+        province: "",
+        country: "",
+        postalCode: "",
+        apartment: "",
+      });
+    }
   };
 
   return (
@@ -61,7 +78,7 @@ export default function EditOrderForm({
       validationSchema={EditOrderValidationSchema}
       enableReinitialize
       onSubmit={(values) => {
-        console.log("Valores enviados al backend:", values);
+        
         if (selectedSavedAddressId != null) {
           const savedAddress = savedAddresses.find((addr) => addr.id === selectedSavedAddressId);
           if (savedAddress) {
@@ -95,7 +112,9 @@ export default function EditOrderForm({
               <select
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
                 value={selectedSavedAddressId ?? ""}
-                onChange={(e) => handleSavedAddressChange(Number(e.target.value))}
+                onChange={(e) => 
+                  handleSavedAddressChange(Number(e.target.value), setFieldValue)
+                }
               >
                 <option value="">Ingresar dirección manual</option>
                 {savedAddresses.map((addr) => (

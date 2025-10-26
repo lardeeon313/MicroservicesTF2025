@@ -7,6 +7,21 @@ namespace DepotService.Infraestructure.Documents.Excel
 {
     public class InvoiceExcelGenerator : IInvoiceExcelGenerator
     {
+        private string GetPaymentTypeName(int paymentType)
+        {
+            return paymentType switch
+            {
+                0 => "Transferencia",
+                1 => "Tarjeta de crédito",
+                2 => "Tarjeta de débito",
+                3 => "Efectivo",
+                4 => "Cuenta corriente",
+                5 => "Cheque",
+                6 => "Pagare",
+                _ => "Desconocido"
+            };
+        }
+
         public byte[] Generate(DepotOrderEntity order)
         {
             using var workbook = new XLWorkbook();
@@ -41,6 +56,12 @@ namespace DepotService.Infraestructure.Documents.Excel
             worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
             worksheet.Cell(currentRow, 2).Value = DateTime.UtcNow.ToString("dd/MM/yyyy");
             currentRow++;
+
+            worksheet.Cell(currentRow, 1).Value = "Tipo de pago:";
+            worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+            worksheet.Cell(currentRow, 2).Value = GetPaymentTypeName((int)order.PaymentType);
+            currentRow++;
+
 
             // === DIRECCIÓN DE ENTREGA (SI EXISTE) ===
             if (order.DeliveryAddress != null)

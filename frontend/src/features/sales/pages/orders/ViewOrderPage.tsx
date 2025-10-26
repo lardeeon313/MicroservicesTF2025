@@ -50,7 +50,7 @@ export default function ViewOrderPage() {
       try {
         if (!id) return;
         const data = await getOrderById(Number(id));
-        console.log("📦 Orden recibida:", data); // 👀 Verificá si llega paymentType
+        
 
         const mappedOrder = {
           ...data,

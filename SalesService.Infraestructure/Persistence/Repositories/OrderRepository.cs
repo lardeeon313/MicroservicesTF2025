@@ -71,6 +71,7 @@ namespace SalesService.Infraestructure.Persistence.Repositories
         {
             return await _context.Orders
                 .Include(o => o.Customer)
+                    .ThenInclude(c => c.Addresses)
                 .Include(o => o.DeliveryAddress)
                 .Include(o => o.Items)
                 .FirstOrDefaultAsync(o => o.Id == orderId);
@@ -136,5 +137,7 @@ namespace SalesService.Infraestructure.Persistence.Repositories
             _context.Orders.Update(order);
             await _context.SaveChangesAsync();
         }
+
+        
     }
 }

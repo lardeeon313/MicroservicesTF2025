@@ -12,9 +12,7 @@ export const getAllCustomers = async (): Promise<CustomerResponse[]> => {
 export const registerCustomer = async (
   data: RegisterCustomerRequest
 ): Promise<void> => {
-   console.log("📤 Datos enviados al backend (registerCustomer):", data);
   await API.post("/sales/customer/register", data);
-   console.log("📥 Respuesta del backend (registerCustomer):", data);
 };
 
 // Obtener Cliente por Id

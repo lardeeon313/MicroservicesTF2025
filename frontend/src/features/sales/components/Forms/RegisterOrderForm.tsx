@@ -86,8 +86,6 @@ const RegisterOrderForm: React.FC<Props> = ({
             if (values.customerId) {
               try {
                 const data = await getCustomerPaymentTypes(values.customerId);
-                console.log("Tipos de pago recibidos:", data);
-
                 // Mapeo correcto
                 const mapped = data.map((pt: any) => ({
                   id: pt.id,

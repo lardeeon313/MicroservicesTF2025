@@ -116,7 +116,7 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
                       {/* Apartment */}
                       <div>
                         <label className="block text-sm font-medium text-gray-900 mb-1">
-                          Departamento
+                          Departamento *
                         </label>
                         <Field
                           name={`addresses[${index}].apartment`}
@@ -225,24 +225,25 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
 
           {/* Formas de Pago (Desplegable) */}
           <div className="mt-8">
-            <h3 className="text-lg font-semibold mb-4 text-gray-800">Formas de Pago</h3>
+            <h3 className="text-lg font-semibold mb-4 text-gray-800">Formas de Pago * </h3>
+            <h2 className="text-lg font-semibold mb-4 text-gray-800">Ingresa la forma de pago para el cliente: </h2>
             <div className="relative">
               <Field
-  as="select"
-  name="paymentTypes"
-  multiple
-  className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 shadow-sm transition-all duration-200 focus:border-red-400 focus:ring-4 focus:ring-red-100 focus:outline-none hover:border-gray-400"
-  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value as PaymentType);
-    setFieldValue("paymentTypes", selectedOptions);
-  }}
->
-  {Object.values(PaymentType).map((type) => (
-    <option key={type} value={type} className="py-2">
-      {getPaymentTypeLabel(type)}
-    </option>
-  ))}
-</Field>
+                as="select"
+                name="paymentTypes"
+                multiple
+                className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 shadow-sm transition-all duration-200 focus:border-red-400 focus:ring-4 focus:ring-red-100 focus:outline-none hover:border-gray-400"
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                  const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value as PaymentType);
+                  setFieldValue("paymentTypes", selectedOptions);
+                }}
+              >
+                {Object.values(PaymentType).map((type) => (
+                  <option key={type} value={type} className="py-2">
+                    {getPaymentTypeLabel(type)}
+                  </option>
+                ))}
+              </Field>
 
             </div>
             <ErrorMessage
