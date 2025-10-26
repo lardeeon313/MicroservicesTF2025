@@ -15,13 +15,9 @@ namespace SalesService.Application.Commands.Orders.Update
         private readonly IOrderRepository _orderRepository = orderRepository;
         public async Task<OrderDto?> HandleAsync(UpdateOrderCommand command)
         {
-            
-            var existingOrder = await _orderRepository.GetByIdAsync(command.OrderId);
 
-            if (existingOrder == null)
-            {
-                throw new KeyNotFoundException($"Order with ID {command.OrderId} not found.");
-            }
+            var existingOrder = await _orderRepository.GetByIdAsync(command.OrderId)
+                ?? throw new KeyNotFoundException($"Order with ID {command.OrderId} not found.");
 
             // Se actualizan solo los campos modificables desde SalesService
             existingOrder.DeliveryDetail = command.Request.DeliveryDetail;
@@ -42,12 +38,14 @@ namespace SalesService.Application.Commands.Orders.Update
                     if (existingAddress == null)
                         throw new KeyNotFoundException($"Address with ID {command.Request.AddressRequest.Id} not found for this customer.");
 
+                    // Reutilizamos la dirección existente
+                    existingOrder.DeliveryAddressId = existingAddress.Id;
                     existingOrder.DeliveryAddress = existingAddress;
                 }
                 else
                 {
                     // Se registró una nueva dirección manual
-                    existingOrder.DeliveryAddress = new Address
+                    var newAddress = new Address
                     {
                         Street = command.Request.AddressRequest.Street,
                         Number = command.Request.AddressRequest.Number,
@@ -61,6 +59,9 @@ namespace SalesService.Application.Commands.Orders.Update
                         FormattedAddress = command.Request.AddressRequest.FormattedAddress,
                         CustomerId = existingOrder.CustomerId
                     };
+
+                    existingOrder.DeliveryAddress = newAddress;
+                    existingOrder.DeliveryAddressId = 0; // Se asignará al guardar
                 }
             }
 
@@ -117,7 +118,7 @@ namespace SalesService.Application.Commands.Orders.Update
                     ProductName = i.ProductName,
                     ProductBrand = i.ProductBrand,
                     Quantity = i.Quantity
-                }).ToList()
+                }).ToList(),
             };
 
 

@@ -33,18 +33,21 @@ namespace SalesService.Application.Commands.Orders.Register
             var customer = await _customerRepository.GetByIdAsync(command.CustomerId)
                 ?? throw new KeyNotFoundException($"Customer with ID {command.CustomerId} not found.");
 
-            Address deliveryAddress;
+            int? deliveryAddressId = null;
+            Address? newAddress = null;
 
             // Si el usuario seleccionó una dirección existente
-            if (command.DeliveryAddress.Id > 0)
+            if (command.DeliveryAddressId.HasValue && command.DeliveryAddressId.Value > 0)
             {
-                deliveryAddress = customer.Addresses?.FirstOrDefault(a => a.Id == command.DeliveryAddress.Id)
+                var existingAddress = customer.Addresses?.FirstOrDefault(a => a.Id == command.DeliveryAddressId)
                     ?? throw new KeyNotFoundException($"Address with ID {command.DeliveryAddress.Id} not found for this customer.");
+
+                deliveryAddressId = existingAddress.Id;
             }
-            else
+            else if (command.DeliveryAddress != null)
             {
                 // Crear una nueva dirección manual
-                deliveryAddress = new Address
+                newAddress = new Address
                 {
                     Street = command.DeliveryAddress.Street,
                     Number = command.DeliveryAddress.Number,
@@ -76,13 +79,12 @@ namespace SalesService.Application.Commands.Orders.Register
                     ProductName = i.ProductName,
                     Quantity = i.Quantity
                 }).ToList(),
-                DeliveryAddress = deliveryAddress,
+                DeliveryAddressId = deliveryAddressId,
+                DeliveryAddress = newAddress
             };
 
             // Guardar la orden en la base de datos
-            await _orderRepository.AddAsync(order);
-
-            Console.WriteLine($"Order después de guardar: {JsonSerializer.Serialize(order)}");
+            await _orderRepository.AddAsync(order);            
 
             // Actualizar el estado del cliente a "Active"
             customer.Status = CustomerStatus.Active;
@@ -121,7 +123,6 @@ namespace SalesService.Application.Commands.Orders.Register
                 htmlBody
             );
 
-
             // Devolver el DTO de la orden creada
             return new OrderDto
             {
@@ -138,20 +139,22 @@ namespace SalesService.Application.Commands.Orders.Register
                     ProductBrand = i.ProductBrand,
                     Quantity = i.Quantity
                 }).ToList(),
-                Address = new SalesService.Application.DTOs.Customer.AddressDto
-                {
-                    Id = order.DeliveryAddress.Id,
-                    Street = order.DeliveryAddress.Street,
-                    Number = order.DeliveryAddress.Number,
-                    Apartment = order.DeliveryAddress.Apartment,
-                    City = order.DeliveryAddress.City,
-                    Province = order.DeliveryAddress.Province,
-                    Country = order.DeliveryAddress.Country,
-                    PostalCode = order.DeliveryAddress.PostalCode,
-                    Latitude = order.DeliveryAddress.Latitude,
-                    Longitude = order.DeliveryAddress.Longitude,
-                    FormattedAddress = order.DeliveryAddress.FormattedAddress
-                }
+                Address = order.DeliveryAddress != null
+            ? new SalesService.Application.DTOs.Customer.AddressDto
+            {
+                Id = order.DeliveryAddress.Id,
+                Street = order.DeliveryAddress.Street,
+                Number = order.DeliveryAddress.Number,
+                Apartment = order.DeliveryAddress.Apartment,
+                City = order.DeliveryAddress.City,
+                Province = order.DeliveryAddress.Province,
+                Country = order.DeliveryAddress.Country,
+                PostalCode = order.DeliveryAddress.PostalCode,
+                Latitude = order.DeliveryAddress.Latitude,
+                Longitude = order.DeliveryAddress.Longitude,
+                FormattedAddress = order.DeliveryAddress.FormattedAddress
+            }
+            : null // En caso de dirección existente
             };
         }
     }

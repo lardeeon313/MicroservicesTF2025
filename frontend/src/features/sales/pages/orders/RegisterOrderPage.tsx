@@ -72,6 +72,7 @@ export default function RegisterOrderPage() {
     const orderToSend = {
       ...values,
       createdByUserId: userId!,
+      deliveryAddress: values.deliveryAddressId ? undefined : values.deliveryAddress,
     };
     console.log("Datos enviados al backend:", orderToSend);
     const response = await registerOrder(orderToSend);

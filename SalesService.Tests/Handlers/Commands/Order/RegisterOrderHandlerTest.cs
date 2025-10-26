@@ -52,6 +52,7 @@ namespace SalesService.Tests.Handlers
                 null,
                 "Entrega mañana",
                 "User123",
+                2,
                 new AddressRequest
                 {
                     Street = "Calle Falsa",
@@ -87,7 +88,7 @@ namespace SalesService.Tests.Handlers
         public async Task HandleAsync_ShouldThrow_WhenCustomerNotFound()
         {
             // Arrange
-            var command = new RegisterOrderCommand(Guid.NewGuid(), [], null, "Sin dirección", "user123", new AddressRequest
+            var command = new RegisterOrderCommand(Guid.NewGuid(), [], null, "Sin dirección", "user123", 2, new AddressRequest
             {
                 Street = "Calle Falsa",
                 Number = "123",

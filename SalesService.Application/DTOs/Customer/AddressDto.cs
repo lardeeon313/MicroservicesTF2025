@@ -8,7 +8,7 @@ namespace SalesService.Application.DTOs.Customer
 {
     public class AddressDto
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string Street { get; set; } = string.Empty;
         public string Number { get; set; } = string.Empty;
         public string? Apartment { get; set; }

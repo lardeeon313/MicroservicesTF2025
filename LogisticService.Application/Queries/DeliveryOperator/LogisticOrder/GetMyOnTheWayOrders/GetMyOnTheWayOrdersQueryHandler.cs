@@ -29,9 +29,7 @@ namespace LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.Get
             {
                 _logger.LogWarning("No on-the-way orders found for operator {OperatorId}", query.OperatorUserId);
                 return new List<LogisticOrderDto>();
-            }
-
-            _logger.LogInformation("Found {Count} on-the-way orders for operator {OperatorId}", orders.Count(), query.OperatorUserId);
+            }            
 
             return orders.Select(order => new LogisticOrderDto
             {
