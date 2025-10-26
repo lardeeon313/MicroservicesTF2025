@@ -103,6 +103,7 @@ const InvoicedOrdersPage: React.FC = () => {
                 status: order.status,
                 items: order.items,
                 total: order.totalAmount,
+                address: order.address,
               }))}
               loading={loading}
               error={error}

@@ -12,11 +12,13 @@ import { ValidationToMissingToPreparation } from "../../validations/ValidationTo
  
 import { useAuth } from '../../Login/context/useAuth';
 
+import GetBack from "../../../components/GetBack";
+import Footer from "../../../components/Footer";
+
 const MissingAndPreparationOrdersPage = () => {
   const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
 
-  
-  const {userId, name, role, isAuthenticated, logout, team} = useAuth();
+  const { userId, name, role, isAuthenticated, logout, team } = useAuth();
 
   if (!isAuthenticated || !userId || !name || !role) {
     return (
@@ -26,8 +28,10 @@ const MissingAndPreparationOrdersPage = () => {
     );
   }
 
-  const user = userId && name && role 
-    ? { id: userId, name, role, team }  // 👈 ahora incluye el team
+  const teamName = typeof team === 'object' ? team?.teamName : team;
+  
+  const user = userId && name && role
+    ? { id: userId, name, role, team: teamName ?? null } 
     : null;
 
   const { missingOrders: orders, loading, error } = useMissingOrders(user?.id ?? "");
@@ -84,6 +88,11 @@ const MissingAndPreparationOrdersPage = () => {
         logout={logout}
       />
 
+      <View style={{ marginTop: 10, marginLeft: 10}}>
+        <GetBack/>
+      </View>
+
+
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         <Text style={{ fontSize: 22,fontWeight: '600',marginBottom: 20,color: '#333', letterSpacing: 0.5, textAlign: 'center'}}>
           Pedidos con faltantes
@@ -100,6 +109,7 @@ const MissingAndPreparationOrdersPage = () => {
           />
         ))}
       </ScrollView>
+      <Footer/>
     </View>
   );
 };

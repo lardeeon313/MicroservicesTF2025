@@ -128,6 +128,16 @@ function InvoicedOrderDetailsPage() {
                   <label className="block text-sm font-medium text-gray-600 mb-1">Detalles de entrega:</label>
                   <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">{order.deliveryDetail || "No especificado"}</p>
                 </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Dirección:</label>
+                  <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">
+                    {order.address
+                      ? `${order.address.street}, ${order.address.number} , ${order.address.apartment}, ${order.address.city} , ${order.address.province}`
+                      : 'No especificado'}
+                  </p>
+                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-4">Estado:</label>
                   <span className="rounded-lg border border-gray-300 bg-green-100 px-3 py-2.5 font-semibold text-gray-900 shadow-sm">Facturado</span>

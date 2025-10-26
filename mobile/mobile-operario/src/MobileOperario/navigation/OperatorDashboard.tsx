@@ -72,6 +72,16 @@ const OperatorDashboardComponent = () => {
     team: team ?? null
   };
 
+  // 🧠 Log para inspeccionar si el usuario tiene el equipo asignado
+useEffect(() => {
+  console.log("🧩 Usuario autenticado:", user);
+  if (user.team) {
+    console.log("✅ Equipo asignado al usuario:", user.team);
+  } else {
+    console.log("⚠️ El usuario no tiene equipo asignado");
+  }
+}, [user]);
+
   const { missingOrders, loading, error } = useMissingOrders(user.id);
   
 

@@ -8,6 +8,8 @@ import NavbarOperator from '../../components/Navbar/NavbarOperator';
 import { useGetNotificationMissing } from '../../hocks/useGetNotificationsMissing';
   
 import { useAuth } from '../../Login/context/useAuth';
+import GetBack from '../../../components/GetBack';
+import Footer from '../../../components/Footer';
 
 
 const NotificationSectionPage = () => {
@@ -15,9 +17,11 @@ const NotificationSectionPage = () => {
   const { order } = params;
 
   const { userId, name, role, isAuthenticated, logout, team } = useAuth();
-  
-  const user = userId && name && role 
-    ? { id: userId, name, role, team } 
+      
+  const teamName = typeof team === 'object' ? team?.teamName : team;
+      
+  const user = userId && name && role
+    ? { id: userId, name, role, team: teamName ?? null } 
     : null;
 
   if (!user) {
@@ -37,12 +41,18 @@ const NotificationSectionPage = () => {
   return (
     <View style={{ flex: 1 }}>
       <NavbarOperator user={user} isAuthenticated={isAuthenticated} logout={logout} />
+
+      <View style={{ marginTop: 10, marginLeft: 10}}>
+          <GetBack/>
+      </View>
+      
       <View style={{ flex: 1, padding: 16, backgroundColor: "#fff" }}>
         <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 16 }}>
           Faltantes del Pedido#: {fullOrder.depotOrderId}
         </Text>
         <NotificacionSection missingItems={fullOrder.missings} />
       </View>
+      <Footer/>
     </View>
   );
 };

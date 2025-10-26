@@ -8,6 +8,8 @@ import { useGetOneOrder } from "../../hocks/useGetOneOrder";
 import { useOrderManagment } from "./OrderManagmentPage";
 import { RejectOrderWithReasonModal } from "../../components/additional/AlertWindows/AlertManager";
 import { useAuth } from "../../Login/context/useAuth"; 
+import GetBack from "../../../components/GetBack";
+import Footer from "../../../components/Footer";
 
 type AcceptOrderPageProp = RouteProp<DepotStackParamList, "AcceptOrder">;
 
@@ -15,11 +17,12 @@ const AcceptOrderPage = () => {
   const { params } = useRoute<AcceptOrderPageProp>();
 
   const { userId, name, role, isAuthenticated, logout, team } = useAuth();
-
-  const user = userId && name && role 
-    ? { id: userId, name, role, team }  
+      
+  const teamName = typeof team === 'object' ? team?.teamName : team;
+      
+  const user = userId && name && role
+    ? { id: userId, name, role, team: teamName ?? null } 
     : null;
-
   
   const { order: fetchedOrder, loading, error } = useGetOneOrder(
     params.order.depotOrderId,
@@ -46,6 +49,10 @@ const AcceptOrderPage = () => {
         logout={logout}
       />
 
+      <View style={{ marginTop: 10, marginLeft: 10}}>
+        <GetBack/>
+      </View>
+
       <AcceptOrder
         order={order}
         onAccept={acceptOrder}
@@ -57,6 +64,7 @@ const AcceptOrderPage = () => {
         onCancel={() => setShowMeRejectModal(false)}
         onConfirm={ConfirmRejectWithReason}
       />
+      <Footer/>
     </View>
   );
 };

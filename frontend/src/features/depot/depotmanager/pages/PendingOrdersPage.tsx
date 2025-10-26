@@ -29,9 +29,7 @@ function PendingOrdersPage() {
   const itemsPerPage = 10;
 
   // Convertir DepotOrderDto a OrderTableData para compatibilidad
-  const convertToTableData = (order: any) => {
-  return {
-    
+  const convertToTableData = (order: DepotOrderDto) => ({
     id: order.depotOrderId,
     status:
       Number(order.status) === 0
@@ -42,26 +40,38 @@ function PendingOrdersPage() {
         ? 'Re-emitida'
         : 'Otro',
     orderDate: order.orderDate ? order.orderDate.toString() : 'Sin fecha',
-    deliveryDate: order.deliveryDate ?? null,
-    deliveryDetail: order.deliveryDetail ?? '',
-    customerFirstName: order.customerName ? order.customerName.split(' ')[0] : '',
-    customerLastName: order.customerName ? order.customerName.split(' ').slice(1).join(' ') : '',
+    deliveryDate: order.deliveryDate ? order.deliveryDate.toString() : undefined,
+    // Aquí nos aseguramos de que siempre sea string
+    deliveryDetail: order.deliveryDetail != null ? order.deliveryDetail : '',
+    customerFirstName: order.customerName?.split(' ')[0] || '',
+    customerLastName: order.customerName?.split(' ').slice(1).join(' ') || '',
     operatorName: (() => {
       const found = operators.find(op => op.id === order.assignedOperatorId);
       return found?.fullName || '-';
     })(),
+    address: order.address
+      ? {
+          id: order.address.id,
+          street: order.address.street,
+          number: order.address.number,
+          apartment: order.address.apartment,
+          city: order.address.city,
+          province: order.address.province,
+          country: order.address.country,
+          postalCode: order.address.postalCode,
+          latitude: order.address.latitude,
+          longitude: order.address.longitude,
+          formattedAddress: order.address.formattedAddress
+        }
+      : undefined,
     items: Array.isArray(order.items)
-      ? order.items.map((item: any) => ({
+      ? order.items.map(item => ({
           productName: item.productName ?? '',
           productBrand: item.productBrand ?? '',
-          quantity: item.quantity ?? 0,
+          quantity: item.quantity ?? 0
         }))
-      : [],
-    };
-  };
-
-
-
+      : []
+  });
 
   // Filtrar órdenes por estado según la pestaña activa
   const filteredOrders = orders.filter(

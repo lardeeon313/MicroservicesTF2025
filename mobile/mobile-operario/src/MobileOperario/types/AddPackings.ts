@@ -10,11 +10,11 @@ export interface AddPackingCommand {
 
 //Para marcar un producto del pedido como check
 export interface MarkItemCommand {
-    OrderItemId: number; 
-    OperatorUserId: string; 
+    orderItemId: number; 
+    operatorUserId: string; 
 }
 
 //para desmarcar un producto dentro del pedido
 export interface UnMarkItemReadyCommand {
-    OrderItemId: number;
+    orderItemId: number;
 }

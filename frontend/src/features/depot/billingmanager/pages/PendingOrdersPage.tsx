@@ -118,10 +118,11 @@ const PendingOrdersPage: React.FC = () => {
               id: order.depotOrderId,
               customerFirstName: order.customerName,
               orderDate: order.orderDate,
-              deliveryDetail: order.deliveryDetail,
+              deliveryDetail: order.deliveryDetail ?? '',
               status: order.status,
               items: order.items,
               total: order.totalAmount,
+              address: order.address,
             }))}
             loading={loading}
             error={error}

@@ -126,6 +126,27 @@ namespace DepotService.Infraestructure.Documents.Pdf
 
                        column.Item().Text($"Teléfono: {order.PhoneNumber ?? "N/D"}")
                              .FontSize(10);
+
+                       if (order.DeliveryAddress != null)
+                       {
+                           column.Item().PaddingTop(10).Text("Dirección de entrega")
+                                 .FontSize(11)
+                                 .Bold()
+                                 .FontColor(Colors.Grey.Darken2);
+
+                           column.Item().Text(
+                               $"Calle: {order.DeliveryAddress.Street} {order.DeliveryAddress.Number}" +
+                               $"{(!string.IsNullOrEmpty(order.DeliveryAddress.Apartment) ? $", Dpto: {order.DeliveryAddress.Apartment}" : "")}"
+                           ).FontSize(10);
+
+                           column.Item().Text(
+                               $"Ciudad: {order.DeliveryAddress.City}, Provincia: {order.DeliveryAddress.Province}"
+                           ).FontSize(10);
+
+                           column.Item().Text(
+                               $"Código Postal: {order.DeliveryAddress.PostalCode ?? "N/D"}"
+                           ).FontSize(10);
+                       }
                    });
             });
         }

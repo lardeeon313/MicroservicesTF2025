@@ -21,24 +21,44 @@ function PreparedOrdersPage() {
   const itemsPerPage = 10;
 
   // Convertir DepotOrderDto a OrderTableData para compatibilidad
-  const convertToTableData = (order: any) => ({
+  const convertToTableData = (order: DepotOrderDto) => ({
     id: order.depotOrderId,
-    status: 
+    status:
       Number(order.status) === OrderStatus.Prepared
         ? 'Preparado'
         : Number(order.status) === OrderStatus.Invoiced
         ? 'Facturado'
-        : 'Enviado a facturar',      
+        : 'Enviado a Facturar',
     orderDate: order.orderDate ? order.orderDate.toString() : 'Sin fecha',
     deliveryDate: order.deliveryDate ? order.deliveryDate.toString() : undefined,
     deliveryDetail: order.deliveryDetail ?? '',
-    customerFirstName: order.customerName ? order.customerName.split(' ')[0] : '',
-    customerLastName: order.customerName ? order.customerName.split(' ').slice(1).join(' ') : '',
-    items: Array.isArray(order.items) ? order.items.map((item: any) => ({
-      productName: item.productName ?? '',
-      productBrand: item.productBrand ?? '',
-      quantity: item.quantity ?? 0
-    })) : []
+    customerFirstName: order.customerName?.split(' ')[0] || '',
+    customerLastName: order.customerName?.split(' ').slice(1).join(' ') || '',
+    operatorName: order.operatorName || '-',
+    address: order.address
+      ? {
+          id: order.address.id,
+          street: order.address.street,
+          number: order.address.number,
+          apartment: order.address.apartment,
+          city: order.address.city,
+          province: order.address.province,
+          country: order.address.country,
+          postalCode: order.address.postalCode,
+          latitude: order.address.latitude,
+          longitude: order.address.longitude,
+          formattedAddress: order.address.formattedAddress
+        }
+      : undefined,
+    items: Array.isArray(order.items)
+      ? order.items.map((item) => ({
+          productName: item.productName ?? '',
+          productBrand: item.productBrand ?? '',
+          quantity: item.quantity ?? 0,
+          unitPrice: item.unitPrice ?? 0 // si aplica para facturadas
+        }))
+      : [],
+    total: order.totalAmount ?? 0
   });
 
 

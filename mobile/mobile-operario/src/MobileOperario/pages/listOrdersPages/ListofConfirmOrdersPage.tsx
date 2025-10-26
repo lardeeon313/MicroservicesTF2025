@@ -9,6 +9,9 @@ import type { DepotOrderDTO } from '../../types/OrderDTO';
 import { OrderStatusMap, DepotOrderStatus } from '../../types/OrderDTO';
 import NavbarOperator from '../../components/Navbar/NavbarOperator';
 import { useAuth } from '../../Login/context/useAuth'; 
+import Footer from '../../../components/Footer';
+import GetBack from '../../../components/GetBack';
+import { TeamDepotType } from '../../types/TeamType';
 
 
 const ListOfConfirmedOrdersPage = () => {
@@ -16,9 +19,11 @@ const ListOfConfirmedOrdersPage = () => {
   const { confirmedOrders: orders, loading, error } = useConfirmedOrders();
 
   const { userId, name, role, isAuthenticated, logout, team } = useAuth();
-
-  const user = userId && name && role 
-    ? { id: userId, name, role, team }  // 👈 ahora incluye el team
+  
+  const teamName = typeof team === 'object' ? team?.teamName : team;
+  
+  const user = userId && name && role
+    ? { id: userId, name, role, team: teamName ?? null } 
     : null;
 
   const handleSeeDetail = (order: DepotOrderDTO) => {
@@ -54,6 +59,11 @@ const ListOfConfirmedOrdersPage = () => {
         isAuthenticated={isAuthenticated} 
         logout={logout} 
       />
+
+      <View style={{ marginTop: 10, marginLeft: 10}}>
+        <GetBack/>
+      </View>
+
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         <Text style={{ 
           fontSize: 22, 
@@ -83,6 +93,7 @@ const ListOfConfirmedOrdersPage = () => {
           ))
         )}
       </ScrollView>
+      <Footer/>
     </View>
   );
 };

@@ -9,6 +9,7 @@ import { AlertCircle, Calendar, Mail, Phone, User } from "lucide-react";
 import BackButton from "../../../../components/BackButton";
 import InfoItem from "../../../../components/InfoItem";
 import TotalCard from "../components/TotalCard";
+import { BillingAddressDto } from "../types/OrderTypes";
 
 type InvoiceItem = {
   productName: string;
@@ -25,6 +26,7 @@ type Invoice = {
   orderDate: string;
   totalAmount: number;
   items: InvoiceItem[];
+  address?: BillingAddressDto;
 };
 
 const InvoiceOneDetailPage = () => {
@@ -50,6 +52,7 @@ const InvoiceOneDetailPage = () => {
           orderDate: data.orderDate ?? "",
           totalAmount: data.totalAmount ?? 0,
           items: data.items ?? [],
+          address: data.address
         };
 
         setInvoice(mappedInvoice);
@@ -130,6 +133,19 @@ const InvoiceOneDetailPage = () => {
                   bgColor="bg-red-100/40"
                   textColor="text-red-600"
                 />
+                
+                <InfoItem
+                  icon={<User className="text-red-600 w-5 h-5" />}
+                  label="Dirección"
+                  value={
+                    invoice.address
+                      ? `${invoice.address.street} ${invoice.address.number}, ${invoice.address.city}, ${invoice.address.province}`
+                      : 'No especificado'
+                  }
+                  bgColor="bg-red-100/30"
+                  textColor="text-red-600"
+                />
+
               </div>
             </div>
           </div>

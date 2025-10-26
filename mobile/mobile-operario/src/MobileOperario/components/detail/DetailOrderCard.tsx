@@ -25,6 +25,8 @@ const DetailOrderCard = ({order}: Props) => {
     role: role!
   };
 
+  const address = order.address;
+
   console.log("Detalle del pedido:", order);
   return(
     <View style={{ flex: 1, backgroundColor: '#f9f9f9', padding: 16 }}>

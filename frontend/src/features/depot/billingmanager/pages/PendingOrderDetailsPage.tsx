@@ -161,6 +161,15 @@ function PendingOrderDetailsPage() {
                   <label className="block text-sm font-medium text-gray-600 mb-1">Detalles de Entrega:</label>
                   <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">{order.deliveryDetail || "No especificado"}</p>
                 </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Dirección:</label>
+                  <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">
+                    {order.address
+                      ? `${order.address.street}, ${order.address.number} , ${order.address.apartment}, ${order.address.city} , ${order.address.province}`
+                      : 'No especificado'}
+                  </p>
+                </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-1">Estado:</label>
