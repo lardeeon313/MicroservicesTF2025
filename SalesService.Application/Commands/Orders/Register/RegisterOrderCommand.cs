@@ -25,15 +25,14 @@ namespace SalesService.Application.Commands.Orders.Register
         public AddressRequest? DeliveryAddress { get; set; } = new();
         public PaymentType? PaymentType { get; set; } 
 
-
-        public RegisterOrderCommand(Guid customerId, List<RegisterOrderItemRequest> items,DateTime? deliverDate, string? deliveryDetail, string createdByUserId,int? deliveryAddresId, AddressRequest? deliveryAddress, PaymentType? paymentType)
+        public RegisterOrderCommand(Guid customerId, List<RegisterOrderItemRequest> items, DateTime? deliverDate, string? deliveryDetail, string createdByUserId, AddressRequest? deliveryAddress, int? deliveryAddressId, PaymentType? paymentType)
         {
             CustomerId = customerId;
             DeliveryDetail = deliveryDetail;
             DeliveryDate = deliverDate;
             Items = items;
             CreatedByUserId = createdByUserId;
-            DeliveryAddressId = deliveryAddresId;
+            DeliveryAddressId = deliveryAddressId;
             DeliveryAddress = deliveryAddress;
             PaymentType = paymentType;
         }

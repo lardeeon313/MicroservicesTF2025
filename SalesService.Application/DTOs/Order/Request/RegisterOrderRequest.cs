@@ -28,7 +28,7 @@ namespace SalesService.Application.DTOs.Order.Request
 
         public int? DeliveryAddressId { get; set; }
         
-        public AddressRequest? DeliveryAddress { get; set; } = new();
+        public AddressRequest? DeliveryAddress { get; set; }
 
          public PaymentType? PaymentType { get; set; }
 

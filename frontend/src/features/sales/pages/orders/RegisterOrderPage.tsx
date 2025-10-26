@@ -95,6 +95,7 @@ export default function RegisterOrderPage() {
     setIsSubmitting(false);
   }
 };
+
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
