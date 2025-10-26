@@ -3,6 +3,8 @@ import { updateCustomerSchema } from "../../validations/customerSchemas";
 import { UpdateCustomerRequest, AddressRequest } from "../../types/CustomerTypes";
 import { useMemo } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { PaymentType } from "../../types/OrderTypes";
+import { getPaymentTypeLabel } from "../../constants/CustomerPaymentTypesLabel";
 
 interface Props {
   initialValues: UpdateCustomerRequest;
@@ -10,16 +12,20 @@ interface Props {
   isSubmitting?: boolean;
 }
 
-// Tipo extendido solo para el formulario (frontend)
 type FormAddress = AddressRequest & { tempId: string };
 
 const EditCustomerForm = ({ initialValues, onSubmit, isSubmitting }: Props) => {
+  const originalPaymentTypes = useMemo(
+    () => initialValues.paymentTypes || [],
+    [initialValues.paymentTypes]
+  );
+
   const normalizedInitialValues = useMemo(() => {
     const addresses: FormAddress[] = initialValues.addresses?.length
       ? initialValues.addresses.map((addr) => ({
           ...addr,
           number: addr.number?.toString() || "",
-          tempId: uuidv4(), // ID temporal solo para el frontend
+          tempId: uuidv4(),
         }))
       : [
           {
@@ -36,8 +42,11 @@ const EditCustomerForm = ({ initialValues, onSubmit, isSubmitting }: Props) => {
             tempId: uuidv4(),
           },
         ];
-
-    return { ...initialValues, addresses };
+    return {
+      ...initialValues,
+      addresses,
+      paymentTypes: initialValues.paymentTypes || [],
+    };
   }, [initialValues]);
 
   return (
@@ -46,7 +55,6 @@ const EditCustomerForm = ({ initialValues, onSubmit, isSubmitting }: Props) => {
       validationSchema={updateCustomerSchema}
       enableReinitialize
       onSubmit={(values) => {
-        // Remover los IDs temporales y convertir `number` a string si es necesario
         const valuesToSubmit: UpdateCustomerRequest = {
           ...values,
           addresses: values.addresses.map(({ tempId, ...rest }) => ({
@@ -57,9 +65,10 @@ const EditCustomerForm = ({ initialValues, onSubmit, isSubmitting }: Props) => {
         onSubmit(valuesToSubmit);
       }}
     >
-      {({ values }) => (
+      {({ values, setFieldValue }) => (
         <Form className="space-y-6 container mx-auto py-10 px-16 sm:max-w-6xl">
           <Field type="hidden" name="id" />
+
           {/* Datos básicos */}
           <h3 className="text-lg font-semibold mb-4">Datos de Contacto</h3>
           {["firstName", "lastName", "email", "phoneNumber"].map((field) => (
@@ -88,7 +97,7 @@ const EditCustomerForm = ({ initialValues, onSubmit, isSubmitting }: Props) => {
                 <div className="space-y-4">
                   {values.addresses.map((address: FormAddress, index: number) => (
                     <div
-                      key={address.tempId} // Usamos el ID temporal como key
+                      key={address.tempId}
                       className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-start border-b pb-4"
                     >
                       {[
@@ -152,6 +161,45 @@ const EditCustomerForm = ({ initialValues, onSubmit, isSubmitting }: Props) => {
               )}
             </FieldArray>
           </div>
+
+          {/* Formas de Pago (Desplegable) */}
+          <div className="mt-8">
+            <h3 className="text-lg font-semibold mb-4 text-gray-800">Formas de Pago</h3>
+            <h2 className="text-lg font-semibold mb-4 text-gray-800">Agrega otra forma de pago para el cliente: </h2>
+            <div className="relative">
+              <select
+                multiple
+                className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 shadow-sm transition-all duration-200 focus:border-red-400 focus:ring-4 focus:ring-red-100 focus:outline-none hover:border-gray-400"
+                size={Object.values(PaymentType).length > 4 ? 4 : Object.values(PaymentType).length}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                  const selectedOptions = Array.from(e.target.selectedOptions, option => option.value as PaymentType);
+                  setFieldValue(
+                    "paymentTypes",
+                    [...new Set([...originalPaymentTypes, ...selectedOptions])]
+                  );
+                }}
+                value={values.paymentTypes}
+              >
+                {Object.values(PaymentType).map((type) => (
+                  <option
+                    key={type}
+                    value={type}
+                    disabled={originalPaymentTypes.includes(type)}
+                    className="py-2 disabled:text-gray-400 disabled:bg-gray-50"
+                  >
+                    {getPaymentTypeLabel(type)}{" "}
+                    {originalPaymentTypes.includes(type) && "✓ (Original)"}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <ErrorMessage
+              name="paymentTypes"
+              component="div"
+              className="text-red-600 text-sm mt-2 flex items-center gap-1"
+            />
+          </div>
+
 
           {/* Submit */}
           <div className="mt-10">

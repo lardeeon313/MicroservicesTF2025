@@ -62,6 +62,25 @@ namespace SalesService.API.Migrations
                     b.ToTable("Customers", (string)null);
                 });
 
+            modelBuilder.Entity("SalesService.Domain.Entities.CustomerEntity.CustomerPaymentType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("PaymentType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("CustomerPaymentTypes");
+                });
+
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -91,8 +110,8 @@ namespace SalesService.API.Migrations
                     b.Property<string>("PaymentReceipt")
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("PaymentType")
-                        .HasColumnType("int");
+                    b.Property<string>("PaymentType")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -121,11 +140,9 @@ namespace SalesService.API.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("ProductBrand")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("ProductName")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("Quantity")
@@ -235,6 +252,17 @@ namespace SalesService.API.Migrations
                     b.ToTable("OrderStatusHistories", (string)null);
                 });
 
+            modelBuilder.Entity("SalesService.Domain.Entities.CustomerEntity.CustomerPaymentType", b =>
+                {
+                    b.HasOne("SalesService.Domain.Entities.CustomerEntity.Customer", "Customer")
+                        .WithMany("PaymentTypes")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.Order", b =>
                 {
                     b.HasOne("SalesService.Domain.Entities.CustomerEntity.Customer", "Customer")
@@ -298,6 +326,16 @@ namespace SalesService.API.Migrations
                     b.Navigation("OrderEntity");
                 });
 
+<<<<<<< HEAD
+=======
+            modelBuilder.Entity("SalesService.Domain.Entities.CustomerEntity.Customer", b =>
+                {
+                    b.Navigation("Addresses");
+
+                    b.Navigation("PaymentTypes");
+                });
+
+>>>>>>> c7cb406 (Push antes del merge de la rama de milton)
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.Order", b =>
                 {
                     b.Navigation("Items");

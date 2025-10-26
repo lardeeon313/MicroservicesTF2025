@@ -127,10 +127,14 @@ namespace SalesService.Infraestructure.Persistence.Repositories
             return (orders, totalCount);
         }
 
-        public Task UpdateAsync(Order order)
+        public async Task UpdateAsync(Order order)
         {
+            foreach (var item in order.Items.Where(i => i.Id == 0))
+            {
+                _context.Entry(item).State = EntityState.Added;
+            }
             _context.Orders.Update(order);
-            return _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
     }
 }

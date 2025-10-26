@@ -1,4 +1,6 @@
 // Representa el modelo completo del cliente en base de datos
+import { PaymentType } from "./OrderTypes";
+
 export interface Customer {
   id: string;
   firstName: string;
@@ -12,6 +14,7 @@ export interface Customer {
   //
   satisfactionScore?: number;
   addresses: Address[];
+  paymentTypes : CustomerPaymenType[];
   isActive: boolean;
 }
 
@@ -31,6 +34,13 @@ export interface Address{
   createdAt:string;
   customerId: string; // Guid → string
   customer?: Customer;
+}
+
+export interface CustomerPaymenType{
+  id: number; 
+  customerId: string;
+  customer?: any;
+  paymentType: PaymentType;
 }
 
 //Request que se comunicara con el service: 
@@ -56,7 +66,6 @@ export enum CustomerStatus {
   Lost = "Lost"
 }
 
-
 // Representa la respuesta que devuelve la API al obtener un cliente
 export interface CustomerResponse {
   id: string;
@@ -65,6 +74,7 @@ export interface CustomerResponse {
   email: string;
   phoneNumber: string;
   addresses: Address[];
+  paymentTypes : CustomerPaymenType[];
   status: CustomerStatus;
 }
 
@@ -75,6 +85,7 @@ export interface RegisterCustomerRequest {
   email: string;
   phoneNumber: string;
   addresses: AddressRequest[];
+  paymentTypes : PaymentType[];
 }
 
 // Para el formulario de actualización de cliente
@@ -85,6 +96,7 @@ export interface UpdateCustomerRequest {
   email?: string;
   phoneNumber?: string;
   addresses: AddressRequest[];
+  paymentTypes : PaymentType[];
 }
 
 // Get: CustomerPaginated 

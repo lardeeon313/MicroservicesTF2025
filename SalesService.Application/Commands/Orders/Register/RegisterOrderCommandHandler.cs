@@ -40,7 +40,7 @@ namespace SalesService.Application.Commands.Orders.Register
             if (command.DeliveryAddressId.HasValue && command.DeliveryAddressId.Value > 0)
             {
                 var existingAddress = customer.Addresses?.FirstOrDefault(a => a.Id == command.DeliveryAddressId)
-                    ?? throw new KeyNotFoundException($"Address with ID {command.DeliveryAddress.Id} not found for this customer.");
+                    ?? throw new KeyNotFoundException($"Address with ID not found for this customer.");
 
                 deliveryAddressId = existingAddress.Id;
             }

@@ -13,7 +13,6 @@ export default function ViewOrderPage() {
   const [order, setOrder] = useState<OrderTableData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Estados que permiten edición (Pendiente, Emitido, Pendiente de resolución, Pendiente de re-emisión y Re-emitida)
   const editableStatuses = [
     OrderStatus.Pending, 
     OrderStatus.Issued,
@@ -23,19 +22,41 @@ export default function ViewOrderPage() {
   ];
   const canEditOrder = order && editableStatuses.includes(order.status);
 
+  // 🔹 Traductor del tipo de pago
+  const getPaymentTypeLabel = (type?: string) => {
+    if (!type) return "No especificado";
+    switch (type) {
+      case "cash":
+        return "Efectivo";
+      case "credit_Card":
+        return "Tarjeta de Crédito";
+      case "debit_Card":
+        return "Tarjeta de Débito";
+      case "transfer":
+        return "Transferencia";
+      case "check":
+        return "Cheque";
+      case "current_Account":
+        return "Cuenta Corriente";
+      case "promissory_Note":
+        return "Pagaré";
+      default:
+        return type;
+    }
+  };
+
   useEffect(() => {
     const fetchOrder = async () => {
       try {
         if (!id) return;
         const data = await getOrderById(Number(id));
-        console.log(data);
-        
+        console.log("📦 Orden recibida:", data); // 👀 Verificá si llega paymentType
+
         const mappedOrder = {
           ...data,
           deliveryAddress: data.address,
         };
         setOrder(mappedOrder);
-
       } catch (error) {
         handleFormikError({
           error,
@@ -51,17 +72,15 @@ export default function ViewOrderPage() {
     fetchOrder();
   }, [id]);
 
-    if (loading) {
-      return (
-        <LoadingSpinner message="Cargando órden..." height="h-screen"/>
-      );
-    }
+  if (loading) {
+    return <LoadingSpinner message="Cargando órden..." height="h-screen" />;
+  }
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
-        <BackButton to="/sales/orders"></BackButton>
-        
+        <BackButton to="/sales/orders" />
+
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-center text-4xl font-bold text-red-600 mb-2">
             Detalles de la Órden {order?.id}
@@ -80,39 +99,53 @@ export default function ViewOrderPage() {
                     {order.customerFirstName} {order.customerLastName}
                   </p>
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-1">Fecha Pedido:</label>
                   <p className="rounded-md bg-gray-50 px-3 py-2 text-gray-900 shadow-sm">
                     {new Date(order.orderDate).toLocaleDateString("es-AR")}
                   </p>
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-1">Fecha Entrega:</label>
                   <p className="rounded-md bg-gray-50 px-3 py-2 text-gray-900 shadow-sm">
-                    {order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString("es-AR") : "No asignada"}
+                    {order.deliveryDate
+                      ? new Date(order.deliveryDate).toLocaleDateString("es-AR")
+                      : "No asignada"}
                   </p>
                 </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-600 mb-4">Estado:</label>
                   <div className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">
                     <OrderStatusBadge status={order.status} />
                   </div>
                 </div>
-                <div className='md:col-span-2'>
+
+                <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-600 mb-1">Detalles de entrega:</label>
                   <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">
                     {order.deliveryDetail || "No especificado"}
                   </p>
                 </div>
+
+                {/* 🔹 Nuevo bloque: Tipo de pago */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-600 mb-1">Tipo de Pago:</label>
+                  <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">
+                    {getPaymentTypeLabel(order.paymentType)}
+                  </p>
+                </div>
+
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-600 mb-1">Dirección de entrega:</label>
                   <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">
                     {order.deliveryAddress
-                      ? `${order.deliveryAddress.street}, ${order.deliveryAddress.number},${order.deliveryAddress.apartment} , ${order.deliveryAddress.city}, ${order.deliveryAddress.province}`
-                      : 'No especificado'}
+                      ? `${order.deliveryAddress.street}, ${order.deliveryAddress.number}, ${order.deliveryAddress.apartment}, ${order.deliveryAddress.city}, ${order.deliveryAddress.province}`
+                      : "No especificado"}
                   </p>
                 </div>
-                
               </div>
 
               {/* Tabla de productos */}
@@ -120,17 +153,17 @@ export default function ViewOrderPage() {
                 <OrderItemsTable items={order.items} />
               </div>
 
-               {/* Botón de editar - Solo visible para estados editables */}
-               {canEditOrder && (
-                 <div className="flex justify-end mt-6">
-                   <Link 
-                     to={`/sales/orders/update/${order.id}`}
-                     className="px-6 py-2 bg-red-600 text-white rounded-lg shadow font-bold transition hover:bg-red-700"
-                   >
-                     Editar Órden
-                   </Link>
-                 </div>
-               )}
+              {/* Botón de editar */}
+              {canEditOrder && (
+                <div className="flex justify-end mt-6">
+                  <Link
+                    to={`/sales/orders/update/${order.id}`}
+                    className="px-6 py-2 bg-red-600 text-white rounded-lg shadow font-bold transition hover:bg-red-700"
+                  >
+                    Editar Órden
+                  </Link>
+                </div>
+              )}
             </div>
           )}
         </div>

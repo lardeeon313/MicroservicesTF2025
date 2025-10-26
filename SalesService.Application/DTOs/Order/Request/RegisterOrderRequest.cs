@@ -30,5 +30,7 @@ namespace SalesService.Application.DTOs.Order.Request
         
         public AddressRequest? DeliveryAddress { get; set; } = new();
 
+         public PaymentType? PaymentType { get; set; }
+
     }
 }

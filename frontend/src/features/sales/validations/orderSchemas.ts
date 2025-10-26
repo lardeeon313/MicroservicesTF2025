@@ -1,5 +1,6 @@
 import * as Yup from "yup"
 
+
 export const registerOrderValidationSchema = Yup.object().shape({
   customerId: Yup.string().required("Customer is required"),
   deliveryDate: Yup.date()
@@ -8,6 +9,7 @@ export const registerOrderValidationSchema = Yup.object().shape({
   deliveryDetail: Yup.string()
     .max(220, "Max 220 characters")
     .nullable(),
+  paymentType: Yup.string().required("Payment type is required"),
   items: Yup.array()
     .of(
       Yup.object().shape({

@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-
+import { PaymentType } from '../types/OrderTypes';
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 
@@ -43,29 +43,45 @@ export const registerCustomerSchema = Yup.object({
       postalCode: Yup.string().max(20, 'Máximo 20 caracteres'),
     })
   ).min(1, 'Debe ingresar al menos una dirección'),
+  paymentTypes: Yup.array()
+    .of(Yup.string().oneOf(Object.values(PaymentType)))
+    .min(1, "Debe seleccionar al menos un tipo de pago"),
 });
 
 export const updateCustomerSchema = Yup.object({
-  id: Yup.string().required(),
+  id: Yup.string().required('El ID del cliente es obligatorio'),
 
   firstName: Yup.string()
     .max(50, 'Máximo 50 caracteres')
-    .optional(),
+    .nullable(),
 
   lastName: Yup.string()
     .max(50, 'Máximo 50 caracteres')
-    .optional(),
+    .nullable(),
 
   email: Yup.string()
     .matches(emailRegex, 'Formato de correo inválido')
     .email('Correo electrónico inválido')
-    .optional(),
+    .nullable(),
 
   phoneNumber: Yup.string()
     .max(50, 'Máximo 50 caracteres')
-    .optional(),
+    .nullable(),
 
-  address: Yup.string()
-    .max(50, 'Máximo 50 caracteres')
-    .optional(),
+  addresses: Yup.array().of(
+    Yup.object({
+      id: Yup.string().nullable(), // por si se actualiza una dirección existente
+      street: Yup.string().max(100, 'Máximo 100 caracteres').nullable(),
+      number: Yup.string().max(10, 'Máximo 10 caracteres').nullable(),
+      apartment: Yup.string().max(20, 'Máximo 20 caracteres').nullable(),
+      city: Yup.string().max(50, 'Máximo 50 caracteres').nullable(),
+      province: Yup.string().max(50, 'Máximo 50 caracteres').nullable(),
+      country: Yup.string().max(50, 'Máximo 50 caracteres').nullable(),
+      postalCode: Yup.string().max(20, 'Máximo 20 caracteres').nullable(),
+    })
+  ).nullable(),
+
+  paymentTypes: Yup.array()
+    .of(Yup.string().oneOf(Object.values(PaymentType)))
+    .nullable(),
 });

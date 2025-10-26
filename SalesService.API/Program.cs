@@ -156,7 +156,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // Registrar el DbContext
 builder.Services.AddDbContext<SalesDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-        b => b.MigrationsAssembly("SalesService.API")));
+        b => b.MigrationsAssembly("SalesService.Infraestructure")));
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
