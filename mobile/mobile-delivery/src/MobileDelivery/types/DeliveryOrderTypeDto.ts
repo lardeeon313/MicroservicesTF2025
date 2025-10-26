@@ -6,7 +6,7 @@ export enum OrderStatus {
   Prepared = "Prepared",
   SentToBilling = "SentToBilling",
   Invoiced = "Invoiced",
-  Verify = "Verify",
+  Verified = "Verified",
   OnTheWay = "OnTheWay",
   Delivered = "Delivered",
   Canceled = "Canceled",
@@ -14,7 +14,15 @@ export enum OrderStatus {
   ReIssued = "ReIssued",
   PendingReissued = "PendingReissued",
   PendingVerification = "PendingVerification",
-  WithIncidents = "WithIncidents"
+  //
+  PendingDelivery = "PendingDelivery",
+  AssignmentCancelled = "AssignmentCancelled",
+  //
+  AssignedDelivery = "AssignedDelivery",
+  PendingCashVerification = "PendingCashVerification",
+  CashVerified = "CashVerified",
+  PendingIncidentResolution = "PendingIncidentResolution",
+  IncidentResolved = "IncidentResolved"
 }
 
 export enum PaymentType {
@@ -25,14 +33,20 @@ export enum PaymentType {
   Current_Account = "Current_Account",
   Check = "Check",
   Promissory_Note = "Promissory_Note",
+  Unknown = "DESCONOCIDO"
 }
 
 
-
 export enum PriorityType {
-  HIGH = "HIGH",
-  NORMAL = "NORMAL",
-  LOW = "LOW",
+  Low = "Low",
+  Medium = "Medium",
+  High = "High",
+}
+
+export enum DeliveryIncidentStatus{
+  Pending = "Pending",
+  Resolved = "Resolved",
+  Delivered = "Delivered",
 }
   
 export interface LogisticOrder {
@@ -45,7 +59,7 @@ export interface LogisticOrder {
   totalAmount?: number | null;
   paymentReceipt?: string | null;
   deliveryDetail?: string | null;
-  paymentType?: PaymentType | null;
+  paymentType?: PaymentType ;
 
   // Cliente
   customerId: string; // Guid → string
@@ -66,10 +80,52 @@ export interface LogisticOrder {
   deliveryAddressId: number;
   deliveryAddress: LogisticAddress;
 
+  //Historial y trazabilidad: 
+  statusHistory: OrderStatusHistory[];
+  deliveryRejections: DeliveryRejectionReason[];
+  deliveryIncidents: DeliveryIncident[];
+
   // Trazabilidad
   depotOrderId: number;
   salesOrderId: number;
   priority: PriorityType;
+  //para mapear datos en el front
+  deliveryPriority?: string
+  deliveryPayment?: string;
+  deliveryStatus?: string; 
+  deliveryIncidentStatus?:string; 
+}
+
+
+export interface OrderStatusHistory {
+  id: number;
+  orderId: number;
+  oldStatus: OrderStatus;
+  newStatus: OrderStatus;
+  changedAt: string; // DateTime → string ISO
+  averageDuration: number; // segundos
+}
+
+export interface DeliveryRejectionReason {
+  id: number;
+  logisticOrderId: number;
+  deliveryOperatorId: string; // Guid → string
+  reason: string;
+  rejectedAt: string; // DateTime → string ISO
+}
+
+
+export interface DeliveryIncident {
+  id: number;
+  logisticOrderId: number;
+  reportedByOperatorId: string; // Guid → string
+  incidentType: string;
+  description: string;
+  reportedAt: string; // DateTime → string ISO
+  resolved: boolean;
+  resolvedAt?: string | null;
+  resolutionNote?: string | null;
+  deliveryIncidentStatus: DeliveryIncidentStatus;
 }
 
 
@@ -138,3 +194,9 @@ export interface DeliveryTeam {
   isActive: boolean;
 }
 
+
+export enum DeliveryResolvedIncidentStatus {
+  Pending = 0,
+  Resolved = 1,
+  Delivered = 2,
+}

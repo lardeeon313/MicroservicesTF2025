@@ -1,14 +1,15 @@
-<<<<<<< HEAD
-=======
 import { LogisticOrder } from "./DeliveryOrderTypeDto";
 import { OrderStatus } from "./DeliveryOrderTypeDto";
+import { DeliveryIncident } from "./DeliveryOrderTypeDto";
 
 export type DeliveryStackParamList = {
   Dashboard: undefined;
   OrdersToDistribute: undefined;
   OrdersToDelivered: undefined;
   OrdersToIncidents: undefined;
-  OrdersToVerified: undefined;
+  OrdersOnTheWay: undefined;
+  OrdersReject: undefined; 
+  OrdersPendingCashVerification: undefined;
   OrderDetail: {
     order: LogisticOrder;
   };
@@ -34,5 +35,15 @@ export type DeliveryStackParamList = {
   OrderStatusChange: {
     order: LogisticOrder;
   };
+  // ✅ Agrega esta línea:
+  ConfirmAssignedOrder: {
+    order: LogisticOrder;
+  };
+  RejectAssignedOrder: {
+    order: LogisticOrder;
+  };
+  ResolveDeliveryIncident: {
+    order: LogisticOrder;
+    incident: DeliveryIncident | null; // 👈 agregamos el incidente
+  };
 };
->>>>>>> a328cc8 (Refactorización del DeliveryMobile antes de la implementación del backend:)

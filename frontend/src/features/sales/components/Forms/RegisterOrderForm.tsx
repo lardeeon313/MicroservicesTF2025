@@ -86,6 +86,8 @@ const RegisterOrderForm: React.FC<Props> = ({
             if (values.customerId) {
               try {
                 const data = await getCustomerPaymentTypes(values.customerId);
+  
+
                 // Mapeo correcto
                 const mapped = data.map((pt: any) => ({
                   id: pt.id,
