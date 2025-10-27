@@ -45,6 +45,39 @@ export default function DetailOrderComponent({ order, onBack }: Props) {
         <Text style={{ fontSize: 16, marginBottom: 4}}>
           Prioridad: {order.priority}
         </Text>
+<<<<<<< HEAD
+=======
+        <Text style={styles.label}>Fecha de entrga: </Text>
+        <Text style={styles.text}>
+          {order.deliveryDate
+            ? new Date(order.deliveryDate).toLocaleString("es-AR", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              }) + " hs"
+            : "Sin fecha"}
+        </Text>
+        <Text style={styles.label}>Estado:</Text>
+        <Text style={styles.text}>{order.deliveryStatus}</Text>
+        <Text style={styles.label}>Tipo de Pago:</Text>
+        <Text style={styles.text}>{order.deliveryPayment}</Text>
+        <Text style={styles.label}>Detalle del pedido: </Text>
+        <Text style={styles.text}>{order.deliveryDetail}</Text>
+        <Text style={styles.label}>Recibo de pago:</Text>
+        <Text style={styles.text}>{order.paymentReceipt}</Text>
+        <Text style={styles.label}>Prioridad:</Text>
+        <Text style={styles.text}>{order.deliveryPriority}</Text>
+        {order.totalAmount && (
+          <>
+            <Text style={styles.label}>Total:</Text>
+            <Text style={[styles.text, styles.total]}>
+              ${order.totalAmount.toFixed(2)}
+            </Text>
+          </>
+        )}
+>>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))
       </View>
 
 
