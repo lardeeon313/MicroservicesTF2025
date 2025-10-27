@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetDeliveryIncidentByOrderId
 {
-    public class GetDeliveryIncidentByOrderIdQueryHandler(ILogisticOrderRepository repository, ILogger<GetDeliveryIncidentByOrderIdQueryHandler> logger) : IGetDeliveryIncidentByOrderIdQuery
+    public class GetDeliveryIncidentByOrderIdQueryHandler(ILogisticOrderRepository repository, ILogger<GetDeliveryIncidentByOrderIdQueryHandler> logger) : IGetDeliveryIncidentByOrderIdQueryHandler
     {
         private readonly ILogisticOrderRepository _repository = repository;
         private readonly ILogger<GetDeliveryIncidentByOrderIdQueryHandler> _logger = logger;

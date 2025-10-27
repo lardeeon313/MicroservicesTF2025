@@ -161,7 +161,7 @@ builder.Services.AddScoped<IGetOrdersByTeamIdQueryHandler, GetOrdersByTeamIdQuer
 builder.Services.AddScoped<IGetOrdersDeliveryRejectionsQueryHandler, GetOrdersDeliveryRejectionsQueryHandler>();
 builder.Services.AddScoped<IGetOrdersWithDeliveryIncidentQueryHandler, GetOrdersWithDeliveryIncidentQueryHandler>();
 builder.Services.AddScoped<IGetRejectionReasonsByOrderIdQueryHandler, GetRejectionReasonsByOrderIdQueryHandler>();
-builder.Services.AddScoped<IGetDeliveryIncidentByOrderIdQuery, GetDeliveryIncidentByOrderIdQueryHandler>();
+builder.Services.AddScoped<IGetDeliveryIncidentByOrderIdQueryHandler, GetDeliveryIncidentByOrderIdQueryHandler>();
 
 //Commands DeliveryOperator
 builder.Services.AddScoped<IConfirmAssignedOrderCommandHandler, ConfirmAssignedOrderCommandHandler>();
