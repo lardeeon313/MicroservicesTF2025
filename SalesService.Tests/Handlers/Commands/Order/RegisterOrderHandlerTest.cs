@@ -7,6 +7,7 @@ using SalesService.Application.DTOs.Order.Request;
 using SalesService.Domain.Common.Interfaces;
 using SalesService.Domain.Entities.CustomerEntity;
 using SalesService.Domain.Entities.OrderEntity;
+using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Messaging.Publisher;
 using SharedKernel.IntegrationEvents.SalesEvents.Order;
@@ -52,7 +53,6 @@ namespace SalesService.Tests.Handlers
                 null,
                 "Entrega mañana",
                 "User123",
-                2,
                 new AddressRequest
                 {
                     Street = "Calle Falsa",
@@ -64,7 +64,9 @@ namespace SalesService.Tests.Handlers
                     FormattedAddress = "Calle Falsa 123, Springfield, SomeProvince, SomeCountry, 12345",
                     Latitude = -34.6037,
                     Longitude = -58.3816
-                }
+                },
+                2,
+                PaymentType.Cash
             );
 
             // Act
@@ -88,7 +90,7 @@ namespace SalesService.Tests.Handlers
         public async Task HandleAsync_ShouldThrow_WhenCustomerNotFound()
         {
             // Arrange
-            var command = new RegisterOrderCommand(Guid.NewGuid(), [], null, "Sin dirección", "user123", 2, new AddressRequest
+            var command = new RegisterOrderCommand(Guid.NewGuid(), [], null, "Sin dirección", "user123", new AddressRequest
             {
                 Street = "Calle Falsa",
                 Number = "123",
@@ -99,7 +101,8 @@ namespace SalesService.Tests.Handlers
                 FormattedAddress = "Calle Falsa 123, Springfield, SomeProvince, SomeCountry, 12345",
                 Latitude = -34.6037,
                 Longitude = -58.3816
-            });
+            },2,
+            PaymentType.Cash);
 
             // Act
             _customerRepo.Setup(c => c.GetByIdAsync(command.CustomerId)).ReturnsAsync((Customer)null!);
