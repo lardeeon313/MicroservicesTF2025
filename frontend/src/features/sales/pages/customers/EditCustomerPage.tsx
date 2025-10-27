@@ -55,7 +55,7 @@ const EditCustomerPage = () => {
     setIsSubmitting(true);
     try {
       // Logueamos los valores para depuración
-      console.log("Valores a enviar:", values);
+      
       await updateCustomer(values);
       toast.success("Cliente actualizado correctamente");
       navigate(`/sales/customers`);

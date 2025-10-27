@@ -44,7 +44,6 @@ namespace DepotService.Infraestructure.Documents.Pdf
                     .Padding(20)
                     .Column(column =>
                     {
-                        // Título principal
                         column.Item()
                               .AlignCenter()
                               .Text("FACTURA")
@@ -52,7 +51,6 @@ namespace DepotService.Infraestructure.Documents.Pdf
                               .Bold()
                               .FontColor(Colors.Red.Darken2);
 
-                        // Línea decorativa
                         column.Item()
                               .PaddingTop(5)
                               .Height(3)
@@ -102,6 +100,10 @@ namespace DepotService.Infraestructure.Documents.Pdf
 
                        column.Item().Text($"Fecha: {order.OrderDate:dd/MM/yyyy}")
                              .FontSize(10);
+
+                       // 👇 Agregamos el tipo de pago aquí
+                       column.Item().Text($"Tipo de pago: {GetPaymentTypeName(Convert.ToInt32(order.PaymentType))}")
+                             .FontSize(10);
                    });
 
                 row.ConstantItem(20); // Espacio entre columnas
@@ -143,54 +145,20 @@ namespace DepotService.Infraestructure.Documents.Pdf
                     cols.RelativeColumn(2); // Subtotal
                 });
 
-                // Header de la tabla con estilo
                 table.Header(header =>
                 {
-                    header.Cell()
-                          .Background(Colors.Green.Darken1)
-                          .Padding(10)
-                          .Text("Producto")
-                          .FontColor(Colors.White)
-                          .FontSize(11)
-                          .Bold();
-
-                    header.Cell()
-                          .Background(Colors.Green.Darken1)
-                          .Padding(10)
-                          .Text("Marca")
-                          .FontColor(Colors.White)
-                          .FontSize(11)
-                          .Bold();
-
-                    header.Cell()
-                          .Background(Colors.Green.Darken1)
-                          .Padding(10)
-                          .AlignCenter()
-                          .Text("Cant.")
-                          .FontColor(Colors.White)
-                          .FontSize(11)
-                          .Bold();
-
-                    header.Cell()
-                          .Background(Colors.Green.Darken1)
-                          .Padding(10)
-                          .AlignRight()
-                          .Text("P. Unitario")
-                          .FontColor(Colors.White)
-                          .FontSize(11)
-                          .Bold();
-
-                    header.Cell()
-                          .Background(Colors.Green.Darken1)
-                          .Padding(10)
-                          .AlignRight()
-                          .Text("Subtotal")
-                          .FontColor(Colors.White)
-                          .FontSize(11)
-                          .Bold();
+                    header.Cell().Background(Colors.Green.Darken1).Padding(10)
+                          .Text("Producto").FontColor(Colors.White).FontSize(11).Bold();
+                    header.Cell().Background(Colors.Green.Darken1).Padding(10)
+                          .Text("Marca").FontColor(Colors.White).FontSize(11).Bold();
+                    header.Cell().Background(Colors.Green.Darken1).Padding(10).AlignCenter()
+                          .Text("Cant.").FontColor(Colors.White).FontSize(11).Bold();
+                    header.Cell().Background(Colors.Green.Darken1).Padding(10).AlignRight()
+                          .Text("P. Unitario").FontColor(Colors.White).FontSize(11).Bold();
+                    header.Cell().Background(Colors.Green.Darken1).Padding(10).AlignRight()
+                          .Text("Subtotal").FontColor(Colors.White).FontSize(11).Bold();
                 });
 
-                // Filas de productos con alternancia de colores
                 if (order.Items != null && order.Items.Any())
                 {
                     var items = order.Items.ToArray();
@@ -199,52 +167,25 @@ namespace DepotService.Infraestructure.Documents.Pdf
                         var item = items[i];
                         var backgroundColor = i % 2 == 0 ? Colors.White : Colors.Grey.Lighten5;
 
-                        table.Cell()
-                             .Background(backgroundColor)
-                             .Padding(8)
-                             .Text(item?.ProductName ?? "N/D")
-                             .FontSize(10);
-
-                        table.Cell()
-                             .Background(backgroundColor)
-                             .Padding(8)
-                             .Text(item?.ProductBrand ?? "N/D")
-                             .FontSize(10);
-
-                        table.Cell()
-                             .Background(backgroundColor)
-                             .Padding(8)
-                             .AlignCenter()
-                             .Text(item?.Quantity.ToString() ?? "0")
-                             .FontSize(10);
-
-                        table.Cell()
-                             .Background(backgroundColor)
-                             .Padding(8)
-                             .AlignRight()
-                             .Text($"${(item?.UnitPrice ?? 0):N2}")
-                             .FontSize(10);
-
-                        table.Cell()
-                             .Background(backgroundColor)
-                             .Padding(8)
-                             .AlignRight()
+                        table.Cell().Background(backgroundColor).Padding(8)
+                             .Text(item?.ProductName ?? "N/D").FontSize(10);
+                        table.Cell().Background(backgroundColor).Padding(8)
+                             .Text(item?.ProductBrand ?? "N/D").FontSize(10);
+                        table.Cell().Background(backgroundColor).Padding(8).AlignCenter()
+                             .Text(item?.Quantity.ToString() ?? "0").FontSize(10);
+                        table.Cell().Background(backgroundColor).Padding(8).AlignRight()
+                             .Text($"${(item?.UnitPrice ?? 0):N2}").FontSize(10);
+                        table.Cell().Background(backgroundColor).Padding(8).AlignRight()
                              .Text($"${((item?.UnitPrice ?? 0) * (item?.Quantity ?? 0)):N2}")
-                             .FontSize(10)
-                             .Bold();
+                             .FontSize(10).Bold();
                     }
                 }
                 else
                 {
-                    table.Cell()
-                         .ColumnSpan(5)
-                         .Background(Colors.Red.Lighten4)
-                         .Padding(20)
-                         .AlignCenter()
+                    table.Cell().ColumnSpan(5).Background(Colors.Red.Lighten4)
+                         .Padding(20).AlignCenter()
                          .Text("No hay productos en esta orden")
-                         .FontSize(12)
-                         .Italic()
-                         .FontColor(Colors.Red.Darken2);
+                         .FontSize(12).Italic().FontColor(Colors.Red.Darken2);
                 }
             });
         }
@@ -298,8 +239,22 @@ namespace DepotService.Infraestructure.Documents.Pdf
                                text.Span($" - {DateTime.Now:dd/MM/yyyy HH:mm}");
                            });
                     });
+        }
 
+        // 🔽 Mapeo del enum numérico al texto en español
+        private string GetPaymentTypeName(int paymentType)
+        {
+            return paymentType switch
+            {
+                0 => "Transferencia",
+                1 => "Tarjeta de crédito",
+                2 => "Tarjeta de débito",
+                3 => "Efectivo",
+                4 => "Cuenta corriente",
+                5 => "Cheque",
+                6 => "Pagare",
+                _ => "Desconocido"
+            };
         }
     }
-
 }

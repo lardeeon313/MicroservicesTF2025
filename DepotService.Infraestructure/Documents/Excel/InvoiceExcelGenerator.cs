@@ -1,48 +1,90 @@
 ﻿using ClosedXML.Excel;
 using DepotService.Domain.Entities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace DepotService.Infraestructure.Documents.Excel
 {
     public class InvoiceExcelGenerator : IInvoiceExcelGenerator
     {
+        private string GetPaymentTypeName(int paymentType)
+        {
+            return paymentType switch
+            {
+                0 => "Transferencia",
+                1 => "Tarjeta de crédito",
+                2 => "Tarjeta de débito",
+                3 => "Efectivo",
+                4 => "Cuenta corriente",
+                5 => "Cheque",
+                6 => "Pagare",
+                _ => "Desconocido"
+            };
+        }
+
         public byte[] Generate(DepotOrderEntity order)
         {
             using var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add("Invoice");
 
             // === HEADER SECTION ===
-            // Título principal
             var titleCell = worksheet.Cell(1, 1);
             titleCell.Value = "FACTURA";
             titleCell.Style.Font.FontSize = 20;
             titleCell.Style.Font.Bold = true;
             titleCell.Style.Font.FontColor = XLColor.White;
-            titleCell.Style.Fill.BackgroundColor = XLColor.FromHtml("#C0392B"); // Rojo oscuro
+            titleCell.Style.Fill.BackgroundColor = XLColor.FromHtml("#C0392B");
             titleCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             titleCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
             worksheet.Range("A1:F1").Merge();
             worksheet.Row(1).Height = 35;
 
-            // Información del pedido
-            worksheet.Cell(2, 1).Value = "Invoice ID:";
-            worksheet.Cell(2, 1).Style.Font.Bold = true;
-            worksheet.Cell(2, 2).Value = order.DepotOrderId;
+            // === INFORMACIÓN DEL PEDIDO Y CLIENTE ===
+            int currentRow = 2;
 
-            worksheet.Cell(3, 1).Value = "Cliente:";
-            worksheet.Cell(3, 1).Style.Font.Bold = true;
-            worksheet.Cell(3, 2).Value = order.CustomerName;
+            worksheet.Cell(currentRow, 1).Value = "Invoice ID:";
+            worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+            worksheet.Cell(currentRow, 2).Value = order.DepotOrderId;
+            currentRow++;
 
-            worksheet.Cell(4, 1).Value = "Fecha:";
-            worksheet.Cell(4, 1).Style.Font.Bold = true;
-            worksheet.Cell(4, 2).Value = DateTime.UtcNow.ToString("dd/MM/yyyy");
+            worksheet.Cell(currentRow, 1).Value = "Cliente:";
+            worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+            worksheet.Cell(currentRow, 2).Value = order.CustomerName;
+            currentRow++;
+
+            worksheet.Cell(currentRow, 1).Value = "Fecha:";
+            worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+            worksheet.Cell(currentRow, 2).Value = DateTime.UtcNow.ToString("dd/MM/yyyy");
+            currentRow++;
+
+            worksheet.Cell(currentRow, 1).Value = "Tipo de pago:";
+            worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+            worksheet.Cell(currentRow, 2).Value = GetPaymentTypeName((int)order.PaymentType);
+            currentRow++;
+
+
+            // === DIRECCIÓN DE ENTREGA (SI EXISTE) ===
+            if (order.DeliveryAddress != null)
+            {
+                worksheet.Cell(currentRow, 1).Value = "Dirección:";
+                worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+                worksheet.Cell(currentRow, 1).Style.Fill.BackgroundColor = XLColor.LightGray;
+                worksheet.Cell(currentRow, 2).Value = $"{order.DeliveryAddress.Street} {order.DeliveryAddress.Number}" +
+                    $"{(!string.IsNullOrEmpty(order.DeliveryAddress.Apartment) ? $", Dpto: {order.DeliveryAddress.Apartment}" : "")}";
+                worksheet.Cell(currentRow, 2).Style.Fill.BackgroundColor = XLColor.LightGray;
+                currentRow++;
+
+                worksheet.Cell(currentRow, 2).Value = $"{order.DeliveryAddress.City}, {order.DeliveryAddress.Province}";
+                worksheet.Cell(currentRow, 2).Style.Fill.BackgroundColor = XLColor.LightGray;
+                currentRow++;
+
+                worksheet.Cell(currentRow, 2).Value = $"C.P.: {order.DeliveryAddress.PostalCode ?? "N/D"}";
+                worksheet.Cell(currentRow, 2).Style.Fill.BackgroundColor = XLColor.LightGray;
+                currentRow++;
+            }
 
             // === TABLE HEADER ===
-            var headerRow = 6;
+            var headerRow = currentRow;
             var headers = new[] { "Item ID", "Producto", "Marca", "Cantidad", "Precio unitario", "Total" };
 
             for (int i = 0; i < headers.Length; i++)
@@ -52,58 +94,56 @@ namespace DepotService.Infraestructure.Documents.Excel
                 cell.Style.Font.Bold = true;
                 cell.Style.Font.FontSize = 11;
                 cell.Style.Font.FontColor = XLColor.White;
-                cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#27AE60"); // Verde
+                cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#27AE60");
                 cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 cell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
                 cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             }
             worksheet.Row(headerRow).Height = 25;
+            currentRow = headerRow + 1;
 
             // === DATA ROWS ===
-            var row = 7;
             foreach (var item in order.Items)
             {
-                // Aplicar color alternado a las filas (tonos suaves de verde y rojo)
-                var rowColor = (row % 2 == 0) ? XLColor.FromHtml("#E8F8F5") : XLColor.FromHtml("#FADBD8"); // Verde claro / Rojo claro
+                var rowColor = (currentRow % 2 == 0) ? XLColor.FromHtml("#E8F8F5") : XLColor.FromHtml("#FADBD8");
 
-                worksheet.Cell(row, 1).Value = item.Id;
-                worksheet.Cell(row, 1).Style.Fill.BackgroundColor = rowColor;
-                worksheet.Cell(row, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                worksheet.Cell(currentRow, 1).Value = item.Id;
+                worksheet.Cell(currentRow, 1).Style.Fill.BackgroundColor = rowColor;
+                worksheet.Cell(currentRow, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-                worksheet.Cell(row, 2).Value = item.ProductName;
-                worksheet.Cell(row, 2).Style.Fill.BackgroundColor = rowColor;
+                worksheet.Cell(currentRow, 2).Value = item.ProductName;
+                worksheet.Cell(currentRow, 2).Style.Fill.BackgroundColor = rowColor;
 
-                worksheet.Cell(row, 3).Value = item.ProductBrand;
-                worksheet.Cell(row, 3).Style.Fill.BackgroundColor = rowColor;
+                worksheet.Cell(currentRow, 3).Value = item.ProductBrand;
+                worksheet.Cell(currentRow, 3).Style.Fill.BackgroundColor = rowColor;
 
-                worksheet.Cell(row, 4).Value = item.Quantity;
-                worksheet.Cell(row, 4).Style.Fill.BackgroundColor = rowColor;
-                worksheet.Cell(row, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                worksheet.Cell(currentRow, 4).Value = item.Quantity;
+                worksheet.Cell(currentRow, 4).Style.Fill.BackgroundColor = rowColor;
+                worksheet.Cell(currentRow, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-                worksheet.Cell(row, 5).Value = item.UnitPrice ?? 0;
-                worksheet.Cell(row, 5).Style.Fill.BackgroundColor = rowColor;
-                worksheet.Cell(row, 5).Style.NumberFormat.Format = "$#,##0.00";
-                worksheet.Cell(row, 5).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                worksheet.Cell(currentRow, 5).Value = item.UnitPrice ?? 0;
+                worksheet.Cell(currentRow, 5).Style.Fill.BackgroundColor = rowColor;
+                worksheet.Cell(currentRow, 5).Style.NumberFormat.Format = "$#,##0.00";
+                worksheet.Cell(currentRow, 5).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
 
-                worksheet.Cell(row, 6).Value = (item.Quantity * (item.UnitPrice ?? 0));
-                worksheet.Cell(row, 6).Style.Fill.BackgroundColor = rowColor;
-                worksheet.Cell(row, 6).Style.NumberFormat.Format = "$#,##0.00";
-                worksheet.Cell(row, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                worksheet.Cell(currentRow, 6).Value = item.Quantity * (item.UnitPrice ?? 0);
+                worksheet.Cell(currentRow, 6).Style.Fill.BackgroundColor = rowColor;
+                worksheet.Cell(currentRow, 6).Style.NumberFormat.Format = "$#,##0.00";
+                worksheet.Cell(currentRow, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
 
-                // Bordes para cada celda
-                worksheet.Range(row, 1, row, 6).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-                worksheet.Range(row, 1, row, 6).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                worksheet.Range(currentRow, 1, currentRow, 6).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                worksheet.Range(currentRow, 1, currentRow, 6).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 
-                row++;
+                currentRow++;
             }
 
             // === TOTAL SECTION ===
-            var totalRow = row + 1;
+            var totalRow = currentRow + 1;
             worksheet.Cell(totalRow, 5).Value = "Monto Total:";
             worksheet.Cell(totalRow, 5).Style.Font.Bold = true;
             worksheet.Cell(totalRow, 5).Style.Font.FontSize = 12;
             worksheet.Cell(totalRow, 5).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
-            worksheet.Cell(totalRow, 5).Style.Fill.BackgroundColor = XLColor.FromHtml("#E74C3C"); // Rojo
+            worksheet.Cell(totalRow, 5).Style.Fill.BackgroundColor = XLColor.FromHtml("#E74C3C");
             worksheet.Cell(totalRow, 5).Style.Font.FontColor = XLColor.White;
 
             worksheet.Cell(totalRow, 6).Value = order.TotalAmount;
@@ -111,7 +151,7 @@ namespace DepotService.Infraestructure.Documents.Excel
             worksheet.Cell(totalRow, 6).Style.Font.FontSize = 12;
             worksheet.Cell(totalRow, 6).Style.NumberFormat.Format = "$#,##0.00";
             worksheet.Cell(totalRow, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
-            worksheet.Cell(totalRow, 6).Style.Fill.BackgroundColor = XLColor.FromHtml("#E74C3C"); // Rojo
+            worksheet.Cell(totalRow, 6).Style.Fill.BackgroundColor = XLColor.FromHtml("#E74C3C");
             worksheet.Cell(totalRow, 6).Style.Font.FontColor = XLColor.White;
 
             worksheet.Range(totalRow, 5, totalRow, 6).Style.Border.OutsideBorder = XLBorderStyleValues.Medium;

@@ -15,6 +15,33 @@ interface Props {
   onActionChange: (action: string, id: number) => void;
 }
 
+<<<<<<< HEAD
+=======
+const getPaymentTypeLabel = (type?: string) => {
+  
+  if (!type) return "No especificado";
+  switch (type.toLowerCase()) {
+    case "cash":
+      return "Efectivo";
+    case "credit_card":
+      return "Tarjeta de Crédito";
+    case "promissory_note":
+      return "Pagaré";
+    case "transfer":
+      return "Transferencia Bancaria";
+    case "debit_card":
+      return "Tarjeta de Débito";
+    case "check":
+      return "Cheque";
+    case "current_account":
+      return "Cuenta corriente";
+    default:
+      return type; // Muestra el valor crudo si no coincide con ningún caso
+  }
+};
+
+
+>>>>>>> 6af0e0b (Implementación final del tipo de pago en registro y actualización de clientes y órdenes)
 export default function OrderTable({
   orders,
   loading,

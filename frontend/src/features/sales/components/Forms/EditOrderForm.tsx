@@ -1,15 +1,19 @@
 import { Form, ErrorMessage, Field, FieldArray, Formik } from "formik";
+import {  useState } from "react";
 import { UpdateOrderRequest } from "../../types/OrderTypes";
+import { CustomerPaymenType } from "../../types/CustomerTypes";
 import { AddressRequest } from "../../types/CustomerTypes";
 import { EditOrderValidationSchema } from "../../validations/orderSchemas";
-import { useState } from "react";
 
 interface EditOrderFormProps {
   initialValues: UpdateOrderRequest;
   onSubmit: (values: UpdateOrderRequest) => void;
   isSubmitting: boolean;
   savedAddresses?: AddressRequest[];
-  onItemsChange?: (items: Array<{ id: number; productName: string; productBrand: string; quantity: number }>) => void;
+  paymentTypes: CustomerPaymenType[]; // ✅ agregado para recibir desde la page
+  onItemsChange?: (
+    items: Array<{ id: number; productName: string; productBrand: string; quantity: number }>
+  ) => void;
 }
 
 export default function EditOrderForm({
@@ -17,24 +21,66 @@ export default function EditOrderForm({
   onSubmit,
   isSubmitting,
   savedAddresses = [],
+  paymentTypes,
   onItemsChange,
 }: EditOrderFormProps) {
   const [selectedSavedAddressId, setSelectedSavedAddressId] = useState<number | null>(
     initialValues.deliveryAddress?.id ?? null
   );
 
-  const handleSavedAddressChange = (id: number) => {
+    // Traductor de tipos de pago
+  const getPaymentTypeLabel = (paymentType: string): string => {
+    if (!paymentType) return "Tipo de pago desconocido";
+
+    // Normalizamos (por si vienen con mayúsculas mezcladas)
+    const normalized = paymentType
+      .replace(/([A-Z])/g, "_$1") // pone guión antes de cada mayúscula
+      .toLowerCase() // todo minúscula
+      .replace(/__+/g, "_"); // limpia posibles dobles guiones bajos
+
+    const labels: Record<string, string> = {
+      transfer: "Transferencia",
+      credit_card: "Tarjeta de crédito",
+      debit_card: "Tarjeta de débito",
+      cash: "Efectivo",
+      current_account: "Cuenta corriente",
+      check: "Cheque",
+      promissory_note: "Pagaré",
+    };
+
+    return labels[normalized] ?? paymentType;
+  };
+
+  const handleSavedAddressChange = (id: number, setFieldValue: any) => {
     setSelectedSavedAddressId(id);
+    if (id != null) {
+      const savedAddress = savedAddresses.find((addr) => addr.id === id);
+      if (savedAddress) {
+        setFieldValue("addressRequest", { ...savedAddress }); // 🟢 aquí rellenamos el objeto
+      }
+    } else {
+      // Si el usuario decide ingresar manualmente, limpiamos addressRequest
+      setFieldValue("addressRequest", {
+        street: "",
+        number: "",
+        city: "",
+        province: "",
+        country: "",
+        postalCode: "",
+        apartment: "",
+      });
+    }
   };
 
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={EditOrderValidationSchema}
+      enableReinitialize
       onSubmit={(values) => {
-        console.log("Valores enviados al backend:", values);
+        
         if (selectedSavedAddressId != null) {
-          const savedAddress = savedAddresses.find(addr => addr.id === selectedSavedAddressId);
+          const savedAddress = savedAddresses.find((addr) => addr.id === selectedSavedAddressId);
           if (savedAddress) {
             values.addressRequest = { ...savedAddress };
           }
@@ -57,7 +103,7 @@ export default function EditOrderForm({
             <ErrorMessage name="deliveryDate" component="div" className="text-red-700 text-sm pt-1" />
           </div>
 
-          {/* Direcciones registradas */}
+          {/* Dirección guardada */}
           {savedAddresses.length > 0 && (
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">
@@ -66,10 +112,12 @@ export default function EditOrderForm({
               <select
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
                 value={selectedSavedAddressId ?? ""}
-                onChange={(e) => handleSavedAddressChange(Number(e.target.value))}
+                onChange={(e) => 
+                  handleSavedAddressChange(Number(e.target.value), setFieldValue)
+                }
               >
                 <option value="">Ingresar dirección manual</option>
-                {savedAddresses.map(addr => (
+                {savedAddresses.map((addr) => (
                   <option key={addr.id} value={addr.id}>
                     {addr.street} {addr.number}, {addr.city}
                   </option>
@@ -78,7 +126,7 @@ export default function EditOrderForm({
             </div>
           )}
 
-          {/* Dirección de entrega manual */}
+          {/* Dirección manual */}
           {selectedSavedAddressId == null && (
             <div className="grid grid-cols-2 gap-3 mt-3">
               {[
@@ -94,7 +142,7 @@ export default function EditOrderForm({
                   key={field.name}
                   name={`addressRequest.${field.name}`}
                   placeholder={field.placeholder}
-                  className={`block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200 ${
+                  className={`block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200 ${
                     field.col ? `col-span-${field.col}` : ""
                   }`}
                 />
@@ -102,12 +150,44 @@ export default function EditOrderForm({
             </div>
           )}
 
+          {/* Tipo de pago */}
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-1">
+              Tipo de pago
+            </label>
+            {paymentTypes.length > 0 ? (
+              <Field
+                as="select"
+                name="paymentType"
+                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
+              >
+                <option value="">Seleccione un tipo de pago</option>
+                {paymentTypes.map((p) => (
+                  <option key={p.id} value={p.paymentType}>
+                    {getPaymentTypeLabel(p.paymentType)}
+                  </option>
+                ))}
+              </Field>
+            ) : (
+              <p className="text-gray-600 italic">
+                No hay tipos de pago disponibles para este cliente.
+              </p>
+            )}
+            <ErrorMessage name="paymentType" component="div" className="text-red-700 text-sm pt-1" />
+          </div>
+
           {/* Detalles de entrega */}
           <div>
             <label htmlFor="deliveryDetail" className="block text-sm font-medium text-gray-900 mb-1">
               Detalles de entrega
             </label>
-            <Field as="textarea" name="deliveryDetail" className="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200" />
+            <Field
+              as="textarea"
+              name="deliveryDetail"
+              rows={3}
+              placeholder="Ej. Dejar en portería..."
+              className="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
+            />
             <ErrorMessage name="deliveryDetail" component="div" className="text-red-700 text-sm pt-1" />
           </div>
 
@@ -116,7 +196,11 @@ export default function EditOrderForm({
             <label htmlFor="status" className="block text-sm font-medium text-gray-900 mb-1">
               Estado
             </label>
-            <Field as="select" name="status" className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200">
+            <Field
+              as="select"
+              name="status"
+              className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
+            >
               <option value="">Seleccionar estado</option>
               <option value="Pending">Pendiente</option>
               <option value="Issued">Emitido</option>
@@ -139,29 +223,35 @@ export default function EditOrderForm({
                     </tr>
                   </thead>
                   <tbody>
-                    {values.items.map((item: { id: number; productName: string; productBrand: string; quantity: number }, index: number) => {
+                    {values.items.map((item, index) => {
                       const handleRemove = () => {
                         const newItems = [...values.items];
                         newItems.splice(index, 1);
                         setFieldValue("items", newItems);
-                        if (onItemsChange) {
-                          onItemsChange(newItems);
-                        }
+                        if (onItemsChange) onItemsChange(newItems);
                       };
 
                       return (
                         <tr key={item.id || index} className="align-top">
                           <td className="pr-2 px-4 py-2">
-                            <Field name={`items[${index}].productName`} className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200" />
-                            <ErrorMessage name={`items[${index}].productName`} component="div" className="text-red-700 text-sm" />
+                            <Field
+                              name={`items[${index}].productName`}
+                              className="block w-full rounded-md bg-white px-3 py-1.5 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
+                            />
                           </td>
                           <td className="pr-2 px-4 py-2">
-                            <Field name={`items[${index}].productBrand`} className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200" />
-                            <ErrorMessage name={`items[${index}].productBrand`} component="div" className="text-red-700 text-sm" />
+                            <Field
+                              name={`items[${index}].productBrand`}
+                              className="block w-full rounded-md bg-white px-3 py-1.5 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
+                            />
                           </td>
                           <td className="pr-2 px-4 py-2">
-                            <Field name={`items[${index}].quantity`} type="number" min={1} className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200" />
-                            <ErrorMessage name={`items[${index}].quantity`} component="div" className="text-red-700 text-sm pt-1" />
+                            <Field
+                              name={`items[${index}].quantity`}
+                              type="number"
+                              min={1}
+                              className="block w-full rounded-md bg-white px-3 py-1.5 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
+                            />
                           </td>
                           <td className="p-2 px-4 py-2 text-center">
                             <button
@@ -195,7 +285,11 @@ export default function EditOrderForm({
 
           {/* Submit */}
           <div className="mt-10">
-            <button type="submit" disabled={isSubmitting} className="flex w-full justify-center items-center rounded-md bg-red-700 px-3 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-red-600 transition duration-150 disabled:opacity-50">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex w-full justify-center items-center rounded-md bg-red-700 px-3 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-red-600 transition duration-150 disabled:opacity-50"
+            >
               {isSubmitting ? "Guardando..." : "Guardar Cambios"}
             </button>
           </div>

@@ -53,6 +53,38 @@ const RegisterOrderForm: React.FC<Props> = ({
           fetchAddresses();
         }, [values.customerId, setFieldValue]);
 
+<<<<<<< HEAD
+=======
+        // Trae tipos de pago del cliente
+        // ✅ Trae y mapea tipos de pago del cliente
+        useEffect(() => {
+          const fetchPaymentTypes = async () => {
+            if (values.customerId) {
+              try {
+                const data = await getCustomerPaymentTypes(values.customerId);
+  
+
+                // Mapeo correcto
+                const mapped = data.map((pt: any) => ({
+                  id: pt.id,
+                  paymentType: pt.paymentType, // el enum string (ej: "Cash")
+                }));
+
+                setPaymentTypes(mapped);
+                setFieldValue("paymentType", ""); // antes era paymentTypeId
+              } catch (error) {
+                console.error("Error al traer tipos de pago:", error);
+                setPaymentTypes([]);
+              }
+            } else {
+              setPaymentTypes([]);
+            }
+          };
+          fetchPaymentTypes();
+        }, [values.customerId, setFieldValue]);
+
+
+>>>>>>> 6af0e0b (Implementación final del tipo de pago en registro y actualización de clientes y órdenes)
         const handleAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
   const selectedAddressId = e.target.value;
   setFieldValue("deliveryAddressId", selectedAddressId);

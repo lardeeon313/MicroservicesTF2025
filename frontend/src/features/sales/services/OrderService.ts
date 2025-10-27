@@ -34,13 +34,26 @@ export const getOrdersByCustomer = async (customerId: string): Promise<Order[]> 
 
 // Registrar una nueva orden
 export const registerOrder = async (data: RegisterOrderRequest): Promise<Order> => {
+<<<<<<< HEAD
   const response = await API.post("/sales/Order/register", data);
   return response.data;
+=======
+  
+  const response = await API.post("/sales/Order/register", data);
+  
+  return response.data
+>>>>>>> 6af0e0b (Implementación final del tipo de pago en registro y actualización de clientes y órdenes)
 };
 
 // Actualizar orden
 export const updateOrder = async (id: number, data: UpdateOrderRequest): Promise<Order> => {
+<<<<<<< HEAD
   const response = await API.put(`/sales/order/update/${id}`, data);
+=======
+
+  const response = await API.put(`/sales/order/update/${id}`, data);
+
+>>>>>>> 6af0e0b (Implementación final del tipo de pago en registro y actualización de clientes y órdenes)
   return response.data;
 };
 

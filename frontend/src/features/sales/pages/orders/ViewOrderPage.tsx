@@ -28,8 +28,18 @@ export default function ViewOrderPage() {
       try {
         if (!id) return;
         const data = await getOrderById(Number(id));
+<<<<<<< HEAD
         console.log(data)
         setOrder(data);
+=======
+        
+
+        const mappedOrder = {
+          ...data,
+          deliveryAddress: data.address,
+        };
+        setOrder(mappedOrder);
+>>>>>>> 6af0e0b (Implementación final del tipo de pago en registro y actualización de clientes y órdenes)
       } catch (error) {
         handleFormikError({
           error,

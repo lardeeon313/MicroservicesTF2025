@@ -31,7 +31,7 @@ const ReissueOrderModal: React.FC<Props> = ({ order, onClose, onReissue }) => {
     };
 
     try {
-      console.log('ReissueOrderModal - handleSubmit data:', data);
+      
       await onReissue(data);
       onClose();
     } catch (error) {
