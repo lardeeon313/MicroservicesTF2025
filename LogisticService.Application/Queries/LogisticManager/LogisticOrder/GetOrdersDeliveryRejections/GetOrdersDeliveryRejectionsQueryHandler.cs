@@ -9,27 +9,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyOnTheWayOrders
+namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetDRReasonByOrderId
 {
-    public class GetMyOnTheWayOrdersQueryHandler(ILogisticOrderRepository repository, ILogger<GetMyOnTheWayOrdersQueryHandler> logger) : IGetMyOnTheWayOrdersQueryHandler
+    public class GetOrdersDeliveryRejectionsQueryHandler(ILogisticOrderRepository repository, ILogger<GetOrdersDeliveryRejectionsQueryHandler> logger) : IGetOrdersDeliveryRejectionsQueryHandler
     {
-        private readonly ILogisticOrderRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        private readonly ILogger<GetMyOnTheWayOrdersQueryHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        private readonly ILogisticOrderRepository _repository = repository;
+        private readonly ILogger<GetOrdersDeliveryRejectionsQueryHandler> _logger = logger;
 
         /// <summary>
-        /// query para obtener mis órdenes en camino.
+        /// Query para obtener todas las órdenes logísticas con rechazos de entrega.
         /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public async Task<IList<LogisticOrderDto>> GetMyOnTheWayOrdersAsync(GetMyOnTheWayOrdersQuery query)
+        /// <returns></returns>        
+        public async Task<List<LogisticOrderDto>> GetOrdersDeliveryRejectionsAsync()
         {
-            var orders = await _repository.GetMyOnTheWayOrders(query.OperatorUserId);
-            if (orders == null || !orders.Any())
+            var orders = await _repository.GetOrdersWithDeliveryRejectionsAsync();
+
+            if (!orders.Any())
             {
-                _logger.LogWarning("No on-the-way orders found for operator {OperatorId}", query.OperatorUserId);
+                _logger.LogWarning("No logistic orders with delivery rejections found.");
                 return new List<LogisticOrderDto>();
-            }            
+            }
 
             return orders.Select(order => new LogisticOrderDto
             {
@@ -51,17 +50,12 @@ namespace LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.Get
                     Email = order.Customer.Email,
                     PhoneNumber = order.Customer.PhoneNumber
                 },
-                DeliveryIncidents = order.DeliveryIncidents.Select(incident => new DeliveryIncidentDto
+                DeliveryRejections = order.RejectionReasons.Select(rejection => new DeliveryRejectionReasonDto
                 {
-                    Id = incident.Id,
-                    IncidentType = incident.IncidentType,
-                    Description = incident.Description,
-                    ReportedAt = incident.ReportedAt,
-                    ReportedByOperatorId = incident.ReportedByOperatorId,
-                    Resolved = incident.Resolved,
-                    ResolvedAt = incident.ResolvedAt,
-                    ResolutionNote = incident.ResolutionNote,
-                    DeliveryIncidentStatus = incident.DeliveryIncidentStatus
+                    Id = rejection.Id,
+                    Reason = rejection.Reason,
+                    DeliveryOperatorId = rejection.DeliveryOperatorId,
+                    RejectedAt = rejection.RejectedAt,
                 }).ToList(),
                 Items = order.Items.Select(item => new LogisticOrderItemDto
                 {
@@ -98,6 +92,7 @@ namespace LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.Get
                     FormattedAddress = order.DeliveryAddress.FormattedAddress
                 }
             }).ToList();
+
         }
     }
 }

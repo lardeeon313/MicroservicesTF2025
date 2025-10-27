@@ -1,6 +1,8 @@
-﻿using LogisticService.Application.DTOs;
+﻿
+using LogisticService.Application.DTOs;
 using LogisticService.Application.DTOs.DeliveryZoneDtos;
 using LogisticService.Application.DTOs.LogisticOrderDtos;
+using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyOrdersWithDeliveryIncident;
 using LogisticService.Domain.IRepositories;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,27 +11,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyOnTheWayOrders
+namespace LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyRejectOrders
 {
-    public class GetMyOnTheWayOrdersQueryHandler(ILogisticOrderRepository repository, ILogger<GetMyOnTheWayOrdersQueryHandler> logger) : IGetMyOnTheWayOrdersQueryHandler
+    public class GetMyRejectOrdersQueryHandler(ILogisticOrderRepository repository, ILogger<GetMyRejectOrdersQueryHandler> logger) : IGetMyRejectOrdersQueryHandler
     {
-        private readonly ILogisticOrderRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        private readonly ILogger<GetMyOnTheWayOrdersQueryHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        private readonly ILogisticOrderRepository _repository = repository;
+        private readonly ILogger<GetMyRejectOrdersQueryHandler> _logger = logger;
 
         /// <summary>
-        /// query para obtener mis órdenes en camino.
+        /// Query para devolver las ordenes rechazadas por un operario.
         /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public async Task<IList<LogisticOrderDto>> GetMyOnTheWayOrdersAsync(GetMyOnTheWayOrdersQuery query)
+        /// <param name="OperatorUserId"></param>
+        /// <returns></returns>        
+        public async Task<List<LogisticOrderDto>> GetMyRejectOrdersAsync(Guid OperatorUserId)
         {
-            var orders = await _repository.GetMyOnTheWayOrders(query.OperatorUserId);
-            if (orders == null || !orders.Any())
+            var orders = await _repository.GetMyRejectOrders(OperatorUserId);
+            if (orders == null)
             {
-                _logger.LogWarning("No on-the-way orders found for operator {OperatorId}", query.OperatorUserId);
+                _logger.LogWarning("No RejectionOrders found for operator {OperatorId}", OperatorUserId);
                 return new List<LogisticOrderDto>();
-            }            
+            }
 
             return orders.Select(order => new LogisticOrderDto
             {
@@ -51,17 +52,12 @@ namespace LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.Get
                     Email = order.Customer.Email,
                     PhoneNumber = order.Customer.PhoneNumber
                 },
-                DeliveryIncidents = order.DeliveryIncidents.Select(incident => new DeliveryIncidentDto
+                DeliveryRejections = order.RejectionReasons.Select(rejection => new DeliveryRejectionReasonDto
                 {
-                    Id = incident.Id,
-                    IncidentType = incident.IncidentType,
-                    Description = incident.Description,
-                    ReportedAt = incident.ReportedAt,
-                    ReportedByOperatorId = incident.ReportedByOperatorId,
-                    Resolved = incident.Resolved,
-                    ResolvedAt = incident.ResolvedAt,
-                    ResolutionNote = incident.ResolutionNote,
-                    DeliveryIncidentStatus = incident.DeliveryIncidentStatus
+                    Id = rejection.Id,
+                    Reason = rejection.Reason,
+                    DeliveryOperatorId = rejection.DeliveryOperatorId,
+                    RejectedAt = rejection.RejectedAt,
                 }).ToList(),
                 Items = order.Items.Select(item => new LogisticOrderItemDto
                 {

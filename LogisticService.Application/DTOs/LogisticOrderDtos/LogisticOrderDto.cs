@@ -27,5 +27,7 @@ namespace LogisticService.Application.DTOs.LogisticOrderDtos
         public DeliveryTeamDto AssignedDeliveryTeam { get; set; } = new();
         public DeliveryZoneDto AssignedDeliveryZone { get; set; } = new();
         public LogisticAddressDto? DeliveryAddress { get; set; }        
+        public List<DeliveryRejectionReasonDto> DeliveryRejections { get; set; } = [];
+        public List<DeliveryIncidentDto> DeliveryIncidents { get; set; } = [];
     }
 }

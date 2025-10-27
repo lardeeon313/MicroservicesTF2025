@@ -31,10 +31,14 @@ namespace LogisticService.Domain.IRepositories
         Task<List<LogisticOrder>> GetMyPendingCashOrders(Guid operatorId);
         Task<List<LogisticOrder>> GetMyPendingDeliveredOrders(Guid operatorId);
         Task<List<LogisticOrder>> GetMyOnTheWayOrders(Guid operatorId);
+        Task<List<LogisticOrder>> GetMyOrdersWithDeliveryIncident(Guid operatorId);
+        Task<List<LogisticOrder>> GetMyRejectOrders(Guid operatorId);
 
         // DELIVERY REJECTIONS REASONS
         Task AddDeliveryRejectionAsync(DeliveryRejectionReason rejectionReason);
         Task<IEnumerable<DeliveryRejectionReason>> GetRejectionReasonsByOrderIdAsync(int logisticOrderId);
+        Task<List<LogisticOrder>> GetOrdersWithDeliveryRejectionsAsync();
+        Task<List<LogisticOrder>> GetOrdersWithDeliveryIncidentsAsync();
 
         // DELIVERY INCIDENTS
         Task AddDeliveryIncidentAsync(DeliveryIncident incident);       

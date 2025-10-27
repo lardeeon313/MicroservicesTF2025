@@ -8,28 +8,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
-namespace LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyOnTheWayOrders
+namespace LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyOrdersWithDeliveryIncident
 {
-    public class GetMyOnTheWayOrdersQueryHandler(ILogisticOrderRepository repository, ILogger<GetMyOnTheWayOrdersQueryHandler> logger) : IGetMyOnTheWayOrdersQueryHandler
+    public class GetMyOrdersWithDeliveryIncidentQueryHandler(ILogisticOrderRepository repository, ILogger<GetMyOrdersWithDeliveryIncidentQueryHandler> logger) : IGetMyOrdersWithDeliveryIncidentQueryHandler
     {
-        private readonly ILogisticOrderRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        private readonly ILogger<GetMyOnTheWayOrdersQueryHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        private readonly ILogisticOrderRepository _repository = repository;
+        private readonly ILogger<GetMyOrdersWithDeliveryIncidentQueryHandler> _logger = logger;
 
         /// <summary>
-        /// query para obtener mis órdenes en camino.
+        /// Query para devolver las ordenes de un operador que sufrieron una incidencia
         /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public async Task<IList<LogisticOrderDto>> GetMyOnTheWayOrdersAsync(GetMyOnTheWayOrdersQuery query)
+        /// <param name="operatorUserId"></param>
+        /// <returns></returns>        
+        public async Task<List<LogisticOrderDto>> GetMyOrdersWithDeliveryIncidentAsync(Guid operatorUserId)
         {
-            var orders = await _repository.GetMyOnTheWayOrders(query.OperatorUserId);
-            if (orders == null || !orders.Any())
+            var orders = await _repository.GetMyOrdersWithDeliveryIncident(operatorUserId);
+            if (orders == null)
             {
-                _logger.LogWarning("No on-the-way orders found for operator {OperatorId}", query.OperatorUserId);
+                _logger.LogWarning("No Orders-with-deliveryIncident found for operator {OperatorId}", operatorUserId);
                 return new List<LogisticOrderDto>();
-            }            
+            }
 
             return orders.Select(order => new LogisticOrderDto
             {

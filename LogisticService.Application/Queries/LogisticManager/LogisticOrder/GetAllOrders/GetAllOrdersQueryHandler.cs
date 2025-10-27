@@ -51,6 +51,25 @@ namespace LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetA
                     Email = order.Customer.Email,
                     PhoneNumber = order.Customer.PhoneNumber
                 },
+                DeliveryRejections = order.RejectionReasons.Select(rejection => new DeliveryRejectionReasonDto
+                {
+                    Id = rejection.Id,
+                    Reason = rejection.Reason,
+                    DeliveryOperatorId = rejection.DeliveryOperatorId,
+                    RejectedAt = rejection.RejectedAt,
+                }).ToList(),
+                DeliveryIncidents = order.DeliveryIncidents.Select(incident => new DeliveryIncidentDto
+                {
+                    Id = incident.Id,
+                    IncidentType = incident.IncidentType,
+                    Description = incident.Description,
+                    ReportedAt = incident.ReportedAt,
+                    ReportedByOperatorId = incident.ReportedByOperatorId,
+                    Resolved = incident.Resolved,
+                    ResolvedAt = incident.ResolvedAt,
+                    ResolutionNote = incident.ResolutionNote,
+                    DeliveryIncidentStatus = incident.DeliveryIncidentStatus
+                }).ToList(),
                 Items = order.Items.Select(item => new LogisticOrderItemDto
                 {
                     Id = item.Id,
