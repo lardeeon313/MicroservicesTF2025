@@ -42,6 +42,7 @@ using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetAllZon
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetByIdZone;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrders;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrdersByDeliveryPriority;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetDeliveryIncidentByOrderId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetDRReasonByOrderId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrderById;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByCustomerId;
@@ -51,6 +52,7 @@ using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrder
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByTeamId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersWithDeliveryIncident;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetPagedOrders;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetRejectionReasonsByOrderId;
 using LogisticService.Application.Services.IdentityServiceClient;
 using LogisticService.Domain.Common.Interfaces;
 using LogisticService.Domain.IRepositories;
@@ -158,6 +160,8 @@ builder.Services.AddScoped<IGetOrdersByOperatorIdQueryHandler, GetOrdersByOperat
 builder.Services.AddScoped<IGetOrdersByTeamIdQueryHandler, GetOrdersByTeamIdQueryHandler>();
 builder.Services.AddScoped<IGetOrdersDeliveryRejectionsQueryHandler, GetOrdersDeliveryRejectionsQueryHandler>();
 builder.Services.AddScoped<IGetOrdersWithDeliveryIncidentQueryHandler, GetOrdersWithDeliveryIncidentQueryHandler>();
+builder.Services.AddScoped<IGetRejectionReasonsByOrderIdQueryHandler, GetRejectionReasonsByOrderIdQueryHandler>();
+builder.Services.AddScoped<IGetDeliveryIncidentByOrderIdQuery, GetDeliveryIncidentByOrderIdQueryHandler>();
 
 //Commands DeliveryOperator
 builder.Services.AddScoped<IConfirmAssignedOrderCommandHandler, ConfirmAssignedOrderCommandHandler>();
