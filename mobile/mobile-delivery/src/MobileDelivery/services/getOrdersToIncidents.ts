@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 //import API from "../../services/axios";
 import { LogisticOrder } from "../types/DeliveryOrderTypeDto";
 import API from "../../services/axios";
@@ -27,4 +25,3 @@ export const getMyOrdersWithIncident = async (operatorId: string): Promise<Logis
   }
 };
 
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))

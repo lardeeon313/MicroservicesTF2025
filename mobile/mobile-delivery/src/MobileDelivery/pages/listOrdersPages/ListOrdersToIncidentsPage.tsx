@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-import React, { useState } from "react";
-import { View, FlatList, StyleSheet, Text } from "react-native";
-
-=======
 import React, {useEffect} from "react";
 import { View, FlatList, StyleSheet, Text, ActivityIndicator, Alert } from "react-native";
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))
 import NavbarDelivery from "../../components/Navbar/NavbarDelivery";
 import GetBack from "../../../components/GetBack";
 import Footer from "../../../components/Footer";
@@ -14,12 +8,9 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { DeliveryStackParamList } from "../../types/DeliveryStackType";
 import { useAuth } from "../../Login/context/useAuth";
-<<<<<<< HEAD
-=======
 import { useGetMyOrdersWithIncident } from "../../hocks/useOrdersWithIncidentes";
 import { Modal, TouchableOpacity, ScrollView } from "react-native";
 import { useState } from "react";
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))
 
 
 type DeliveryNavigationProp = NativeStackNavigationProp<DeliveryStackParamList>;
@@ -71,14 +62,9 @@ const mapPaymentToSpanish = (payment?: string | null): string => {
 
 export default function ListOrdersToIncidentPage() {
   const navigation = useNavigation<DeliveryNavigationProp>();
-<<<<<<< HEAD
-  const [orders] = useState(initialOrders);
-
-=======
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedIncidents, setSelectedIncidents] = useState<any[]>([]);
   const { userId, name, role, isAuthenticated, logout, team } = useAuth();
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))
 
   if (!isAuthenticated || !userId || !name || !role) {
       return (
@@ -98,22 +84,11 @@ export default function ListOrdersToIncidentPage() {
   team: teamName ?? null 
   };
 
-<<<<<<< HEAD
-  //METODOS: 
-  const handleReportIncident = (orderId: number) => {
-     navigation.navigate("ReportIncident", { orderId });
-  };
-
-  const handleViewIncidents = (orderId: number) => {
-    navigation.navigate("NotificationIncident", { orderId });
-  };
-=======
   useEffect(() => {
   if (error) {
     Alert.alert("Error", error, [{ text: "Reintentar", onPress: refetch }]);
   }
   }, [error]);
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))
 
   return (
     <View style={styles.container}>
@@ -129,27 +104,6 @@ export default function ListOrdersToIncidentPage() {
 
       <Text style={styles.title}>Pedidos con Incidentes</Text>
 
-<<<<<<< HEAD
-      <FlatList contentContainerStyle={{ padding: 16 }}
-        data={orders.filter((o) => o.status === "INCIDENT")}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <ListOrdersToIncidentComponent 
-            id={item.id}
-            customer={item.customer}
-            address={item.address}
-            status={item.status}
-            priority={item.priority}
-            incidentCount={item.incidentCount || 0} // 👈 contador
-            onSeeDetail={() =>
-              navigation.navigate("OrderDetail", { order: item })
-            }
-            onReportIncident={() => handleReportIncident(item.id)}
-            onViewIncidents={() => handleViewIncidents(item.id)}
-          />
-        )}
-      />
-=======
       {loading ? (
         <ActivityIndicator size="large" color="#3B82F6" style={{ marginTop: 40 }} />
       ) : (
@@ -252,7 +206,6 @@ export default function ListOrdersToIncidentPage() {
         </View>
       </Modal>
 
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))
 
       <Footer />
     </View>
@@ -270,8 +223,6 @@ const styles = StyleSheet.create({
     color: "#111827",
     textAlign: "center",
   },
-<<<<<<< HEAD
-=======
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -320,5 +271,4 @@ const styles = StyleSheet.create({
   textAlign: "center",
   fontWeight: "600",
   },
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))
 });

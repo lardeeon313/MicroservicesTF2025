@@ -1,5 +1,4 @@
-// navigation/DeliveryStackType.ts
-import { DeliveryOrderTypeDto } from "./DeliveryOrderTypeDto";
+import { LogisticOrder } from "./DeliveryOrderTypeDto";
 import { OrderStatus } from "./DeliveryOrderTypeDto";
 import { DeliveryIncident } from "./DeliveryOrderTypeDto";
 
@@ -8,31 +7,24 @@ export type DeliveryStackParamList = {
   OrdersToDistribute: undefined;
   OrdersToDelivered: undefined;
   OrdersToIncidents: undefined;
-<<<<<<< HEAD
-  OrdersToVerified: undefined;
-=======
   OrdersOnTheWay: undefined;
   OrdersReject: undefined; 
   OrdersPendingCashVerification: undefined;
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))
   OrderDetail: {
-    order: DeliveryOrderTypeDto
+    order: LogisticOrder;
   };
   SelectPaymentType: { 
     orderId: number;
-    updateOrderStatus:  (orderId: number, newStatus: OrderStatus) => void;
+    updateOrderStatus: (orderId: number, newStatus: OrderStatus) => void;
   };
   ReportIncident: { 
     orderId: number; 
   };
   NotificationIncident: {
-     orderId: number ;
-  }
-  Login : undefined;
+    orderId: number;
+  };
+  Login: undefined;
   Register: undefined;
-<<<<<<< HEAD
-};
-=======
   OrdersRouteMap: {
     orders: LogisticOrder[];
   };
@@ -55,4 +47,3 @@ export type DeliveryStackParamList = {
     incident: DeliveryIncident | null; // 👈 agregamos el incidente
   };
 };
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))

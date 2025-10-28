@@ -1,16 +1,14 @@
+// OrderDetailPage.tsx
 import React from "react";
-import { View, StyleSheet, ScrollView } from "react-native"; // ✅ View correcto
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { RouteProp, useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { DeliveryStackParamList } from "../../types/DeliveryStackType";
 import DetailOrderComponent from "../../components/Detail/DetailOrder";
 import NavbarDelivery from "../../components/Navbar/NavbarDelivery";
 import Footer from "../../../components/Footer";
 import GetBack from "../../../components/GetBack";
-
 import { useAuth } from "../../Login/context/useAuth";
-<<<<<<< HEAD
-=======
 import { useOrderById } from "../../hocks/useOneOrderDetail";
 import { LogisticOrder, PaymentType } from "../../types/DeliveryOrderTypeDto";
 
@@ -98,54 +96,57 @@ const mayStatusToSpanish = (status: string | undefined) : AxuziliarStatusType =>
       return AxuziliarStatusType.Unknown;
   }
 }
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))
 
 type OrderDetailRouteProp = RouteProp<DeliveryStackParamList, "OrderDetail">;
 type OrderDetailNavigationProp = NativeStackNavigationProp<DeliveryStackParamList>;
 
 export default function OrderDetailPage() {
   const route = useRoute<OrderDetailRouteProp>();
-  const navigation = useNavigation<OrderDetailNavigationProp>();
-  const { order } = route.params;
+  const { order: orderFromParams } = route.params;
+  const orderId = orderFromParams.id;
+  const { userId, name, role, team, loading: authLoading, token, isAuthenticated, logout } = useAuth();
 
+  if (!isAuthenticated || !userId || !name || !role) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Debes iniciar sesión para ver los pedidos con faltantes.</Text>
+      </View>
+    );
+  }
 
-  const { name, role, team, isAuthenticated, logout } = useAuth();
-  const user = {
-    name: name ?? "",
-    role: role ?? "",
-    team: team ?? null,
-  };
+  const teamName = typeof team === "object" ? team?.teamName : team;
+  const user = { id: userId, name, role, team: teamName ?? null };
+  
+  const { order, loading, error, refetch } = useOrderById(orderId);
+
+  // ✅ Mapeamos deliveryPriority antes de pasarla al componente
+  const orderWithMappedPriority = order ? {
+    ...order,
+    deliveryPriority: mapPriority(order.deliveryPriority),
+    deliveryStatus: mayStatusToSpanish(order.status), 
+    deliveryPayment: mapPaymentToSpanish(order.paymentType),
+    
+  } : null;
 
   return (
     <View style={styles.container}>
       <NavbarDelivery user={user} isAuthenticated={isAuthenticated} logout={logout} />
-
       <View style={{ marginTop: 10, marginLeft: 10 }}>
-        <GetBack/>
+        <GetBack />
       </View>
-      {/* ScrollView para evitar cortes en pantallas chicas */}
       <ScrollView contentContainerStyle={styles.content}>
         <DetailOrderComponent
-          order={order}
-          onBack={() => navigation.goBack()}
+          order={orderWithMappedPriority}
+          loading={loading}
+          error={error}
         />
       </ScrollView>
-
       <Footer />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F9FAFB",
-  },
-  content: {
-    flexGrow: 1,
-    paddingBottom: 20,
-  },
+  container: { flex: 1, backgroundColor: "#F9FAFB" },
+  content: { flexGrow: 1, paddingBottom: 20 },
 });
-
-
-//{ marginTop: 10, marginLeft: 10 },

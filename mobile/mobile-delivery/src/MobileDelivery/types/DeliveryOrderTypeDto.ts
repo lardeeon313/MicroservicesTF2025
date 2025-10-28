@@ -1,24 +1,56 @@
-export type PaymentType = "CASH" | "TRANSFER" | "ACCOUNT";
+export enum OrderStatus {
+  Pending = "Pending",
+  Issued = "Issued",
+  Confirmed = "Confirmed",
+  InPreparation = "InPreparation",
+  Prepared = "Prepared",
+  SentToBilling = "SentToBilling",
+  Invoiced = "Invoiced",
+  Verified = "Verified",
+  OnTheWay = "OnTheWay",
+  Delivered = "Delivered",
+  Canceled = "Canceled",
+  PendingResolution = "PendingResolution",
+  ReIssued = "ReIssued",
+  PendingReissued = "PendingReissued",
+  PendingVerification = "PendingVerification",
+  //
+  PendingDelivery = "PendingDelivery",
+  AssignmentCancelled = "AssignmentCancelled",
+  //
+  AssignedDelivery = "AssignedDelivery",
+  PendingCashVerification = "PendingCashVerification",
+  CashVerified = "CashVerified",
+  PendingIncidentResolution = "PendingIncidentResolution",
+  IncidentResolved = "IncidentResolved"
+}
 
-export type OrderStatus =
-  | "TO_DISTRIBUTE"
-  | "DELIVERED"
-  | "PENDING_VERIFIED"
-  | "VERIFIED"
-  | "INCIDENT"
-  | "RENDERED"
-  | "PAYMENT_CONFIRMED"
-  | "CONFIRM"
-  | "PENDING_CONFIRMED";
-
-export type PriorityType = "HIGH" | "NORMAL" | "LOW";
+export enum PaymentType {
+  Transfer = "Transfer",
+  Credit_Card = "Credit_Card",
+  Debit_Card = "Debit_Card",
+  Cash = "Cash",
+  Current_Account = "Current_Account",
+  Check = "Check",
+  Promissory_Note = "Promissory_Note",
+  Unknown = "DESCONOCIDO"
+}
 
 
-export interface DeliveryOrderTypeDto {
+export enum PriorityType {
+  Low = "Low",
+  Medium = "Medium",
+  High = "High",
+}
+
+export enum DeliveryIncidentStatus{
+  Pending = "Pending",
+  Resolved = "Resolved",
+  Delivered = "Delivered",
+}
+  
+export interface LogisticOrder {
   id: number;
-<<<<<<< HEAD
-  customer: string;
-=======
 
   status: OrderStatus;
   orderDate: string; // DateTime → string ISO
@@ -103,17 +135,12 @@ export interface LogisticCustomer {
   lastName: string;
   email: string;
   phoneNumber: string;
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))
   address: string;
-  location: { lat: number; lng: number };
-  status: OrderStatus;
-  payment: PaymentType;
-  priority: PriorityType;
-  incidentCount?: number;
-  rejectReason:string;
+  registrationDate: string; // DateTime → string
+  satisfactionDescription?: string | null;
+  satisfactionScore?: number | null;
+  addresses: LogisticAddress[];
 }
-<<<<<<< HEAD
-=======
 
 export interface LogisticAddress {
   id: number;
@@ -173,4 +200,3 @@ export enum DeliveryResolvedIncidentStatus {
   Resolved = 1,
   Delivered = 2,
 }
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))

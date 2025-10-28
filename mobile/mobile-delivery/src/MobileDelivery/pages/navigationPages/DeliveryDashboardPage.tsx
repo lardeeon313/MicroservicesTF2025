@@ -5,10 +5,15 @@ import DeliveryDashboardComponent from "../../navigation/DeliveryDashboard";
 import { useAuth } from "../../Login/context/useAuth"; // 👈 Importa el hook de tu AuthProvider
 
 const DeliveryDashboardPage = () => {
-  const { name, role, isAuthenticated, logout } = useAuth();
+  const { userId, name, role, isAuthenticated, logout, team } = useAuth();
 
-  // Armamos el objeto `user` en base a los datos del AuthContext
-  const user = name && role ? { name, role } : null;
+  const teamName = typeof team === "object" ? team?.teamName : team;
+
+  const user = {
+    name: name ?? "",
+    role: role ?? "",
+    team: teamName ?? null,
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: "#ffffff" }}>

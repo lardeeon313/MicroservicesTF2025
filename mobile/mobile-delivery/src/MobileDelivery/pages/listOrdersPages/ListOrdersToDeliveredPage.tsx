@@ -1,29 +1,11 @@
-<<<<<<< HEAD
-import React, { useState } from "react";
-import { View, FlatList, StyleSheet, Text } from "react-native";
-
-=======
 import React, { useEffect, useState } from "react";
 import { View, FlatList, StyleSheet, Text, ActivityIndicator,TouchableOpacity } from "react-native";
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))
 import NavbarDelivery from "../../components/Navbar/NavbarDelivery";
 import GetBack from "../../../components/GetBack";
-import { mockOrders as initialOrders } from "../../MockPrueba/mockOrders";
-import ListOrdersToDeliveredComponent from "../../components/ListOrders/ListOrdersToDelivered";
 import Footer from "../../../components/Footer";
-
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { DeliveryStackParamList } from "../../types/DeliveryStackType";
-<<<<<<< HEAD
-import { DeliveryOrderTypeDto } from "../../types/DeliveryOrderTypeDto";
-
-import ConfirmPaymentModal from "../../components/ConfirmPayment/ConfirmPaymentModal";
-import { useAuth } from "../../Login/context/useAuth"; // 👈 Importamos el hook del AuthContext
-
-type DeliveryNavigationProp = NativeStackNavigationProp<DeliveryStackParamList>;
-
-=======
 import { LogisticOrder, OrderStatus } from "../../types/DeliveryOrderTypeDto";
 import ListOrdersToDeliveredComponent from "../../components/ListOrders/ListOrdersToDelivered";
 import { useAuth } from "../../Login/context/useAuth";
@@ -70,62 +52,55 @@ const mapStatusToSpanish = (status?: string | null ) : string => {
 }
 
 
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))
 export default function ListOrdersToDeliveredPage() {
   const navigation = useNavigation<DeliveryNavigationProp>();
-  const [orders, setOrders] = useState(initialOrders);
+  const { userId, name, role, isAuthenticated, logout, team } = useAuth();
+  const { orders, loading, error } = useMyDeliveredOrders(userId ?? "");
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
-  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
-
-  // ✅ Obtenemos user, isAuthenticated y logout del AuthContext
-  const { name, role, team, isAuthenticated, logout } = useAuth();
-  const user = {
-    name: name ?? "",
-    role: role ?? "",
-    team: team ?? null,
-  };
-
-  // actualizar estado del pedido
-  const updateOrderStatus = (
-    orderId: number,
-    newStatus: DeliveryOrderTypeDto["status"]
-  ) => {
-    setOrders((prev) =>
-      prev.map((o) =>
-        o.id === orderId ? { ...o, status: newStatus } : o
-      )
+  // Validación básica de sesión
+  if (!isAuthenticated || !userId || !name || !role) {
+    return (
+      <View style={styles.center}>
+        <Text>Debes iniciar sesión para ver los pedidos entregados.</Text>
+      </View>
     );
-  };
+  }
 
-  // abrir modal de confirmación de pago
-  const handleOpenPaymentModal = (orderId: number) => {
-    setSelectedOrderId(orderId);
-    setModalVisible(true);
-  };
+  const teamName = typeof team === "object" ? team?.teamName : team;
+  const user = { name: name ?? "", role: role ?? "", team: teamName ?? null };
 
-  // confirmar pago desde modal
-  const handleConfirmPayment = () => {
-    if (selectedOrderId !== null) {
-      updateOrderStatus(selectedOrderId, "PAYMENT_CONFIRMED");
-      console.log(`💰 Pago confirmado para pedido ${selectedOrderId}`);
+  // 🧠 Regla de negocio: mostrar mensaje según estado del pedido
+  useEffect(() => {
+    if (orders.length > 0) {
+      const lastOrder = orders[0]; // o puedes mostrar uno general según preferencia
+      showStatusMessage(lastOrder.status);
     }
-  };
+  }, [orders]);
 
-  // confirmar rendición
-  const handleRenderOrder = (orderId: number) => {
-    console.log(`✅ Pedido ${orderId} rendido`);
-    updateOrderStatus(orderId, "RENDERED");
+  const showStatusMessage = (status: OrderStatus) => {
+    switch (status) {
+      case OrderStatus.Delivered:
+        setStatusMessage("✅ El pedido ha sido completamente entregado sin complicaciones!");
+        break;
+      case OrderStatus.CashVerified:
+        setStatusMessage("💰 El pedido ha sido verificado por Tesorería.");
+        break;
+      case OrderStatus.PendingCashVerification:
+        setStatusMessage("🕓 El pedido fue procesado y enviado a Tesorería para verificar el tipo de pago en efectivo.");
+        break;
+      default:
+        setStatusMessage(null);
+        break;
+    }
   };
 
   return (
     <View style={styles.container}>
-      
-      <NavbarDelivery
-        user={user}
+      <NavbarDelivery 
+        user={user} 
         isAuthenticated={isAuthenticated}
-        logout={logout}
-      />
+        logout={logout} />
 
       <View style={styles.backContainer}>
         <GetBack />
@@ -133,30 +108,6 @@ export default function ListOrdersToDeliveredPage() {
 
       <Text style={styles.title}>Pedidos Entregados</Text>
 
-<<<<<<< HEAD
-      <FlatList
-        contentContainerStyle={{ padding: 16 }}
-        data={orders.filter(
-          (o) => o.status === "DELIVERED" || o.status === "PENDING_VERIFIED"
-        )}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <ListOrdersToDeliveredComponent
-            id={item.id}
-            customer={item.customer}
-            address={item.address}
-            status={item.status}
-            priority={item.priority}
-            payment={item.payment}
-            onSeeDetail={() =>
-              navigation.navigate("OrderDetail", { order: item })
-            }
-            onPaymentType={() => handleOpenPaymentModal(item.id)}
-            onRenderOrder={handleRenderOrder}
-          />
-        )}
-      />
-=======
       {/* 🔹 Botón arriba del listado */}
       <TouchableOpacity
         style={styles.button}
@@ -177,15 +128,37 @@ export default function ListOrdersToDeliveredPage() {
           <ActivityIndicator size="large" color="#3B82F6" />
         </View>
       )}
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))
 
-      {/* Modal de confirmación de pago */}
-      <ConfirmPaymentModal
-        visible={modalVisible}
-        orderId={selectedOrderId?.toString() ?? ""}
-        onClose={() => setModalVisible(false)}
-        onConfirm={handleConfirmPayment}
-      />
+      {error && (
+        <View style={styles.center}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      )}
+
+      {statusMessage && (
+        <View style={styles.statusContainer}>
+          <Text style={styles.statusMessage}>{statusMessage}</Text>
+        </View>
+      )}
+
+      {!loading && !error && (
+        <FlatList
+          contentContainerStyle={{ padding: 16 }}
+          data={orders}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <ListOrdersToDeliveredComponent
+              id={item.id}
+              customer={`${item.customer.firstName} ${item.customer.lastName}`}
+              address={item.deliveryAddress.formattedAddress ?? `${item.deliveryAddress.street} ${item.deliveryAddress.number}, ${item.deliveryAddress.city}`}
+              status={mapStatusToSpanish(item.status)}
+              priority={mapPriority(item.deliveryPriority)}
+              payment={mapPaymentToSpanish(item.paymentType)}
+              onSeeDetail={() => navigation.navigate("OrderDetail", { order: item })}
+            />
+          )}
+        />
+      )}
 
       <Footer />
     </View>
@@ -203,8 +176,6 @@ const styles = StyleSheet.create({
     color: "#333",
     textAlign: "center",
   },
-<<<<<<< HEAD
-=======
   center: { alignItems: "center", justifyContent: "center", marginTop: 40 },
   errorText: { color: "red", fontSize: 16, textAlign: "center" },
   statusContainer: {
@@ -256,5 +227,4 @@ const styles = StyleSheet.create({
   icon: {
     marginHorizontal: 4,
   },
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))
 });

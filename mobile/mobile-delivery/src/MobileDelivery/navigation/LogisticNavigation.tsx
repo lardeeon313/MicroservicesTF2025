@@ -1,16 +1,39 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+//import { DeliveryStackParamList } from "./DeliveryStackType";
 import { DeliveryStackParamList } from "../types/DeliveryStackType";
+//import DeliveryDashboardComponent from "../pages/Dashboard/DeliveryDashboardPage";
 import DeliveryDashboardComponent from "./DeliveryDashboard";
-import ListOrdersToDistributePage from "../pages/listOrdersPages/ListOrdersToDistributePage";
+//import ListOrdersToDistributePage from "../pages/OrdersToDistribute/ListOrdersToDistributePage";
+//import ListOrdersToDistributePage from "../pages/listOrdersPages/ListOrdersToDistributePage";
+//import ListOrdersToDeliveredPage from "../pages/OrdersToDelivered/ListOrdersToDeliveredPage";
+//import ListOrdersToDeliveredPage from "../pages/listOrdersPages/ListOrdersToDeliveredPage";
+//import ListOrdersToIncidentPage from "../pages/OrdersToIncident/ListOrdersToIncidentPage";
+//import ListOrdersToIncidentPage from "../pages/listOrdersPages/ListOrdersToIncidentsPage";
+//import ListOrdersToVerifiedPage from "../pages/OrdersToVerified/ListOrdersToVerifiedPage";
+//import ListOrdersToVerifiedPage from "../pages/listOrdersPages/ListOrdersOnTheWayPage";
+//import ListOrdersOnTheWayPage from "../pages/listOrdersPages/ListOrdersOnTheWayPage";
+//import OrderDetailPage from "../pages/OrderDetail/OrderDetailPage";
 import OrderDetailPage from "../pages/DetailPages/DetailPage";
-import ListOrdersToDeliveredPage from "../pages/listOrdersPages/ListOrdersToDeliveredPage";
-import ListOrdersToVerifiedPage from "../pages/listOrdersPages/ListOrdersToVerifiedPage";
+//import PaymentTypeComponent from "../pages/PaymentType/PaymentTypeComponent";
 import PaymentTypeComponent from "../components/PaymentType/PaymentTypeComponent";
-import ListOrdersToIncidentPage from "../pages/listOrdersPages/ListOrdersToIncidentsPage";
-import IncidentsDetailPage from "../pages/Incidents/ReportIncidentPage";
+//import IncidentsDetailPage from "../pages/IncidentDetail/IncidentsDetailPage";
+import ReportIncidentPage from "../pages/Incidents/ReportIncidentPage";
+//import NotificationIncidentPage from "../pages/NotificationIncident/NotificationIncidentPage";
 import NotificationIncidentPage from "../pages/Incidents/NotificationIncidentPage";
+//import OrdersRouteMapPage from "../pages/OrdersRouteMap/OrdersRouteMapPage";
+//import OrdersRouteMapPage from "../components/ListOrders/OrdersRouteMapPage";
+//import OneOrderRouteMapPage from "../pages/OneOrderRouteMap/OneOrderRouteMapPage";
+import OneOrderRouteMapPage from "../components/ListOrders/OneOrderRouteMapPage";
+//import OrderStatusChange from "../pages/OrderStatusChange/OrderStatusChangePage"; 
+import OrderStatusChange from "../components/ListOrders/OrderStatusChange";
+import OrderStatusChangePage from "../components/ListOrders/OrderStatusChangePage";
+import ListOrdersToDistributePage from "../pages/listOrdersPages/ListOrdersToDistributePage";
+import ConfirmAssignedOrderPage from "../pages/ConfirmPage/ConfirmAssignedOrderPage";
+import RejectAssignedOrderPage from "../pages/RejectPage/RejectOrderPage";
 
+import ListOrdersOnTheWayPage from "../pages/listOrdersPages/ListOrdersOnTheWayPage";
+import ListOrdersToDeliveredPage from "../pages/listOrdersPages/ListOrdersToDeliveredPage";
 
 import ListRejectOrdersPage from "../pages/listOrdersPages/ListOrdersToRejectPage";
 import ListOrdersToIncidentPage from "../pages/listOrdersPages/ListOrdersToIncidentsPage";
@@ -21,19 +44,11 @@ import { ResolveDeliveryIncidentPage } from "../pages/Incidents/ResolveIncidentP
 const Stack = createNativeStackNavigator<DeliveryStackParamList>();
 
 export default function LogisticNavigation() {
-    return (
+  return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Dashboard" component={DeliveryDashboardComponent} />
+ 
       <Stack.Screen name="OrdersToDistribute" component={ListOrdersToDistributePage} />
-<<<<<<< HEAD
-      <Stack.Screen name='OrdersToVerified' component={ListOrdersToVerifiedPage} />
-      <Stack.Screen name='OrdersToIncidents' component={ListOrdersToIncidentPage} />
-      <Stack.Screen name="OrdersToDelivered" component={ListOrdersToDeliveredPage}/>
-      <Stack.Screen name="OrderDetail" component={OrderDetailPage}/>
-      <Stack.Screen name='SelectPaymentType' component={PaymentTypeComponent} /> 
-      <Stack.Screen name='ReportIncident' component={IncidentsDetailPage} />
-      <Stack.Screen name='NotificationIncident' component={NotificationIncidentPage} />
-=======
       <Stack.Screen name="OrdersOnTheWay" component={ListOrdersOnTheWayPage} />
       {/** 
       <Stack.Screen name="OrdersToIncidents" component={ListOrdersToIncidentPage} />
@@ -60,7 +75,6 @@ export default function LogisticNavigation() {
       <Stack.Screen name='OrdersToIncidents' component={ListOrdersToIncidentPage} />
       <Stack.Screen name='OrdersPendingCashVerification' component={PendingCashOrdersPage} />
       <Stack.Screen name='ResolveDeliveryIncident' component={ResolveDeliveryIncidentPage} />
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))
     </Stack.Navigator>
   );
 }

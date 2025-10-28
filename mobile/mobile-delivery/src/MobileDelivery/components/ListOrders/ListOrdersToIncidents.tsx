@@ -1,9 +1,5 @@
 import React from "react";
-<<<<<<< HEAD
-import { View, Text, TouchableOpacity } from "react-native";
-=======
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))
 import CountIncident from "../Incidents/CountIncident";
 import { ListCollapse,BugOff} from 'lucide-react-native';
 
@@ -19,6 +15,7 @@ type Props = {
   onSeeDetail: () => void;
   onResolveIncident: () => void;
   onViewIncidents: () => void;
+  onOpenInMap: () => void;
 };
 
 export default function ListOrdersToIncidentComponent({
@@ -33,6 +30,7 @@ export default function ListOrdersToIncidentComponent({
   onSeeDetail,
   onResolveIncident,
   onViewIncidents,
+  onOpenInMap,
 }: Props) {
   const isUrgent = priority === "Urgente";
 
@@ -53,24 +51,6 @@ export default function ListOrdersToIncidentComponent({
         )}
       </View>
 
-<<<<<<< HEAD
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10 }}>
-        <TouchableOpacity style={{backgroundColor: "#eb074bff",paddingVertical: 8,paddingHorizontal: 12,borderRadius: 6,marginTop: 8,}}
-        onPress={onViewIncidents} // 👉 abre incidencias
-        >
-        <Text style={{ color: "#fff", fontWeight: "bold", textAlign: "center" }}>
-         ATENCIÓN: Revisar incidentes del pedido
-        </Text>
-      </TouchableOpacity>
-      </View>
-
-      <Text style={{ fontSize: 20, color: '#6B7280', marginTop: 8 }}>
-        Estado: {status}
-      </Text>
-
-      {/* Contador */}
-      <CountIncident count={incidentCount} />
-=======
       {/* 🔹 Información */}
       <View style={styles.infoSection}>
         <View style={styles.infoRow}>
@@ -165,7 +145,6 @@ export default function ListOrdersToIncidentComponent({
           <Text style={styles.buttonText}>⚠️ Revisar incidentes</Text>
         </TouchableOpacity>
       </View>
->>>>>>> aa9e73b (Desarrollo del mobile-delivery: implementación del código de Docker para que funcione con los demás microservicios, implementación de todos los endpoints del backend del mobile-delivery, cambios realizados en los Command Handler y en el código de Infrastructure de LogisticOrderRepository (había muchos filtros que impedían incluso traer pedidos))
     </View>
   );
 }

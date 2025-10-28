@@ -1,16 +1,19 @@
 // components/NavbarDelivery.tsx
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { View, Image, Text, TouchableOpacity, Animated } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { DeliveryStackParamList } from "../../types/DeliveryStackType";
+import { getTeamByDeliveryOperator } from "../../services/getTeamNameForDelivery";
 
 type DeliveryNav = NativeStackNavigationProp<DeliveryStackParamList>;
 
 interface NavbarProps {
   user: {
+    id?: string; // Asegúrate de tener este campo
     name: string;
     role: string;
+    team?: string | null | undefined;
   } | null;
   isAuthenticated: boolean;
   logout: () => void;
@@ -18,6 +21,7 @@ interface NavbarProps {
 
 const NavbarDelivery = ({ user, isAuthenticated, logout }: NavbarProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [teamName, setTeamName] = useState<string | null>(user?.team ?? null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation<DeliveryNav>();
 
@@ -29,6 +33,18 @@ const NavbarDelivery = ({ user, isAuthenticated, logout }: NavbarProps) => {
       useNativeDriver: true,
     }).start();
   };
+
+  // 🧠 Obtener equipo del operador al montar el componente
+  useEffect(() => {
+  const fetchTeam = async () => {
+    if (user?.id) {
+      const fetchedTeam = await getTeamByDeliveryOperator(user.id);
+      setTeamName(fetchedTeam.teamName); // 👈 solo el string
+    }
+  };
+  fetchTeam();
+}, [user?.id]);
+
 
   return (
     <View
@@ -94,10 +110,38 @@ const NavbarDelivery = ({ user, isAuthenticated, logout }: NavbarProps) => {
               <Text style={{ color: "#9ca3af", fontSize: 12 }}>
                 {user.role}
               </Text>
+              <View
+                style={{
+                  backgroundColor: "#c8c8cfff",
+                  padding: 4,
+                  borderRadius: 8,
+                  marginTop: 2,
+                  width: "auto",
+                }}
+              >
+                <Text
+                  style={{
+                    color: "#161718ff",
+                    fontSize: 9,
+                    fontWeight: "600",
+                  }}
+                >
+                  Equipo:
+                </Text>
+                <Text
+                  style={{
+                    color: "#9e0f0fff",
+                    fontSize: 9,
+                    fontWeight: "800",
+                  }}
+                >
+                  {teamName ?? "N/A"}
+                </Text>
+              </View>
             </View>
           </TouchableOpacity>
 
-          {/* Solo Logout */}
+          {/* Logout */}
           {isOpen && (
             <Animated.View
               style={{
@@ -125,9 +169,9 @@ const NavbarDelivery = ({ user, isAuthenticated, logout }: NavbarProps) => {
               }}
             >
               <TouchableOpacity
-              onPress={async () => {
-                await logout(); 
-                setIsOpen(false);          
+                onPress={async () => {
+                  await logout();
+                  setIsOpen(false);
                 }}
                 style={{
                   paddingVertical: 10,
@@ -150,5 +194,3 @@ const NavbarDelivery = ({ user, isAuthenticated, logout }: NavbarProps) => {
 };
 
 export default NavbarDelivery;
-
-

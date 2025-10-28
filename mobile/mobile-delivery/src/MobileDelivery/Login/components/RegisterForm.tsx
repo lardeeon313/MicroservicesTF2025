@@ -86,7 +86,7 @@ const RegisterForm = () => {
                     <Picker.Item label="BillingManager" value="BillingManager" />
                     <Picker.Item label="DepotManager" value="DepotManager" />
                     <Picker.Item label="DepotOperator" value="DepotOperator" />
-                    <Picker.Item label="Delivery" value="Delivery" />
+                    <Picker.Item label="DeliveryOperator" value="DeliveryOperator" />
                     <Picker.Item label="VerificationStaff" value="VerificationStaff" />
                   </Picker>
                 </View>

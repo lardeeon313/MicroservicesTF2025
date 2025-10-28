@@ -63,3 +63,4 @@ export const getNameFromToken = (token: string): string | null => {
     return null;
   }
 };
+
