@@ -32,7 +32,6 @@ namespace SalesService.Application.DTOs.Order.Request
 
          public PaymentType? PaymentType { get; set; }
 
-         public PaymentType? PaymentType { get; set; }
 
     }
 }

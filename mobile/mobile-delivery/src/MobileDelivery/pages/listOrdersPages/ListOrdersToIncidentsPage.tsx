@@ -72,7 +72,7 @@ export default function ListOrdersToIncidentPage() {
           <Text>Debes iniciar sesión para ver los pedidos entregados.</Text>
         </View>
       );
-    }
+  }
 
   const teamName = typeof team === "object" ? team?.teamName : team;
 

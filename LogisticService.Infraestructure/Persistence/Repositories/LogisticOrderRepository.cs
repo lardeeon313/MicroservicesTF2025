@@ -333,12 +333,21 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
 
         public async Task UpdateDeliveryIncidentAsync(DeliveryIncident incident)
         {
-            await Task.Run(() =>
-            {
-                _context.DeliveryIncidents.Update(incident);
-            });
+            var existingIncident = await _context.DeliveryIncidents
+                .FirstOrDefaultAsync(x => x.Id == incident.Id);
+
+            if (existingIncident == null)
+                throw new Exception($"No se encontró la incidencia con ID {incident.Id}");
+
+            // Actualizamos los campos directamente en la entidad trackeada
+            existingIncident.Resolved = incident.Resolved;
+            existingIncident.ResolvedAt = incident.ResolvedAt;
+            existingIncident.ResolutionNote = incident.ResolutionNote;
+            existingIncident.DeliveryIncidentStatus = incident.DeliveryIncidentStatus;
+
             await _context.SaveChangesAsync();
         }
+
 
         public async Task<List<LogisticOrder>> GetOrdersWithDeliveryRejectionsAsync()
         {

@@ -84,14 +84,14 @@ const DeliveryDashboardComponent = () => {
 
   const teamName = typeof team === "object" ? team?.teamName : team;
 
+  const numColumns = 2;
+  const cardWidth = Dimensions.get("window").width / numColumns - 24;
+
   const user = {
     name: name ?? "",
     role: role ?? "",
-    team: teamName ?? null,
+    team: teamName ?? "N/A",
   };
-
-  const numColumns = 2;
-  const cardWidth = Dimensions.get("window").width / numColumns - 24;
 
   console.log("EL USUARIO", user);
 

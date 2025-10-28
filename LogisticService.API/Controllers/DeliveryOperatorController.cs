@@ -16,6 +16,7 @@ using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyRe
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrderById;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByStatus;
 using LogisticService.Domain.Enums;
+using LogisticService.Domain.IRepositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,7 +37,7 @@ namespace LogisticService.API.Controllers
         IMarkOrderDeliveredCommandHandler markOrderDeliveredCommandHandler,
         IReportDeliveryIncidentCommandHandler reportDeliveryIncidentCommandHandler,
         IResolveDeliveryIncidentCommandHandler resolveDeliveryIncidentCommandHandler,
-
+        IDeliveryTeamRepository deliveryTeamRepository,
         IGetMyAssignedOrdersQueryHandler getMyAssignedOrdersQueryHandler,
         IGetMyDeliveredOrdersQueryHandler getMyDeliveredOrdersQueryHandler,
         IGetMyPendingCashOrdersQueryHandler getMyPendingCashOrdersQueryHandler,
@@ -55,7 +56,7 @@ namespace LogisticService.API.Controllers
         private readonly IRejectAssignedOrderCommandHandler _rejectAssignedOrderCommandHandler = rejectAssignedOrderCommandHandler;
         private readonly IReportDeliveryIncidentCommandHandler _reportDeliveryIncidentCommandHandler = reportDeliveryIncidentCommandHandler;
         private readonly IResolveDeliveryIncidentCommandHandler _resolveDeliveryIncidentCommandHandler = resolveDeliveryIncidentCommandHandler;
-
+        private readonly IDeliveryTeamRepository _deliveryTeamRepository = deliveryTeamRepository;
         private readonly IGetOrdersByStatusQueryHandler _getOrdersByStatusQueryHandler = getOrdersByStatusQueryHandler;
         private readonly IGetOrderByIdQueryHandler _getOrderByIdQueryHandler = getOrderByIdQueryHandler;
         private readonly IGetMyAssignedOrdersQueryHandler _getMyAssignedOrdersQueryHandler = getMyAssignedOrdersQueryHandler;
@@ -382,7 +383,7 @@ namespace LogisticService.API.Controllers
         /// </summary>
         /// <param name="operatorId"></param>
         /// <returns></returns>
-        [HttpGet("get-my-orders-with-incident/{operadorId}")]
+        [HttpGet("get-my-orders-with-incident/{operatorId}")]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -396,7 +397,19 @@ namespace LogisticService.API.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Endpoint para obtener el equipo al que pertence el DeliveryOperator
+        /// </summary>
+        [HttpGet("teams/by-delivery/{operatorUserId}")]
+        public async Task<IActionResult> GetTeamByDelivery(Guid operatorUserId)
+        {
+            var team = await _deliveryTeamRepository.GetTeamByOperatorAsync(operatorUserId);
 
+            if (team == null)
+                return NotFound(new { message = "El operador no tiene equipo asignado." });
+
+            return Ok(new { teamName = team.TeamName });
+        }
 
 
 

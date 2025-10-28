@@ -104,7 +104,7 @@ export default function OrderDetailPage() {
   const route = useRoute<OrderDetailRouteProp>();
   const { order: orderFromParams } = route.params;
   const orderId = orderFromParams.id;
-  const { userId, name, role, team, loading: authLoading, token, isAuthenticated, logout } = useAuth();
+  const { userId, name, role, isAuthenticated, logout, team } = useAuth();
 
   if (!isAuthenticated || !userId || !name || !role) {
     return (
@@ -115,9 +115,15 @@ export default function OrderDetailPage() {
   }
 
   const teamName = typeof team === "object" ? team?.teamName : team;
-  const user = { id: userId, name, role, team: teamName ?? null };
-  
+
   const { order, loading, error, refetch } = useOrderById(orderId);
+
+  const user = {
+    name: name ?? "",
+    role: role ?? "",
+    team: teamName ?? "N/A",
+  };
+  
 
   // ✅ Mapeamos deliveryPriority antes de pasarla al componente
   const orderWithMappedPriority = order ? {
@@ -127,6 +133,9 @@ export default function OrderDetailPage() {
     deliveryPayment: mapPaymentToSpanish(order.paymentType),
     
   } : null;
+
+
+  console.log("🧩 TEAM EN ORDER DETAIL:", team);
 
   return (
     <View style={styles.container}>
