@@ -84,12 +84,13 @@ namespace LogisticService.Domain.Entities
         /// </summary>
         public void AssignToOperator(Guid operatorId, DeliveryTeam team)
         {
-            // Validación de Estado: Solo permite asignar si está Verificada (7)
-            // o re-asignar si ya estaba Asignada (15).
-            if (Status != OrderStatus.Verified && Status != OrderStatus.AssignedDelivery)
+            // Validación de Estado
+            if (Status != OrderStatus.Verified &&
+                Status != OrderStatus.AssignedDelivery &&
+                Status != OrderStatus.AssignmentCancelled)
             {
                 throw new InvalidOperationException(
-                    "Solo se puede asignar un operador a una orden en estado 'Verified' o 'AssignedDelivery'.");
+                    "Solo se puede asignar un operador a una orden en estado 'Verified', 'AssignedDelivery' o 'AssignmentCancelled'.");
             }
 
             // Validación de Lógica
@@ -97,22 +98,22 @@ namespace LogisticService.Domain.Entities
                 throw new InvalidOperationException("El operador no pertenece al equipo proporcionado.");
 
             var oldStatus = Status;
-            bool isFirstAssignment = (oldStatus == OrderStatus.Verified);
+            bool shouldAddToHistory = (oldStatus == OrderStatus.Verified || oldStatus == OrderStatus.AssignmentCancelled);
 
             // Aplicar Cambios
             AssignedOperatorId = operatorId;
             AssignedDeliveryTeam = team;
-            AssignedDeliveryTeamId = team.Id; // El 'private set' permite esto
+            AssignedDeliveryTeamId = team.Id;
             Status = OrderStatus.AssignedDelivery;
             ModifiedStatusDate = DateTime.UtcNow;
 
-            // Añadir al historial solo si es la primera asignación (7 -> 15)
-            if (isFirstAssignment)
+            // Añadir al historial solo si es una asignación inicial o una re-asignación desde cancelación
+            if (shouldAddToHistory)
             {
                 StatusHistory.Add(new OrderStatusHistory
                 {
-                    OldStatus = oldStatus, // 'Verified'
-                    NewStatus = Status,  // 'AssignedDelivery'
+                    OldStatus = oldStatus,
+                    NewStatus = Status,
                     ChangedAt = ModifiedStatusDate.Value
                 });
             }
