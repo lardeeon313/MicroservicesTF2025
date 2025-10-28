@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LogisticService.Infraestructure.Migrations
 {
     [DbContext(typeof(LogisticDbContext))]
-    [Migration("20251020191105_InitialCreate")]
+    [Migration("20251023161917_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -443,7 +443,7 @@ namespace LogisticService.Infraestructure.Migrations
                     b.Property<int>("OldStatus")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrderId")
+                    b.Property<int?>("OrderId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

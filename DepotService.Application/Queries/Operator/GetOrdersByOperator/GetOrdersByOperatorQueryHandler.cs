@@ -39,7 +39,9 @@ namespace DepotService.Application.Queries.Operator.GetOrdersByOperatorQuery
                 PhoneNumber = o.PhoneNumber,
                 DeliveryDetail = o.DeliveryDetail,
                 OrderDate = o.OrderDate,
-                Address = new OrderAddressDto
+                Address = o.DeliveryAddress == null
+                ? null
+                : new OrderAddressDto
                 {
                     Street = o.DeliveryAddress.Street,
                     Number = o.DeliveryAddress.Number,

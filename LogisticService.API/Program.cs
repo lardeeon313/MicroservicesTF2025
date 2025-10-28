@@ -42,6 +42,7 @@ using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetAllZon
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetByIdZone;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrders;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrdersByDeliveryPriority;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetDeliveryIncidentByOrderId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetDRReasonByOrderId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrderById;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByCustomerId;
@@ -51,6 +52,7 @@ using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrder
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByTeamId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersWithDeliveryIncident;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetPagedOrders;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetRejectionReasonsByOrderId;
 using LogisticService.Application.Services.IdentityServiceClient;
 using LogisticService.Domain.Common.Interfaces;
 using LogisticService.Domain.IRepositories;
@@ -91,7 +93,7 @@ builder.Services.AddSwaggerGen(options =>
         Description = "Microservicio encargado de la verificacion de pagos y gestion de la logistca del pedido.",
         Contact = new OpenApiContact
         {
-            Name = "Milton Argüello, Bustos Santiago, Diego Aguirre"
+            Name = "Milton Arg?ello, Bustos Santiago, Diego Aguirre"
         }
     });
 });
@@ -112,15 +114,15 @@ builder.Services.AddScoped<ILogisticReportRepository, LogisticReportRepository>(
 builder.Services.AddScoped<IDeliveryZoneRepository, DeliveryZoneRepository>();
 
 ///// Add Commands and Queries /////
-    
+
 //Commands CRUD LogisticDeliveryTeams
 builder.Services.AddScoped<ICreateDeliveryTeamCommandHandler, CreateDeliveryTeamCommandHandler>();
 builder.Services.AddScoped<IUpdateDeliveryTeamCommandHandler, UpdateDeliveryTeamCommandHandler>();
 builder.Services.AddScoped<IDeleteDeliveryTeamCommandHandler, DeleteDeliveryTeamCommandHandler>();
 builder.Services.AddScoped<IActiveDeliveryTeamCommandHandler, ActiveDeliveryTeamCommandHandler>();
 builder.Services.AddScoped<IDisableDeliveryTeamCommandHandler, DisableDeliveryTeamCommandHandler>();
-builder.Services.AddScoped<IAssignZoneToTeamCommandHandler , AssignZoneToTeamCommandHandler>();
-builder.Services.AddScoped<IRemoveZoneFromTeamCommandHandler , RemoveZoneFromTeamCommandHandler>();
+builder.Services.AddScoped<IAssignZoneToTeamCommandHandler, AssignZoneToTeamCommandHandler>();
+builder.Services.AddScoped<IRemoveZoneFromTeamCommandHandler, RemoveZoneFromTeamCommandHandler>();
 builder.Services.AddScoped<IAssignOperatorToTeamCommandHandler, AssignOperatorToTeamCommandHandler>();
 builder.Services.AddScoped<IRemoveOperatorToTeamCommandHandler, RemoveOperatorToTeamCommandHandler>();
 
@@ -158,6 +160,8 @@ builder.Services.AddScoped<IGetOrdersByOperatorIdQueryHandler, GetOrdersByOperat
 builder.Services.AddScoped<IGetOrdersByTeamIdQueryHandler, GetOrdersByTeamIdQueryHandler>();
 builder.Services.AddScoped<IGetOrdersDeliveryRejectionsQueryHandler, GetOrdersDeliveryRejectionsQueryHandler>();
 builder.Services.AddScoped<IGetOrdersWithDeliveryIncidentQueryHandler, GetOrdersWithDeliveryIncidentQueryHandler>();
+builder.Services.AddScoped<IGetRejectionReasonsByOrderIdQueryHandler, GetRejectionReasonsByOrderIdQueryHandler>();
+builder.Services.AddScoped<IGetDeliveryIncidentByOrderIdQueryHandler, GetDeliveryIncidentByOrderIdQueryHandler>();
 
 //Commands DeliveryOperator
 builder.Services.AddScoped<IConfirmAssignedOrderCommandHandler, ConfirmAssignedOrderCommandHandler>();
@@ -173,8 +177,8 @@ builder.Services.AddScoped<IGetMyPendingCashOrdersQueryHandler, GetMyPendingCash
 builder.Services.AddScoped<IGetMyDeliveredOrdersQueryHandler, GetMyDeliveredOrdersQueryHandler>();
 builder.Services.AddScoped<IGetMyPendingDeliveredOrdersQueryHandler, GetMyPendingDeliveredOrdersQueryHandler>();
 builder.Services.AddScoped<IGetMyOnTheWayOrdersQueryHandler, GetMyOnTheWayOrdersQueryHandler>();
-builder.Services.AddScoped<IGetMyOrdersWithDeliveryIncidentQueryHandler,  GetMyOrdersWithDeliveryIncidentQueryHandler>();
-builder.Services.AddScoped<IGetMyRejectOrdersQueryHandler , GetMyRejectOrdersQueryHandler>();
+builder.Services.AddScoped<IGetMyOrdersWithDeliveryIncidentQueryHandler, GetMyOrdersWithDeliveryIncidentQueryHandler>();
+builder.Services.AddScoped<IGetMyRejectOrdersQueryHandler, GetMyRejectOrdersQueryHandler>();
 
 
 
@@ -197,20 +201,20 @@ builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
 
 //////////////////// Configuracion DbContext //////////////////////
 
-// Obtener la cadena de conexión del appsettings.json
+// Obtener la cadena de conexi?n del appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Registrar el DbContext
 builder.Services.AddDbContext<LogisticDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-        b => b.MigrationsAssembly("LogisticService.Infraestructure")));
+        b => b.MigrationsAssembly("LogisticService.API")));
 
 /////////////////// Configuracion JWT ////////////////////
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 
-// Configuración de autenticación JWT
+// Configuraci?n de autenticaci?n JWT
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
@@ -223,13 +227,11 @@ builder.Services.AddAuthentication("Bearer")
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey!)),
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero,
-
-            RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+            ClockSkew = TimeSpan.Zero
         };
     });
 
-// Configuración de autorización
+// Configuraci?n de autorizaci?n
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("LogisticAcces", policy =>
         policy.RequireClaim("role", "VerificationManager, DeliveryOperator"));

@@ -26,7 +26,6 @@ namespace DepotService.Test.Queries.DepotManager
 
             _handler = new GetByIdOrderQueryHandler(
                 _repositoryMock.Object,
-                context: null, // No es utilizado en este handler
                 _loggerMock.Object
             );
         }

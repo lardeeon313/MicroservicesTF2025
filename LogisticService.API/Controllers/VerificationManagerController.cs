@@ -29,6 +29,7 @@ using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetAllZon
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetByIdZone;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrders;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrdersByDeliveryPriority;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetDeliveryIncidentByOrderId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetDRReasonByOrderId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrderById;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByCustomerId;
@@ -38,6 +39,7 @@ using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrder
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersByTeamId;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersWithDeliveryIncident;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetPagedOrders;
+using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetRejectionReasonsByOrderId;
 using LogisticService.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -92,7 +94,9 @@ namespace LogisticService.API.Controllers
         IGetOrdersByTeamIdQueryHandler getOrdersByTeamIdQueryHandler,
         IGetOrdersByOperatorIdQueryHandler getOrdersByOperatorIdQueryHandler,
         IGetOrdersDeliveryRejectionsQueryHandler getOrdersDeliveryRejectionsQueryHandler,
-        IGetOrdersWithDeliveryIncidentQueryHandler getOrdersWithDeliveryIncidentQueryHandler
+        IGetOrdersWithDeliveryIncidentQueryHandler getOrdersWithDeliveryIncidentQueryHandler,
+        IGetDeliveryIncidentByOrderIdQueryHandler getDeliveryIncidentByOrderIdQueryHandler,
+        IGetRejectionReasonsByOrderIdQueryHandler getRejectionReasonsByOrderIdQueryHandler
         ) : ControllerBase
     {
         private readonly IValidator<CreateDeliveryTeamRequest> _createDeliveryTeamRequestValidator = createDeliveryTeamRequestValidator;
@@ -135,6 +139,8 @@ namespace LogisticService.API.Controllers
         private readonly IGetOrdersByOperatorIdQueryHandler _getOrdersByOperatorIdQueryHandler = getOrdersByOperatorIdQueryHandler;
         private readonly IGetOrdersDeliveryRejectionsQueryHandler _getOrdersDeliveryRejectionsQueryHandler = getOrdersDeliveryRejectionsQueryHandler;
         private readonly IGetOrdersWithDeliveryIncidentQueryHandler _getOrdersWithDeliveryIncidentQueryHandler = getOrdersWithDeliveryIncidentQueryHandler;
+        private readonly IGetRejectionReasonsByOrderIdQueryHandler _getRejectionReasonsByOrderIdQueryHandler = getRejectionReasonsByOrderIdQueryHandler;
+        private readonly IGetDeliveryIncidentByOrderIdQueryHandler _getDeliveryIncidentByOrderIdQueryHandler = getDeliveryIncidentByOrderIdQueryHandler;
 
         /**************************************************************/
         /**************************************************************/
@@ -850,6 +856,39 @@ namespace LogisticService.API.Controllers
         public async Task<IActionResult> GetOrdersWithDeliveryIncidents()
         {
             var orders = await _getOrdersWithDeliveryIncidentQueryHandler.GetOrdersWithDeliveryIncidentAsync();
+            return Ok(orders);
+        }
+
+        /// <summary>
+        /// Endpoint para retornar todos los incidentes que tuvo una order por su Id
+        /// </summary>
+        /// <param name="logisticOrderId"></param>
+        /// <returns></returns>
+        [HttpGet("get-delivery-incidents-by-order-id/{logisticOrderId")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetDeliveryIncidentsByOrderId(int logisticOrderId)
+        {
+            var query = new GetDeliveryIncidentByOrderIdQuery(logisticOrderId);
+            var orders = await _getDeliveryIncidentByOrderIdQueryHandler.GetDeliveryIncidentByOrderIdAsync(query);
+            return Ok(orders);
+        }
+
+
+        /// <summary>
+        /// Endpoint para retornar todos los rechazos de asignacion que tuvo una order por su Id
+        /// </summary>
+        /// <param name="logisticOrderId"></param>
+        /// <returns></returns>
+        [HttpGet("get-rejection-reasons-by-order-id/{logisticOrderId")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetRejectionReasonsByOrderId(int logisticOrderId)
+        {
+            var query = new GetRejectionReasonsByOrderIdQuery(logisticOrderId);
+            var orders = await _getRejectionReasonsByOrderIdQueryHandler.GetRejectionReasonsByOrderIdAsync(query);
             return Ok(orders);
         }
     }

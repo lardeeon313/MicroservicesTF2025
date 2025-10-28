@@ -1,7 +1,9 @@
 ﻿using LogisticService.Domain.Entities;
 using LogisticService.Domain.Enums;
 using LogisticService.Domain.IRepositories;
+using LogisticService.Infraestructure.Messaging.Publisher;
 using Microsoft.Extensions.Logging;
+using SharedKernel.IntegrationEvents.LogisticEvents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +12,9 @@ using System.Threading.Tasks;
 
 namespace LogisticService.Application.Commands.DeliveryOperator.LogisticOrder.MarkOrderDelivered
 {
-    public class MarkOrderDeliveredCommandHandler(ILogisticOrderRepository repository, ILogger<MarkOrderDeliveredCommandHandler> logger) : IMarkOrderDeliveredCommandHandler
+    public class MarkOrderDeliveredCommandHandler(IRabbitMQPublisher publisher ,ILogisticOrderRepository repository, ILogger<MarkOrderDeliveredCommandHandler> logger) : IMarkOrderDeliveredCommandHandler
     {
+        private readonly IRabbitMQPublisher _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
         private readonly ILogisticOrderRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         private readonly ILogger<MarkOrderDeliveredCommandHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
@@ -72,6 +75,18 @@ namespace LogisticService.Application.Commands.DeliveryOperator.LogisticOrder.Ma
 
             _logger.LogInformation("Order with ID {OrderId} marked as delivered by operator", command.LogisticOrderId);
             await _repository.UpdateAsync(order);
+
+            var integrationEvent = new OrderDeliveredIntegrationEvent
+            {
+                LogisticOrderId = order.Id,
+                DepotOrderId = order.DepotOrderId,
+                SalesOrderId = order.SalesOrderId,
+                DeliveredAt = DateTime.UtcNow,
+            };
+
+            // Emitir evento para notificar el cambio de estado.
+            await _publisher.PublishToExchangeAsync(integrationEvent, "order_delivered_exchange");
+
             return true;
         }
     }

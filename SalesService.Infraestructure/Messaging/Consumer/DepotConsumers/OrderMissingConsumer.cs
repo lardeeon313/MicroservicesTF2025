@@ -6,7 +6,6 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.Enums;
-using SalesService.Domain.IRepositories;
 using SharedKernel.IntegrationEvents.DepotEvents;
 using System;
 using System.Collections.Generic;
@@ -15,15 +14,15 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace SalesService.Infraestructure.Messaging.Consumer
+namespace SalesService.Infraestructure.Messaging.Consumer.DepotConsumers
 {
-    public class OrderPreparedConsumer : BackgroundService
+    public class OrderMissingConsumer : BackgroundService
     {
         private readonly ILogger<OrderMissingConsumer> _logger;
         private readonly IConfiguration _config;
         private readonly IServiceScopeFactory _scopeFactory;
 
-        public OrderPreparedConsumer(ILogger<OrderMissingConsumer> logger, IConfiguration config, IServiceScopeFactory scopeFactory)
+        public OrderMissingConsumer(ILogger<OrderMissingConsumer> logger, IConfiguration config, IServiceScopeFactory scopeFactory)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -44,7 +43,7 @@ namespace SalesService.Infraestructure.Messaging.Consumer
             var channel = await connection.CreateChannelAsync();
 
             await channel.QueueDeclareAsync(
-                queue: "order_prepared_queue",
+                queue: "order_missing_reported_queue",
                 durable: true,
                 exclusive: false,
                 autoDelete: false
@@ -55,52 +54,71 @@ namespace SalesService.Infraestructure.Messaging.Consumer
             consumer.ReceivedAsync += async (model, ea) =>
             {
                 var json = Encoding.UTF8.GetString(ea.Body.ToArray());
-                var evento = JsonSerializer.Deserialize<OrderPreparedIntegrationEvent>(json);
+                var evento = JsonSerializer.Deserialize<OrderMissingReportedIntegrationEvent>(json);
 
                 if (evento is not null)
                 {
                     using var scope = _scopeFactory.CreateScope();
                     var context = scope.ServiceProvider.GetRequiredService<SalesDbContext>();
-                    var repository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
 
-                    var salesOrder = await repository.GetByIdAsync(evento.SalesOrderId);
-
-                    if (salesOrder != null)
+                    var order =  await context.Orders.FindAsync(evento.SalesOrderId);
+                    if ( order is not null)
                     {
-                        salesOrder.Status = OrderStatus.Prepared;
-                        await repository.UpdateAsync(salesOrder);
-                        await context.SaveChangesAsync();
-                        _logger.LogInformation($"Order {salesOrder.Id} has been marked as prepared.");
+                        var orderMissing = new OrderMissing
+                        {
+                            OrderId = evento.SalesOrderId,
+                            MissingReason = evento.MissingReason,
+                            MissingDescription = evento.MissingDescription,
+                            MissingDate = evento.ReportedAt,
+                            MissingItems = evento.MissingItems.Select(item => new OrderMissingItem
+                            {
+                                OrderItemId = item.SalesOrderItemId,
+                                DepotOrderMissingItemId = evento.DepotOrderMissingId,
+                                ProductName = item.ProductName,
+                                ProductBrand = item.ProductBrand,
+                                Packaging = item.Packaging,
+                                MissingQuantity = item.MissingQuantity,
+                                }).ToList(),
+                            };
 
+                        await context.OrderMissings.AddAsync(orderMissing);
+
+                        // Guardar el historial de estado
                         var statusHistory = new OrderStatusHistory
                         {
-                            OrderId = salesOrder.Id,
-                            OldStatus = OrderStatus.InPreparation,
-                            NewStatus = OrderStatus.Prepared,
-                            ChangedAt = DateTime.UtcNow,
+                            OrderId = order.Id,
+                            OldStatus = OrderStatus.Confirmed,
+                            NewStatus = OrderStatus.PendingResolution,
+                            ChangedAt = DateTime.UtcNow
                         };
+
                         await context.OrderStatusHistories.AddAsync(statusHistory);
                         await context.SaveChangesAsync();
+
+                        order.Status = OrderStatus.PendingResolution;
+                        await context.SaveChangesAsync(stoppingToken);
+                        _logger.LogInformation($"Order with ID {evento.SalesOrderId} status updated to PendingResolution.");
                     }
+
                     else
                     {
-                        _logger.LogWarning($"Sales order with ID {evento.SalesOrderId} not found.");
+                        _logger.LogWarning($"Order with ID {evento.SalesOrderId} not found.");
                     }
                 }
+
                 else
                 {
-                    _logger.LogError("Received an invalid OrderPreparedIntegrationEvent.");
+                    _logger.LogWarning("Received an empty or invalid OrderMissingReportedIntegrationEvent.");
                 }
-            };
-            await channel.BasicConsumeAsync(
-                queue: "order_prepared_queue",
-                autoAck: true,
-                consumer: consumer
-            );
 
-            _logger.LogInformation("OrderPreparedConsumer is running and listening for messages on 'order_prepared_queue'.");
+            };
+
+            await channel.BasicConsumeAsync(queue: "order_missing_reported_queue", autoAck: true, consumer: consumer);
 
             await Task.CompletedTask;
+
         }
+
+
     }
 }

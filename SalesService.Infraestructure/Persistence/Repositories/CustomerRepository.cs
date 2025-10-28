@@ -36,10 +36,10 @@ namespace SalesService.Infraestructure.Persistence.Repositories
 
         public async Task<Customer?> GetByEmailAsync(string? email)
         {
-             return await _context.Customers
-                .Include(o => o.Addresses)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.Email == email);
+            return await _context.Customers
+               .Include(o => o.Addresses)
+               .AsNoTracking()
+               .FirstOrDefaultAsync(c => c.Email == email);
         }
 
         public async Task<Customer?> GetByIdAsync(Guid customerId)
@@ -92,12 +92,9 @@ namespace SalesService.Infraestructure.Persistence.Repositories
                 .ToListAsync();
         }
 
-        // 👇 nuevo método
-        public async Task<Address?> GetAddressByIdAsync(int addressId)
+        public async Task<bool> IsAddressReferencedInOrdersAsync(int addressId)
         {
-            return await _context.Addresses
-                .AsNoTracking()
-                .FirstOrDefaultAsync(a => a.Id == addressId);
+            return await _context.Orders.AnyAsync(o => o.DeliveryAddressId == addressId);
         }
     }
 }

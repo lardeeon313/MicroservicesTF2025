@@ -47,7 +47,9 @@ namespace DepotService.Application.Queries.Operator.GetOrderById
                 CustomerEmail = order.CustomerEmail,
                 PhoneNumber = order.PhoneNumber,
                 Status = order.Status,
-                Address = new OrderAddressDto
+                Address = order.DeliveryAddress == null 
+                ? null
+                : new OrderAddressDto
                 {
                     Street = order.DeliveryAddress.Street,
                     Number = order.DeliveryAddress.Number,

@@ -138,10 +138,6 @@ namespace SalesService.Infraestructure.Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public void AttachEntity<T>(T entity) where T : class
-        {
-            _context.Attach(entity);
-            _context.Entry(entity).State = EntityState.Unchanged;
-        }
+
     }
 }

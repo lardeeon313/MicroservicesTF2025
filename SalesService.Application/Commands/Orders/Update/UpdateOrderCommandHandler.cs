@@ -5,34 +5,19 @@ using SalesService.Domain.IRepositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
 namespace SalesService.Application.Commands.Orders.Update
 {
-    public class UpdateOrderCommandHandler : IUpdateOrderCommandHandler
+    public class UpdateOrderCommandHandler(IOrderRepository orderRepository) : IUpdateOrderCommandHandler
     {
-        private readonly IOrderRepository _orderRepository;
-
-        public UpdateOrderCommandHandler(IOrderRepository orderRepository)
-        {
-            _orderRepository = orderRepository;
-        }
-
+        private readonly IOrderRepository _orderRepository = orderRepository;
         public async Task<OrderDto?> HandleAsync(UpdateOrderCommand command)
         {
-            
-            var existingOrder = await _orderRepository.GetByIdAsync(command.OrderId);
-            Console.WriteLine(existingOrder == null
-                ? $"❌ No se encontró la orden con ID {command.OrderId}"
-                : $"✅ Orden encontrada: ID {existingOrder.Id}");
-            if (existingOrder == null)
-            {
-                throw new KeyNotFoundException($"Order with ID {command.OrderId} not found.");
-            }
 
-
-
+            var existingOrder = await _orderRepository.GetByIdAsync(command.OrderId)
+                ?? throw new KeyNotFoundException($"Order with ID {command.OrderId} not found.");
 
             // Se actualizan solo los campos modificables desde SalesService
             existingOrder.DeliveryDetail = command.Request.DeliveryDetail;
@@ -53,12 +38,14 @@ namespace SalesService.Application.Commands.Orders.Update
                     if (existingAddress == null)
                         throw new KeyNotFoundException($"Address with ID {command.Request.AddressRequest.Id} not found for this customer.");
 
+                    // Reutilizamos la dirección existente
+                    existingOrder.DeliveryAddressId = existingAddress.Id;
                     existingOrder.DeliveryAddress = existingAddress;
                 }
                 else
                 {
                     // Se registró una nueva dirección manual
-                    existingOrder.DeliveryAddress = new Address
+                    var newAddress = new Address
                     {
                         Street = command.Request.AddressRequest.Street,
                         Number = command.Request.AddressRequest.Number,
@@ -72,13 +59,25 @@ namespace SalesService.Application.Commands.Orders.Update
                         FormattedAddress = command.Request.AddressRequest.FormattedAddress,
                         CustomerId = existingOrder.CustomerId
                     };
+
+                    existingOrder.DeliveryAddress = newAddress;
+                    existingOrder.DeliveryAddressId = 0; // Se asignará al guardar
                 }
             }
 
             // Actualizar Items
             foreach (var itemDto in command.Request.Items)
             {
-                if (itemDto.Id == 0 || itemDto.Id == null)
+                var existingItem = existingOrder.Items.FirstOrDefault(i => i.Id == itemDto.Id);
+
+                if (existingItem != null)
+                {
+                    // Actualizamos item existente
+                    existingItem.ProductName = itemDto.ProductName ?? existingItem.ProductName;
+                    existingItem.ProductBrand = itemDto.ProductBrand ?? existingItem.ProductBrand;
+                    existingItem.Quantity = itemDto.Quantity;
+                }
+                else
                 {
                     // Agregamos nuevo item
                     var newItem = new OrderItem
@@ -89,24 +88,12 @@ namespace SalesService.Application.Commands.Orders.Update
                         Order = existingOrder,
                         OrderId = existingOrder.Id
                     };
+
                     existingOrder.Items.Add(newItem);
-                }
-                else
-                {
-                    // Actualizamos item existente
-                    var existingItem = existingOrder.Items.FirstOrDefault(i => i.Id == itemDto.Id);
-                    if (existingItem != null)
-                    {
-                        existingItem.ProductName = itemDto.ProductName ?? existingItem.ProductName;
-                        existingItem.ProductBrand = itemDto.ProductBrand ?? existingItem.ProductBrand;
-                        existingItem.Quantity = itemDto.Quantity;
-                    }
                 }
             }
 
-
             await _orderRepository.UpdateAsync(existingOrder);
-
 
             return new OrderDto
             {
@@ -122,8 +109,10 @@ namespace SalesService.Application.Commands.Orders.Update
                     ProductName = i.ProductName,
                     ProductBrand = i.ProductBrand,
                     Quantity = i.Quantity
-                }).ToList()
+                }).ToList(),
             };
+
+
         }
     }
 }

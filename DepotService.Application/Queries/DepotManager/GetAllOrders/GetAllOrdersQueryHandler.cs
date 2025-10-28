@@ -12,9 +12,8 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.DepotManager.GetAllOrders
 {
-    public class GetAllOrdersQueryHandler(DepotDbContext context, IDepotOrderRepository repository, ILogger<GetAllOrdersQueryHandler> logger) : IGetAllOrdersQueryHandler
+    public class GetAllOrdersQueryHandler(IDepotOrderRepository repository, ILogger<GetAllOrdersQueryHandler> logger) : IGetAllOrdersQueryHandler
     {
-        private readonly DepotDbContext _context = context;
         private readonly IDepotOrderRepository _repository = repository;
         private readonly ILogger<GetAllOrdersQueryHandler> _logger = logger;
 
@@ -54,7 +53,9 @@ namespace DepotService.Application.Queries.DepotManager.GetAllOrders
                 PhoneNumber = order.PhoneNumber,
                 DeliveryDetail = order.DeliveryDetail,
                 OrderDate = order.OrderDate,
-                Address = new OrderAddressDto
+                Address = order.DeliveryAddress == null
+                ? null 
+                : new OrderAddressDto
                 {
                     Street = order.DeliveryAddress.Street,
                     Number = order.DeliveryAddress.Number,

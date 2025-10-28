@@ -26,15 +26,12 @@ namespace DepotService.Domain.IRepositories
         Task AddMissingOrderAsync(DepotOrderMissing missingOrder);
         Task UpdateMissingOrderAsync(DepotOrderMissing missingOrder);
         Task <IEnumerable<DepotOrderEntity>> GetAllByOperatorIdAsync(Guid operatorId);
-        //Para pedidos con missing
         Task<IEnumerable<DepotOrderEntity>> GetWithInPreparationOrMissingAsync(Guid operatorId);
-        //Para pedidos con status Prepared o sentToBilling
         Task<IEnumerable<DepotOrderEntity>> GetPreparedOrSentToBillingAsync(Guid operatorId);
         Task AddMissing(DepotOrderMissing missingOrder);
         Task<List<DepotOrderItemEntity>> GetOrderItemsByIdsAsync(List<int> ids);
         Task UpdateDepotOrderItemsAsync(List<DepotOrderItemEntity> items);
         Task<List<DepotOrderEntity>> GetAssignedPendingOrdersByOperatorIdAsync();
-        //ESTE ES!!!!
         Task<List<DepotOrderEntity>> GetOrdersPendingBillingAsync();
         Task<List<DepotOrderEntity>> GetAllInvoicedOrdersAsync();
         Task<List<DepotOrderEntity>> GetInvoicedOrdersByDateRangeAsync(DateTime startDate, DateTime endDate);

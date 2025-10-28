@@ -1,4 +1,4 @@
-import { useState } from "react";
+/*import { useState } from "react";
 import { Alert } from "react-native";
 import { DeliveryOrderTypeDto } from "../types/DeliveryOrderTypeDto";
 
@@ -57,3 +57,4 @@ export function useValidationOrdersLogic(
     handleTraceRoute,
   };
 }
+*/

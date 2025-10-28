@@ -82,9 +82,6 @@ namespace SalesService.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RegisterOrder([FromBody] RegisterOrderRequest request)
         {
-
-            
-
             var validation = await _registerOrderValidator.ValidateAsync(request);
             if (!validation.IsValid)
             {
@@ -92,10 +89,7 @@ namespace SalesService.API.Controllers
                 return BadRequest(errors);
             }
 
-            var command = new RegisterOrderCommand(request.CustomerId, request.Items, request.DeliveryDate, request.DeliveryDetail, request.CreatedByUserId, request.DeliveryAddress, request.PaymentType);
-
-            
-
+            var command = new RegisterOrderCommand(request.CustomerId, request.Items, request.DeliveryDate, request.DeliveryDetail, request.CreatedByUserId, request.DeliveryAddress, request.DeliveryAddressId, request.PaymentType);
             var result = await _registerOrderCommandHandler.HandleAsync(command);
             return Ok(result);
 
@@ -109,8 +103,6 @@ namespace SalesService.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateOrder(int id, [FromBody] UpdateOrderRequest request)
         {
-
-            
             if (id != request.OrderId)
                 return BadRequest(new { error = "Order ID in the URL does not match the Order ID in the request body." });
 
@@ -122,8 +114,6 @@ namespace SalesService.API.Controllers
             }
 
             var command = new UpdateOrderCommand(id, request);
-
-
             var result = await _updateOrderCommandHandler.HandleAsync(command);
             return Ok(result);
         }

@@ -23,7 +23,10 @@ namespace DepotService.Domain.Enums
         Verify,   // Verificado
         OnTheWay,   // En camino
         Delivered,  // Entregado
-        PendingVerification // Pendiente de verificación
-
+        PendingVerification, // Pendiente de verificación
+        AssignedDelivery, // Asignado a reparto
+        PendingDelivered, // Pendiente de reparto
+        PendingIncidentResolution, // Pendiente de resolución de incidente
+        IncidentResolved // Incidente resuelto
     }
 }

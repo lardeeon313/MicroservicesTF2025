@@ -26,8 +26,11 @@ namespace SalesService.Application.DTOs.Order.Request
         [Required]
         public string CreatedByUserId { get; set; } = string.Empty;
 
-        [Required]
-        public AddressRequest DeliveryAddress { get; set; } = new();
+        public int? DeliveryAddressId { get; set; }
+        
+        public AddressRequest? DeliveryAddress { get; set; }
+
+         public PaymentType? PaymentType { get; set; }
 
          public PaymentType? PaymentType { get; set; }
 

@@ -45,7 +45,9 @@ namespace DepotService.Application.Queries.BillingManager.GetBillingDetailsByOrd
                 DeliveryDetail = order.DeliveryDetail,
                 OrderDate = order.OrderDate,
                 Status = order.Status,
-                Address = new OrderAddressDto
+                Address = order.DeliveryAddress == null
+                ? null
+                : new OrderAddressDto
                 {
                     Street = order.DeliveryAddress.Street,
                     Number = order.DeliveryAddress.Number,

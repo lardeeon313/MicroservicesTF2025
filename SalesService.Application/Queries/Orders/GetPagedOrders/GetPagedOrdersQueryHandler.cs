@@ -41,7 +41,9 @@ namespace SalesService.Application.Queries.Orders.GetPagedOrders
                     DeliveryDetail = o.DeliveryDetail,
                     PaymentType = o.PaymentType,
                     ModifiedStatusDate = o.ModifiedStatusDate,
-                    Address = new AddressDto
+                    Address = o.DeliveryAddress == null
+                    ? null
+                    : new AddressDto
                     {
                         Street = o.DeliveryAddress.Street,
                         Number = o.DeliveryAddress.Number,

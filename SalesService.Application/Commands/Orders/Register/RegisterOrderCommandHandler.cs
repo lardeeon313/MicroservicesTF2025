@@ -19,12 +19,8 @@ namespace SalesService.Application.Commands.Orders.Register
     /// <summary>
     /// Manejador para registrar nota de pedido
     /// </summary>
-    public class RegisterOrderCommandHandler(
-        IEmailService emailService,
-        IOrderRepository orderRepository,
-        IRabbitMQPublisher publisher,
-        ICustomerRepository customerRepository
-    ) : IRegisterOrderCommandHandler
+
+    public class RegisterOrderCommandHandler(IEmailService emailService, IOrderRepository orderRepository, IRabbitMQPublisher publisher, ICustomerRepository customerRepository) : IRegisterOrderCommandHandler
     {
         private readonly IEmailService _emailService = emailService;
         private readonly IOrderRepository _orderRepository = orderRepository;
@@ -37,22 +33,21 @@ namespace SalesService.Application.Commands.Orders.Register
             var customer = await _customerRepository.GetByIdAsync(command.CustomerId)
                 ?? throw new KeyNotFoundException($"Customer with ID {command.CustomerId} not found.");
 
-            Address deliveryAddress;
+            int? deliveryAddressId = null;
+            Address? newAddress = null;
 
             // Si el usuario seleccionó una dirección existente
-            if (command.DeliveryAddressId.HasValue && command.DeliveryAddressId > 0)
+            if (command.DeliveryAddressId.HasValue && command.DeliveryAddressId.Value > 0)
             {
-                // Buscar la dirección existente desde el repositorio (mejor que desde la navegación)
-                deliveryAddress = await _customerRepository.GetAddressByIdAsync(command.DeliveryAddressId.Value)
-                    ?? throw new KeyNotFoundException($"Address with ID {command.DeliveryAddressId} not found for this customer.");
+                var existingAddress = customer.Addresses?.FirstOrDefault(a => a.Id == command.DeliveryAddressId)
+                    ?? throw new KeyNotFoundException($"Address with ID not found for this customer.");
 
-                // Aseguramos que EF no intente volver a insertarla
-                _orderRepository.AttachEntity(deliveryAddress);
+                deliveryAddressId = existingAddress.Id;
             }
-            else
+            else if (command.DeliveryAddress != null)
             {
                 // Crear una nueva dirección manual
-                deliveryAddress = new Address
+                newAddress = new Address
                 {
                     Street = command.DeliveryAddress.Street,
                     Number = command.DeliveryAddress.Number,
@@ -68,9 +63,7 @@ namespace SalesService.Application.Commands.Orders.Register
                 };
             }
 
-
-
-            // Crear la orden directamente con el Address
+            // Crear la orden
             var order = new Order
             {
                 CustomerId = command.CustomerId,
@@ -86,21 +79,18 @@ namespace SalesService.Application.Commands.Orders.Register
                     ProductName = i.ProductName,
                     Quantity = i.Quantity
                 }).ToList(),
-                DeliveryAddress = deliveryAddress // 🔑 asignación directa
+                DeliveryAddressId = deliveryAddressId,
+                DeliveryAddress = newAddress
             };
 
-           
-
-            // Guardar todo en la DB (EF hace el insert de Address y Order en la misma transacción)
+            // Guardar la orden en la base de datos
             await _orderRepository.AddAsync(order);
-
-
 
             // Actualizar el estado del cliente a "Active"
             customer.Status = CustomerStatus.Active;
             await _customerRepository.UpdateAsync(customer);
 
-            // Creamos el evento de integración
+            // Creamos el evento
             var integrationEvent = new OrderRegisteredIntegrationEvent
             {
                 OrderId = order.Id,
@@ -119,7 +109,7 @@ namespace SalesService.Application.Commands.Orders.Register
 
             // Enviar un correo electrónico al cliente
             var htmlBody = EmailTemplateGenerator.BuildOrderRegisteredTemplate(
-                customerName: $"{customer.FirstName} {customer.LastName}",
+                customerName: customer.FirstName + " " + customer.LastName,
                 orderId: order.Id,
                 orderDate: order.OrderDate,
                 deliveryDate: order.DeliveryDate,
@@ -149,20 +139,22 @@ namespace SalesService.Application.Commands.Orders.Register
                     ProductBrand = i.ProductBrand,
                     Quantity = i.Quantity
                 }).ToList(),
-                Address = new SalesService.Application.DTOs.Customer.AddressDto
-                {
-                    Id = order.DeliveryAddress.Id,
-                    Street = order.DeliveryAddress.Street,
-                    Number = order.DeliveryAddress.Number,
-                    Apartment = order.DeliveryAddress.Apartment,
-                    City = order.DeliveryAddress.City,
-                    Province = order.DeliveryAddress.Province,
-                    Country = order.DeliveryAddress.Country,
-                    PostalCode = order.DeliveryAddress.PostalCode,
-                    Latitude = order.DeliveryAddress.Latitude,
-                    Longitude = order.DeliveryAddress.Longitude,
-                    FormattedAddress = order.DeliveryAddress.FormattedAddress
-                }
+                Address = order.DeliveryAddress != null
+            ? new SalesService.Application.DTOs.Customer.AddressDto
+            {
+                Id = order.DeliveryAddress.Id,
+                Street = order.DeliveryAddress.Street,
+                Number = order.DeliveryAddress.Number,
+                Apartment = order.DeliveryAddress.Apartment,
+                City = order.DeliveryAddress.City,
+                Province = order.DeliveryAddress.Province,
+                Country = order.DeliveryAddress.Country,
+                PostalCode = order.DeliveryAddress.PostalCode,
+                Latitude = order.DeliveryAddress.Latitude,
+                Longitude = order.DeliveryAddress.Longitude,
+                FormattedAddress = order.DeliveryAddress.FormattedAddress
+            }
+            : null // En caso de dirección existente
             };
         }
     }

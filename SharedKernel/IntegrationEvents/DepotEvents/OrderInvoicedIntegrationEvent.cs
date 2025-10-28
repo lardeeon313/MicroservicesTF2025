@@ -29,7 +29,7 @@ namespace SharedKernel.IntegrationEvents.DepotEvents
         public decimal TotalAmount { get; set; }
         public DateTime InvoicedDate { get; set; }
 
-        public AddressDto DeliveryAddress { get; set; } = null!;
+        public AddressDto? DeliveryAddress { get; set; } = null!;
         public List<InvoicedItemDto> OrderItems { get; set; } = new();
     }
 }

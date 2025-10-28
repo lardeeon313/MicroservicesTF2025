@@ -58,7 +58,9 @@ namespace DepotService.Application.Queries.DepotManager.GetOrdersByStatus
                     Missings = order.Missings,
                     AssignedDepotTeam = order.AssignedDepotTeam,
                     AssignedOperatorId = order.AssignedOperatorId,
-                    Address = new OrderAddressDto
+                    Address = order.DeliveryAddress == null 
+                    ? null
+                    : new OrderAddressDto
                     {
                         Street = order.DeliveryAddress.Street,
                         Number = order.DeliveryAddress.Number,

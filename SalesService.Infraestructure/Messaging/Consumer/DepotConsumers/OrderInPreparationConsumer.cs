@@ -2,27 +2,28 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using SalesService.Domain.Entities.OrderEntity;
-using SalesService.Domain.Enums;
-using SharedKernel.IntegrationEvents.DepotEvents;
+using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
+using SharedKernel.IntegrationEvents.DepotEvents;
+using System.Text.Json;
+using SalesService.Domain.IRepositories;
+using SalesService.Domain.Enums;
+using SalesService.Domain.Entities.OrderEntity;
 
-namespace SalesService.Infraestructure.Messaging.Consumer
+namespace SalesService.Infraestructure.Messaging.Consumer.DepotConsumers
 {
-    public class OrderMissingConsumer : BackgroundService
+    public class OrderInPreparationConsumer : BackgroundService
     {
         private readonly ILogger<OrderMissingConsumer> _logger;
         private readonly IConfiguration _config;
         private readonly IServiceScopeFactory _scopeFactory;
 
-        public OrderMissingConsumer(ILogger<OrderMissingConsumer> logger, IConfiguration config, IServiceScopeFactory scopeFactory)
+        public OrderInPreparationConsumer(ILogger<OrderMissingConsumer> logger, IConfiguration config, IServiceScopeFactory scopeFactory)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -43,7 +44,7 @@ namespace SalesService.Infraestructure.Messaging.Consumer
             var channel = await connection.CreateChannelAsync();
 
             await channel.QueueDeclareAsync(
-                queue: "order_missing_reported_queue",
+                queue: "order_in_preparation_queue",
                 durable: true,
                 exclusive: false,
                 autoDelete: false
@@ -54,71 +55,54 @@ namespace SalesService.Infraestructure.Messaging.Consumer
             consumer.ReceivedAsync += async (model, ea) =>
             {
                 var json = Encoding.UTF8.GetString(ea.Body.ToArray());
-                var evento = JsonSerializer.Deserialize<OrderMissingReportedIntegrationEvent>(json);
+                var evento = JsonSerializer.Deserialize<OrderPreparedIntegrationEvent>(json);
 
-                if (evento is not null)
+                if(evento is not null)
                 {
                     using var scope = _scopeFactory.CreateScope();
                     var context = scope.ServiceProvider.GetRequiredService<SalesDbContext>();
+                    var repository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
 
-                    var order =  await context.Orders.FindAsync(evento.SalesOrderId);
-                    if ( order is not null)
+                    var salesOrder = await repository.GetByIdAsync(evento.SalesOrderId);
+
+                    if(salesOrder != null)
                     {
-                        var orderMissing = new OrderMissing
-                        {
-                            OrderId = evento.SalesOrderId,
-                            MissingReason = evento.MissingReason,
-                            MissingDescription = evento.MissingDescription,
-                            MissingDate = evento.ReportedAt,
-                            MissingItems = evento.MissingItems.Select(item => new OrderMissingItem
-                            {
-                                OrderItemId = item.SalesOrderItemId,
-                                DepotOrderMissingItemId = evento.DepotOrderMissingId,
-                                ProductName = item.ProductName,
-                                ProductBrand = item.ProductBrand,
-                                Packaging = item.Packaging,
-                                MissingQuantity = item.MissingQuantity,
-                                }).ToList(),
-                            };
+                        salesOrder.Status = OrderStatus.InPreparation;
+                        await repository.UpdateAsync(salesOrder);
+                        await context.SaveChangesAsync();
+                        _logger.LogInformation($"Order {salesOrder.Id} is now in preparation.");
 
-                        await context.OrderMissings.AddAsync(orderMissing);
 
-                        // Guardar el historial de estado
                         var statusHistory = new OrderStatusHistory
                         {
-                            OrderId = order.Id,
+                            OrderId = salesOrder.Id,
                             OldStatus = OrderStatus.Confirmed,
-                            NewStatus = OrderStatus.PendingResolution,
+                            NewStatus = OrderStatus.InPreparation,
                             ChangedAt = DateTime.UtcNow
                         };
-
                         await context.OrderStatusHistories.AddAsync(statusHistory);
                         await context.SaveChangesAsync();
-
-                        order.Status = OrderStatus.PendingResolution;
-                        await context.SaveChangesAsync(stoppingToken);
-                        _logger.LogInformation($"Order with ID {evento.SalesOrderId} status updated to PendingResolution.");
                     }
-
                     else
                     {
                         _logger.LogWarning($"Order with ID {evento.SalesOrderId} not found.");
                     }
                 }
-
                 else
                 {
-                    _logger.LogWarning("Received an empty or invalid OrderMissingReportedIntegrationEvent.");
+                    _logger.LogWarning("Received an empty or invalid OrderPreparedIntegrationEvent.");
                 }
-
             };
 
-            await channel.BasicConsumeAsync(queue: "order_missing_reported_queue", autoAck: true, consumer: consumer);
+            await channel.BasicConsumeAsync(
+                queue: "order_in_preparation_queue",
+                autoAck: true,
+                consumer: consumer
+            );
+
+            _logger.LogInformation("OrderInPreparationConsumer is running and listening for messages on 'order_in_preparation_queue'.");
 
             await Task.CompletedTask;
-
         }
-
-
-    }
+    }   
 }

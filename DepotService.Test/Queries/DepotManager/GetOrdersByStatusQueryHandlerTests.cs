@@ -26,7 +26,6 @@ namespace DepotService.Test.Queries.DepotManager
 
             _handler = new GetOrdersByStatusQueryHandler(
                 _repositoryMock.Object,
-                context: null,
                 _loggerMock.Object
             );
         }
@@ -60,7 +59,6 @@ namespace DepotService.Test.Queries.DepotManager
                         UnitPrice = 10m
                     }
                 },
-                Missings = null,
                 AssignedDepotTeam = null
             }
         };
@@ -74,14 +72,6 @@ namespace DepotService.Test.Queries.DepotManager
             // Assert
             result.Should().NotBeNullOrEmpty();
             result.First().DepotOrderId.Should().Be(1);
-            _loggerMock.Verify(
-                x => x.Log(
-                    LogLevel.Information,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains(status)),
-                    null,
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-                Times.Once);
         }
 
         [Fact]

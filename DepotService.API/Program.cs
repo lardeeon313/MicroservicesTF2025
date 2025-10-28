@@ -60,7 +60,8 @@ using DepotService.Infraestructure.Documents.Pdf;
 using DepotService.Infraestructure.Documents.Word;
 using DepotService.Infraestructure.Email;
 using DepotService.Infraestructure.Messaging;
-using DepotService.Infraestructure.Messaging.Consumers;
+using DepotService.Infraestructure.Messaging.Consumers.LogisticConsumers;
+using DepotService.Infraestructure.Messaging.Consumers.SalesConsumers;
 using DepotService.Infraestructure.Messaging.Publisher;
 using DepotService.Infraestructure.Persistence.Repositories;
 using FluentValidation;
@@ -175,6 +176,14 @@ builder.Services.AddScoped<SetItemUnitPricesCommandValidator>();
 builder.Services.AddHostedService<OrderIssuedConsumer>();
 builder.Services.AddHostedService<OrderReissuedConsumer>();
 builder.Services.AddHostedService<OrderDeletedConsumer>();
+builder.Services.AddHostedService<OrderCanceledConsumer>();
+
+builder.Services.AddHostedService<OrderVerifiedConsumer>();
+builder.Services.AddHostedService<OrderOnTheWayConsumer>();
+builder.Services.AddHostedService<OrderDeliveredConsumer>();
+builder.Services.AddHostedService<OrderDeliveryIncidentConsumer>();
+builder.Services.AddHostedService<DepotService.Infraestructure.Messaging.Consumers.LogisticConsumers.OrderAssignedDeliveryConsumer>();
+builder.Services.AddHostedService<OrderResolveIncidentConsumer>();
 
 // Add Export Document Service 
 builder.Services.AddScoped<IInvoiceDocumentGenerator, InvoicePdfGenerator>();

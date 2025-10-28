@@ -15,7 +15,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace DepotService.Infraestructure
+namespace DepotService.Infraestructure.Messaging.Consumers.SalesConsumers
 {
     /// <summary>
     /// Consumer para recibir eventos de órdenes emitidas desde RabbitMQ.
@@ -91,7 +91,9 @@ namespace DepotService.Infraestructure
                                 evento.PaymentType.Value.ToString()
                               )
                             : null,
-                            DeliveryAddress = new OrderAddress
+                            DeliveryAddress = evento.DeliveryAddress == null
+                            ? null
+                            : new OrderAddress
                             {
                                 Street = evento.DeliveryAddress.Street,
                                 Number = evento.DeliveryAddress.Number,

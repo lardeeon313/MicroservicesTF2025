@@ -43,11 +43,12 @@ using SalesService.Infraestructure.Email;
 using SalesService.Application.Commands.Orders.OrderReissued;
 using SalesService.Application.Commands.Orders.UpdateMissingOrder;
 using SalesService.Application.Queries.Orders.GetAllMissingOrders;
-using SalesService.Infraestructure.Messaging.Consumer;
 using SalesService.Application.Commands.Customers.ActivateCustomer;
 using SalesService.Application.Commands.Customers;
 using SalesService.Application.Queries.Customers.GetCustomerAddresses;
 using SalesService.Application.Queries.Customers.GetCustomerPaymentTypes;
+using SalesService.Infraestructure.Messaging.Consumer.DepotConsumers;
+using SalesService.Infraestructure.Messaging.Consumer.LogisticConsumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -141,6 +142,13 @@ builder.Services.AddHostedService<OrderInPreparationConsumer>();
 builder.Services.AddHostedService<OrderInvoicedConsumer>();
 builder.Services.AddHostedService<OrderPreparedConsumer>();
 builder.Services.AddHostedService<OrderSentToBillingConsumer>();
+
+builder.Services.AddHostedService<OrderVerifiedConsumer>();
+builder.Services.AddHostedService<OrderDeliveredConsumer>();
+builder.Services.AddHostedService<OrderAssignedDeliveryConsumer>();
+builder.Services.AddHostedService<OrderDeliveryIncidentConsumer>();
+builder.Services.AddHostedService<OrderOnTheWayConsumer>();
+builder.Services.AddHostedService<OrderResolveIncidentConsumer>();
 
 // Obtener la cadena de conexión del appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

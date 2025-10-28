@@ -1,13 +1,14 @@
-﻿using DepotService.Domain.Enums;
+﻿using DepotService.Application.DTOs.DepotOrder;
+using DepotService.Domain.Enums;
 using DepotService.Domain.IRepositories;
 using DepotService.Infraestructure;
 using DepotService.Infraestructure.Messaging.Publisher;
 using DepotService.Infraestructure.Persistence.Repositories;
 using Microsoft.Extensions.Logging;
+using SharedKernel.Extensions;
 using SharedKernel.IntegrationEvents.DepotEvents;
 using SharedKernel.IntegrationEvents.DepotEvents.DTOs;
 using SharedKernel.IntegrationEvents.SalesEvents.DTOs;
-using SharedKernel.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,8 +33,7 @@ namespace DepotService.Application.Commands.BillingManager.InvoicedOrder
         /// Handles the command to invoice an order.
         /// </summary>
         /// <param name="command"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <returns></returns>       
         public async Task<bool> HandleAsync(InvoiceOrderCommand command)
         {
             var order = await _repository.GetByIdAsync(command.DepotOrderId);
@@ -93,7 +93,9 @@ namespace DepotService.Application.Commands.BillingManager.InvoicedOrder
                 DeliveryDetail = order.DeliveryDetail,
                 TotalAmount = totalAmount,
                 InvoicedDate = DateTime.UtcNow,
-                DeliveryAddress = new AddressDto
+                DeliveryAddress = order.DeliveryAddress == null
+                ? null
+                : new AddressDto
                 {
                     Street = order.DeliveryAddress.Street,
                     Number = order.DeliveryAddress.Number,

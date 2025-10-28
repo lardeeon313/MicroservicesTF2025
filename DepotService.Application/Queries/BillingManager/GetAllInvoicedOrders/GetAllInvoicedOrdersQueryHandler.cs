@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace DepotService.Application.Queries.BillingManager.GetAllInvoicedOrders
 {
-    public class GetAllInvoicedOrdersQueryHandler(IDepotOrderRepository repository, DepotDbContext context, ILogger<GetAllInvoicedOrdersQueryHandler> logger) : IGetAllInvoicedOrdersQueryHandler
+    public class GetAllInvoicedOrdersQueryHandler(IDepotOrderRepository repository, ILogger<GetAllInvoicedOrdersQueryHandler> logger) : IGetAllInvoicedOrdersQueryHandler
     {
         private readonly IDepotOrderRepository _repository = repository;        
         private readonly ILogger<GetAllInvoicedOrdersQueryHandler> _logger = logger;
@@ -53,7 +53,9 @@ namespace DepotService.Application.Queries.BillingManager.GetAllInvoicedOrders
                 PhoneNumber = o.PhoneNumber,
                 DeliveryDetail = o.DeliveryDetail,
                 OrderDate = o.OrderDate,
-                Address = new OrderAddressDto
+                Address = o.DeliveryAddress == null
+                ? null
+                : new OrderAddressDto
                 {
                     Street = o.DeliveryAddress.Street,
                     Number = o.DeliveryAddress.Number,

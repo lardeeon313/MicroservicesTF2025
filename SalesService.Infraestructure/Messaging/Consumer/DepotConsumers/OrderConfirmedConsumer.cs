@@ -15,7 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using SalesService.Domain.Enums;
 using SalesService.Domain.Entities.OrderEntity;
 
-namespace SalesService.Infraestructure.Messaging.Consumer
+namespace SalesService.Infraestructure.Messaging.Consumer.DepotConsumers
 {
     public class OrderConfirmedConsumer : BackgroundService
     {

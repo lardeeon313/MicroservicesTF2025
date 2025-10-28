@@ -17,15 +17,14 @@ namespace DepotService.Test.Queries.DepotOperator
     {
         private readonly Mock<IDepotOrderRepository> _repositoryMock;
         private readonly Mock<ILogger<GetOrdersByOperatorQueryHandler>> _loggerMock;
-        private readonly DepotDbContext _context; // null o mock si no se usa
         private readonly GetOrdersByOperatorQueryHandler _handler;
 
         public GetOrdersByOperatorQueryHandlerTests()
         {
             _repositoryMock = new Mock<IDepotOrderRepository>();
             _loggerMock = new Mock<ILogger<GetOrdersByOperatorQueryHandler>>();
-            _context = null;
-            _handler = new GetOrdersByOperatorQueryHandler(_repositoryMock.Object, _context, _loggerMock.Object);
+
+            _handler = new GetOrdersByOperatorQueryHandler(_repositoryMock.Object, _loggerMock.Object);
         }
 
         [Fact]

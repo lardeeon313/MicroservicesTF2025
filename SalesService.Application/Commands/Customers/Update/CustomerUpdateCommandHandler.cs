@@ -36,12 +36,26 @@ namespace SalesService.Application.Commands.Customers.Update
             if (command.Addresses != null && command.Addresses.Any())
             {
                 var existingAddresses = customer.Addresses.ToList();
-                
+
                 foreach (var ea in existingAddresses)
                 {
-                    if (!command.Addresses.Any(a => a.Id == ea.Id))
+                    bool isReferenced = await _repository.IsAddressReferencedInOrdersAsync(ea.Id);
+
+                    // Verificamos si existe una dirección equivalente en el comando
+                    bool existsEquivalent = command.Addresses.Any(a =>
+                        (a.Id == ea.Id) ||
+                        (
+                            a.Street.Equals(ea.Street, StringComparison.OrdinalIgnoreCase) &&
+                            a.Number.Equals(ea.Number, StringComparison.OrdinalIgnoreCase) &&
+                            a.City.Equals(ea.City, StringComparison.OrdinalIgnoreCase) &&
+                            a.Province.Equals(ea.Province, StringComparison.OrdinalIgnoreCase) &&
+                            a.Country.Equals(ea.Country, StringComparison.OrdinalIgnoreCase)
+                        )
+                    );
+
+                    if (!existsEquivalent && !isReferenced)
                     {
-                        await _repository.RemoveAddress(ea); 
+                        await _repository.RemoveAddress(ea);
                     }
                 }
 
@@ -65,21 +79,32 @@ namespace SalesService.Application.Commands.Customers.Update
                     }
                     else
                     {
-                        // Agregar nueva dirección
-                        customer.Addresses.Add(new Address
+                        // Verificamos si ya existe una dirección con los mismos datos
+                        var duplicate = existingAddresses.FirstOrDefault(a =>
+                            a.Street.Equals(dto.Street, StringComparison.OrdinalIgnoreCase) &&
+                            a.Number.Equals(dto.Number, StringComparison.OrdinalIgnoreCase) &&
+                            a.City.Equals(dto.City, StringComparison.OrdinalIgnoreCase) &&
+                            a.Province.Equals(dto.Province, StringComparison.OrdinalIgnoreCase) &&
+                            a.Country.Equals(dto.Country, StringComparison.OrdinalIgnoreCase));
+
+                        if (duplicate == null)
                         {
-                            Street = dto.Street,
-                            Number = dto.Number,
-                            Apartment = dto.Apartment,
-                            City = dto.City,
-                            Province = dto.Province,
-                            Country = dto.Country,
-                            PostalCode = dto.PostalCode,
-                            Latitude = dto.Latitude,
-                            Longitude = dto.Longitude,
-                            FormattedAddress = dto.FormattedAddress,
-                            CustomerId = customer.Id
-                        });
+                            // No existe → la agregamos
+                            customer.Addresses.Add(new Address
+                            {
+                                Street = dto.Street,
+                                Number = dto.Number,
+                                Apartment = dto.Apartment,
+                                City = dto.City,
+                                Province = dto.Province,
+                                Country = dto.Country,
+                                PostalCode = dto.PostalCode,
+                                Latitude = dto.Latitude,
+                                Longitude = dto.Longitude,
+                                FormattedAddress = dto.FormattedAddress,
+                                CustomerId = customer.Id
+                            });
+                        }
                     }
                 }
             }

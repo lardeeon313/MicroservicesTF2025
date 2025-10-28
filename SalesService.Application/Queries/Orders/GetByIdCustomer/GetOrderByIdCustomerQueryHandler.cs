@@ -39,7 +39,9 @@ namespace SalesService.Application.Queries.Orders.GetByIdCustomer
                     ProductName = item.ProductName,
                     Quantity = item.Quantity
                 }).ToList(),
-                Address = new AddressDto
+                Address = order.DeliveryAddress == null
+                ? null
+                : new AddressDto
                 {
                     Street = order.DeliveryAddress.Street,
                     Number = order.DeliveryAddress.Number,

@@ -36,8 +36,8 @@ namespace DepotService.Domain.Entities
             public ICollection<OrderStatusHistory> StatusHistory { get; set; } = [];
 
             // Relacion 1 a 1 con Address
-            public int DeliveryAddressId { get; set; }
-            public OrderAddress DeliveryAddress { get; set; } = null!;
+            public int? DeliveryAddressId { get; set; }
+            public OrderAddress? DeliveryAddress { get; set; }
 
 
         public void AssignToOperator(Guid operatorId, DepotTeamEntity team)

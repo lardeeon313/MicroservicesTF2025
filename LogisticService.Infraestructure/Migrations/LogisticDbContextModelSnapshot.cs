@@ -440,7 +440,7 @@ namespace LogisticService.Infraestructure.Migrations
                     b.Property<int>("OldStatus")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrderId")
+                    b.Property<int?>("OrderId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

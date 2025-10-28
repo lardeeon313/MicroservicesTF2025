@@ -13,32 +13,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Threading; // Añadido
+using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
-// Asegúrate de tener el DbContext correcto si no está en este namespace
-// using SalesService.Infraestructure.Persistence; 
-
-namespace SalesService.Infraestructure.Messaging.Consumer
+namespace SalesService.Infraestructure.Messaging.Consumer.DepotConsumers
 {
     /// <summary>
     /// Consumidor para eventos de pedidos facturados.
     /// </summary>
     public class OrderInvoicedConsumer : BackgroundService
     {
-        // --- CAMBIO 1: Corregir el tipo de Logger ---
         private readonly ILogger<OrderInvoicedConsumer> _logger;
         private readonly IConfiguration _config;
         private readonly IServiceScopeFactory _scopeFactory;
 
-        // --- CAMBIO 2: Añadir campos para conexión y canal (nullable) ---
         private IConnection? _connection;
         private IChannel? _channel;
 
-        // --- CAMBIO 3: Definir nombres para el Exchange y la Cola ÚNICA ---
         private const string EXCHANGE_NAME = "order_invoiced_exchange";
-        private const string QUEUE_NAME = "sales_order_invoiced_queue"; // ¡Cola única para Sales!
+        private const string QUEUE_NAME = "sales_order_invoiced_queue"; 
 
         public OrderInvoicedConsumer(ILogger<OrderInvoicedConsumer> logger, IConfiguration config, IServiceScopeFactory scopeFactory)
         {
@@ -57,7 +51,6 @@ namespace SalesService.Infraestructure.Messaging.Consumer
                 Password = _config["RabbitMQ:Password"] ?? "guest"
             };
 
-            // --- CAMBIO 4: Añadir bucle de reintento de conexión ---
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
@@ -77,16 +70,15 @@ namespace SalesService.Infraestructure.Messaging.Consumer
             if (stoppingToken.IsCancellationRequested || _channel == null) return;
 
 
-            // --- CAMBIO 5: Declarar el Exchange, declarar la Cola ÚNICA y BINDEAR ---
             await _channel.ExchangeDeclareAsync(
                 exchange: EXCHANGE_NAME,
-                type: ExchangeType.Fanout, // Debe coincidir con el publicador
+                type: ExchangeType.Fanout, 
                 durable: true,
                 autoDelete: false
             );
 
             await _channel.QueueDeclareAsync(
-              queue: QUEUE_NAME, // Usar la cola única
+              queue: QUEUE_NAME, 
                       durable: true,
               exclusive: false,
               autoDelete: false
@@ -95,9 +87,8 @@ namespace SalesService.Infraestructure.Messaging.Consumer
             await _channel.QueueBindAsync(
                 queue: QUEUE_NAME,
                 exchange: EXCHANGE_NAME,
-                routingKey: "" // Fanout ignora el routing key
+                routingKey: "" 
             );
-            // --- Fin del cambio 5 ---
 
             var consumer = new AsyncEventingBasicConsumer(_channel);
 

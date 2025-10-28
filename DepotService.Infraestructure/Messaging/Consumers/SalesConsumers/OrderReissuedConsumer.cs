@@ -16,7 +16,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace DepotService.Infraestructure.Messaging.Consumers
+namespace DepotService.Infraestructure.Messaging.Consumers.SalesConsumers
 {
     public class OrderReissuedConsumer : BackgroundService
     {
