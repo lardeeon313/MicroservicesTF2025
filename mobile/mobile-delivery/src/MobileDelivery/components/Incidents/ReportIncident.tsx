@@ -1,7 +1,18 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { LogisticOrder, DeliveryIncidentStatus } from "../../types/DeliveryOrderTypeDto";
+import { ReportDeliveryIncidentRequest } from "../../types/Request";
+//import { validateReportDeliveryIncident } from "../../validations/validateReportDeliveryIncident";
+import { validateReportDeliveryIncident } from "../../validations/ValidateReportIncidentOrder";
 
 type Props = {
   order: LogisticOrder;
@@ -14,6 +25,26 @@ export default function ReportIncidentComponent({ order, onSubmit, isLoading }: 
   const [incidentType, setIncidentType] = useState<DeliveryIncidentStatus>(
     DeliveryIncidentStatus.Pending
   );
+
+  const handleSubmit = () => {
+    const request: ReportDeliveryIncidentRequest = {
+      logisticOrderId: order.id,
+      operatorUserId: order.assignedOperatorId || "", // asegúrate que esté presente en el objeto order
+      incidentType: incidentType.toString(),
+      description: notes,
+    };
+
+    // 🔹 Validación externa
+    const validationError = validateReportDeliveryIncident(request);
+
+    if (validationError) {
+      Alert.alert("Validación", validationError);
+      return;
+    }
+
+    // ✅ Si pasa la validación, llama al callback
+    onSubmit(incidentType, notes);
+  };
 
   return (
     <View
@@ -91,7 +122,7 @@ export default function ReportIncidentComponent({ order, onSubmit, isLoading }: 
           flexDirection: "row",
           justifyContent: "center",
         }}
-        onPress={() => onSubmit(incidentType, notes)}
+        onPress={handleSubmit}
       >
         {isLoading ? (
           <ActivityIndicator color="#fff" />
@@ -102,10 +133,27 @@ export default function ReportIncidentComponent({ order, onSubmit, isLoading }: 
         )}
       </TouchableOpacity>
 
-
-      <View style={{flexDirection: "row",alignItems: "flex-start",marginTop: 20,padding: 12,backgroundColor: "#f0f7ff",borderRadius: 10,borderLeftWidth: 3,borderLeftColor: "#2196F3",}}>
-        <Text style={{fontSize: 16,marginRight: 8,marginTop: 1,}}>ℹ️</Text>
-        <Text style={{flex: 1,fontSize: 13,color: "#555",lineHeight: 18,}}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "flex-start",
+          marginTop: 20,
+          padding: 12,
+          backgroundColor: "#f0f7ff",
+          borderRadius: 10,
+          borderLeftWidth: 3,
+          borderLeftColor: "#2196F3",
+        }}
+      >
+        <Text style={{ fontSize: 16, marginRight: 8, marginTop: 1 }}>ℹ️</Text>
+        <Text
+          style={{
+            flex: 1,
+            fontSize: 13,
+            color: "#555",
+            lineHeight: 18,
+          }}
+        >
           Esta acción notificará al sistema.
         </Text>
       </View>

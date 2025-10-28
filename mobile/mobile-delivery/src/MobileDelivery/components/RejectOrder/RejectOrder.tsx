@@ -1,7 +1,8 @@
-//src/components/RejectAssignedOrder/RejectAssignedOrderComponent.tsx
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { LogisticOrder } from "../../types/DeliveryOrderTypeDto";
+import { RejectAssingOrderRequest } from "../../types/Request";
+import { validateRejectAssignedOrder } from "../../validations/ValidateRejectAssignedOrder";
 
 type RejectAssignedOrderComponentProps = {
   order: LogisticOrder | null;
@@ -15,13 +16,27 @@ export default function RejectAssignedOrderComponent({
   onReject,
 }: RejectAssignedOrderComponentProps) {
   const [reason, setReason] = useState("");
-  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleRejectPress = () => {
-    if (reason.trim() === "") {
-      setShowError(true);
+    if (!order) return;
+
+    // 🔹 Construimos el request según la interfaz real
+    const request: RejectAssingOrderRequest = {
+      logisticOrderId: order.id,
+      operatorUserId: "", // se completa en la Page
+      reason,
+    };
+
+    // 🔹 Validamos usando la función desacoplada
+    const validation = validateRejectAssignedOrder(request);
+
+    if (!validation.isValid) {
+      setErrorMessage(validation.errors.reason ?? "Motivo inválido");
       return;
     }
+
+    setErrorMessage(null);
     onReject(reason);
   };
 
@@ -68,7 +83,7 @@ export default function RejectAssignedOrderComponent({
           <TextInput
             style={[
               styles.input,
-              showError && styles.inputError,
+              errorMessage && styles.inputError,
               loading && styles.inputDisabled,
             ]}
             placeholder="Describe brevemente el motivo del rechazo..."
@@ -76,29 +91,24 @@ export default function RejectAssignedOrderComponent({
             value={reason}
             onChangeText={(text) => {
               setReason(text);
-              setShowError(false);
+              setErrorMessage(null);
             }}
             editable={!loading}
             multiline
             numberOfLines={4}
             textAlignVertical="top"
           />
-          {showError && (
+          {errorMessage && (
             <View style={styles.errorMessageContainer}>
               <Text style={styles.errorIcon}>⚠️</Text>
-              <Text style={styles.errorMessage}>
-                El motivo del rechazo es obligatorio
-              </Text>
+              <Text style={styles.errorMessage}>{errorMessage}</Text>
             </View>
           )}
         </View>
 
         {/* Botón de acción */}
         <TouchableOpacity
-          style={[
-            styles.button,
-            loading && styles.buttonDisabled,
-          ]}
+          style={[styles.button, loading && styles.buttonDisabled]}
           onPress={handleRejectPress}
           disabled={loading}
           activeOpacity={0.8}
@@ -116,9 +126,7 @@ export default function RejectAssignedOrderComponent({
         {/* Nota informativa */}
         <View style={styles.infoContainer}>
           <Text style={styles.infoIcon}>ℹ️</Text>
-          <Text style={styles.infoText}>
-            Esta acción notificará al sistema.
-          </Text>
+          <Text style={styles.infoText}>Esta acción notificará al sistema.</Text>
         </View>
       </View>
     </View>
