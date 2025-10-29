@@ -1,8 +1,9 @@
-import { CalendarDays, Package, User, BadgeCheck, Eye, Pencil, Trash,MapPin } from "lucide-react"
+import { CalendarDays, Package, User, BadgeCheck, Eye, Pencil, Trash,MapPin,CircleDollarSign } from "lucide-react"
 import { OrderTableData } from "../../types/OrderTypes";
 import formatDate from "../../../../utils/formateDate";
 import { OrderStatusBadge } from "../../../../components/OrderStatusBadge";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
+
 
 interface Props {
   orders: OrderTableData[];
@@ -15,8 +16,6 @@ interface Props {
   onActionChange: (action: string, id: number) => void;
 }
 
-<<<<<<< HEAD
-=======
 const getPaymentTypeLabel = (type?: string) => {
   
   if (!type) return "No especificado";
@@ -41,7 +40,6 @@ const getPaymentTypeLabel = (type?: string) => {
 };
 
 
->>>>>>> 6af0e0b (Implementación final del tipo de pago en registro y actualización de clientes y órdenes)
 export default function OrderTable({
   orders,
   loading,
@@ -78,6 +76,7 @@ export default function OrderTable({
                 <th className="px-4 py-3 text-left"><CalendarDays className="inline w-4 h-4 mr-1" /> Fecha Pedido</th>
                 <th className="px-4 py-3 text-left"><Package className="inline w-4 h-4 mr-1" /> Fecha Entrega</th>
                 <th className="px-4 py-3 text-left"><MapPin className="inline w-4 h-4 mr-1" /> Dirección</th>
+                <th className="px-4 py-3 text-left"><CircleDollarSign className="inline w-4 h-4 mr-1"/>Tipo de pago</th>
                 <th className="px-4 py-3 text-left"><BadgeCheck className="inline w-4 h-4 mr-1" /> Estado</th>
                 <th className="px-4 py-3 text-center">Acciones</th>
                 <th className="px-4 py-3 text-center">Cambiar estado</th>
@@ -104,6 +103,7 @@ export default function OrderTable({
                       <span>Sin dirección</span>
                     )}
                   </td>
+                  <td className="px-4 py-3">{getPaymentTypeLabel(order.paymentType)}</td>
                   <td className="px-4 py-3"><OrderStatusBadge status={order.status}></OrderStatusBadge></td>
                   <td className="px-4 py-3 text-center">
                     <div className="flex justify-center items-center gap-x-2">

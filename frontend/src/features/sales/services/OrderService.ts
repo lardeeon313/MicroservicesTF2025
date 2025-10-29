@@ -7,6 +7,7 @@ import {
    CancelOrderRequest,
    DeleteOrderRequest } from "../types/OrderTypes";
 import { Address } from "../types/CustomerTypes";
+import { CustomerPaymenType } from "../types/CustomerTypes";
 
 // Obtener todas las órdenes
 export const getAllOrders = async (): Promise<Order[]> => {
@@ -34,26 +35,17 @@ export const getOrdersByCustomer = async (customerId: string): Promise<Order[]> 
 
 // Registrar una nueva orden
 export const registerOrder = async (data: RegisterOrderRequest): Promise<Order> => {
-<<<<<<< HEAD
-  const response = await API.post("/sales/Order/register", data);
-  return response.data;
-=======
   
   const response = await API.post("/sales/Order/register", data);
   
   return response.data
->>>>>>> 6af0e0b (Implementación final del tipo de pago en registro y actualización de clientes y órdenes)
 };
 
 // Actualizar orden
 export const updateOrder = async (id: number, data: UpdateOrderRequest): Promise<Order> => {
-<<<<<<< HEAD
-  const response = await API.put(`/sales/order/update/${id}`, data);
-=======
 
   const response = await API.put(`/sales/order/update/${id}`, data);
 
->>>>>>> 6af0e0b (Implementación final del tipo de pago en registro y actualización de clientes y órdenes)
   return response.data;
 };
 
@@ -151,4 +143,37 @@ export const getCustomerAddresses = async (customerId: string): Promise<Address[
   return response.data;
 };
 
+//Obtiene todos los tipos de pago segun el tipo de cliente: 
+
+export const getCustomerPaymentTypes = async (
+  customerId: string
+): Promise<CustomerPaymenType[]> => {
+  try {
+    const response = await API.get<CustomerPaymenType[]>(
+      `/sales/Customer/payment-types/${customerId}`
+    );
+
+    return response.data;
+  } catch (error: any) {
+    if (error.response) {
+      const { status, data } = error.response;
+
+      if (status === 404) {
+        // Manejo explícito del mensaje del backend
+        const message =
+          data?.message || "El cliente no no tiene los tipos de pago.";
+        console.warn(message);
+        return [];
+      }
+
+      if (status === 500) {
+        console.error("Internal Server Error:", data);
+        throw new Error("Internal Server Error");
+      }
+    }
+
+    console.error("Unexpected error while fetching customer payment types:", error);
+    throw error;
+  }
+};
 

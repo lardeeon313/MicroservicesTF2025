@@ -5,22 +5,6 @@ export const orderStatusStyles: Record<OrderStatus, { text: string; bg: string }
     text: "text-gray-700",
     bg: "bg-gray-200", // gris = en espera
   },
-  [OrderStatus.ReIssued]: {
-    text: "text-yellow-700",
-    bg: "bg-yellow-100", // amarillo = reemitido
-  },
-  [OrderStatus.PendingResolution]: {
-    text: "text-yellow-700",
-    bg: "bg-yellow-100", // amarillo claro = pendiente de resolución
-  },
-   [OrderStatus.PendingReissued]: {
-    text: "text-orange-700",
-    bg: "bg-orange-100", // naranja claro = pendiente de reemision
-  },
-  [OrderStatus.SentToBilling]: {
-    text: "text-purple-700",
-    bg: "bg-purple-100", // morado = enviado a facturación
-  },
   [OrderStatus.Issued]: {
     text: "text-blue-700",
     bg: "bg-blue-100", // azul = emitido/documentado
@@ -37,13 +21,17 @@ export const orderStatusStyles: Record<OrderStatus, { text: string; bg: string }
     text: "text-sky-700",
     bg: "bg-sky-100", // celeste = listo para enviar
   },
+  [OrderStatus.SentToBilling]: {
+    text: "text-purple-700",
+    bg: "bg-purple-100", // morado = enviado a facturación
+  },
   [OrderStatus.Invoiced]: {
     text: "text-emerald-700",
     bg: "bg-emerald-100", // verde fuerte = facturado
   },
-  [OrderStatus.Verify]: {
+  [OrderStatus.Verified]: {
     text: "text-cyan-700",
-    bg: "bg-cyan-100", // celeste brillante = requiere verificación
+    bg: "bg-cyan-100", // celeste brillante = verificado
   },
   [OrderStatus.OnTheWay]: {
     text: "text-yellow-800",
@@ -57,8 +45,48 @@ export const orderStatusStyles: Record<OrderStatus, { text: string; bg: string }
     text: "text-red-700",
     bg: "bg-red-100", // rojo = cancelado
   },
-  [OrderStatus.Modified]: {
-    text: "text-pink-700",
-    bg: "bg-pink-100", // rosado = modificado/alterado
+  [OrderStatus.PendingResolution]: {
+    text: "text-yellow-700",
+    bg: "bg-yellow-100", // amarillo claro = pendiente de resolución
+  },
+  [OrderStatus.ReIssued]: {
+    text: "text-amber-700",
+    bg: "bg-amber-100", // amarillo = reemitido
+  },
+  [OrderStatus.PendingReissued]: {
+    text: "text-orange-700",
+    bg: "bg-orange-100", // naranja claro = pendiente de reemision
+  },
+  [OrderStatus.PendingVerification]: {
+    text: "text-lime-700",
+    bg: "bg-lime-100", // lima = pendiente de verificación
+  },
+  [OrderStatus.PendingDelivery]: {
+    text: "text-violet-700",
+    bg: "bg-violet-100", // violeta = pendiente de reparto
+  },
+  [OrderStatus.AssignmentCancelled]: {
+    text: "text-rose-700",
+    bg: "bg-rose-100", // rosa = asignación cancelada
+  },
+  [OrderStatus.AssignedDelivery]: {
+    text: "text-fuchsia-700",
+    bg: "bg-fuchsia-100", // fucsia = asignado a reparto
+  },
+  [OrderStatus.PendingCashVerification]: {
+    text: "text-stone-700",
+    bg: "bg-stone-100", // piedra = efectivo pendiente de verificación
+  },
+  [OrderStatus.CashVerified]: {
+    text: "text-green-700",
+    bg: "bg-green-50", // verde claro = efectivo verificado
+  },
+  [OrderStatus.PendingIncidentResolution]: {
+    text: "text-red-800",
+    bg: "bg-red-50", // rojo claro = pendiente de resolución de incidente
+  },
+  [OrderStatus.IncidentResolved]: {
+    text: "text-green-600",
+    bg: "bg-green-200", // verde = incidente resuelto
   },
 }

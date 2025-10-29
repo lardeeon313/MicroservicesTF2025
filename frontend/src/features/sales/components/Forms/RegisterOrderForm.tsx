@@ -3,7 +3,7 @@ import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
 import { registerOrderValidationSchema } from "../../validations/orderSchemas";
 import type { Customer, Address } from "../../types/CustomerTypes";
 import { RegisterOrderRequest } from "../../types/OrderTypes";
-import { getCustomerAddresses } from "../../services/OrderService";
+import { getCustomerAddresses, getCustomerPaymentTypes } from "../../services/OrderService";
 
 interface Props {
   customers: Customer[];
@@ -19,6 +19,32 @@ const RegisterOrderForm: React.FC<Props> = ({
   isSubmitting,
 }) => {
   const [addresses, setAddresses] = useState<Address[]>([]);
+  const [paymentTypes, setPaymentTypes] = useState<{ id: number; paymentType: string }[]>([]);
+
+
+  // Traductor de tipos de pago
+  const getPaymentTypeLabel = (paymentType: string): string => {
+    if (!paymentType) return "Tipo de pago desconocido";
+
+    // Normalizamos (por si vienen con mayúsculas mezcladas)
+    const normalized = paymentType
+      .replace(/([A-Z])/g, "_$1") // pone guión antes de cada mayúscula
+      .toLowerCase() // todo minúscula
+      .replace(/__+/g, "_"); // limpia posibles dobles guiones bajos
+
+    const labels: Record<string, string> = {
+      transfer: "Transferencia",
+      credit_card: "Tarjeta de crédito",
+      debit_card: "Tarjeta de débito",
+      cash: "Efectivo",
+      current_account: "Cuenta corriente",
+      check: "Cheque",
+      promissory_note: "Pagaré",
+    };
+
+    return labels[normalized] ?? paymentType;
+  };
+
 
   const handleSubmit = (values: RegisterOrderRequest) => {
     console.log("Valores del formulario al enviar:", values);
@@ -32,8 +58,9 @@ const RegisterOrderForm: React.FC<Props> = ({
       onSubmit={handleSubmit}
     >
       {({ values, setFieldValue }) => {
-        console.log("Valores actuales del formulario:", values); // Debug
+        console.log("Valores actuales del formulario:", values);
 
+        // Trae direcciones del cliente
         useEffect(() => {
           const fetchAddresses = async () => {
             if (values.customerId) {
@@ -41,7 +68,6 @@ const RegisterOrderForm: React.FC<Props> = ({
                 const data = await getCustomerAddresses(values.customerId);
                 setAddresses(data);
                 setFieldValue("deliveryAddressId", "");
-                // NO sobrescribas el address aquí
               } catch (error) {
                 console.error("Error al traer direcciones:", error);
                 setAddresses([]);
@@ -53,8 +79,6 @@ const RegisterOrderForm: React.FC<Props> = ({
           fetchAddresses();
         }, [values.customerId, setFieldValue]);
 
-<<<<<<< HEAD
-=======
         // Trae tipos de pago del cliente
         // ✅ Trae y mapea tipos de pago del cliente
         useEffect(() => {
@@ -84,43 +108,35 @@ const RegisterOrderForm: React.FC<Props> = ({
         }, [values.customerId, setFieldValue]);
 
 
->>>>>>> 6af0e0b (Implementación final del tipo de pago en registro y actualización de clientes y órdenes)
         const handleAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedAddressId = e.target.value ? Number(e.target.value) : null;
+  const selectedAddressId = e.target.value;
+  setFieldValue("deliveryAddressId", selectedAddressId);
 
-        // ✅ Guardamos deliveryAddressId como número
-        setFieldValue("deliveryAddressId", selectedAddressId);
-
-        if (selectedAddressId) {
-          // ✅ Si seleccionó una dirección existente, limpiamos los campos manuales
-          setFieldValue("deliveryAddress", {
-            street: "",
-            number: "",
-            apartment: "",
-            city: "",
-            province: "",
-            country: "",
-            postalCode: "",
-            latitude: null,
-            longitude: null,
-            formattedAddress: "",
-          });
-        } else {
-          // ✅ Si el usuario elige "ninguna", puede ingresar manualmente
-          setFieldValue("deliveryAddress", {
-            street: "",
-            number: "",
-            apartment: "",
-            city: "",
-            province: "",
-            country: "",
-            postalCode: "",
-            latitude: null,
-            longitude: null,
-            formattedAddress: "",
-          });
-        }
-      };
+  if (selectedAddressId) {
+    const selectedAddress = addresses.find(addr => addr.id === Number(selectedAddressId));
+    if (selectedAddress) {
+      setFieldValue("deliveryAddress", {
+        street: selectedAddress.street,
+        number: selectedAddress.number,
+        apartment: selectedAddress.apartment || "",
+        city: selectedAddress.city,
+        province: selectedAddress.province,
+        country: selectedAddress.country,
+        postalCode: selectedAddress.postalCode,
+      });
+    }
+  } else {
+    setFieldValue("deliveryAddress", {
+      street: "",
+      number: "",
+      apartment: "",
+      city: "",
+      province: "",
+      country: "",
+      postalCode: "",
+    });
+  }
+};
 
 
 
@@ -149,6 +165,7 @@ const RegisterOrderForm: React.FC<Props> = ({
                 className="text-red-700 text-sm pt-1"
               />
             </div>
+
             {/* Fecha de entrega */}
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">
@@ -165,6 +182,7 @@ const RegisterOrderForm: React.FC<Props> = ({
                 className="text-red-700 text-sm pt-1"
               />
             </div>
+
             {/* Dirección */}
             {values.customerId && (
               <div>
@@ -230,6 +248,40 @@ const RegisterOrderForm: React.FC<Props> = ({
                 )}
               </div>
             )}
+
+            {/* Tipo de Pago */}
+            {values.customerId && (
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-1">
+                  Tipo de Pago
+                </label>
+                {paymentTypes.length > 0 ? (
+                  <Field
+                    as="select"
+                    name="paymentType"
+                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
+                  >
+                    <option value="">Seleccione un tipo de pago</option>
+                    {paymentTypes.map((p) => (
+                      <option key={p.id} value={p.paymentType}>
+                        {getPaymentTypeLabel(p.paymentType)}
+                      </option>
+                    ))}
+                  </Field>
+                ) : (
+                  <p className="text-gray-600 italic">
+                    No hay tipos de pago disponibles para este cliente.
+                  </p>
+                )}
+                <ErrorMessage
+                  name="paymentType"  // <-- Cambiar de "paymentTypeId" a "paymentType"
+                  component="div"
+                  className="text-red-700 text-sm pt-1"
+                />
+              </div>
+            )}
+
+
             {/* Items */}
             <FieldArray name="items">
               {({ push, remove }) => (
@@ -302,6 +354,7 @@ const RegisterOrderForm: React.FC<Props> = ({
                 </div>
               )}
             </FieldArray>
+
             {/* Detalle adicional */}
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-1">
@@ -320,6 +373,7 @@ const RegisterOrderForm: React.FC<Props> = ({
                 className="text-red-700 text-sm pt-1"
               />
             </div>
+
             {/* Botón submit */}
             <div className="mt-10">
               <button

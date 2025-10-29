@@ -12,5 +12,6 @@ export function mapOrderToOrderTableData(order: any): OrderTableData {
     items: order.items,
     // 👇 Ajustamos acá
     deliveryAddress: order.address,
+    paymentType: order.paymentType
   };
 }

@@ -11,10 +11,12 @@ import { useAuth } from "../../../auth/context/useAuth";
 import { getUserIdFromToken } from "../../../../utils/jwtUtils";
 import BackButton from "../../../../components/BackButton";
 
+
 const initialValues: RegisterOrderRequest = {
   customerId: "",
   deliveryDate: "",
   deliveryDetail: "",
+  paymentType: undefined, // 👈 inicializado como string del enum
   items: [{ productName: "", productBrand: "", quantity: 1 }],
   deliveryAddressId: null,
   deliveryAddress: {
@@ -31,7 +33,6 @@ const initialValues: RegisterOrderRequest = {
     formattedAddress: "",
   },
 };
-
 
 export default function RegisterOrderPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -55,6 +56,7 @@ export default function RegisterOrderPage() {
           registrationDate: new Date().toISOString(),
           descriptionsatisfaction: "",
           isActive: true,
+          paymentTypes: c.paymentTypes || [],
         }));
         setCustomers(mappedCustomers);
       } catch (error) {
@@ -72,7 +74,6 @@ export default function RegisterOrderPage() {
     const orderToSend = {
       ...values,
       createdByUserId: userId!,
-      deliveryAddress: values.deliveryAddressId ? undefined : values.deliveryAddress,
     };
     console.log("Datos enviados al backend:", orderToSend);
     const response = await registerOrder(orderToSend);

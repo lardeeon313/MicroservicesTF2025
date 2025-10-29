@@ -54,16 +54,9 @@ import {DashboardBillingReportsPage} from "../features/depot/pages/DashboardBill
 import InvoicePage from "../features/depot/billingmanager/pages/InvoiceExportPage";
 import InvoiceOneDetailPage from "../features/depot/billingmanager/pages/InvoiceDetailPage";
 
-// Otros roles
-import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
-
 // Verification
 import TeamsPageVerification from "../features/verification/pages/TeamsPage";
 import VerificationManagerDashboardPage from "../features/verification/pages/VerificationManagerDashboard";
-<<<<<<< HEAD
-=======
-//import { DashboardLogisticReportsPage } from "../features/verification/pages/reports/DashboardLogisticReportsPage";
->>>>>>> 6af0e0b (Implementación final del tipo de pago en registro y actualización de clientes y órdenes)
 import PendingOrdersVerificationPage from "../features/verification/pages/PendingOrdersVerficationPage";
 import PendingOrdersVerificationDetailsPage from "../features/verification/pages/PendingOrderVerificationDetailsPage";
 import OrdersInRoutePage from "../features/verification/pages/OrdersInRoutePage";

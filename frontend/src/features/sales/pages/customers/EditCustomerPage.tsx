@@ -19,24 +19,25 @@ const EditCustomerPage = () => {
       try {
         const customer = await getCustomerById(id!);
         setInitialValues({
-  id: customer.id,
-  firstName: customer.firstName || "",
-  lastName: customer.lastName || "",
-  email: customer.email || "",
-  phoneNumber: customer.phoneNumber || "",
-  addresses: customer.addresses?.map(a => ({
-    street: a.street || "",
-    number: a.number?.toString() || "",
-    apartment: a.apartment || "",
-    city: a.city || "",
-    province: a.province || "",
-    country: a.country || "",
-    postalCode: a.postalCode || "",
-    latitude: a.latitude,
-    longitude: a.longitude,
-    formattedAddress: a.formattedAddress,
-  })) || [],
-});
+        id: customer.id,
+        firstName: customer.firstName || "",
+        lastName: customer.lastName || "",
+        email: customer.email || "",
+        phoneNumber: customer.phoneNumber || "",
+        addresses: customer.addresses?.map(a => ({
+          street: a.street || "",
+          number: a.number?.toString() || "",
+          apartment: a.apartment || "",
+          city: a.city || "",
+          province: a.province || "",
+          country: a.country || "",
+          postalCode: a.postalCode || "",
+          latitude: a.latitude,
+          longitude: a.longitude,
+          formattedAddress: a.formattedAddress,
+        })) || [],
+        paymentTypes: customer.paymentTypes?.map(pt => pt.paymentType) || [],
+      });
 
       } catch (error) {
         handleFormikError({

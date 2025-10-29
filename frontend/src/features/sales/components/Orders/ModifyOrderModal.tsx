@@ -18,7 +18,7 @@ const ModifyOrderModal: React.FC<Props> = ({ order, onClose, onSave }) => {
     }))
   );
 
-  const [addressRequest, setAddressRequest] = useState({
+  const [addressRequest] = useState({
     street: order.salesOrder.deliveryAddress?.street || '',
     number: order.salesOrder.deliveryAddress?.number?.toString() || '',
     apartment: order.salesOrder.deliveryAddress?.apartment || '',
@@ -34,10 +34,6 @@ const ModifyOrderModal: React.FC<Props> = ({ order, onClose, onSave }) => {
     const newItems = [...items];
     (newItems[index] as any)[field] = value;
     setItems(newItems);
-  };
-
-  const handleAddressChange = (field: keyof typeof addressRequest, value: string) => {
-    setAddressRequest(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -80,62 +76,6 @@ const ModifyOrderModal: React.FC<Props> = ({ order, onClose, onSave }) => {
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-red-400 focus:outline-none"
               />
-            </div>
-
-            {/* Dirección de entrega */}
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Dirección de Entrega</h3>
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="text"
-                  placeholder="Calle"
-                  value={addressRequest.street}
-                  onChange={(e) => handleAddressChange('street', e.target.value)}
-                  className="px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:border-red-400"
-                />
-                <input
-                  type="text"
-                  placeholder="Número"
-                  value={addressRequest.number}
-                  onChange={(e) => handleAddressChange('number', e.target.value)}
-                  className="px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:border-red-400"
-                />
-                <input
-                  type="text"
-                  placeholder="Depto (opcional)"
-                  value={addressRequest.apartment}
-                  onChange={(e) => handleAddressChange('apartment', e.target.value)}
-                  className="col-span-2 px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:border-red-400"
-                />
-                <input
-                  type="text"
-                  placeholder="Ciudad"
-                  value={addressRequest.city}
-                  onChange={(e) => handleAddressChange('city', e.target.value)}
-                  className="px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:border-red-400"
-                />
-                <input
-                  type="text"
-                  placeholder="Provincia"
-                  value={addressRequest.province}
-                  onChange={(e) => handleAddressChange('province', e.target.value)}
-                  className="px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:border-red-400"
-                />
-                <input
-                  type="text"
-                  placeholder="País"
-                  value={addressRequest.country}
-                  onChange={(e) => handleAddressChange('country', e.target.value)}
-                  className="px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:border-red-400"
-                />
-                <input
-                  type="text"
-                  placeholder="Código Postal"
-                  value={addressRequest.postalCode}
-                  onChange={(e) => handleAddressChange('postalCode', e.target.value)}
-                  className="px-3 py-2 border rounded-md border-gray-300 focus:outline-none focus:border-red-400"
-                />
-              </div>
             </div>
 
             {/* Productos */}

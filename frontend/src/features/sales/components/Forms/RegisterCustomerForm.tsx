@@ -1,6 +1,8 @@
 import { Formik, Field, Form, ErrorMessage, FormikHelpers, FieldArray } from "formik";
 import { RegisterCustomerRequest } from "../../types/CustomerTypes";
 import { registerCustomerSchema } from "../../validations/customerSchemas";
+import { PaymentType } from "../../types/OrderTypes";
+import { getPaymentTypeLabel } from "../../constants/CustomerPaymentTypesLabel";
 
 interface Props {
   isSubmitting: boolean;
@@ -26,6 +28,7 @@ const initialValues: RegisterCustomerRequest = {
       postalCode: "",
     },
   ],
+  paymentTypes: [],
 };
 
 const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
@@ -35,7 +38,7 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
       validationSchema={registerCustomerSchema}
       onSubmit={onSubmit}
     >
-      {({ values }) => (
+      {({ values, setFieldValue }) => (
         <Form className="space-y-6 container mx-auto py-10 px-16 sm:max-w-6xl">
           {/* Datos básicos del cliente */}
           <h3 className="text-lg font-semibold mb-4">Datos de Contacto</h3>
@@ -72,7 +75,6 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
           {/* Direcciones */}
           <div className="mt-8">
             <h3 className="text-lg font-semibold mb-4">Direcciones</h3>
-
             <FieldArray name="addresses">
               {({ push, remove }) => (
                 <div className="space-y-6">
@@ -96,7 +98,6 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
                           className="text-red-700 text-sm pt-1"
                         />
                       </div>
-
                       {/* Number */}
                       <div>
                         <label className="block text-sm font-medium text-gray-900 mb-1">
@@ -112,7 +113,6 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
                           className="text-red-700 text-sm pt-1"
                         />
                       </div>
-
                       {/* Apartment */}
                       <div>
                         <label className="block text-sm font-medium text-gray-900 mb-1">
@@ -128,7 +128,6 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
                           className="text-red-700 text-sm pt-1"
                         />
                       </div>
-
                       {/* City */}
                       <div>
                         <label className="block text-sm font-medium text-gray-900 mb-1">
@@ -144,7 +143,6 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
                           className="text-red-700 text-sm pt-1"
                         />
                       </div>
-
                       {/* Province */}
                       <div>
                         <label className="block text-sm font-medium text-gray-900 mb-1">
@@ -160,7 +158,6 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
                           className="text-red-700 text-sm pt-1"
                         />
                       </div>
-
                       {/* Country */}
                       <div>
                         <label className="block text-sm font-medium text-gray-900 mb-1">
@@ -176,7 +173,6 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
                           className="text-red-700 text-sm pt-1"
                         />
                       </div>
-
                       {/* PostalCode */}
                       <div>
                         <label className="block text-sm font-medium text-gray-900 mb-1">
@@ -192,7 +188,6 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
                           className="text-red-700 text-sm pt-1"
                         />
                       </div>
-
                       {/* Botón quitar */}
                       <div className="flex items-center mt-6">
                         <button
@@ -205,7 +200,6 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
                       </div>
                     </div>
                   ))}
-
                   {/* Botón agregar dirección */}
                   <button
                     type="button"
@@ -229,8 +223,6 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
             </FieldArray>
           </div>
 
-<<<<<<< HEAD
-=======
           {/* Formas de Pago (Desplegable) */}
           <div className="mt-8">
             <h3 className="text-lg font-semibold mb-4 text-gray-800">Formas de Pago * </h3>
@@ -261,7 +253,6 @@ const RegisterCustomerForm = ({ isSubmitting, onSubmit }: Props) => {
             />
           </div>
 
->>>>>>> 6af0e0b (Implementación final del tipo de pago en registro y actualización de clientes y órdenes)
           {/* Botón Submit */}
           <div className="mt-10">
             <button
