@@ -20,6 +20,7 @@ import ListPendingCashOrdersComponent from "../../components/ListOrders/ListOrde
 import { useGetMyPendingCashOrders } from "../../hocks/usePendingCashOrders";
 import { LogisticOrder } from "../../types/DeliveryOrderTypeDto";
 import { Banknote } from "lucide-react-native";
+import OrdersNotFound from "../../../components/OrdersNotFound";
 
 type DeliveryNavigationProp = NativeStackNavigationProp<DeliveryStackParamList>;
 
@@ -144,13 +145,6 @@ export default function PendingCashOrdersPage() {
         </View>
       )}
 
-      {/* Estado: Error */}
-      {error && (
-        <View style={styles.center}>
-          <Text style={styles.errorText}>{error}</Text>
-        </View>
-      )}
-
       {/* Estado: Mensaje contextual */}
       {statusMessage && (
         <View style={styles.statusContainer}>
@@ -159,7 +153,25 @@ export default function PendingCashOrdersPage() {
       )}
 
       {/* Lista de pedidos */}
-      {!loading && !error && (
+      {loading ? (
+        <ActivityIndicator size="large" color="#3B82F6" style={{ marginTop: 40 }} />
+      ) : error ? (
+        <OrdersNotFound
+          icon="🚫"
+          title="Error al cargar pedidos"
+          message="Ocurrió un problema al obtener los pedidos pendientes en efectivo."
+          buttonText="Reintentar"
+          onRefresh={() => {}}
+        />
+      ) : orders.length === 0 ? (
+        <OrdersNotFound
+          icon="🚫"
+          title="No hay pedidos pendientes"
+          message="No se encontraron pedidos pendientes en efectivo asignados a tu usuario."
+          buttonText="Actualizar"
+          onRefresh={() => {}} 
+        />
+      ) : (
         <FlatList
           contentContainerStyle={{ padding: 16 }}
           data={orders}

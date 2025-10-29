@@ -3,18 +3,27 @@
 import API from "../../services/axios";
 import { LogisticOrder } from "../types/DeliveryOrderTypeDto";
 
+// ✅ Endpoint para obtener todos los pedidos en camino (status = OnTheWay)
 export const getMyOnTheWayOrders = async (operatorId: string): Promise<LogisticOrder[]> => {
   try {
     const response = await API.get<LogisticOrder[]>(`/logistic/DeliveryOperator/get-my-on-the-way-orders/${operatorId}`);
     return response.data;
   } catch (error: any) {
     if (error.response) {
+      // Si es 404 (no hay pedidos), devolvemos lista vacía en lugar de lanzar un error
       if (error.response.status === 404) {
-        throw new Error("No se encontraron pedidos en camino para este operador.");
-      } else if (error.response.status === 400) {
-        throw new Error("Solicitud inválida. Verifica el ID del operador.");
+        return [];
+      }
+
+      // Si es 400 (ID inválido), también podemos devolver vacío o manejarlo distinto
+      if (error.response.status === 400) {
+        console.warn("Solicitud inválida. Verifica el ID del operador.");
+        return [];
       }
     }
-    throw new Error("Error al obtener los pedidos en camino. Intenta nuevamente más tarde.");
+
+    // Para cualquier otro error (problema de red, servidor caído, etc.)
+    console.error("Error al obtener los pedidos en camino:", error);
+    return [];
   }
 };

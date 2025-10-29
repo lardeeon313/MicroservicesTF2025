@@ -5,6 +5,7 @@ import { DeliveryIncident } from "./DeliveryOrderTypeDto";
 export type DeliveryStackParamList = {
   Dashboard: undefined;
   OrdersToDistribute: undefined;
+  OrdersToConfirm: undefined;
   OrdersToDelivered: undefined;
   OrdersToIncidents: undefined;
   OrdersOnTheWay: undefined;

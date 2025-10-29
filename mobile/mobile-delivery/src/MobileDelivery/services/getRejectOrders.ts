@@ -12,7 +12,6 @@ export const getMyRejectOrders = async (operatorId: string): Promise<LogisticOrd
     console.log("✅ Órdenes rechazadas recibidas:", response.data);
     return response.data;
   } catch (error: any) {
-    console.error("❌ Error en getMyRejectOrders:", error.response?.data || error.message);
     throw error;
   }
 };

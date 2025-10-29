@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, Dimensions, ScrollView } from "react-native";
-import { MapPin, CheckCircle, AlertTriangle, Bus, Search, ShieldX } from "lucide-react-native";
+import { MapPin, CheckCircle, AlertTriangle, Bus, Search, ShieldX , PackageOpen} from "lucide-react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { DeliveryStackParamList } from "../types/DeliveryStackType";
@@ -20,14 +20,21 @@ const cards: CardItem[] = [
   {
     title: "Pedidos para repartir",
     description:
-      "Visualiza todos los pedidos que ya has confirmado dependiendo de tu zona.",
+      "Visualiza todos los pedidos que se te han sido asignados para confirmarlos o rechazarlos.",
     icon: MapPin,
     path: "OrdersToDistribute",
   },
   {
+    title: "Pedidos confirmados",
+    description: 
+      "Envia los pedidos que has confirmado para mandarlos en camino.",
+    icon:PackageOpen,
+    path: "OrdersToConfirm", 
+  },
+  {
     title: "Pedidos en \ncamino",
     description:
-      "Revisa los pedidos que ya confirmaste y que se encuentran en camino.",
+      "Revisa los pedidos que ya se encuentran en camino.",
     icon: Bus,
     path: "OrdersOnTheWay",
   },
@@ -46,7 +53,7 @@ const cards: CardItem[] = [
   },
   {
     title: "Pedidos rechazados",
-    description: "Consulta todos los pedidos que has rechzado, viendo los motivos",
+    description: "Consulta todos los pedidos que has rechzado, viendo los motivos.",
     icon: ShieldX,
     path: "OrdersReject",
   }
@@ -209,6 +216,8 @@ const DeliveryDashboardComponent = () => {
                     case "OrdersReject":
                       navigation.navigate("OrdersReject");
                       break;
+                    case "OrdersToConfirm":
+                      navigation.navigate("OrdersToConfirm");
                     default:
                       console.warn("Ruta no reconocida:", card.path);
                   }

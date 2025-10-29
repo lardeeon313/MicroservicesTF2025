@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace LogisticService.Infraestructure.Migrations
+namespace LogisticService.API.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

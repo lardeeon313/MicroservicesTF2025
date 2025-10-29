@@ -20,6 +20,8 @@ import { useAuth } from "../../Login/context/useAuth";
 import { useMyOnTheWayOrders } from "../../hocks/useOrdersToOnTheWay";
 import { useMarkOrderDelivered } from "../../hocks/useMarkOrderDelivered";
 import { LogisticOrder, PriorityType } from "../../types/DeliveryOrderTypeDto";
+import OrdersNotFound from "../../../components/OrdersNotFound";
+
 
 type DeliveryNavigationProp = NativeStackNavigationProp<DeliveryStackParamList>;
 
@@ -142,6 +144,7 @@ export default function ListOrdersOnTheWayPage() {
       )}
 
       {!loading && !error && (
+        orders.length > 0? (
         <FlatList
           contentContainerStyle={{ padding: 16 }}
           data={orders}
@@ -161,6 +164,16 @@ export default function ListOrdersOnTheWayPage() {
             />
           )}
         />
+        ) : (
+          <OrdersNotFound
+            icon="🚫"
+            title="No hay pedidos para en camino."
+            message="No has marcado ningun pedido 'En camino' con anterioridad, vuelve a intentarlo mas tarde."
+            buttonText="Actualizar"
+            onRefresh={() => {
+            }}
+          />
+        )
       )}
 
       {/* ✅ Modal de Confirmación */}
@@ -271,4 +284,3 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
 });
-
