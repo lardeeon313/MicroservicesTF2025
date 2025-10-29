@@ -38,4 +38,3 @@ const DeliveryDashboardPage = () => {
 };
 
 export default DeliveryDashboardPage;
-

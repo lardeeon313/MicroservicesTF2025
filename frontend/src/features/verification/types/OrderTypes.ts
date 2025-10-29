@@ -45,10 +45,9 @@ export enum PaymentType {
 }
 
 export enum DeliveryIncidentStatus {
-  Open = 0, // Abierto
-  InProgress = 1, // En progreso
-  Resolved = 2, // Resuelto
-  Closed = 3, // Cerrado
+  Pending = 0, // Pendiente
+  Resolved = 1, // Resuelto
+  Delivered = 2, // Entregado
 }
 
 // Main Order DTO
@@ -113,7 +112,6 @@ export interface DeliveryIncidentDto {
 // Delivery Rejection Reason DTO
 export interface DeliveryRejectionReasonDto {
   id: number;
-  logisticOrderId: number;
   deliveryOperatorId: string; // GUID as string
   reason: string;
   rejectedAt: string; // ISO date string

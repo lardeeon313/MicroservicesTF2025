@@ -205,7 +205,7 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
             return await _context.LogisticOrders
                     .Where(o => o.AssignedOperatorId == operatorId && (o.Status == OrderStatus.Delivered
                                                                       || o.Status == OrderStatus.CashVerified
-                                                                      || o.Status == OrderStatus.PendingCashVerification))
+                                                                      || o.Status == OrderStatus.PendingCashVerification))                    
                     .Include(o => o.Customer)
                     .Include(o => o.Items)
                     .Include(o => o.AssignedDeliveryTeam)
@@ -219,7 +219,7 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         public async Task<List<LogisticOrder>> GetMyOnTheWayOrders(Guid operatorId)
         {
             return await _context.LogisticOrders
-                    .Where(o => o.AssignedOperatorId == operatorId && o.Status == OrderStatus.OnTheWay)
+                    .Where(o => o.AssignedOperatorId == operatorId && o.Status == OrderStatus.OnTheWay)                    
                     .Include(o => o.Customer)
                     .Include(o => o.Items)
                     .Include(o => o.AssignedDeliveryTeam)
@@ -233,7 +233,7 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         public async Task<List<LogisticOrder>> GetMyPendingCashOrders(Guid operatorId)
         {
             return await _context.LogisticOrders
-                    .Where(o => o.AssignedOperatorId == operatorId && o.Status == OrderStatus.PendingCashVerification && o.PaymentType == PaymentType.Cash)
+                    .Where(o => o.AssignedOperatorId == operatorId && o.Status == OrderStatus.PendingCashVerification && o.PaymentType == PaymentType.Cash)                    
                     .Include(o => o.Customer)
                     .Include(o => o.Items)
                     .Include(o => o.AssignedDeliveryTeam)
@@ -247,7 +247,7 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         public async Task<List<LogisticOrder>> GetMyPendingDeliveredOrders(Guid operatorId)
         {
             return await _context.LogisticOrders
-                    .Where(o => o.AssignedOperatorId == operatorId && o.Status == OrderStatus.PendingDelivery)
+                    .Where(o => o.AssignedOperatorId == operatorId && o.Status == OrderStatus.PendingDelivery)                                        
                     .Include(o => o.Customer)
                     .Include(o => o.Items)
                     .Include(o => o.DeliveryAddress)
@@ -347,7 +347,6 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
 
             await _context.SaveChangesAsync();
         }
-
 
         public async Task<List<LogisticOrder>> GetOrdersWithDeliveryRejectionsAsync()
         {

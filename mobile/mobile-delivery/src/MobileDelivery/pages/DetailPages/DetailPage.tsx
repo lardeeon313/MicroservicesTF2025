@@ -134,9 +134,6 @@ export default function OrderDetailPage() {
     
   } : null;
 
-
-  console.log("🧩 TEAM EN ORDER DETAIL:", team);
-
   return (
     <View style={styles.container}>
       <NavbarDelivery user={user} isAuthenticated={isAuthenticated} logout={logout} />

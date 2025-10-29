@@ -53,7 +53,7 @@ export const AssignOperatorModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-[60]">
       <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full mx-4">
         <h3 className="text-xl font-bold text-gray-900 mb-6">
           Asignar Operador a Orden L-{orderId}
