@@ -54,9 +54,6 @@ import {DashboardBillingReportsPage} from "../features/depot/pages/DashboardBill
 import InvoicePage from "../features/depot/billingmanager/pages/InvoiceExportPage";
 import InvoiceOneDetailPage from "../features/depot/billingmanager/pages/InvoiceDetailPage";
 
-// Otros roles
-import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
-
 // Verification
 import TeamsPageVerification from "../features/verification/pages/TeamsPage";
 import VerificationManagerDashboardPage from "../features/verification/pages/VerificationManagerDashboard";

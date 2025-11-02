@@ -139,5 +139,4 @@ const ViewCustomerPage = () => {
     </div>
   );
 };
-
 export default ViewCustomerPage;

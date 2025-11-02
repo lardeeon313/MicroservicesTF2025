@@ -109,41 +109,34 @@ const RegisterOrderForm: React.FC<Props> = ({
 
 
         const handleAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedAddressId = e.target.value ? Number(e.target.value) : null;
+  const selectedAddressId = e.target.value;
+  setFieldValue("deliveryAddressId", selectedAddressId);
 
-        // ✅ Guardamos deliveryAddressId como número
-        setFieldValue("deliveryAddressId", selectedAddressId);
-
-        if (selectedAddressId) {
-          // ✅ Si seleccionó una dirección existente, limpiamos los campos manuales
-          setFieldValue("deliveryAddress", {
-            street: "",
-            number: "",
-            apartment: "",
-            city: "",
-            province: "",
-            country: "",
-            postalCode: "",
-            latitude: null,
-            longitude: null,
-            formattedAddress: "",
-          });
-        } else {
-          // ✅ Si el usuario elige "ninguna", puede ingresar manualmente
-          setFieldValue("deliveryAddress", {
-            street: "",
-            number: "",
-            apartment: "",
-            city: "",
-            province: "",
-            country: "",
-            postalCode: "",
-            latitude: null,
-            longitude: null,
-            formattedAddress: "",
-          });
-        }
-      };
+  if (selectedAddressId) {
+    const selectedAddress = addresses.find(addr => addr.id === Number(selectedAddressId));
+    if (selectedAddress) {
+      setFieldValue("deliveryAddress", {
+        street: selectedAddress.street,
+        number: selectedAddress.number,
+        apartment: selectedAddress.apartment || "",
+        city: selectedAddress.city,
+        province: selectedAddress.province,
+        country: selectedAddress.country,
+        postalCode: selectedAddress.postalCode,
+      });
+    }
+  } else {
+    setFieldValue("deliveryAddress", {
+      street: "",
+      number: "",
+      apartment: "",
+      city: "",
+      province: "",
+      country: "",
+      postalCode: "",
+    });
+  }
+};
 
         return (
           <Form className="space-y-6 container mx-auto py-10 px-16 sm:max-w-6xl">
