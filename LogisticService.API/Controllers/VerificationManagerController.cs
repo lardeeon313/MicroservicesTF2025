@@ -388,7 +388,7 @@ namespace LogisticService.API.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> RemoveZoneFromTeam(int zoneId, int teamId)
+        public async Task<IActionResult> RemoveZoneFromTeam(int teamId, int zoneId)
         {
             var command = new RemoveZoneFromTeamCommand(zoneId, teamId);
             var result = await _removeZoneToTeamCommandHandler.RemoveZoneAsync(command);
