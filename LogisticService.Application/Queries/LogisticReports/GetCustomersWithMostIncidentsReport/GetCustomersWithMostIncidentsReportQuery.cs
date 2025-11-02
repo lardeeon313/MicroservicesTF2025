@@ -1,0 +1,24 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace LogisticService.Application.Queries.LogisticReports.GetCustomersWithMostIncidentsReport
+{
+    public class GetCustomersWithMostIncidentsReportQuery
+    {
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public Guid? CustomerId { get; set; }
+        public string? IncidentType { get; set; }
+
+        public GetCustomersWithMostIncidentsReportQuery(DateTime? startDate, DateTime? endDate, Guid? customerId, string? incidentType)
+        {
+            StartDate = startDate;
+            EndDate = endDate;
+            CustomerId = customerId;
+            IncidentType = incidentType;
+        }
+    }
+}

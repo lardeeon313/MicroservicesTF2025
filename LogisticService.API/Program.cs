@@ -1,5 +1,6 @@
 using FluentValidation;
 using LogisticService.API.RequestDtos.LogisticOrders;
+using LogisticService.API.RequestDtos.Reports;
 using LogisticService.API.RequestDtos.VerificationManager.DeliveryTeams;
 using LogisticService.API.RequestDtos.VerificationManager.DeliveryZones;
 using LogisticService.API.Validators.DeliveryTeams;
@@ -53,6 +54,17 @@ using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrder
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetOrdersWithDeliveryIncident;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetPagedOrders;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetRejectionReasonsByOrderId;
+using LogisticService.Application.Queries.LogisticReports;
+using LogisticService.Application.Queries.LogisticReports.GetCustomersWithMostIncidentsReport;
+using LogisticService.Application.Queries.LogisticReports.GetDeliveryIncidentReport;
+using LogisticService.Application.Queries.LogisticReports.GetDeliveryRejectionsReport;
+using LogisticService.Application.Queries.LogisticReports.GetDeliveryTeamActivityReport;
+using LogisticService.Application.Queries.LogisticReports.GetDeliveryTimeReport;
+using LogisticService.Application.Queries.LogisticReports.GetOperatorProductivityReport;
+using LogisticService.Application.Queries.LogisticReports.GetOrdersByStatusReport;
+using LogisticService.Application.Queries.LogisticReports.GetOrderStatusHistoryReport;
+using LogisticService.Application.Queries.LogisticReports.GetPendingCashVerificationReport;
+using LogisticService.Application.Queries.LogisticReports.GetZonePerformanceReport;
 using LogisticService.Application.Services.IdentityServiceClient;
 using LogisticService.Domain.Common.Interfaces;
 using LogisticService.Domain.IRepositories;
@@ -177,10 +189,20 @@ builder.Services.AddScoped<IGetMyPendingCashOrdersQueryHandler, GetMyPendingCash
 builder.Services.AddScoped<IGetMyDeliveredOrdersQueryHandler, GetMyDeliveredOrdersQueryHandler>();
 builder.Services.AddScoped<IGetMyPendingDeliveredOrdersQueryHandler, GetMyPendingDeliveredOrdersQueryHandler>();
 builder.Services.AddScoped<IGetMyOnTheWayOrdersQueryHandler, GetMyOnTheWayOrdersQueryHandler>();
-builder.Services.AddScoped<IGetMyOrdersWithDeliveryIncidentQueryHandler,  GetMyOrdersWithDeliveryIncidentQueryHandler>();
-builder.Services.AddScoped<IGetMyRejectOrdersQueryHandler , GetMyRejectOrdersQueryHandler>();
+builder.Services.AddScoped<IGetMyOrdersWithDeliveryIncidentQueryHandler, GetMyOrdersWithDeliveryIncidentQueryHandler>();
+builder.Services.AddScoped<IGetMyRejectOrdersQueryHandler, GetMyRejectOrdersQueryHandler>();
 
-
+//Queries Logistic Reports
+builder.Services.AddScoped<IGetCustomersWithMostIncidentsReportQueryHandler, GetCustomersWithMostIncidentsReportQueryHandler>();
+builder.Services.AddScoped<IGetDeliveryIncidentReportQueryHandler, GetDeliveryIncidentReportQueryHandler>();
+builder.Services.AddScoped<IGetDeliveryRejectionsReportQueryHandler, GetDeliveryRejectionsReportQueryHandler>();
+builder.Services.AddScoped<IGetDeliveryTeamActivityReportQueryHandler, GetDeliveryTeamActivityReportQueryHandler>();
+builder.Services.AddScoped<IGetDeliveryTimeReportQueryHandler, GetDeliveryTimeReportQueryHandler>();
+builder.Services.AddScoped<IGetOperatorProductivityReportQueryHandler, GetOperatorProductivityReportQueryHandler>();
+builder.Services.AddScoped<IGetOrdersByStatusReportQueryHandler , GetOrdersByStatusReportQueryHandler>();
+builder.Services.AddScoped<IGetOrderStatusHistoryReportQueryHandler , GetOrderStatusHistoryReportQueryHandler>();
+builder.Services.AddScoped<IGetPendingCashVerificationReportQueryHandler , GetPendingCashVerificationReportQueryHandler>();
+builder.Services.AddScoped<IGetZonePerformanceReportQueryHandler, GetZonePerformanceReportQueryHandler>();
 
 // Add EmailService
 builder.Services.AddScoped<IEmailService, MailgunEmailService>();
@@ -267,6 +289,8 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseDeveloperExceptionPage();
 
 app.MapControllers();
 

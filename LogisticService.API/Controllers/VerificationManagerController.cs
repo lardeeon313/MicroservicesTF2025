@@ -388,7 +388,7 @@ namespace LogisticService.API.Controllers
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> RemoveZoneFromTeam(int zoneId, int teamId)
+        public async Task<IActionResult> RemoveZoneFromTeam(int teamId, int zoneId)
         {
             var command = new RemoveZoneFromTeamCommand(zoneId, teamId);
             var result = await _removeZoneToTeamCommandHandler.RemoveZoneAsync(command);
@@ -864,7 +864,7 @@ namespace LogisticService.API.Controllers
         /// </summary>
         /// <param name="logisticOrderId"></param>
         /// <returns></returns>
-        [HttpGet("get-delivery-incidents-by-order-id/{logisticOrderId")]
+        [HttpGet("get-delivery-incidents-by-order-id/{logisticOrderId}")]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -881,7 +881,7 @@ namespace LogisticService.API.Controllers
         /// </summary>
         /// <param name="logisticOrderId"></param>
         /// <returns></returns>
-        [HttpGet("get-rejection-reasons-by-order-id/{logisticOrderId")]
+        [HttpGet("get-rejection-reasons-by-order-id/{logisticOrderId}")]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
