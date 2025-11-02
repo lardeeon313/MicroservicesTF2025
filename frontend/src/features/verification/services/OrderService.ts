@@ -7,6 +7,8 @@ import {
   SetPriorityRequest,
   OrderStatus,
   DeliveryPriority,
+  DeliveryIncidentDto,
+  DeliveryRejectionReasonDto,
 } from "../types/OrderTypes";
 
 // ========== ORDER OPERATIONS ==========
@@ -156,6 +158,18 @@ export const getOrdersByTeamId = async (teamId: number): Promise<LogisticOrderDt
 // Obtener órdenes por operador
 export const getOrdersByOperatorId = async (operatorUserId: string): Promise<LogisticOrderDto[]> => {
   const response = await API.get(`/logistic/VerificationManager/get-orders-by-operator/${operatorUserId}`);
+  return response.data;
+};
+
+// Obtener incidentes de reparto por ID de orden
+export const getDeliveryIncidentsByOrderId = async (logisticOrderId: number): Promise<DeliveryIncidentDto[]> => {
+  const response = await API.get(`/logistic/VerificationManager/get-delivery-incidents-by-order-id/${logisticOrderId}`);
+  return response.data;
+};
+
+// Obtener motivos de rechazo por ID de orden
+export const getRejectionReasonsByOrderId = async (logisticOrderId: number): Promise<DeliveryRejectionReasonDto[]> => {
+  const response = await API.get(`/logistic/VerificationManager/get-rejection-reasons-by-order-id/${logisticOrderId}`);
   return response.data;
 };
 
