@@ -12,6 +12,7 @@ import { useAuth } from "../../Login/context/useAuth";
 import { useMyDeliveredOrders } from "../../hocks/useOrdersToDelivered";
 import { PriorityType } from "../../types/DeliveryOrderTypeDto";
 import { Banknote } from 'lucide-react-native';
+import OrdersNotFound from "../../../components/OrdersNotFound";
 
 type DeliveryNavigationProp = NativeStackNavigationProp<DeliveryStackParamList>;
 
@@ -141,7 +142,25 @@ export default function ListOrdersToDeliveredPage() {
         </View>
       )}
 
-      {!loading && !error && (
+      {loading ? (
+        <ActivityIndicator size="large" color="#3B82F6" style={{ marginTop: 40 }} />
+      ) : error ? (
+        <OrdersNotFound
+          icon="🚫"
+          title="Error al cargar pedidos"
+          message="Ocurrió un problema al obtener los pedidos entregados."
+          buttonText="Reintentar"
+          onRefresh={() => {}}
+        />
+      ) : orders.length === 0 ? (
+        <OrdersNotFound
+          icon="🚫"
+          title="No hay pedidos entregados"
+          message="No se encontraron pedidos entregados asignados a tu usuario."
+          buttonText="Actualizar"
+          onRefresh={() => {}}
+        />
+      ) : (
         <FlatList
           contentContainerStyle={{ padding: 16 }}
           data={orders}
@@ -150,7 +169,10 @@ export default function ListOrdersToDeliveredPage() {
             <ListOrdersToDeliveredComponent
               id={item.id}
               customer={`${item.customer.firstName} ${item.customer.lastName}`}
-              address={item.deliveryAddress.formattedAddress ?? `${item.deliveryAddress.street} ${item.deliveryAddress.number}, ${item.deliveryAddress.city}`}
+              address={
+                item.deliveryAddress.formattedAddress ??
+                `${item.deliveryAddress.street} ${item.deliveryAddress.number}, ${item.deliveryAddress.city}`
+              }
               status={mapStatusToSpanish(item.status)}
               priority={mapPriority(item.deliveryPriority)}
               payment={mapPaymentToSpanish(item.paymentType)}
@@ -159,6 +181,7 @@ export default function ListOrdersToDeliveredPage() {
           )}
         />
       )}
+
 
       <Footer />
     </View>

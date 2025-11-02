@@ -1,262 +1,117 @@
-import React, { useState, useMemo } from "react";
-import {
-  View,
-  FlatList,
-  Text,
-  TouchableOpacity,
-  Alert,
-  StyleSheet,
-} from "react-native";
+import React from "react";
+import { View, FlatList, StyleSheet, Text } from "react-native";
 import NavbarDelivery from "../../components/Navbar/NavbarDelivery";
 import GetBack from "../../../components/GetBack";
-import { mockOrders } from "../../MockPrueba/mockOrders";
+import Footer from "../../../components/Footer";
+import OrdersNotFound from "../../../components/OrdersNotFound";
 import ListOrdersToDistributeComponent from "../../components/ListOrders/ListOrdersToDistribute";
-import OrdersCountToDistribute from "../../components/ListOrders/OrdersCountToDistribute";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { DeliveryStackParamList } from "../../types/DeliveryStackType";
-import { useValidationOrdersLogic } from "../../validations/ValidationOrdersToDistribute";
-import { LogisticOrder, OrderStatus } from "../../types/DeliveryOrderTypeDto";
-import ConfirmOrderModal from "../../components/ConfirmOrder/ConfirmOrder";
-import RejectOrderModal from "../../components/RejectOrder/RejectOrder";
 import { useAuth } from "../../Login/context/useAuth";
-import Footer from "../../../components/Footer";
-import OrderStatusChange from "../../components/ListOrders/OrderStatusChange";
+import { useMyAssignedOrders } from "../../hocks/useOrdersToDistribute";
+import { LogisticOrder, PriorityType } from "../../types/DeliveryOrderTypeDto";
 
 type DeliveryNavigationProp = NativeStackNavigationProp<DeliveryStackParamList>;
 
-export default function ListOrdersToDistributePage() {
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [showRejectModal, setShowRejectModal] = useState(false);
-  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+const mapPriority = (priority?: string): string => {
+  switch (priority?.toLowerCase()) {
+    case "high": return "Urgente";
+    case "medium": return "Media";
+    case "low": return "Baja";
+    default: return PriorityType.Low;
+  }
+};
 
-  // 🔹 Mantenemos los pedidos del mock validando estados
-  const [orders, setOrders] = useState<LogisticOrder[]>(
-    mockOrders.map((o) => ({
-      ...o,
-      status: Object.values(OrderStatus).includes(o.status as OrderStatus)
-        ? (o.status as OrderStatus)
-        : OrderStatus.Issued,
-    }))
-  );
+const mapPaymentToSpanish = (payment?: string | null): string => {
+  switch (payment?.toLowerCase()) {
+    case "credit_card": return "Tarjeta de crédito";
+    case "debit_card": return "Tarjeta de débito";
+    case "transfer": return "Transferencia";
+    case "cash": return "Efectivo";
+    case "current_account": return "Cuenta corriente";
+    case "check": return "Cheque";
+    case "promissory_note": return "Pagaré";
+    default: return "Desconocido";
+  }
+}
 
+const mapStatusToSpanish = (status?: string | null): string => {
+  switch (status?.toLowerCase()) {
+    case "assigneddelivery": return "Asignado";
+    default: return "Desconocido";
+  }
+};
+
+export default function ListAssignedOrdersPage() {
   const navigation = useNavigation<DeliveryNavigationProp>();
-  const { name, role, team, isAuthenticated, logout } = useAuth();
-  const user = { name: name ?? "", role: role ?? "", team: team ?? null };
+  const { userId, name, role, isAuthenticated, logout, team } = useAuth();
+  const { orders: assignedOrders } = useMyAssignedOrders(userId ?? "");
 
-  // 🔹 Estados que se deben mostrar (Delivery + Tesorería inicial)
-  const allowedStatuses: OrderStatus[] = [
-    OrderStatus.Issued,
-    OrderStatus.Confirmed,
-    OrderStatus.InPreparation,
-    OrderStatus.OnTheWay,
-    OrderStatus.Canceled,
-    OrderStatus.ReIssued,
-  ];
+  const teamName = typeof team === "object" ? team?.teamName : team;
+  const user = { name: name ?? "", role: role ?? "", team: teamName ?? null };
 
-  // 🔹 Filtrado exacto (solo los permitidos, sin fallback)
-  const filteredOrders = useMemo(
-    () => orders.filter((o) => allowedStatuses.includes(o.status)),
-    [orders]
-  );
-
-  // --- Handlers ---
   const handleConfirmOrder = (order: LogisticOrder) => {
-    setSelectedOrderId(order.id);
-    setShowConfirmModal(true);
+    navigation.navigate("ConfirmAssignedOrder", { order });
   };
 
-  const confirmOrder = () => {
-    if (selectedOrderId === null) return;
-    setOrders((prev) =>
-      prev.map((o) =>
-        o.id === selectedOrderId
-          ? { ...o, status: OrderStatus.Confirmed, rejectReason: "" }
-          : o
-      )
-    );
-    setShowConfirmModal(false);
-    setSelectedOrderId(null);
+  const handleRejectOrder = (order: LogisticOrder) => {
+    navigation.navigate("RejectAssignedOrder", { order });
   };
 
-  const handleRejectOrder = (orderId: number) => {
-    setSelectedOrderId(orderId);
-    setShowRejectModal(true);
-  };
-
-  const rejectOrder = (reason: string) => {
-    if (selectedOrderId === null) return;
-    setOrders((prev) =>
-      prev.map((o) =>
-        o.id === selectedOrderId
-          ? { ...o, status: OrderStatus.Canceled, rejectReason: reason }
-          : o
-      )
+  if (!isAuthenticated) {
+    return (
+      <View style={styles.center}>
+        <Text>Debes iniciar sesión para ver los pedidos asignados.</Text>
+      </View>
     );
-    setShowRejectModal(false);
-    setSelectedOrderId(null);
-  };
-
-  const handleStatusUpdate = (updatedOrder: LogisticOrder) => {
-    setOrders((prev) =>
-      prev.map((o) => (o.id === updatedOrder.id ? updatedOrder : o))
-    );
-  };
-
-  const handleTraceRouteWrapper = () => {
-    const onTheWayOrders = filteredOrders.filter(
-      (o) => o.status === OrderStatus.OnTheWay
-    );
-    if (onTheWayOrders.length === 0) {
-      Alert.alert(
-        "No hay pedidos en camino",
-        "Solo puedes abrir la ruta cuando haya pedidos 'En Camino'."
-      );
-      return;
-    }
-    const allOnTheWay = filteredOrders.every(
-      (o) => o.status === OrderStatus.OnTheWay
-    );
-    if (!allOnTheWay) {
-      Alert.alert(
-        "No permitido",
-        "Solo puedes abrir la ruta cuando TODOS los pedidos estén 'En Camino'."
-      );
-      return;
-    }
-    navigation.navigate("OrdersRouteMap", { orders: onTheWayOrders });
-  };
+  }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#f8f8f8" }}>
-      <NavbarDelivery
-        user={user}
-        isAuthenticated={isAuthenticated}
-        logout={logout}
-      />
-      <View style={{ marginTop: 8, marginLeft: 16 }}>
-        <GetBack />
-      </View>
-      <Text style={styles.title}>Pedidos para repartir</Text>
-      <View style={{ alignItems: "flex-end", marginRight: 16 }}>
-        <OrdersCountToDistribute
-          confirmedOrders={
-            filteredOrders.filter((o) => o.status === OrderStatus.Confirmed)
-              .length
-          }
-          onThresholdReached={(v) => console.log("Threshold reached:", v)}
+    <View style={styles.container}>
+      <NavbarDelivery user={user} isAuthenticated={isAuthenticated} logout={logout} />
+      <View style={styles.backContainer}><GetBack /></View>
+      <Text style={styles.title}>Pedidos Asignados</Text>
+
+      {assignedOrders.length === 0 ? (
+        <OrdersNotFound
+          icon="📦"
+          title="No tienes pedidos asignados."
+          message="El encargado de tesoreria no te asignó pedidos por el momento.Vuelve a intentarlo mas tarde.."
+          buttonText="Actualizar"
+          onRefresh={() => {}}
         />
-      </View>
-      {filteredOrders.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>
-            No hay pedidos disponibles con los estados seleccionados.
-          </Text>
-        </View>
       ) : (
         <FlatList
           contentContainerStyle={{ padding: 16 }}
-          data={filteredOrders}
+          data={assignedOrders}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <View style={styles.card}>
-              <ListOrdersToDistributeComponent
-                id={item.id}
-                customer={
-                  typeof item.customer === "string"
-                    ? item.customer
-                    : `${item.customer.firstName} ${item.customer.lastName}`
-                }
-                address={item.deliveryAddress?.street ?? ""}
-                status={item.status}
-                priority={item.priority}
-                onConfirm={() => handleConfirmOrder(item)}
-                onReject={() => handleRejectOrder(item.id)}
-                onSeeDetail={() =>
-                  navigation.navigate("OrderDetail", { order: item })
-                }
-                onOpenInMap={() =>
-                  navigation.navigate("OneOrderRouteMap", { order: item })
-                }
-                onPreparation={() =>
-                  navigation.navigate("OrderStatusChange", { order: item })
-                }
-              />
-              <OrderStatusChange
-                order={item}
-                onStatusUpdate={handleStatusUpdate}
-              />
-            </View>
+            <ListOrdersToDistributeComponent
+              id={item.id}
+              customer={`${item.customer.firstName} ${item.customer.lastName}`}
+              address={
+                item.deliveryAddress.formattedAddress ??
+                `${item.deliveryAddress.street}, ${item.deliveryAddress.number}, ${item.deliveryAddress.city}`
+              }
+              status={mapStatusToSpanish(item.status)}
+              priority={mapPriority(item.deliveryPriority)}
+              payment={mapPaymentToSpanish(item.paymentType)}
+              onConfirm={() => handleConfirmOrder(item)}
+              onReject={() => handleRejectOrder(item)}
+              onSeeDetail={() => navigation.navigate("OrderDetail", { order: item })}
+            />
           )}
         />
       )}
-      <TouchableOpacity
-        style={[
-          styles.traceButton,
-          {
-            backgroundColor: filteredOrders.length > 0 &&
-              filteredOrders.every((o) => o.status === OrderStatus.OnTheWay)
-                ? "#007bff"
-                : "#ccc",
-          },
-        ]}
-        onPress={handleTraceRouteWrapper}
-        disabled={
-          filteredOrders.length === 0 ||
-          !filteredOrders.every((o) => o.status === OrderStatus.OnTheWay)
-        }
-      >
-        <Text style={{ color: "#fff", fontWeight: "700" }}>
-          Trazar Ruta (Pedidos en camino)
-        </Text>
-      </TouchableOpacity>
-      <ConfirmOrderModal
-        visible={showConfirmModal}
-        orderId={selectedOrderId}
-        onConfirm={confirmOrder}
-        onCancel={() => {
-          setShowConfirmModal(false);
-          setSelectedOrderId(null);
-        }}
-      />
-      <RejectOrderModal
-        visible={showRejectModal}
-        orderId={selectedOrderId}
-        onReject={rejectOrder}
-        onCancel={() => {
-          setShowRejectModal(false);
-          setSelectedOrderId(null);
-        }}
-      />
       <Footer />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginLeft: 16,
-    marginTop: 16,
-    marginBottom: 16,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  emptyText: {
-    fontSize: 16,
-    color: "#888",
-  },
-  card: {
-    marginBottom: 16,
-  },
-  traceButton: {
-    padding: 16,
-    margin: 16,
-    borderRadius: 8,
-    alignItems: "center",
-  },
+  container: { flex: 1 },
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
+  backContainer: { marginTop: 10, marginLeft: 10 },
+  title: { fontSize: 22, fontWeight: "700", marginVertical: 20, textAlign: "center" },
 });

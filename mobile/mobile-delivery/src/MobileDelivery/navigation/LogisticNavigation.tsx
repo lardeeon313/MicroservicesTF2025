@@ -40,6 +40,7 @@ import ListOrdersToIncidentPage from "../pages/listOrdersPages/ListOrdersToIncid
 import PendingCashOrdersPage from "../pages/listOrdersPages/ListOrdersPendingAndCashOrdersPage";
 
 import { ResolveDeliveryIncidentPage } from "../pages/Incidents/ResolveIncidentPage";
+import ListPendingDeliveryPage from "../pages/listOrdersPages/ListOrdersToConfirmPage";
 
 const Stack = createNativeStackNavigator<DeliveryStackParamList>();
 
@@ -50,12 +51,7 @@ export default function LogisticNavigation() {
  
       <Stack.Screen name="OrdersToDistribute" component={ListOrdersToDistributePage} />
       <Stack.Screen name="OrdersOnTheWay" component={ListOrdersOnTheWayPage} />
-      {/** 
-      <Stack.Screen name="OrdersToIncidents" component={ListOrdersToIncidentPage} />
-      */}
-      {/**
-      <Stack.Screen name="OrdersToDelivered" component={ListOrdersToDeliveredPage} />
-      */}
+
       <Stack.Screen name="OrderDetail" component={OrderDetailPage} />
       <Stack.Screen name="SelectPaymentType" component={PaymentTypeComponent} />
       <Stack.Screen name="ReportIncident" component={ReportIncidentPage} />
@@ -75,6 +71,7 @@ export default function LogisticNavigation() {
       <Stack.Screen name='OrdersToIncidents' component={ListOrdersToIncidentPage} />
       <Stack.Screen name='OrdersPendingCashVerification' component={PendingCashOrdersPage} />
       <Stack.Screen name='ResolveDeliveryIncident' component={ResolveDeliveryIncidentPage} />
+      <Stack.Screen name='OrdersToConfirm' component={ListPendingDeliveryPage} />
     </Stack.Navigator>
   );
 }

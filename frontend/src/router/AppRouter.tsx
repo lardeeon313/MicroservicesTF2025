@@ -62,6 +62,7 @@ import PendingOrdersVerificationDetailsPage from "../features/verification/pages
 import OrdersInRoutePage from "../features/verification/pages/OrdersInRoutePage";
 import OrdersInRouteDetailsPage from "../features/verification/pages/OrdersInRouteDetailsPage";
 import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
+import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
 
 
 const AppRouter = () => {

@@ -1,29 +1,27 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { ListCollapse, XIcon, BookmarkCheck } from "lucide-react-native";
+import { ListCollapse, Bus } from "lucide-react-native";
 
 type Props = {
   id: number;
   customer: string;
   address: string;
   priority: string;
-  status : string; 
+  status: string;
   payment: string;
-  onConfirm: () => void;
-  onReject: () => void;
   onSeeDetail: () => void;
+  onMarkOnTheWay: () => void;
 };
 
-export default function ListAssignedOrdersComponent({
+export default function ListOrdersToConfirm({
   id,
   customer,
   address,
   priority,
   status,
   payment,
-  onConfirm,
-  onReject,
   onSeeDetail,
+  onMarkOnTheWay,
 }: Props) {
   const isUrgent = priority === "Urgente";
 
@@ -47,8 +45,8 @@ export default function ListAssignedOrdersComponent({
       {/* Info */}
       <View style={styles.infoSection}>
         <InfoRow label="Cliente" value={customer} />
-        <InfoRow label="Estado" value={status} />
         <InfoRow label="Dirección" value={address} />
+        <InfoRow label="Estado" value={status} />
         <InfoRow label="Tipo de pago" value={payment} />
         <InfoRow
           label="Prioridad"
@@ -63,33 +61,26 @@ export default function ListAssignedOrdersComponent({
       <View style={styles.actionsSection}>
         <View style={styles.buttonRow}>
           <TouchableOpacity
-            style={[styles.button, styles.confirm, styles.flexButton]}
-            onPress={onConfirm}
+            style={[styles.button, styles.detail, styles.flexButton]}
+            onPress={onSeeDetail}
           >
-            <BookmarkCheck size={20} color="#fff" />
-            <Text style={styles.buttonText}>Confirmar</Text>
+            <ListCollapse size={20} color="#fff" />
+            <Text style={styles.buttonText}>Ver Detalle</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.button, styles.reject, styles.flexButton]}
-            onPress={onReject}
+            style={[styles.button, styles.onTheWay, styles.flexButton]}
+            onPress={onMarkOnTheWay}
           >
-            <XIcon size={20} color="#fff" />
-            <Text style={styles.buttonText}>Rechazar</Text>
+            <Bus size={20} color="#fff" />
+            <Text style={styles.buttonText}>Marcar en camino</Text>
           </TouchableOpacity>
         </View>
-
-        <TouchableOpacity
-          style={[styles.button, styles.detail, styles.fullButton]}
-          onPress={onSeeDetail}
-        >
-          <ListCollapse size={20} color="#fff" />
-          <Text style={styles.buttonText}>Ver Detalle</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
 }
+
 
 type InfoRowProps = {
   label: string;
@@ -97,7 +88,6 @@ type InfoRowProps = {
   valueStyle?: object;
 };
 
-// 🔹 Subcomponente para evitar repetir código
 const InfoRow: React.FC<InfoRowProps> = ({ label, value, valueStyle = {} }) => (
   <View style={styles.infoRow}>
     <Text style={styles.label}>{label}:</Text>
@@ -145,9 +135,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   flexButton: { flex: 1 },
-  fullButton: { width: "100%" },
-  confirm: { backgroundColor: "#4a9c13" },
-  reject: { backgroundColor: "#e41616" },
   detail: { backgroundColor: "#3B82F6" },
+  onTheWay: { backgroundColor: "#f59e0b" },
   buttonText: { color: "#fff", fontWeight: "bold" },
 });

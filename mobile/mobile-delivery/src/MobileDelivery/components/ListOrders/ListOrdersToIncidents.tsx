@@ -15,6 +15,7 @@ type Props = {
   onSeeDetail: () => void;
   onResolveIncident: () => void;
   onViewIncidents: () => void;
+  onViewResolutions: () => void;
   onOpenInMap: () => void;
 };
 
@@ -30,6 +31,7 @@ export default function ListOrdersToIncidentComponent({
   onSeeDetail,
   onResolveIncident,
   onViewIncidents,
+  onViewResolutions,
   onOpenInMap,
 }: Props) {
   const isUrgent = priority === "Urgente";
@@ -143,6 +145,13 @@ export default function ListOrdersToIncidentComponent({
           onPress={onViewIncidents}
         >
           <Text style={styles.buttonText}>⚠️ Revisar incidentes</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.button, styles.viewResolutions, styles.fullButton]}
+          onPress={onViewResolutions}
+        >
+          <Text style={styles.buttonText}>✅ Revisar resoluciones</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -272,6 +281,9 @@ const styles = StyleSheet.create({
   },
   viewIncidents: {
     backgroundColor: "#b91c1c",
+  },
+  viewResolutions: {
+    backgroundColor: "#479b0fff",
   },
   buttonText: {
     color: "#fff",

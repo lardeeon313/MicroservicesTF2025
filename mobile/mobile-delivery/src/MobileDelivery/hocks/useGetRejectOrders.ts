@@ -9,32 +9,37 @@ export const useMyRejectOrders = (operatorId: string) => {
 
   useEffect(() => {
     const fetchRejectOrders = async () => {
-      if (!operatorId) return;
+      // ⚠️ Evitamos ejecutar si no hay operatorId
+      if (!operatorId) {
+        setError(new Error("No se encontró el operador para obtener los pedidos."));
+        setOrders([]);
+        return;
+      }
+
       setIsLoading(true);
+      setError(null);
+
       console.log("🚀 useMyRejectOrders iniciado para operador:", operatorId);
 
       try {
         const data = await getMyRejectOrders(operatorId);
 
-        // 🔍 Log completo del resultado
-        console.log("📦 Órdenes rechazadas recibidas del backend:", data);
+        // Validación: el backend debe devolver array
+        if (!Array.isArray(data)) {
+          throw new Error("El formato de respuesta del servidor no es válido.");
+        }
 
-        // 🔍 Mostrar específicamente las razones de rechazo si existen
-        data.forEach((order: any, index: number) => {
-          if (order.rejections && order.rejections.length > 0) {
-            console.log(
-              `🧾 Pedido #${order.id} tiene ${order.rejections.length} rechazos:`,
-              order.rejections
-            );
-          } else {
-            console.log(`ℹ️ Pedido #${order.id} no tiene razones de rechazo.`);
-          }
-        });
+        console.log("📦 Órdenes rechazadas recibidas:", data);
+
+        // Si no hay pedidos rechazados
+        if (data.length === 0) {
+          console.warn("⚠️ No se encontraron pedidos rechazados.");
+        }
 
         setOrders(data);
-      } catch (err) {
-        console.error("⚠️ Error al cargar órdenes rechazadas:", err);
+      } catch (err: any) {
         setError(err);
+        setOrders([]);
       } finally {
         setIsLoading(false);
       }
