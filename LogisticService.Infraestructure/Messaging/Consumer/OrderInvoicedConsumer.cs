@@ -2,6 +2,7 @@
 using LogisticService.Domain.Enums;
 using LogisticService.Domain.IRepositories;
 using LogisticService.Infraestructure.Persistence;
+using LogisticService.Infraestructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -103,20 +104,43 @@ namespace LogisticService.Infraestructure.Messaging.Consumer
                         using var scope = _scopeFactory.CreateScope();
                         var context = scope.ServiceProvider.GetRequiredService<LogisticDbContext>();
                         var repository = scope.ServiceProvider.GetRequiredService<ILogisticOrderRepository>();
+                        var nominatim = scope.ServiceProvider.GetRequiredService<INominatimService>();
 
                         // PASO 1: Customer
                         var customer = await context.Customers
-                .FirstOrDefaultAsync(c => c.Id == evento.CustomerId, stoppingToken);
+                            .FirstOrDefaultAsync(c => c.Id == evento.CustomerId, stoppingToken);
 
                         if (customer == null)
                         {
-                            customer = new LogisticCustomer { Id = evento.CustomerId, FirstName = evento.CustomerName.Split(" ").First(), LastName = evento.CustomerName.Split(" ").Last(), Email = evento.CustomerEmail, PhoneNumber = evento.PhoneNumber, RegistrationDate = evento.RegistrationDate, };
+                            customer = new LogisticCustomer { 
+                                Id = evento.CustomerId,
+                                FirstName = evento.CustomerName.Split(" ").First(), 
+                                LastName = evento.CustomerName.Split(" ").Last(),
+                                Email = evento.CustomerEmail,
+                                PhoneNumber = evento.PhoneNumber,
+                                RegistrationDate = evento.RegistrationDate,
+                            };
                             await context.Customers.AddAsync(customer, stoppingToken);
                             await context.SaveChangesAsync(stoppingToken);
                         }
 
-                        // PASO 2: Address
-                        var address = new LogisticAddress { Street = evento.DeliveryAddress!.Street, Number = evento.DeliveryAddress.Number, Apartment = evento.DeliveryAddress.Apartment, City = evento.DeliveryAddress.City, Province = evento.DeliveryAddress.Province, Country = evento.DeliveryAddress.Country, PostalCode = evento.DeliveryAddress.PostalCode, FormattedAddress = evento.DeliveryAddress.FormattedAddress, Latitude = evento.DeliveryAddress.Latitude, Longitude = evento.DeliveryAddress.Longitude, CreatedAt = DateTime.UtcNow, };
+                        var fullAddress = $"{evento.DeliveryAddress?.Street} {evento.DeliveryAddress?.Number}, {evento.DeliveryAddress?.City}, {evento.DeliveryAddress?.Province}, {evento.DeliveryAddress?.Country}";
+                        var geoData = await nominatim.GeocodeAddressAsync(fullAddress);
+
+                        var address = new LogisticAddress
+                        {
+                            Street = evento.DeliveryAddress!.Street,
+                            Number = evento.DeliveryAddress.Number,
+                            Apartment = evento.DeliveryAddress.Apartment,
+                            City = evento.DeliveryAddress.City,
+                            Province = evento.DeliveryAddress.Province,
+                            Country = evento.DeliveryAddress.Country,
+                            PostalCode = evento.DeliveryAddress.PostalCode,
+                            FormattedAddress = fullAddress,
+                            Latitude = geoData.lat,
+                            Longitude = geoData.lon,
+                            CreatedAt = DateTime.UtcNow,
+                        };
                         await context.Addresses.AddAsync(address, stoppingToken);
                         await context.SaveChangesAsync(stoppingToken);
 
@@ -129,6 +153,7 @@ namespace LogisticService.Infraestructure.Messaging.Consumer
                             DeliveryAddressId = address.Id,
                             Status = OrderStatus.PendingVerification,
                             TotalAmount = evento.TotalAmount,
+                            DeliveryDetail = evento.DeliveryDetail,
                             DeliveryDate = evento.DeliveryDate,
                             OrderDate = evento.OrderDate,
                             PaymentType = evento.PaymentType.HasValue ? (PaymentType)Enum.Parse(typeof(PaymentType), evento.PaymentType.Value.ToString()) : null,

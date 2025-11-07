@@ -75,6 +75,19 @@ namespace LogisticService.Infraestructure.Persistence
                       .IsRequired();
             });
 
+            modelBuilder.Entity<LogisticOrder>()
+                .HasOne(o => o.AssignedDeliveryZone)
+                .WithMany()
+                .HasForeignKey(o => o.AssignedDeliveryZoneId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<LogisticOrder>()
+                .HasOne(o => o.AssignedDeliveryTeam)
+                .WithMany()
+                .HasForeignKey(o => o.AssignedDeliveryTeamId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
         }
     }
 }
