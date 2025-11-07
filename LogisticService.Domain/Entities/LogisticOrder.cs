@@ -32,7 +32,7 @@ namespace LogisticService.Domain.Entities
         // Asignación ()
         public Guid? AssignedOperatorId { get; set; } 
         public DeliveryTeam? AssignedDeliveryTeam { get; set; }
-        public int? AssignedDeliveryTeamId { get; private set; } 
+        public int? AssignedDeliveryTeamId { get; set; } 
 
         // Guardar zona asignada (útil para búsquedas/filtrado)
         public int? AssignedDeliveryZoneId { get; set; }

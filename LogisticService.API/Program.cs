@@ -73,6 +73,7 @@ using LogisticService.Infraestructure.Messaging.Consumer;
 using LogisticService.Infraestructure.Messaging.Publisher;
 using LogisticService.Infraestructure.Persistence;
 using LogisticService.Infraestructure.Persistence.Repositories;
+using LogisticService.Infraestructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -206,6 +207,9 @@ builder.Services.AddScoped<IGetZonePerformanceReportQueryHandler, GetZonePerform
 
 // Add EmailService
 builder.Services.AddScoped<IEmailService, MailgunEmailService>();
+
+// Add Nominatim
+builder.Services.AddHttpClient<INominatimService, NominatimService>();
 
 // RabbitMQ Consumer
 builder.Services.AddHostedService<OrderInvoicedConsumer>();
