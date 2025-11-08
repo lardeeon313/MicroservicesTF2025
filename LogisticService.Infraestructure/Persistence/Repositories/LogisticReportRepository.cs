@@ -3,6 +3,7 @@ using LogisticService.Domain.Enums;
 using LogisticService.Domain.IRepositories;
 using LogisticService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +15,11 @@ namespace LogisticService.Infraestructure.Persistence
     public class LogisticReportRepository : ILogisticReportRepository
     {
         private readonly LogisticDbContext _context;
-        public LogisticReportRepository(LogisticDbContext context)
+        private readonly ILogger<LogisticReportRepository> _logger;
+        public LogisticReportRepository(LogisticDbContext context, ILogger<LogisticReportRepository> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public async Task<List<CustomerIncidentReport>> GetCustomersWithMostIncidentsAsync(DateTime? startDate, DateTime? endDate, Guid? customerId, string? incidentType)
@@ -241,7 +244,7 @@ namespace LogisticService.Infraestructure.Persistence
             return results.Select(h => new OrderStatusHistoryReport
             {
                 Id = h.Id,
-                OrderId = h.OrderId,
+                OrderId = h.OrderId ?? 0,
                 CustomerName = $"{h.LogisticOrder.Customer.FirstName} {h.LogisticOrder.Customer.LastName}".Trim(),
                 OldStatus = h.OldStatus.ToString(),
                 NewStatus = h.NewStatus.ToString(),
