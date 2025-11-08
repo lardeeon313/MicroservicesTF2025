@@ -1,50 +1,68 @@
-import {Bus, TriangleAlert,ClockFading,CircleDollarSign,BadgeCheck,UserSearch,LandPlot  } from "lucide-react";
+import {Boxes, TriangleAlert,Siren,ShieldX,Users,History,LandPlot,Clock2,PersonStanding,Receipt } from "lucide-react";
 import { Link } from "react-router-dom";
 import BackButton from "../../../../components/BackButton";
 
 const cards = [
     {
-        title: "Tiempos promedios de pago",
-        description : "Visualiza los tiempos realizados al momento de realizar el pago",
-        icon: <ClockFading className="h-10 w-10 text-red-600" />,
-        link: "/verification/reports/AveragePaymentTimes",
+        title: "Clientes con mayor Incidencia",
+        description : "Visualiza todos los clientes que han tenido la mayor cantidad de incidentes",
+        icon: <Siren className="h-10 w-10 text-red-600" />,
+        link: "/verification/reports/CustomersIncidents",
     },
     {
-        title: "Metodos de pago",
-        description: "Revisa cuales fueron los metodos de pago mas utilizados luego de completar las operaciones",
-        icon: <CircleDollarSign className="h-10 w-10 text-red-600"/>,
-        link: "/verification/reports/PaymentMethods",
+        title: "Incidentes de entrega",
+        description: "Revisa cuales fueron los pedidos que tuvieron incidentes durante , antes o despues del reparto.",
+        icon: <TriangleAlert className="h-10 w-10 text-purple-600"/>,
+        link: "/verification/reports/OrderIncidents",
     },
     {
-        title: "Pedidos verificados",
-        description : "Visualiza cuales han sido los pedidos ya verificados para el despacho",
-        icon: <BadgeCheck className="h-10 w-10 text-red-600"/>,
-        link: "/verification/reports/VerifiedOrders",
+        title: "Pedidos Rechazados",
+        description : "Visualiza todos los pedidos que han sido rechazados por el repartidor y el impacto obtenido.",
+        icon: <ShieldX className="h-10 w-10 text-red-600"/>,
+        link: "/verification/reports/RejectOrders",
+    },
+    {
+        title: "Actividad por equipo",
+        description : "Visualiza todos los niveles de rendimiento obtenidos por los diferentes equipos de reparto.",
+        icon : <Users className="h-10 w-10 text-red-600"/>,
+        link: "/verification/reports/TeamDeliveryProdictivity"
+    },
+    {
+        title: "Tiempos de entrega",
+        description : "Visualiza todos los pedidos que ya han sido entregados por los diferentes equipos de reparto.",
+        icon : <Clock2 className="h-10 w-10 text-red-600"/>,
+        link : "/verification/reports/DeliveryTimes",
+    },
+    {
+        title: "Estados de cada pedido",
+        description : "Verifica la cantidad de pedidos que hay por estado.",
+        icon : <Boxes className="h-10 w-10 text-red-600" />,
+        link: "/verification/reports/OrderStatus",
+    },
+    {
+        title : "Historial de estados de pedido",
+        description : "Verifica cuales han sido que han obtenido los diferentes pedidos a lo largo de su historia.",
+        icon: <History className="h-10 w-10 text-red-600"/>,
+        link: "/verification/reports/OrderStatusHistory",
+    },
+    {
+        title: "Pedidos pendientes de pago en Efectivo",
+        description : "Revisa todos los pedidos que se encuentran pendientes de verificar porque han sido pagados en efectivo",
+        icon : <Receipt className="h-10 w-10 text-red-600"/>,
+        link: "/verification/reports/PendingCashVerification",
     },
     //REPORTES DE DELIVERY 
     {
-        title: "Alertas por incidentes de entrega",
-        description: "Visualiza cuales han sidos los pedidos que tuvieron incidentes al momento de la entrega o durante el trayecto",
-        icon: <TriangleAlert className="h-10 w-10 text-purple-600"/>,
-        link: "/verification/reports/IncidentAlerts",
+        title: "Productividad por repartidor",
+        description: "Verifica el rendimiento que ha tenido el repartidor . sus estadisticas y sus pedidos entregados",
+        icon: <PersonStanding className="h-10 w-10 text-purple-600"/>,
+        link: "/verification/reports/OperatorProdictivity",
     },
     {
-        title: "Entregas a tiempo",
-        description: "Visualiza todos los pedidos que ya han sido entregados por los diferentes equipos",
-        icon: <Bus className="h-10 w-10 text-purple-600"/>,
-        link: "/verification/reports/OnTimeDeliveries",
-    },
-    {
-        title: "Total de pedidos entregados por repartidor",
-        description: "Visualiza los pedidos entregados por cada repartidor asignado",
-        icon: <UserSearch className="h-10 w-10 text-purple-600"/>,
-        link: "/verification/reports/TotalOrdersDeliveried",
-    },
-    {
-        title: "Pedidos por zona",
+        title: "Eficiencia por Zona",
         description: "Visualiza la cantidad de pedidos entregados por las diferentes zonas",
         icon: <LandPlot className="h-10 w-10 text-purple-600"/>,
-        link: "/verification/reports/OrdersByArea"
+        link: "/verification/reports/ZonePerfomance"
     }
 ]
 
