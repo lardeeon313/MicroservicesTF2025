@@ -101,10 +101,7 @@ export default function ListOrdersOnTheWayPage() {
   };
 
   const handleSeeLocation = (order: LogisticOrder) => {
-    const { street, number, city } = order.deliveryAddress;
-    const query = encodeURIComponent(`${street} ${number}, ${city}`);
-    const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
-    Linking.openURL(url);
+    navigation.navigate("OrderMap", { orderId: order.id });
   };
 
   const handleConfirmReception = (order: LogisticOrder) => {

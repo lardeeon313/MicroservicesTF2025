@@ -186,14 +186,14 @@ export default function ListOrdersToIncidentPage() {
                   setModalVisible(true);
                 }}
                 onViewResolutions={() => {
-  const resolved = item.deliveryIncidents?.filter(
-    (i) => i.resolvedAt !== null || i.resolutionNote !== null
-  ) || [];
-  setSelectedResolutions(resolved);
-  setResolutionsModalVisible(true);
-}}
+                  const resolved = item.deliveryIncidents?.filter(
+                    (i) => i.resolvedAt !== null || i.resolutionNote !== null
+                  ) || [];
+                  setSelectedResolutions(resolved);
+                  setResolutionsModalVisible(true);
+                }}
 
-                onOpenInMap={() => navigation.navigate("OneOrderRouteMap", { order: item })}
+                onOpenInMap={() => navigation.navigate("OrderMap", { orderId: item.id })}
               />
             );
           }}

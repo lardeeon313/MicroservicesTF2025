@@ -22,8 +22,6 @@ export const getMyOnTheWayOrders = async (operatorId: string): Promise<LogisticO
       }
     }
 
-    // Para cualquier otro error (problema de red, servidor caído, etc.)
-    console.error("Error al obtener los pedidos en camino:", error);
     return [];
   }
 };

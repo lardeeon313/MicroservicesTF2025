@@ -47,4 +47,6 @@ export type DeliveryStackParamList = {
     order: LogisticOrder;
     incident: DeliveryIncident | null; // 👈 agregamos el incidente
   };
+  OrderMap: { orderId: number };
+  OrdersMapPage: undefined;
 };

@@ -12,10 +12,10 @@ export const useGetMyOrdersWithIncident = (operatorId: string) => {
     setError(null);
     try {
   const data = await getMyOrdersWithIncident(operatorId);
-  console.log("📦 Órdenes con incidentes obtenidas:", data);
+ 
   setOrders(data);
 } catch (err: any) {
-  console.error("❌ Error al obtener órdenes:", err);
+  
   setError(err.message);
 
     } finally {
