@@ -81,8 +81,12 @@ namespace LogisticService.Application.Queries.LogisticReports
                     ResolvedAt = i.ResolvedAt,
                     ResolutionNote = i.ResolutionNote,
                     DeliveryIncidentStatus = i.DeliveryIncidentStatus.ToString(),
-                    DeliveryZoneId = i.LogisticOrder.AssignedDeliveryZoneId,
-                    DeliveryZoneName = i.LogisticOrder.AssignedDeliveryZone?.Name,
+                    DeliveryZoneId = i.LogisticOrder.AssignedDeliveryZoneId
+                        ?? i.LogisticOrder.AssignedDeliveryTeam?.ZoneAssignments
+                            ?.FirstOrDefault(a => a.IsActive)?.DeliveryZoneId,
+                    DeliveryZoneName = i.LogisticOrder.AssignedDeliveryZone?.Name
+                        ?? i.LogisticOrder.AssignedDeliveryTeam?.ZoneAssignments
+                            ?.FirstOrDefault(a => a.IsActive)?.DeliveryZone?.Name,
                     DeliveryTeamId = i.LogisticOrder.AssignedDeliveryTeamId,
                     DeliveryTeamName = i.LogisticOrder.AssignedDeliveryTeam?.TeamName,
                     CustomerName = $"{i.LogisticOrder.Customer?.FirstName ?? ""} {i.LogisticOrder.Customer?.LastName ?? ""}".Trim()
