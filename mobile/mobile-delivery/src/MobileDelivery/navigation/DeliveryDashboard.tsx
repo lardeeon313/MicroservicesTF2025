@@ -174,6 +174,48 @@ const DeliveryDashboardComponent = () => {
           </Text>
         </TouchableOpacity>
 
+        {/* 🗺️ Botón para ver mapa de pedidos */}
+<TouchableOpacity
+  style={{
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    backgroundColor: '#ffffffff',
+    borderRadius: 12,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    shadowColor: '#520404ff',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.50,
+    shadowRadius: 3.84,
+    elevation: 5,
+  }}
+  onPress={() => navigation.navigate("OrdersMapPage")}
+  activeOpacity={0.8}
+>
+  <MapPin
+    color="#111111ff"
+    size={20}
+    strokeWidth={2.5}
+    style={{ marginRight: 8 }}
+  />
+  <Text
+    style={{
+      color: '#5a5a5aff',
+      fontWeight: 'bold',
+      fontSize: 16,
+      letterSpacing: 0.3,
+    }}
+  >
+    Ver mapa de pedidos
+  </Text>
+</TouchableOpacity>
+
+
         {/* 📦 Cards dinámicas */}
         <View style={{ padding: 16 }}>
           <View
