@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LogisticService.API.Migrations
 {
     [DbContext(typeof(LogisticDbContext))]
-    [Migration("20251028153144_InitialCreate")]
+    [Migration("20251108200840_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -541,11 +541,13 @@ namespace LogisticService.API.Migrations
                 {
                     b.HasOne("LogisticService.Domain.Entities.DeliveryTeam", "AssignedDeliveryTeam")
                         .WithMany()
-                        .HasForeignKey("AssignedDeliveryTeamId");
+                        .HasForeignKey("AssignedDeliveryTeamId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("LogisticService.Domain.Entities.DeliveryZone", "AssignedDeliveryZone")
                         .WithMany()
-                        .HasForeignKey("AssignedDeliveryZoneId");
+                        .HasForeignKey("AssignedDeliveryZoneId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("LogisticService.Domain.Entities.LogisticCustomer", "Customer")
                         .WithMany()

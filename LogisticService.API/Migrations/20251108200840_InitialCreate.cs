@@ -213,12 +213,14 @@ namespace LogisticService.API.Migrations
                         name: "FK_LogisticOrders_DeliveryTeams_AssignedDeliveryTeamId",
                         column: x => x.AssignedDeliveryTeamId,
                         principalTable: "DeliveryTeams",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_LogisticOrders_DeliveryZones_AssignedDeliveryZoneId",
                         column: x => x.AssignedDeliveryZoneId,
                         principalTable: "DeliveryZones",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 

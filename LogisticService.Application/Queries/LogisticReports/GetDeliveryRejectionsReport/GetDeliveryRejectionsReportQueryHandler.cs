@@ -34,6 +34,7 @@ namespace LogisticService.Application.Queries.LogisticReports.GetDeliveryRejecti
 
             return rejections.Select(r => new DeliveryRejectionReportDto
             {
+<<<<<<< HEAD
                 Id = r.Id,
                 LogisticOrderId = r.LogisticOrderId,
                 OperatorId = r.DeliveryOperatorId,                                
@@ -44,6 +45,31 @@ namespace LogisticService.Application.Queries.LogisticReports.GetDeliveryRejecti
                 DeliveryTeamId = r.LogisticOrder.AssignedDeliveryTeamId,
                 DeliveryTeamName = r.LogisticOrder.AssignedDeliveryTeam?.TeamName,
                 CustomerName = $"{r.LogisticOrder.Customer?.FirstName ?? ""} {r.LogisticOrder.Customer?.LastName ?? ""}".Trim()
+=======
+                string fullName = string.Empty;
+                var opId = r.DeliveryOperatorId.ToString().ToLowerInvariant();
+                if (operatorsById.TryGetValue(opId, out var op))
+                    fullName = op.FullName;
+
+                return new DeliveryRejectionReportDto
+                {
+                    Id = r.Id,
+                    LogisticOrderId = r.LogisticOrderId,
+                    OperatorId = r.DeliveryOperatorId,
+                    FullNameDeliveringOperator = fullName,
+                    Reason = r.Reason,
+                    RejectedAt = r.RejectedAt,
+                    DeliveryZoneId = r.LogisticOrder.AssignedDeliveryZoneId
+                        ?? r.LogisticOrder.AssignedDeliveryTeam?.ZoneAssignments
+                            ?.FirstOrDefault(a => a.IsActive)?.DeliveryZoneId,
+                    DeliveryZoneName = r.LogisticOrder.AssignedDeliveryZone?.Name
+                        ?? r.LogisticOrder.AssignedDeliveryTeam?.ZoneAssignments
+                            ?.FirstOrDefault(a => a.IsActive)?.DeliveryZone?.Name,
+                    DeliveryTeamId = r.LogisticOrder.AssignedDeliveryTeamId,
+                    DeliveryTeamName = r.LogisticOrder.AssignedDeliveryTeam?.TeamName,
+                    CustomerName = $"{r.LogisticOrder.Customer?.FirstName ?? ""} {r.LogisticOrder.Customer?.LastName ?? ""}".Trim()
+                };
+>>>>>>> bc72047 (Se modifica Repository de Reportes en Logistica para realizar pruebas de los campos Id Zone y Zone Name.)
             }).ToList();
         }
     }

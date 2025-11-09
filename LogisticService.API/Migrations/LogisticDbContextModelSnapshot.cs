@@ -538,11 +538,13 @@ namespace LogisticService.API.Migrations
                 {
                     b.HasOne("LogisticService.Domain.Entities.DeliveryTeam", "AssignedDeliveryTeam")
                         .WithMany()
-                        .HasForeignKey("AssignedDeliveryTeamId");
+                        .HasForeignKey("AssignedDeliveryTeamId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("LogisticService.Domain.Entities.DeliveryZone", "AssignedDeliveryZone")
                         .WithMany()
-                        .HasForeignKey("AssignedDeliveryZoneId");
+                        .HasForeignKey("AssignedDeliveryZoneId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("LogisticService.Domain.Entities.LogisticCustomer", "Customer")
                         .WithMany()
