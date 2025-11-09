@@ -1,5 +1,5 @@
 import React from "react";
-import { PendingCashVerificationReport } from "../../../../types/Report";
+import { PendingCashVerificationReport } from "../../../../../types/Report";
 import { AlertTriangle } from "lucide-react";
 
 interface Props {
@@ -48,7 +48,7 @@ export const PendingCashVerificationTable: React.FC<Props> = ({ data }) => {
                 <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.customerName}</td>
                 <td className="px-6 py-4 text-sm font-medium text-gray-900">${item.totalAmount.toFixed(2)}</td>
                 <td className="px-6 py-4 text-sm font-medium text-gray-900">{new Date(item.orderDate).toLocaleDateString()}</td>
-                <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.assignedOperatorId}</td>
+                <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.fullNameDeliveringOperator}</td>
                 <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.assignedTeamName}</td>
               </tr>
             ))

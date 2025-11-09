@@ -12,6 +12,7 @@ export interface DeliveryIncidentReport {
   id: number;
   logisticOrderId: number;
   reportedByOperatorId: string;
+  fullNameReportedByOperator : string;
   assignedOperatorId: string;
   incidentType: string;
   description: string;
@@ -31,6 +32,7 @@ export interface DeliveryRejectionReport {
   id: number;
   logisticOrderId: number;
   operatorId: string;
+  fullNameDeliveringOperator: string;
   rejectionType: string;
   reason: string;
   rejectedAt: string;
@@ -67,6 +69,7 @@ export interface OrderStatusHistoryReport {
   changedAt: string;
   averageDurationSeconds: number;
   assignedOperatorId: string;
+  fullNameDeliveringOperator:string;
   assignedTeamName: string;
 }
 
@@ -141,6 +144,7 @@ export interface PendingCashVerificationReport {
   totalAmount: number;
   orderDate: string;
   assignedOperatorId: string;
+  fullNameDeliveringOperator: string;
   assignedTeamName: string;
 }
 
@@ -148,6 +152,7 @@ export interface PendingCashVerificationReport {
 
 export interface OperatorProductivityReport {
   operatorId: string;
+  fullNameDeliveringOperator: string;
   totalOrders: number;
   deliveredOrders: number;
   rejectedOrders: number;
@@ -162,6 +167,7 @@ export interface DeliveryTimeReportItem {
   deliveryZoneId: number;
   deliveryZoneName: string;
   operatorId: string;
+  fullNameDeliveringOperator: string;
   totalDeliveredOrders: number;
   averageDeliveryTimeInHours: number;
   maxDeliveryTimeInHours: number;

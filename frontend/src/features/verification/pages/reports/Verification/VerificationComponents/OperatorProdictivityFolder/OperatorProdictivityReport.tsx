@@ -45,7 +45,7 @@ export const OperatorProductivityTable: React.FC<Props> = ({ data }) => {
         <tbody className="bg-white divide-y divide-gray-200">
           {data.map((op) => (
             <tr key={op.operatorId} className="hover:bg-gray-50 transition-colors duration-200">
-              <td className="px-6 py-4 text-sm font-medium text-gray-900">{op.operatorId}</td>
+              <td className="px-6 py-4 text-sm font-medium text-gray-900">{op.fullNameDeliveringOperator}</td>
               <td className="px-6 py-4 text-sm font-medium text-gray-900">{op.totalOrders}</td>
               <td className="px-6 py-4 text-sm font-medium text-gray-900">{op.deliveredOrders}</td>
               <td className="px-6 py-4 text-sm font-medium text-gray-900">{op.rejectedOrders}</td>

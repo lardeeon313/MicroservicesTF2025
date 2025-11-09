@@ -44,6 +44,7 @@ export const DeliveryIncidentsTeamTable: React.FC<Props> = ({ data }) => {
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Equipo</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Zona</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Reportada por el repartidor</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">UUID</th>
             </tr>
           </thead>
 
@@ -53,7 +54,8 @@ export const DeliveryIncidentsTeamTable: React.FC<Props> = ({ data }) => {
                 <td className="px-6 py-4 text-sm font-medium text-gray-900">{team.deliveryTeamId}</td>
                 <td className="px-6 py-4 text-sm text-gray-700">{team.deliveryTeamName || "—"}</td>
                 <td className="px-6 py-4 text-sm text-gray-700">{team.deliveryZoneName || "—"}</td>
-                <td className="px-6 py-4 text-sm text-gray-700">{team.assignedOperatorId || "—"}</td>
+                <td className="px-6 py-4 text-sm text-gray-700">{team.fullNameReportedByOperator}</td>
+                <td className="px-6 py-4 text-sm text-gray-700">{team.assignedOperatorId}</td>
               </tr>
             ))}
           </tbody>

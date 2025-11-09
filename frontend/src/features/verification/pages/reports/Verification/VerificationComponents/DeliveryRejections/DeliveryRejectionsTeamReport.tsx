@@ -59,7 +59,7 @@ const DeliveryRejectionsTeamReport: React.FC<Props> = ({ data }) => {
             <tr key={item.deliveryTeamId} className="hover:bg-gray-50 transition-colors duration-200">
               <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.deliveryTeamId}</td>
               <td className="px-6 py-4 text-sm text-gray-900">{item.deliveryTeamName}</td>
-              <td className="px-6 py-4 text-sm text-gray-900">{item.operatorId}</td>
+              <td className="px-6 py-4 text-sm text-gray-900">{item.fullNameDeliveringOperator}</td>
             </tr>
           ))}
         </tbody>

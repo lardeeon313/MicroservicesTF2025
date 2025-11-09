@@ -74,7 +74,7 @@ const DeliveryRejectionsTable: React.FC<Props> = ({ data }) => {
               <td className="px-6 py-4 text-sm text-gray-900">
                 {new Date(item.rejectedAt).toLocaleString("es-AR")}
               </td>
-              <td className="px-6 py-4 text-sm text-gray-900">{item.operatorId}</td>
+              <td className="px-6 py-4 text-sm text-gray-900">{item.fullNameDeliveringOperator}</td>
               <td className="px-6 py-4 text-sm text-gray-900">{item.reason}</td>
               <td className="px-6 py-4 text-sm text-gray-900">{item.rejectionType || "—"}</td>
             </tr>
