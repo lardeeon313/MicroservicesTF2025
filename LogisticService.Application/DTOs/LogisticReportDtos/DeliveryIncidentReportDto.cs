@@ -11,7 +11,9 @@ namespace LogisticService.Application.DTOs.LogisticReportDtos
         public int Id { get; set; }
         public int LogisticOrderId { get; set; }
         public Guid ReportedByOperatorId { get; set; }
+        public string FullNameReportedByOperator { get; set; } = string.Empty;
         public Guid? AssignedOperatorId { get; set; }
+        public string FullNameDeliveringOperator { get; set; } = string.Empty;
         public string IncidentType { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public DateTime ReportedAt { get; set; }

@@ -13,6 +13,7 @@ namespace LogisticService.Application.DTOs.LogisticReportDtos
         public decimal? TotalAmount { get; set; }
         public DateTime OrderDate { get; set; }
         public Guid? AssignedOperatorId { get; set; }
+        public string FullNameDeliveringOperator { get; set; } = string.Empty;
         public string? AssignedTeamName { get; set; }
     }
 }

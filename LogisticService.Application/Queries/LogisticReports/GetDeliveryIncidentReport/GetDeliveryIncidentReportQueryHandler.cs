@@ -1,6 +1,8 @@
 ﻿
+using LogisticService.Application.DTOs;
 using LogisticService.Application.DTOs.LogisticReportDtos;
 using LogisticService.Application.Queries.LogisticReports.GetDeliveryIncidentReport;
+using LogisticService.Application.Services.IdentityServiceClient;
 using LogisticService.Domain.IRepositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -12,10 +14,13 @@ using System.Threading.Tasks;
 
 namespace LogisticService.Application.Queries.LogisticReports
 {
-    public class GetDeliveryIncidentReportQueryHandler(ILogisticReportRepository repository, ILogger<GetDeliveryIncidentReportQueryHandler> logger) : IGetDeliveryIncidentReportQueryHandler
+    public class GetDeliveryIncidentReportQueryHandler(ILogisticReportRepository repository,
+                                                       ILogger<GetDeliveryIncidentReportQueryHandler> logger,
+                                                       IIdentityServiceClient identityServiceClient) : IGetDeliveryIncidentReportQueryHandler
     {
         private readonly ILogisticReportRepository _repository = repository;
         private readonly ILogger<GetDeliveryIncidentReportQueryHandler> _logger = logger;
+        private readonly IIdentityServiceClient _identityServiceClient = identityServiceClient;
 
         /// <summary>
         /// Genera el reporte de los incidentes del reparto, con filtros opcionales.
@@ -35,26 +40,16 @@ namespace LogisticService.Application.Queries.LogisticReports
 
             _logger.LogInformation("Se recuperaron {Count} incidencias para el reporte.", incidents.Count);
 
-            return incidents.Select(i => new DeliveryIncidentReportDto
+            // Obtener operadores desde el Identity Service
+            var deliveryOperators = await _identityServiceClient.GetUserWithRoleDeliveryOperator()
+                ?? new List<DeliveryOperatorDto>();
+
+            // Crear diccionario para búsqueda rápida
+            var operatorsById = deliveryOperators
+                .ToDictionary(op => op.Id.ToLowerInvariant(), op => op);
+
+            var result = incidents.Select(i =>
             {
-<<<<<<< HEAD
-                Id = i.Id,
-                LogisticOrderId = i.LogisticOrderId,
-                ReportedByOperatorId = i.ReportedByOperatorId,
-                AssignedOperatorId = i.LogisticOrder.AssignedOperatorId,
-                IncidentType = i.IncidentType.ToString(),
-                Description = i.Description,
-                ReportedAt = i.ReportedAt,
-                Resolved = i.Resolved,
-                ResolvedAt = i.ResolvedAt,
-                ResolutionNote = i.ResolutionNote,
-                DeliveryIncidentStatus = i.DeliveryIncidentStatus.ToString(),
-                DeliveryZoneId = i.LogisticOrder.AssignedDeliveryZoneId,
-                DeliveryZoneName = i.LogisticOrder.AssignedDeliveryZone?.Name,
-                DeliveryTeamId = i.LogisticOrder.AssignedDeliveryTeamId,
-                DeliveryTeamName = i.LogisticOrder.AssignedDeliveryTeam?.TeamName,                
-                CustomerName = $"{i.LogisticOrder.Customer?.FirstName ?? ""} {i.LogisticOrder.Customer?.LastName ?? ""}".Trim()
-=======
                 string fullNameDelivering = string.Empty;
                 string fullNameReportedBy = string.Empty;
 
@@ -96,8 +91,9 @@ namespace LogisticService.Application.Queries.LogisticReports
                     DeliveryTeamName = i.LogisticOrder.AssignedDeliveryTeam?.TeamName,
                     CustomerName = $"{i.LogisticOrder.Customer?.FirstName ?? ""} {i.LogisticOrder.Customer?.LastName ?? ""}".Trim()
                 };
->>>>>>> bc72047 (Se modifica Repository de Reportes en Logistica para realizar pruebas de los campos Id Zone y Zone Name.)
             }).ToList();
+
+            return result;
         }
     }
 }

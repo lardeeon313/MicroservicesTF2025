@@ -1,4 +1,6 @@
-﻿using LogisticService.Application.DTOs.LogisticReportDtos;
+﻿using LogisticService.Application.DTOs;
+using LogisticService.Application.DTOs.LogisticReportDtos;
+using LogisticService.Application.Services.IdentityServiceClient;
 using LogisticService.Domain.Enums;
 using LogisticService.Domain.IRepositories;
 using Microsoft.Extensions.Logging;
@@ -10,10 +12,13 @@ using System.Threading.Tasks;
 
 namespace LogisticService.Application.Queries.LogisticReports.GetOperatorProductivityReport
 {
-    public class GetOperatorProductivityReportQueryHandler(ILogisticReportRepository repository, ILogger<GetOperatorProductivityReportQueryHandler> logger) : IGetOperatorProductivityReportQueryHandler
+    public class GetOperatorProductivityReportQueryHandler(ILogisticReportRepository repository, 
+                                                           ILogger<GetOperatorProductivityReportQueryHandler> logger,
+                                                           IIdentityServiceClient identityServiceClient) : IGetOperatorProductivityReportQueryHandler
     {
         private readonly ILogisticReportRepository _repository = repository;
         private readonly ILogger<GetOperatorProductivityReportQueryHandler> _logger = logger;
+        private readonly IIdentityServiceClient _identityServiceClient = identityServiceClient;
 
         /// <summary>
         /// Genera el reporte de productividad del operador, con filtros opcionales.
@@ -46,7 +51,20 @@ namespace LogisticService.Application.Queries.LogisticReports.GetOperatorProduct
                 .OrderByDescending(r => r.TotalOrders)
                 .ToList();
 
-            _logger.LogInformation("Generated OperatorProductivity report with {Count} operators", grouped.Count);
+            // Obtener operadores desde Identity Service
+            var deliveryOperators = await _identityServiceClient.GetUserWithRoleDeliveryOperator()
+                ?? new List<DeliveryOperatorDto>();
+
+            // Crear diccionario para búsqueda rápida
+            var operatorsById = deliveryOperators.ToDictionary(op => op.Id.ToLowerInvariant(), op => op);
+
+            // Asignar nombre completo al DTO
+            foreach (var item in grouped)
+            {
+                var opId = item.OperatorId.ToString().ToLowerInvariant();
+                if (operatorsById.TryGetValue(opId, out var op))
+                    item.FullNameDeliveringOperator = op.FullName;
+            }
 
             return grouped;
         }

@@ -8,7 +8,8 @@ namespace LogisticService.Application.DTOs.LogisticReportDtos
 {
     public class OperatorProductivityReportDto
     {
-        public Guid OperatorId { get; set; }        
+        public Guid OperatorId { get; set; }
+        public string FullNameDeliveringOperator { get; set; } = string.Empty;
         public int TotalOrders { get; set; }
         public int DeliveredOrders { get; set; }
         public int RejectedOrders { get; set; }

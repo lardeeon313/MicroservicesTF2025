@@ -10,7 +10,8 @@ namespace LogisticService.Application.DTOs.LogisticReportDtos
     {
         public int? DeliveryZoneId { get; set; }
         public string? DeliveryZoneName { get; set; }
-        public Guid? OperatorId { get; set; }        
+        public Guid? OperatorId { get; set; }
+        public string FullNameDeliveringOperator { get; set; } = string.Empty;
         public int TotalDeliveredOrders { get; set; }
         public double AverageDeliveryTimeInHours { get; set; } // tiempo promedio en horas
         public double MaxDeliveryTimeInHours { get; set; }
