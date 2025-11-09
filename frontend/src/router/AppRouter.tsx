@@ -61,9 +61,17 @@ import PendingOrdersVerificationPage from "../features/verification/pages/Pendin
 import PendingOrdersVerificationDetailsPage from "../features/verification/pages/PendingOrderVerificationDetailsPage";
 import OrdersInRoutePage from "../features/verification/pages/OrdersInRoutePage";
 import OrdersInRouteDetailsPage from "../features/verification/pages/OrdersInRouteDetailsPage";
-import VerificationDashboard from "../features/verification/pages/VerificationDashboard";
-import DeliveryDashboard from "../features/delivery/pages/DeliveryDashboard";
-
+import { DashboardLogisticReportsPage } from "../features/verification/pages/reports/DashboardLogisticReportsPage";
+import { CustomersWithIncidentsPage } from "../features/verification/pages/reports/Verification/VerificationPages/CustomersWithIncidentsPage";
+import { DeliveryIncidentsPage } from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryIncidentsPage";
+import DeliveryRejectionsPage from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryRejectionsPage";
+import { OrdersByStatusReportPage } from "../features/verification/pages/reports/Verification/VerificationPages/OrderByStatusPage";
+import { OrderStatusHistoryReportPage } from "../features/verification/pages/reports/Verification/VerificationPages/OrderByStatusHistoryPage";
+import DeliveryTeamActivityPage from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryTeamActivityPage";
+import { PendingCashVerificationPage } from "../features/verification/pages/reports/Verification/VerificationPages/PendingCashVerificationPage";
+import { OperatorProductivityPage } from "../features/verification/pages/reports/Verification/VerificationPages/OperatorProdictivityReportPage";
+import DeliveryTimesReportPage from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryTimesPage";
+import { ZonePerformanceReportPage } from "../features/verification/pages/reports/Verification/VerificationPages/ZonePerfomancePage";
 
 const AppRouter = () => {
   return (
@@ -152,6 +160,7 @@ const AppRouter = () => {
         </Route>
 
         {/* Delivery */}
+        {/** 
         <Route
             path="/delivery"
             element={
@@ -159,7 +168,7 @@ const AppRouter = () => {
                 <DeliveryDashboard />
             </ProtectedRoute>
             }
-        />
+        />*/}
 
         {/* Verificación */}
         <Route
@@ -177,7 +186,17 @@ const AppRouter = () => {
             <Route path="orders-in-route" element={<OrdersInRoutePage/> } />
             <Route path="orders-in-route/:id" element={<OrdersInRouteDetailsPage/> } />
             {/**reportes sector logistica*/}
-            <Route path="reports" element={<VerificationDashboard/>} />
+            <Route path="reports" element={<DashboardLogisticReportsPage/>} />
+            <Route path="reports/CustomersIncidents" element={<CustomersWithIncidentsPage/>} />
+            <Route path="reports/OrderIncidents" element={<DeliveryIncidentsPage/>} />
+            <Route path="reports/RejectOrders" element={<DeliveryRejectionsPage />} />
+            <Route path="reports/OrderStatus" element={<OrdersByStatusReportPage/>} />
+            <Route path="reports/OrderStatusHistory" element={<OrderStatusHistoryReportPage/>} />
+            <Route path="reports/TeamDeliveryProdictivity" element={<DeliveryTeamActivityPage/>} />
+            <Route path="reports/PendingCashVerification" element={<PendingCashVerificationPage/>} />
+            <Route path="reports/OperatorProdictivity" element={<OperatorProductivityPage/>} />
+            <Route path="reports/DeliveryTimes" element={<DeliveryTimesReportPage />} /> 
+            <Route path="reports/ZonePerfomance" element={<ZonePerformanceReportPage/>} />
         </Route>
 
         {/* Admin */}
