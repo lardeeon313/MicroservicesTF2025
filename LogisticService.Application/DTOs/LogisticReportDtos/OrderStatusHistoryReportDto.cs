@@ -16,6 +16,7 @@ namespace LogisticService.Application.DTOs.LogisticReportDtos
         public DateTime ChangedAt { get; set; }
         public double AverageDurationSeconds { get; set; }
         public Guid? AssignedOperatorId { get; set; }
+        public string FullNameDeliveringOperator { get; set; } = string.Empty;
         public string? AssignedTeamName { get; set; }
     }
 }

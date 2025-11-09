@@ -10,7 +10,8 @@ namespace LogisticService.Application.DTOs.LogisticReportDtos
     {
         public int Id { get; set; }
         public int LogisticOrderId { get; set; }
-        public Guid OperatorId { get; set; }        
+        public Guid OperatorId { get; set; }
+        public string FullNameDeliveringOperator { get; set; } = string.Empty;
         public string RejectionType { get; set; } = string.Empty;
         public string? Reason { get; set; }
         public DateTime RejectedAt { get; set; }
