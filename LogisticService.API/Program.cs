@@ -39,6 +39,7 @@ using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyPe
 using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyRejectOrders;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetAllTeams;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetById;
+using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetTeamByDeliveryOperator;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetAllZones;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetByIdZone;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrders;
@@ -142,6 +143,7 @@ builder.Services.AddScoped<IRemoveOperatorToTeamCommandHandler, RemoveOperatorTo
 //Queries CRUD LogisticDeliveryTeams
 builder.Services.AddScoped<IGetAllTeamsQueryHandler, GetAllTeamsQueryHandler>();
 builder.Services.AddScoped<IGetTeamByIdQueryHandler, GetTeamByIdQueryHandler>();
+builder.Services.AddScoped<IGetTeamByDeliveryOperatorQueryHandler,IGetTeamByDeliveryOperatorQueryHandler>();
 
 //Commands CRUD LogisticDeliveryZones
 builder.Services.AddScoped<ICreateDeliveryZoneCommandHandler, CreateDeliveryZoneCommandHandler>();

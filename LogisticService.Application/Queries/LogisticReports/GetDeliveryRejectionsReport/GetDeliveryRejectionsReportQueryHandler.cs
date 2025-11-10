@@ -61,12 +61,8 @@ namespace LogisticService.Application.Queries.LogisticReports.GetDeliveryRejecti
                     FullNameDeliveringOperator = fullName,
                     Reason = r.Reason,
                     RejectedAt = r.RejectedAt,
-                    DeliveryZoneId = r.LogisticOrder.AssignedDeliveryZoneId
-                        ?? r.LogisticOrder.AssignedDeliveryTeam?.ZoneAssignments
-                            ?.FirstOrDefault(a => a.IsActive)?.DeliveryZoneId,
-                    DeliveryZoneName = r.LogisticOrder.AssignedDeliveryZone?.Name
-                        ?? r.LogisticOrder.AssignedDeliveryTeam?.ZoneAssignments
-                            ?.FirstOrDefault(a => a.IsActive)?.DeliveryZone?.Name,
+                    DeliveryZoneId = r.LogisticOrder.AssignedDeliveryZoneId,
+                    DeliveryZoneName = r.LogisticOrder.AssignedDeliveryZone?.Name,
                     DeliveryTeamId = r.LogisticOrder.AssignedDeliveryTeamId,
                     DeliveryTeamName = r.LogisticOrder.AssignedDeliveryTeam?.TeamName,
                     CustomerName = $"{r.LogisticOrder.Customer?.FirstName ?? ""} {r.LogisticOrder.Customer?.LastName ?? ""}".Trim()

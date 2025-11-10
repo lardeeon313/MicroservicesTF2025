@@ -43,9 +43,24 @@ namespace LogisticService.Application.Commands.LogisticManager.LogisticOrder.Ass
                 return false;
             }
 
+            // Determinar zona
+            int? selectedZoneId = command.DeliveryZoneId;
+
+            if (selectedZoneId == null)
+            {
+                selectedZoneId = team.ZoneAssignments
+                    .FirstOrDefault(z => z.IsActive)?.DeliveryZoneId;
+            }
+
+            if (selectedZoneId == null)
+            {
+                _logger.LogError("El equipo {TeamId} no tiene zonas activas y no se especificó una zona en la asignación.", team.Id);
+                return false;
+            }
+
             try
             {               
-                order.AssignToOperator(command.OperatorUserId, team);
+                order.AssignToOperator(command.OperatorUserId, team, selectedZoneId.Value);
             }
             catch (InvalidOperationException ex)
             {
