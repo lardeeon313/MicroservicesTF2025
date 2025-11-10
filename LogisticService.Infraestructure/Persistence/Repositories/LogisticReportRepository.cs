@@ -76,11 +76,8 @@ namespace LogisticService.Infraestructure.Persistence
             var query = _context.DeliveryIncidents
                     .Include(i => i.LogisticOrder)
                         .ThenInclude(o => o.Customer)                    
-                    //.Include(i => i.LogisticOrder.AssignedDeliveryZone)
+                    .Include(i => i.LogisticOrder.AssignedDeliveryZone)
                     .Include(i => i.LogisticOrder.AssignedDeliveryTeam)
-                        .ThenInclude(t => t.ZoneAssignments
-                            .Where(a => a.IsActive))
-                            .ThenInclude(a => a.DeliveryZone)
                     .AsNoTracking()
                     .AsQueryable();
 
@@ -110,11 +107,8 @@ namespace LogisticService.Infraestructure.Persistence
             var query = _context.DeliveryRejectionReasons
                     .Include(r => r.LogisticOrder)
                         .ThenInclude(o => o.Customer)                    
-                    //.Include(r => r.LogisticOrder.AssignedDeliveryZone)
+                    .Include(r => r.LogisticOrder.AssignedDeliveryZone)
                     .Include(r => r.LogisticOrder.AssignedDeliveryTeam)
-                        .ThenInclude(t => t.ZoneAssignments
-                            .Where(a => a.IsActive))
-                            .ThenInclude(a => a.DeliveryZone)
                     .AsNoTracking()
                     .AsQueryable();
 
@@ -264,11 +258,8 @@ namespace LogisticService.Infraestructure.Persistence
         public async Task<List<ZonePerformanceReport>> GetZonePerformanceAsync(DateTime? startDate, DateTime? endDate, int? deliveryZoneId, int? deliveryTeamId)
         {
             var query = _context.LogisticOrders
-                    //.Include(o => o.AssignedDeliveryZone)
+                    .Include(o => o.AssignedDeliveryZone)
                     .Include(o => o.AssignedDeliveryTeam)
-                        .ThenInclude(t => t.ZoneAssignments
-                            .Where(a => a.IsActive))
-                            .ThenInclude(a => a.DeliveryZone)
                     .Include(o => o.DeliveryIncidents)
                     .Include(o => o.RejectionReasons)
                     .AsNoTracking()

@@ -25,6 +25,7 @@ using LogisticService.Application.Commands.LogisticManager.LogisticOrder.SetPrio
 using LogisticService.Application.Commands.LogisticManager.LogisticOrder.VerifiedOrder;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetAllTeams;
 using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetById;
+using LogisticService.Application.Queries.LogisticManager.DeliveryTeam.GetTeamByDeliveryOperator;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetAllZones;
 using LogisticService.Application.Queries.LogisticManager.DeliveryZone.GetByIdZone;
 using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetAllOrders;
@@ -43,6 +44,7 @@ using LogisticService.Application.Queries.LogisticManager.LogisticOrder.GetRejec
 using LogisticService.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata;
 
 /**************************************************************/
 /**************************************************************/
@@ -64,6 +66,7 @@ namespace LogisticService.API.Controllers
         IAssignZoneToTeamCommandHandler assignZoneToTeamCommandHandler,
         IGetAllTeamsQueryHandler getAllTeamsQueryHandler,
         IGetTeamByIdQueryHandler getTeamByIdQueryHandler,
+        IGetTeamByDeliveryOperatorQueryHandler getTeamByDeliveryOperatorQueryHandler,
         IValidator<CreateDeliveryTeamRequest> createDeliveryTeamRequestValidator,
         IValidator<UpdateDeliveryTeamRequest> updateDeliveryTeamRequestValidator,
         IAssignOperatorToTeamCommandHandler assignOperatorToTeamCommandHandler,
@@ -116,6 +119,7 @@ namespace LogisticService.API.Controllers
         private readonly IDeleteDeliveryTeamCommandHandler _deleteDeliveryTeamCommandHandler = deleteDeliveryTeamCommandHandler;
         private readonly IGetTeamByIdQueryHandler _getTeamByIdQueryHandler = getTeamByIdQueryHandler;
         private readonly IGetAllTeamsQueryHandler _getAllTeamsQueryHandler = getAllTeamsQueryHandler;
+        private readonly IGetTeamByDeliveryOperatorQueryHandler _getTeamByDeliveryOperatorQueryHandler = getTeamByDeliveryOperatorQueryHandler;
         private readonly IUpdateDeliveryTeamCommandHandler _updateDeliveryTeamCommandHandler = updateDeliveryTeamCommandHandler;
         private readonly ICreateDeliveryTeamCommandHandler _createDeliveryTeamCommandHandler = createDeliveryTeamCommandHandler;
         private readonly IDisableDeliveryTeamCommandHandler _disableDeliveryTeamCommandHandler = disableDeliveryTeamCommandHandler;
@@ -305,6 +309,25 @@ namespace LogisticService.API.Controllers
             return team is not null ? Ok(team) : NotFound(new { message = "Team not found." });
         }
 
+        /// <summary>
+        /// Endpoint para retornar un equipo por un operario asignado
+        /// </summary>
+        /// <param name="operatorUserId"></param>
+        /// <returns></returns>
+        [HttpGet("get-team-by-operator/{operatorUserId:guid}")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetTeamByDeliveryOperator(Guid operatorUserId)
+        {
+            var query = new GetTeamByDeliveryOperatorQuery(operatorUserId);
+            var result = await _getTeamByDeliveryOperatorQueryHandler.HandleAsync(query);
+
+            if (result == null)
+                return NotFound(new { message = "No se encontró un equipo para el operador especificado." });
+
+            return Ok(result);
+        }
 
         /// <summary>
         /// Asigna un operador a un equipo
@@ -609,7 +632,7 @@ namespace LogisticService.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AssignOperator([FromBody] AssignOperatorRequest request)
         {
-            var command = new AssignOrderCommand(request.LogisticOrderId, request.OperatorUserId);
+            var command = new AssignOrderCommand(request.LogisticOrderId, request.OperatorUserId, request.DeliveryZoneId);
             var result = await _assignOrderCommandHandler.HandleAsync(command);
             if (!result)
                 return BadRequest("No se pudo asignar el operador.");

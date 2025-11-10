@@ -14,5 +14,6 @@ namespace LogisticService.API.RequestDtos.VerificationManager.LogisticOrders
         /// </summary>
         [Required(ErrorMessage = "OperatorUserId is required")]
         public Guid OperatorUserId { get; set; }
+        public int? DeliveryZoneId { get; set; }
     }
 }

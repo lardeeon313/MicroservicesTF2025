@@ -82,7 +82,7 @@ namespace LogisticService.Domain.Entities
         /// Asigna la orden a un operador y su equipo.
         /// Cambia el estado de 'Verified' (7) a 'AssignedDelivery' (15).
         /// </summary>
-        public void AssignToOperator(Guid operatorId, DeliveryTeam team)
+        public void AssignToOperator(Guid operatorId, DeliveryTeam team, int zoneId)
         {
             // Validación de Estado
             if (Status != OrderStatus.Verified &&
@@ -104,6 +104,7 @@ namespace LogisticService.Domain.Entities
             AssignedOperatorId = operatorId;
             AssignedDeliveryTeam = team;
             AssignedDeliveryTeamId = team.Id;
+            AssignedDeliveryZoneId = zoneId; 
             Status = OrderStatus.AssignedDelivery;
             ModifiedStatusDate = DateTime.UtcNow;
 

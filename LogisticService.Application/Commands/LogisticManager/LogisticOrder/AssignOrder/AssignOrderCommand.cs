@@ -13,10 +13,12 @@ namespace LogisticService.Application.Commands.LogisticManager.LogisticOrder.Ass
     {
         public int LogisticOrderId { get; set; }
         public Guid OperatorUserId { get; set; }
-        public AssignOrderCommand(int logisticOrderId, Guid operatorId)
+        public int? DeliveryZoneId { get; set; }
+        public AssignOrderCommand(int logisticOrderId, Guid operatorId, int? deliveryZoneId)
         {
             LogisticOrderId = logisticOrderId;
             OperatorUserId = operatorId;
+            DeliveryZoneId = deliveryZoneId;
         }
     }
 }
