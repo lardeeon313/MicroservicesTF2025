@@ -56,6 +56,8 @@ export const STATUS_TRANSLATIONS: Record<string, string> = {
   IncidentResolved: "Incidente resuelto",
   OnTheWay: "En camino",
   PendingDelivery: "Pendiente de entrega",
+  PendingCashVerification: "Pedido en efectivo pendiente",
+  PendingIncidentResolution : "Pedido pendiente con incidente"
 };
 
 //OrderStatusHistory:
