@@ -57,7 +57,7 @@ export const DeliveryTimesTable: React.FC<Props> = ({ data }) => {
                         {row.deliveryZoneName}
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                        {row.operatorId}
+                        {row.fullNameDeliveringOperator}
                     </td>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
                         {row.totalDeliveredOrders}

@@ -54,7 +54,7 @@ export const OrderByStatusAssigmentReport: React.FC<Props> = ({ data }) => {
             <tr key={row.id} className="hover:bg-gray-50 transition-colors duration-200">
               <td className="px-6 py-4 text-sm font-medium text-gray-900">{row.orderId}</td>
               <td className="px-6 py-4 text-sm text-gray-900">{row.customerName}</td>
-              <td className="px-6 py-4 text-sm text-gray-900">{row.assignedOperatorId ?? "No especificado"}</td>
+              <td className="px-6 py-4 text-sm text-gray-900">{row.fullNameDeliveringOperator ?? "No especificado"}</td>
               <td className="px-6 py-4 text-sm text-gray-900">{row.assignedTeamName}</td>
             </tr>
           ))}
