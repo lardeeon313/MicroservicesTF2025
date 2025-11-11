@@ -2,51 +2,71 @@ import { useState, useEffect } from "react";
 import API from "../../../../../../api/axios";
 import { OrderStatusHistoryFilter } from "../../../../types/FilterReports/FilterReportsEntity";
 import { OrderStatusHistoryReport } from "../../../../types/Report";
-import { OrderStatusLabelsReport } from "../../../../types/Report";
-import { EnglishToSpanishStatusMap } from "../../../../types/Report";
-
-
+import { OrderStatusLabelsReport, EnglishToSpanishStatusMap } from "../../../../types/Report";
+import { PagedResponse } from "../../../../types/Report";
 
 export const useOrderStatusHistoryReport = () => {
   const [filters, setFilters] = useState<OrderStatusHistoryFilter>({});
   const [data, setData] = useState<OrderStatusHistoryReport[]>([]);
+  const [pagination, setPagination] = useState({
+    totalCount: 0,
+    pageNumber: 1,
+    pageSize: 10,
+    totalPages: 0,
+  });
   const [loading, setLoading] = useState(false);
 
+  // ✅ Traductor de número a string de estado
   const statusNumberToString = (statusNumber: number | undefined): string | undefined => {
     if (statusNumber === undefined) return undefined;
     return Object.entries(OrderStatusLabelsReport).find(
-      ([key, _]) => Number(key) === statusNumber
+      ([key]) => Number(key) === statusNumber
     )?.[1];
   };
 
-  const fetchData = async () => {
+  const fetchData = async (pageNumber?: number) => {
     try {
       setLoading(true);
-      console.log("📤 Filtros antes de enviar:", filters);
-      const response = await API.get("/logistic/LogisticReport/order-status-history", {
-        params: filters,
-      });
+
+      // 🔹 Convertimos los status numéricos a string antes de enviar al backend
+      const oldStatusString = statusNumberToString(filters.oldStatus);
+      const newStatusString = statusNumberToString(filters.newStatus);
+
+      const params = {
+        ...filters,
+        oldStatus: oldStatusString,
+        newStatus: newStatusString,
+        pageNumber: pageNumber ?? pagination.pageNumber,
+        pageSize: pagination.pageSize,
+      };
+
+      console.log("📤 Filtros antes de enviar:", params);
+
+      const response = await API.get<PagedResponse<OrderStatusHistoryReport>>(
+        "/logistic/LogisticReport/order-status-history",
+        { params }
+      );
+
       console.log("🔍 Respuesta completa del backend:", response.data);
 
-      // Mapear los datos a español
-      const mappedData = response.data.map((item: OrderStatusHistoryReport) => ({
+      // 🔹 Mapeamos los estados a español para mostrar en la tabla
+      const mappedData = response.data.items.map((item) => ({
         ...item,
         oldStatus: EnglishToSpanishStatusMap[item.oldStatus] || item.oldStatus,
         newStatus: EnglishToSpanishStatusMap[item.newStatus] || item.newStatus,
       }));
 
-      const oldStatusString = statusNumberToString(filters.oldStatus);
-      const newStatusString = statusNumberToString(filters.newStatus);
-
-      const filteredData = mappedData.filter((item: OrderStatusHistoryReport) => {
-        const oldStatusMatch = oldStatusString === undefined || item.oldStatus === oldStatusString;
-        const newStatusMatch = newStatusString === undefined || item.newStatus === newStatusString;
-        return oldStatusMatch && newStatusMatch;
+      setData(mappedData);
+      setPagination({
+        totalCount: response.data.totalCount,
+        pageNumber: response.data.pageNumber,
+        pageSize: response.data.pageSize,
+        totalPages: response.data.totalPages,
       });
 
-      console.log("✅ Datos filtrados en el frontend (primeros 3):", filteredData.slice(0, 3));
-      console.log("✅ Total de registros filtrados en el frontend:", filteredData.length);
-      setData(filteredData);
+      console.log("✅ Datos mapeados (primeros 3):", mappedData.slice(0, 3));
+      console.log("✅ Total registros:", response.data.totalCount);
+
     } catch (error: any) {
       console.error("❌ Error al obtener el historial de estados:", error);
     } finally {
@@ -54,13 +74,13 @@ export const useOrderStatusHistoryReport = () => {
     }
   };
 
-  // Efecto para llamar a fetchData cuando los filtros se limpian
+  // Efecto inicial o cuando los filtros cambian
   useEffect(() => {
     const areFiltersEmpty = Object.keys(filters).length === 0;
     if (areFiltersEmpty) {
-      fetchData();
+      fetchData(1);
     }
   }, [filters]);
 
-  return { data, loading, filters, setFilters, fetchData };
+  return { data, loading, filters, setFilters, fetchData, pagination, setPagination };
 };

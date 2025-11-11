@@ -219,3 +219,13 @@ export const EnglishToSpanishStatusMap: Record<string, string> = {
   "PendingIncidentResolution": "Pedido con incidente pendiente",
   "IncidentResolved": "Incidente resuelto"
 };
+
+
+//PAGINADO: 
+export interface PagedResponse<T> {
+  items: T[];
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+}
