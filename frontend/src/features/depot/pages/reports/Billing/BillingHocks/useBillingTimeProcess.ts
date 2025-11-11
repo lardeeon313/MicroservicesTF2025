@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
 import API from "../../../../../../api/axios";
 import dayjs from "dayjs";
+import { ProcessingTimeOrder } from "../../../../billingmanager/types/BillingTimeProcessType";
 
-interface ProcessingTimeOrder {
-  orderId: string;
-  averageProcessingTime: number;
+interface ApiResponse {
+  items: Array<{
+    orderId: number;
+    durationMinutes: number;
+  }>;
+  totalItems: number;
+  totalPages: number;
 }
 
 export const useBillingTimeProcess = (
@@ -19,76 +24,38 @@ export const useBillingTimeProcess = (
   const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
-    // si no hay fechas, no llamar
-    if (!from || !to) {
-      setData([]);
-      setTotalPages(1);
-      setLoading(false);
-      setError(null);
-      return;
-    }
-
-    // valida rango (opcional: intercambia si vienen invertidas)
-    const fromD = dayjs(from, "DD/MM/YYYY");
-    const toD = dayjs(to, "DD/MM/YYYY");
-    if (!fromD.isValid() || !toD.isValid()) {
-      setData([]);
-      setLoading(false);
-      setError("Fechas inválidas.");
-      return;
-    }
-
     const fetchData = async () => {
       setLoading(true);
       setError(null);
-
       try {
-        // 🔸 ARMO RANGO EN HORA LOCAL (SIN UTC, SIN Z)
-        const fromFormatted = fromD
-          .set("hour", 0)
-          .set("minute", 0)
-          .set("second", 0)
-          .set("millisecond", 0)
-          .format("YYYY-MM-DD HH:mm:ss");
+        const params: any = { page, pageSize };
 
-        const toFormatted = toD
-          .set("hour", 23)
-          .set("minute", 59)
-          .set("second", 59)
-          .set("millisecond", 0)
-          .format("YYYY-MM-DD HH:mm:ss");
+        // Si no hay fechas seleccionadas, establecer un rango por defecto
+        const defaultFrom = from || dayjs().subtract(7, 'days').format("YYYY-MM-DD 00:00:00");
+        const defaultTo = to || dayjs().format("YYYY-MM-DD 23:59:59");
 
-        console.log("📤 Parámetros enviados (local):", {
-          from: fromFormatted,
-          to: toFormatted,
-          page,
-          pageSize,
-        });
+        params.from = defaultFrom;
+        params.to = defaultTo;
 
-        const response = await API.get(
+        console.log("Enviando parámetros al backend:", params);
+        const response = await API.get<ApiResponse>(
           "/depot/depotreports/reports/processing-time-per-order",
-          {
-            params: {
-              from: fromFormatted,
-              to: toFormatted,
-              page,
-              pageSize,
-            },
-          }
+          { params }
         );
+        console.log("Respuesta completa del backend:", response);
 
-        console.log("📥 Respuesta completa:", response);
+        const formattedData = response.data.items.map(item => ({
+          orderId: item.orderId,
+          averageProcessingTime: item.durationMinutes
+        }));
 
-        setTotalPages(response?.data?.totalPages ?? 1);
-        setData(response?.data?.items ?? []);
+        setTotalPages(response.data.totalPages);
+        setData(formattedData);
       } catch (err: any) {
-        console.error("❌ Error en API:", err);
+        console.error("Error en API:", err);
         if (err?.response) {
           const status = err.response.status;
-          const msg =
-            err.response.data?.message ||
-            err.response.data?.title ||
-            "al obtener los datos.";
+          const msg = err.response.data?.message || err.response.data?.title || "al obtener los datos.";
           setError(`Error ${status}: ${msg}`);
         } else {
           setError("Error de red o conexión con el servidor.");
@@ -97,7 +64,6 @@ export const useBillingTimeProcess = (
         setLoading(false);
       }
     };
-
     fetchData();
   }, [from, to, page, pageSize]);
 
