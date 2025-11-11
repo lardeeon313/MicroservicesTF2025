@@ -8,13 +8,15 @@ namespace LogisticService.Application.Queries.LogisticReports.GetDeliveryInciden
 {
     public class GetDeliveryIncidentReportQuery
     {
-        public GetDeliveryIncidentReportQuery(DateTime? startDate, DateTime? endDate, Guid? operatorId, int? deliveryZoneId, int? deliveryTeamId)
+        public GetDeliveryIncidentReportQuery(DateTime? startDate, DateTime? endDate, Guid? operatorId, int? deliveryZoneId, int? deliveryTeamId, int pageNumber, int pageSize)
         {
             StartDate = startDate;
             EndDate = endDate;
             OperatorId = operatorId;
             DeliveryZoneId = deliveryZoneId;
             DeliveryTeamId = deliveryTeamId;
+            PageNumber = pageNumber;
+            PageSize = pageSize;
         }
 
         public DateTime? StartDate { get; set; }
@@ -23,5 +25,8 @@ namespace LogisticService.Application.Queries.LogisticReports.GetDeliveryInciden
         public int? DeliveryTeamId { get; set; }
         public Guid? OperatorId { get; set; }
         public bool? Resolved { get; set; }
+        public int PageNumber { get; } = 1;
+        public int PageSize { get; } = 20;
+
     }
 }

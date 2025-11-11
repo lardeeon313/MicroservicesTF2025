@@ -4,6 +4,7 @@ using LogisticService.Application.Queries.LogisticReports.GetOrderStatusHistoryR
 using LogisticService.Application.Services.IdentityServiceClient;
 using LogisticService.Domain.IRepositories;
 using Microsoft.Extensions.Logging;
+using SharedKernel.Application.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,16 +26,18 @@ namespace LogisticService.Application.Queries.LogisticReports.GetPendingCashVeri
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>   
-        public async Task<IEnumerable<PendingCashVerificationReportDto>> HandleAsync(GetPendingCashVerificationReportQuery query)
+        public async Task<PagedResult<PendingCashVerificationReportDto>> HandleAsync(GetPendingCashVerificationReportQuery query)
         {
             var orders = await _repository.GetPendingCashVerificationAsync(
                 query.StartDate,
                 query.EndDate,
                 query.OperatorId,
-                query.DeliveryTeamId
+                query.DeliveryTeamId,
+                query.PageNumber,
+                query.PageSize
             );
 
-            _logger.LogInformation("Se recuperaron {Count} pedidos pendientes de verificación de efectivo.", orders.Count);
+            _logger.LogInformation("Se recuperaron {Count} pedidos pendientes de verificación de efectivo.", orders.Items.Count());
 
             // Obtener operadores desde el Identity Service
             var deliveryOperators = await _identityServiceClient.GetUserWithRoleDeliveryOperator()
@@ -44,7 +47,7 @@ namespace LogisticService.Application.Queries.LogisticReports.GetPendingCashVeri
             var operatorsById = deliveryOperators.ToDictionary(op => op.Id.ToLowerInvariant(), op => op);
 
             // Mapear las órdenes agregando el nombre del operador
-            var reportList = orders.Select(o =>
+            var reportList = orders.Items.Select(o =>
             {
                 string fullName = string.Empty;
 
@@ -67,7 +70,14 @@ namespace LogisticService.Application.Queries.LogisticReports.GetPendingCashVeri
                 };
             }).ToList();
 
-            return reportList;
+            // Retornar paginado
+            return new PagedResult<PendingCashVerificationReportDto>
+            {
+                Items = reportList,
+                TotalCount = orders.TotalCount,
+                PageNumber = orders.PageNumber,
+                PageSize = orders.PageSize
+            };  
         }
     }
 }

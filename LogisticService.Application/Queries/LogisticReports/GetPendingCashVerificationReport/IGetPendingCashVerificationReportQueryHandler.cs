@@ -1,5 +1,6 @@
 ﻿using LogisticService.Application.DTOs.LogisticReportDtos;
 using LogisticService.Application.Queries.DeliveryOperator.LogisticOrder.GetMyPendingCashOrders;
+using SharedKernel.Application.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,6 @@ namespace LogisticService.Application.Queries.LogisticReports.GetPendingCashVeri
 {
     public interface IGetPendingCashVerificationReportQueryHandler
     {
-        Task<IEnumerable<PendingCashVerificationReportDto>> HandleAsync(GetPendingCashVerificationReportQuery query);
+        Task<PagedResult<PendingCashVerificationReportDto>> HandleAsync(GetPendingCashVerificationReportQuery query);
     }
 }

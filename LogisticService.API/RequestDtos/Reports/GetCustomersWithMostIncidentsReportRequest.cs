@@ -6,5 +6,9 @@
         public DateTime? EndDate { get; set; }
         public Guid? CustomerId { get; set; }
         public string? IncidentType { get; set; }
+
+        // Pagination properties
+        public int PageNumber { get; set; } = 1; 
+        public int PageSize { get; set; } = 20;  
     }
 }
