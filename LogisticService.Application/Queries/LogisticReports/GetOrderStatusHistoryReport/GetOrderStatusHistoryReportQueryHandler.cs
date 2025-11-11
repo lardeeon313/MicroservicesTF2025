@@ -4,6 +4,7 @@ using LogisticService.Application.Queries.LogisticReports.GetOrdersByStatusRepor
 using LogisticService.Application.Services.IdentityServiceClient;
 using LogisticService.Domain.IRepositories;
 using Microsoft.Extensions.Logging;
+using SharedKernel.Application.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,17 +26,19 @@ namespace LogisticService.Application.Queries.LogisticReports.GetOrderStatusHist
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>      
-        public async Task<IEnumerable<OrderStatusHistoryReportDto>> HandleAsync(GetOrderStatusHistoryReportQuery query)
+        public async Task<PagedResult<OrderStatusHistoryReportDto>> HandleAsync(GetOrderStatusHistoryReportQuery query)
         {
             var results = await _repository.GetOrderStatusHistoryAsync(
                         query.StartDate,
                         query.EndDate,
                         query.OldStatus,
                         query.NewStatus,
-                        query.OperatorId
-                    );
+                        query.OperatorId,
+                        query.PageNumber,
+                        query.PageSize
+            );
 
-            _logger.LogInformation("Reporte de flujo de estados generado con {Count} registros.", results.Count);
+            _logger.LogInformation("Reporte de flujo de estados generado con {Count} registros paginados.", results.Items);
 
             // Obtener operadores desde IdentityService
             var deliveryOperators = await _identityServiceClient.GetUserWithRoleDeliveryOperator()
@@ -44,7 +47,7 @@ namespace LogisticService.Application.Queries.LogisticReports.GetOrderStatusHist
             // Crear diccionario de búsqueda rápida
             var operatorsById = deliveryOperators.ToDictionary(op => op.Id.ToLowerInvariant(), op => op);
 
-            var reportList = results.Select(r =>
+            var reportList = results.Items.Select(r =>
             {
                 string fullName = string.Empty;
 
@@ -70,7 +73,13 @@ namespace LogisticService.Application.Queries.LogisticReports.GetOrderStatusHist
                 };
             }).ToList();
 
-            return reportList;
+            return new PagedResult<OrderStatusHistoryReportDto>
+            {
+                Items = reportList,
+                TotalCount = results.TotalCount,
+                PageNumber = results.PageNumber,
+                PageSize = results.PageSize
+            };
         }
     }
 }

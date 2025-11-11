@@ -4,6 +4,7 @@ using LogisticService.Application.Queries.LogisticReports.GetDeliveryIncidentRep
 using LogisticService.Application.Services.IdentityServiceClient;
 using LogisticService.Domain.IRepositories;
 using Microsoft.Extensions.Logging;
+using SharedKernel.Application.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,17 +26,19 @@ namespace LogisticService.Application.Queries.LogisticReports.GetDeliveryRejecti
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>   
-        public async Task<List<DeliveryRejectionReportDto>> HandleAsync(GetDeliveryRejectionsReportQuery query)
+        public async Task<PagedResult<DeliveryRejectionReportDto>> HandleAsync(GetDeliveryRejectionsReportQuery query)
         {
             var rejections = await _repository.GetDeliveryRejectionsAsync(
                 query.StartDate,
                 query.EndDate,
                 query.DeliveryZoneId,
                 query.DeliveryTeamId,
-                query.OperatorId
+                query.OperatorId,
+                query.PageNumber,
+                query.PageSize
             );
 
-            _logger.LogInformation("Se recuperaron {Count} rechazos de entrega para el reporte.", rejections.Count);
+            _logger.LogInformation("Se recuperaron rechazos de entrega para el reporte.");
 
             // Obtener operadores desde el Identity Service
             var deliveryOperators = await _identityServiceClient.GetUserWithRoleDeliveryOperator()
@@ -46,7 +49,7 @@ namespace LogisticService.Application.Queries.LogisticReports.GetDeliveryRejecti
                 .ToDictionary(op => op.Id.ToLowerInvariant(), op => op);
 
             // Mapear resultados 
-            var result = rejections.Select(r =>
+            var result = rejections.Items.Select(r =>
             {
                 string fullName = string.Empty;
                 var opId = r.DeliveryOperatorId.ToString().ToLowerInvariant();
@@ -69,7 +72,14 @@ namespace LogisticService.Application.Queries.LogisticReports.GetDeliveryRejecti
                 };
             }).ToList();
 
-            return result;
+            // Retornar resultado paginado
+            return new PagedResult<DeliveryRejectionReportDto>
+            {
+                Items = result,
+                TotalCount = rejections.TotalCount,
+                PageNumber = rejections.PageNumber,
+                PageSize = rejections.PageSize
+            };
         }
     }
 }

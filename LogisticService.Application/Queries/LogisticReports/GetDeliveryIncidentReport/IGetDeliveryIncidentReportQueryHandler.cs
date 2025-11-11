@@ -1,4 +1,5 @@
 ﻿using LogisticService.Application.DTOs.LogisticReportDtos;
+using SharedKernel.Application.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace LogisticService.Application.Queries.LogisticReports.GetDeliveryInciden
 {
     public interface IGetDeliveryIncidentReportQueryHandler
     {
-        Task<List<DeliveryIncidentReportDto>> HandleAsync(GetDeliveryIncidentReportQuery query);
+        Task<PagedResult<DeliveryIncidentReportDto>> HandleAsync(GetDeliveryIncidentReportQuery query);
     }
 }

@@ -9,5 +9,9 @@ namespace LogisticService.API.RequestDtos.Reports
         public OrderStatus? OldStatus { get; set; }
         public OrderStatus? NewStatus { get; set; }
         public Guid? OperatorId { get; set; }
+
+        // paginación
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 50;
     }
 }

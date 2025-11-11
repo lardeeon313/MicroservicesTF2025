@@ -12,6 +12,7 @@ using LogisticService.Application.Queries.LogisticReports.GetPendingCashVerifica
 using LogisticService.Application.Queries.LogisticReports.GetZonePerformanceReport;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SharedKernel.Application.Utils;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace LogisticService.API.Controllers
@@ -49,11 +50,11 @@ namespace LogisticService.API.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("customers-with-incidents")]
-        [ProducesResponseType(typeof(IEnumerable<CustomerIncidentReportDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PagedResult<CustomerIncidentReportDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetCustomersWithIncidentsReport([FromQuery] GetCustomersWithMostIncidentsReportRequest request)
         {
-            var query = new GetCustomersWithMostIncidentsReportQuery(request.StartDate, request.EndDate, request.CustomerId, request.IncidentType);
+            var query = new GetCustomersWithMostIncidentsReportQuery(request.StartDate, request.EndDate, request.CustomerId, request.IncidentType, request.PageNumber, request.PageSize);
             var result = await _getCustomersWithMostIncidentsReportQueryHandler.HandleAsync(query);
             return Ok(result);
         }
@@ -64,10 +65,10 @@ namespace LogisticService.API.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("delivery-incidents")]
-        [ProducesResponseType(typeof(IEnumerable<DeliveryIncidentReportDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PagedResult<DeliveryIncidentReportDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetDeliveryIncidentsReport([FromQuery] GetDeliveryIncidentReportRequest request)
         {
-            var query = new GetDeliveryIncidentReportQuery(request.StartDate, request.EndDate, request.OperatorId, request.DeliveryZoneId, request.DeliveryTeamId);
+            var query = new GetDeliveryIncidentReportQuery(request.StartDate, request.EndDate, request.OperatorId, request.DeliveryZoneId, request.DeliveryTeamId, request.PageNumber, request.PageSize);
             var result = await _getDeliveryIncidentReportQueryHandler.HandleAsync(query);
             return Ok(result);
         }
@@ -78,10 +79,10 @@ namespace LogisticService.API.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("delivery-rejections")]
-        [ProducesResponseType(typeof(IEnumerable<DeliveryRejectionReportDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PagedResult<DeliveryRejectionReportDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetDeliveryRejectionsReport([FromQuery] GetDeliveryRejectionsReportRequest request)
         {
-            var query = new GetDeliveryRejectionsReportQuery(request.StartDate, request.EndDate, request.OperatorId, request.DeliveryZoneId);
+            var query = new GetDeliveryRejectionsReportQuery(request.StartDate, request.EndDate, request.OperatorId, request.DeliveryZoneId, request.PageNumber, request.PageSize);
             var result = await _getDeliveryRejectionsReportQueryHandler.HandleAsync(query);
             return Ok(result);
         }
@@ -148,10 +149,10 @@ namespace LogisticService.API.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("order-status-history")]
-        [ProducesResponseType(typeof(IEnumerable<OrderStatusHistoryReportDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PagedResult<OrderStatusHistoryReportDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetOrderStatusHistoryReport([FromQuery] GetOrderStatusHistoryReportRequest request)
         {
-            var query = new GetOrderStatusHistoryReportQuery(request.StartDate, request.EndDate, request.OperatorId, request.OldStatus, request.NewStatus, request.OperatorId);
+            var query = new GetOrderStatusHistoryReportQuery(request.StartDate, request.EndDate, request.OperatorId, request.OldStatus, request.NewStatus, request.OperatorId, request.PageNumber, request.PageSize);
             var result = await _getOrderStatusHistoryReportQueryHandler.HandleAsync(query);
             return Ok(result);
         }
@@ -162,7 +163,7 @@ namespace LogisticService.API.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("pending-cash-verification")]
-        [ProducesResponseType(typeof(IEnumerable<PendingCashVerificationReportDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PagedResult<PendingCashVerificationReportDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPendingCashVerificationReport([FromQuery] GetPendingCashVerificationReportRequest request)
         {
             var query = new GetPendingCashVerificationReportQuery
@@ -170,7 +171,9 @@ namespace LogisticService.API.Controllers
                 StartDate = request.StartDate,
                 EndDate = request.EndDate,
                 OperatorId = request.OperatorId,
-                DeliveryTeamId = request.DeliveryTeamId
+                DeliveryTeamId = request.DeliveryTeamId,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize
             };
             var result = await _getPendingCashVerificationReportQueryHandler.HandleAsync(query);
             return Ok(result);

@@ -3,7 +3,7 @@ using LogisticService.Domain.Enums;
 using LogisticService.Domain.IRepositories;
 using LogisticService.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using SharedKernel.Application.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,14 +15,12 @@ namespace LogisticService.Infraestructure.Persistence
     public class LogisticReportRepository : ILogisticReportRepository
     {
         private readonly LogisticDbContext _context;
-        private readonly ILogger<LogisticReportRepository> _logger;
-        public LogisticReportRepository(LogisticDbContext context, ILogger<LogisticReportRepository> logger)
+        public LogisticReportRepository(LogisticDbContext context)
         {
             _context = context;
-            _logger = logger;
         }
 
-        public async Task<List<CustomerIncidentReport>> GetCustomersWithMostIncidentsAsync(DateTime? startDate, DateTime? endDate, Guid? customerId, string? incidentType)
+        public async Task<PagedResult<CustomerIncidentReport>> GetCustomersWithMostIncidentsAsync(DateTime? startDate, DateTime? endDate, Guid? customerId, string? incidentType, int pageNumber, int pageSize)
         {
             var query = _context.LogisticOrders
                 .Include(o => o.Customer)
@@ -43,7 +41,7 @@ namespace LogisticService.Infraestructure.Persistence
             if (!string.IsNullOrWhiteSpace(incidentType))
                 query = query.Where(o => o.DeliveryIncidents.Any(i => i.IncidentType == incidentType));
 
-            var grouped = await query
+            var grouped = query
                 .GroupBy(o => o.CustomerId)
                 .Select(g => new CustomerIncidentReport
                 {
@@ -53,11 +51,17 @@ namespace LogisticService.Infraestructure.Persistence
                     TotalOrders = g.Count(),
                     TotalIncidents = g.Sum(o => o.DeliveryIncidents.Count),
                     TotalRejections = g.Sum(o => o.RejectionReasons.Count)
-                })
+                });
+
+            var totalCount = await grouped.CountAsync();
+
+            var pagedData = await grouped
                 .OrderByDescending(r => r.TotalIncidents + r.TotalRejections)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
-            foreach (var c in grouped)
+            foreach (var c in pagedData)
             {
                 c.IncidentRatePercent = c.TotalOrders > 0
                     ? Math.Round((double)c.TotalIncidents / c.TotalOrders * 100, 2)
@@ -68,14 +72,20 @@ namespace LogisticService.Infraestructure.Persistence
                     : 0;
             }
 
-            return grouped;
+            return new PagedResult<CustomerIncidentReport>
+            {
+                Items = pagedData,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         }
 
-        public async Task<List<DeliveryIncident>> GetDeliveryIncidentsReportQuery(DateTime? startDate, DateTime? endDate, int? deliveryZoneId, int? deliveryTeamId, Guid? operatorId, bool? resolved)
+        public async Task<PagedResult<DeliveryIncident>> GetDeliveryIncidentsReportQuery(DateTime? startDate, DateTime? endDate, int? deliveryZoneId, int? deliveryTeamId, Guid? operatorId, bool? resolved, int pageNumber, int pageSize)
         {
             var query = _context.DeliveryIncidents
                     .Include(i => i.LogisticOrder)
-                        .ThenInclude(o => o.Customer)                    
+                        .ThenInclude(o => o.Customer)
                     .Include(i => i.LogisticOrder.AssignedDeliveryZone)
                     .Include(i => i.LogisticOrder.AssignedDeliveryTeam)
                     .AsNoTracking()
@@ -99,14 +109,28 @@ namespace LogisticService.Infraestructure.Persistence
             if (resolved.HasValue)
                 query = query.Where(i => i.Resolved == resolved.Value);
 
-            return await query.ToListAsync();
+            var totalCount = await query.CountAsync();
+
+            var pagedData = await query
+                .OrderByDescending(i => i.ReportedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<DeliveryIncident>
+            {
+                Items = pagedData,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         }
 
-        public async Task<List<DeliveryRejectionReason>> GetDeliveryRejectionsAsync(DateTime? startDate, DateTime? endDate, int? deliveryZoneId, int? deliveryTeamId, Guid? operatorId)
+        public async Task<PagedResult<DeliveryRejectionReason>> GetDeliveryRejectionsAsync(DateTime? startDate, DateTime? endDate, int? deliveryZoneId, int? deliveryTeamId, Guid? operatorId, int pageNumber, int pageSize)
         {
             var query = _context.DeliveryRejectionReasons
                     .Include(r => r.LogisticOrder)
-                        .ThenInclude(o => o.Customer)                    
+                        .ThenInclude(o => o.Customer)
                     .Include(r => r.LogisticOrder.AssignedDeliveryZone)
                     .Include(r => r.LogisticOrder.AssignedDeliveryTeam)
                     .AsNoTracking()
@@ -127,7 +151,21 @@ namespace LogisticService.Infraestructure.Persistence
             if (operatorId.HasValue)
                 query = query.Where(r => r.DeliveryOperatorId == operatorId.Value);
 
-            return await query.ToListAsync();
+            var totalCount = await query.CountAsync();
+
+            var pagedData = await query
+                .OrderByDescending(i => i.RejectedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<DeliveryRejectionReason>
+            {
+                Items = pagedData,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         }
 
         public async Task<List<TeamActivityReport>> GetDeliveryTeamActivityAsync(DateTime? startDate, DateTime? endDate, int? deliveryTeamId, int? deliveryZoneId)
@@ -213,7 +251,7 @@ namespace LogisticService.Infraestructure.Persistence
             return await query.ToListAsync();
         }
 
-        public async Task<List<OrderStatusHistoryReport>> GetOrderStatusHistoryAsync(DateTime? startDate, DateTime? endDate, OrderStatus? oldStatus, OrderStatus? newStatus, Guid? operatorId)
+        public async Task<PagedResult<OrderStatusHistoryReport>> GetOrderStatusHistoryAsync(DateTime? startDate, DateTime? endDate, OrderStatus? oldStatus, OrderStatus? newStatus, Guid? operatorId, int pageNumber, int pageSize)
         {
             var query = _context.OrderStatusHistories
                 .Include(h => h.LogisticOrder)
@@ -237,22 +275,32 @@ namespace LogisticService.Infraestructure.Persistence
             if (operatorId.HasValue)
                 query = query.Where(h => h.LogisticOrder.AssignedOperatorId == operatorId.Value);
 
+            var totalCount = await query.CountAsync();
+
             var results = await query
-                .OrderBy(h => h.ChangedAt)
+                .OrderByDescending(h => h.ChangedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
-            return results.Select(h => new OrderStatusHistoryReport
+            return new PagedResult<OrderStatusHistoryReport>
             {
-                Id = h.Id,
-                OrderId = h.OrderId ?? 0,
-                CustomerName = $"{h.LogisticOrder.Customer.FirstName} {h.LogisticOrder.Customer.LastName}".Trim(),
-                OldStatus = h.OldStatus.ToString(),
-                NewStatus = h.NewStatus.ToString(),
-                ChangedAt = h.ChangedAt,
-                AverageDurationSeconds = h.AverageDuration,
-                AssignedOperatorId = h.LogisticOrder.AssignedOperatorId,
-                AssignedTeamName = h.LogisticOrder.AssignedDeliveryTeam?.TeamName
-            }).ToList();
+                Items = results.Select(h => new OrderStatusHistoryReport
+                {
+                    Id = h.Id,
+                    OrderId = h.OrderId ?? 0,
+                    CustomerName = $"{h.LogisticOrder.Customer.FirstName} {h.LogisticOrder.Customer.LastName}".Trim(),
+                    OldStatus = h.OldStatus.ToString(),
+                    NewStatus = h.NewStatus.ToString(),
+                    ChangedAt = h.ChangedAt,
+                    AverageDurationSeconds = h.AverageDuration,
+                    AssignedOperatorId = h.LogisticOrder.AssignedOperatorId,
+                    AssignedTeamName = h.LogisticOrder.AssignedDeliveryTeam?.TeamName
+                }).ToList(),
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         }
 
         public async Task<List<ZonePerformanceReport>> GetZonePerformanceAsync(DateTime? startDate, DateTime? endDate, int? deliveryZoneId, int? deliveryTeamId)
@@ -325,11 +373,13 @@ namespace LogisticService.Infraestructure.Persistence
             return grouped;
         }
 
-        public async Task<List<LogisticOrder>> GetPendingCashVerificationAsync(
+        public async Task<PagedResult<LogisticOrder>> GetPendingCashVerificationAsync(
             DateTime? startDate,
             DateTime? endDate,
             Guid? operatorId,
-            int? deliveryTeamId)
+            int? deliveryTeamId,
+            int pageNumber,
+            int pageSize)
         {
             var query = _context.LogisticOrders
                 .Include(o => o.Customer)
@@ -355,7 +405,21 @@ namespace LogisticService.Infraestructure.Persistence
             // Solo pedidos pendientes de verificación de efectivo
             query = query.Where(o => o.Status == OrderStatus.PendingCashVerification);
 
-            return await query.ToListAsync();
+            var totalCount = await query.CountAsync();
+
+            var results = await query
+                .OrderByDescending(h => h.OrderDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<LogisticOrder>
+            {
+                Items = results,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         }
     }
 }

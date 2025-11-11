@@ -1,6 +1,7 @@
 ﻿using LogisticService.Domain.Entities;
 using LogisticService.Domain.Enums;
 using LogisticService.Domain.ValueObjects;
+using SharedKernel.Application.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,20 +20,24 @@ namespace LogisticService.Domain.IRepositories
             Guid? operatorId,
             PaymentType? paymentType);
 
-        Task<List<DeliveryIncident>> GetDeliveryIncidentsReportQuery(
+        Task<PagedResult<DeliveryIncident>> GetDeliveryIncidentsReportQuery(
             DateTime? startDate,
             DateTime? endDate,
             int? deliveryZoneId,
             int? deliveryTeamId,
             Guid? operatorId,
-            bool? resolved);
+            bool? resolved,
+            int pageNumber,
+            int pageSize);
 
-        Task<List<DeliveryRejectionReason>> GetDeliveryRejectionsAsync(
+        Task<PagedResult<DeliveryRejectionReason>> GetDeliveryRejectionsAsync(
             DateTime? startDate,
             DateTime? endDate,
             int? deliveryZoneId,
             int? deliveryTeamId,
-            Guid? operatorId);
+            Guid? operatorId,
+            int pageNumber,
+            int pageSize);
 
         Task<List<ZonePerformanceReport>> GetZonePerformanceAsync(
             DateTime? startDate,
@@ -46,24 +51,30 @@ namespace LogisticService.Domain.IRepositories
             int? deliveryTeamId,
             int? deliveryZoneId);
 
-        Task<List<CustomerIncidentReport>> GetCustomersWithMostIncidentsAsync(
+        Task<PagedResult<CustomerIncidentReport>> GetCustomersWithMostIncidentsAsync(
             DateTime? startDate,
             DateTime? endDate,
             Guid? customerId,
-            string? incidentType);
+            string? incidentType,
+            int pageNumber,
+            int pageSize);
 
-        Task<List<OrderStatusHistoryReport>> GetOrderStatusHistoryAsync(
+        Task<PagedResult<OrderStatusHistoryReport>> GetOrderStatusHistoryAsync(
             DateTime? startDate,
             DateTime? endDate,
             OrderStatus? oldStatus,
             OrderStatus? newStatus,
-            Guid? operatorId);
+            Guid? operatorId,
+            int pageNumber,
+            int pageSize);
 
-        Task<List<LogisticOrder>> GetPendingCashVerificationAsync(
+        Task<PagedResult<LogisticOrder>> GetPendingCashVerificationAsync(
             DateTime? startDate,
             DateTime? endDate,
             Guid? operatorId,
-            int? deliveryTeamId);
+            int? deliveryTeamId,
+            int pageNumber,
+            int pageSize);
 
 
 

@@ -13,12 +13,17 @@ namespace LogisticService.Application.Queries.LogisticReports.GetCustomersWithMo
         public Guid? CustomerId { get; set; }
         public string? IncidentType { get; set; }
 
-        public GetCustomersWithMostIncidentsReportQuery(DateTime? startDate, DateTime? endDate, Guid? customerId, string? incidentType)
+        public int PageNumber { get; } = 1;
+        public int PageSize { get; } = 20;
+
+        public GetCustomersWithMostIncidentsReportQuery(DateTime? startDate, DateTime? endDate, Guid? customerId, string? incidentType, int pageNumber, int pageSize)
         {
             StartDate = startDate;
             EndDate = endDate;
             CustomerId = customerId;
             IncidentType = incidentType;
+            PageNumber = pageNumber;
+            PageSize = pageSize;
         }
     }
 }

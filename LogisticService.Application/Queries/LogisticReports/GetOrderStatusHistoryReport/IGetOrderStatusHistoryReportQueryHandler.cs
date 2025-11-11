@@ -1,4 +1,5 @@
 ﻿using LogisticService.Application.DTOs.LogisticReportDtos;
+using SharedKernel.Application.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace LogisticService.Application.Queries.LogisticReports.GetOrderStatusHist
 {
     public interface IGetOrderStatusHistoryReportQueryHandler
     {
-        Task<IEnumerable<OrderStatusHistoryReportDto>> HandleAsync(GetOrderStatusHistoryReportQuery query);
+        Task<PagedResult<OrderStatusHistoryReportDto>> HandleAsync(GetOrderStatusHistoryReportQuery query);
     }
 }
