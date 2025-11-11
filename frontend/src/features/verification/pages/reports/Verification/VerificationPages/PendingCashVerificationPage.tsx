@@ -18,9 +18,16 @@ export const PendingCashVerificationPage: React.FC = () => {
   const [searchParams, setSearchParams] =
     useState<PendingCashVerificationFilter | null>(null);
 
-  const { data, isLoading, error } = usePendingCashVerificationReport(searchParams);
+  // 📄 PAGINADO
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize] = useState(10);
 
-  // 🔹 Ejecutar búsqueda automática al entrar
+  const { data, isLoading, error } = usePendingCashVerificationReport(
+    searchParams,
+    pageNumber,
+    pageSize
+  );
+
   useEffect(() => {
     setSearchParams(filters);
   }, []);
@@ -34,24 +41,37 @@ export const PendingCashVerificationPage: React.FC = () => {
     };
     setFilters(emptyFilters);
     setSearchParams(emptyFilters);
+    setPageNumber(1);
   };
 
   const handleSearch = () => {
-    console.log("🔍 Buscar clic:", filters);
     setSearchParams(filters);
+    setPageNumber(1);
   };
 
   const handleSetFilters = (updated: Partial<PendingCashVerificationFilter>) => {
-    setFilters((prev) => {
-      const newDeliveryTeamId =
+    setFilters((prev) => ({
+      ...prev,
+      ...updated,
+      deliveryTeamId:
         typeof updated.deliveryTeamId === "string"
           ? updated.deliveryTeamId === ""
             ? undefined
             : Number(updated.deliveryTeamId)
-          : updated.deliveryTeamId;
+          : updated.deliveryTeamId,
+    }));
+  };
 
-      return { ...prev, ...updated, deliveryTeamId: newDeliveryTeamId };
-    });
+  const handleNextPage = () => {
+    if (data && pageNumber < data.totalPages) {
+      setPageNumber(pageNumber + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (pageNumber > 1) {
+      setPageNumber(pageNumber - 1);
+    }
   };
 
   if (isLoading) {
@@ -66,16 +86,13 @@ export const PendingCashVerificationPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-10">
       <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-10">
-        {/* Encabezado */}
-        <div className="mb-10">
-          <BackButton to="/verification/reports" />
-          <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-            Reporte de Efectivo Pendiente de Verificación
-          </h1>
-          <p className="text-center text-lg text-gray-700">
-            Visualizá los pedidos que aún se encuentran pendientes de verificación.
-          </p>
-        </div>
+        <BackButton to="/verification/reports" />
+        <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
+          Reporte de Efectivo Pendiente de Verificación
+        </h1>
+        <p className="text-center text-lg text-gray-700">
+          Visualizá los pedidos que aún se encuentran pendientes de verificación.
+        </p>
 
         {/* Filtros */}
         <div className="bg-white shadow-md rounded-2xl p-6 mb-10 border border-gray-200">
@@ -87,11 +104,34 @@ export const PendingCashVerificationPage: React.FC = () => {
           />
         </div>
 
-        {/* Tabla y gráfico simplificado */}
-        {!isLoading && (
+        {/* Tabla */}
+        {!isLoading && data && (
           <div className="space-y-12 mt-8">
-            <PendingCashVerificationTable data={data} />
-            <GraphPendingCashVerification data={data} />
+            <PendingCashVerificationTable data={data.items} />
+            <GraphPendingCashVerification data={data.items} />
+
+            {/* 🔹 Controles de paginación */}
+            <div className="flex justify-center items-center gap-4 mt-6">
+              <button
+                onClick={handlePrevPage}
+                disabled={pageNumber === 1}
+                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg shadow hover:bg-gray-300 transition disabled:opacity-50"
+              >
+                ◀ Anterior
+              </button>
+
+              <span className="text-gray-600 font-medium">
+                Página {pageNumber} de {data.totalPages || 1}
+              </span>
+
+              <button
+                onClick={handleNextPage}
+                disabled={pageNumber >= (data.totalPages || 1)}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg shadow hover:bg-red-700 transition disabled:opacity-50"
+              >
+                Siguiente ▶
+              </button>
+            </div>
           </div>
         )}
 
