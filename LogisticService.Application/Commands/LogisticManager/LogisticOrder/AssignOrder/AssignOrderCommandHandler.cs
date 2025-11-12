@@ -8,17 +8,34 @@ using SharedKernel.IntegrationEvents.LogisticEvents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace LogisticService.Application.Commands.LogisticManager.LogisticOrder.AssignOrder
 {
-    public class AssignOrderCommandHandler(IRabbitMQPublisher publisher, ILogisticOrderRepository repository, IDeliveryTeamRepository teamRepository, ILogger<AssignOrderCommandHandler> logger) : IAssignOrderCommandHandler
+    public class AssignOrderCommandHandler : IAssignOrderCommandHandler
     {
-        private readonly ILogisticOrderRepository _repository = repository;
-        private readonly IDeliveryTeamRepository _teamRepository = teamRepository;
-        private readonly ILogger<AssignOrderCommandHandler> _logger = logger;
-        private readonly IRabbitMQPublisher _publisher = publisher;
+        private readonly ILogisticOrderRepository _repository;
+        private readonly IDeliveryTeamRepository _teamRepository;
+        private readonly ILogger<AssignOrderCommandHandler> _logger;
+        private readonly IRabbitMQPublisher _publisher;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public AssignOrderCommandHandler(
+            IRabbitMQPublisher publisher,
+            ILogisticOrderRepository repository,
+            IDeliveryTeamRepository teamRepository,
+            ILogger<AssignOrderCommandHandler> logger,
+            IHttpContextAccessor httpContextAccessor)
+        {
+            _repository = repository;
+            _teamRepository = teamRepository;
+            _logger = logger;
+            _publisher = publisher;
+            _httpContextAccessor = httpContextAccessor;
+        }
 
         /// <summary>
         /// Handler para asignar una orden a un operario y su equipo.
@@ -28,6 +45,7 @@ namespace LogisticService.Application.Commands.LogisticManager.LogisticOrder.Ass
         public async Task<bool> HandleAsync(AssignOrderCommand command)
         {
             var order = await _repository.GetByIdAsync(command.LogisticOrderId);
+
             if (order == null)
             {
                 _logger.LogWarning("No se encontró la orden logística con ID: {LogisticOrderId}", command.LogisticOrderId);
@@ -58,9 +76,25 @@ namespace LogisticService.Application.Commands.LogisticManager.LogisticOrder.Ass
                 return false;
             }
 
+            // ✅ Obtener el usuario actual que está haciendo la asignación
+            Guid? assignedByUserId = null;
             try
-            {               
-                order.AssignToOperator(command.OperatorUserId, team, selectedZoneId.Value);
+            {
+                var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!string.IsNullOrEmpty(userIdClaim) && Guid.TryParse(userIdClaim, out var userId))
+                {
+                    assignedByUserId = userId;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "No se pudo obtener el ID del usuario actual para AssignedByUserId");
+            }
+
+            try
+            {
+                // ✅ Pasar el assignedByUserId al método
+                order.AssignToOperator(command.OperatorUserId, team, selectedZoneId.Value, assignedByUserId);
             }
             catch (InvalidOperationException ex)
             {
@@ -73,10 +107,8 @@ namespace LogisticService.Application.Commands.LogisticManager.LogisticOrder.Ass
             }
 
             // Si el método de dominio fue exitoso, guardamos los cambios
+            // EF Core detectará automáticamente el nuevo DeliveryTeamAssignment y lo guardará
             await _repository.UpdateAsync(order);
-
-            // Guardamos el cambio de estado en la base de datos
-
 
             _logger.LogInformation("✅ Orden {Id} asignada al operador {Operator}", order.DepotOrderId, order.AssignedOperatorId);
 
@@ -93,6 +125,7 @@ namespace LogisticService.Application.Commands.LogisticManager.LogisticOrder.Ass
             await _publisher.PublishToExchangeAsync(integrationEvent, "order_assigned_delivery_exchange ");
 
             _logger.LogInformation("✅ Evento OrderAssignDeliveryIntegrationEvent publicado para la orden {DepotOrderId}", order.DepotOrderId);
+
             return true;
         }
     }

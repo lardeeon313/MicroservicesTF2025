@@ -1,13 +1,12 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePendingVerificationOrders, useAssignedDeliveryOrders, useVerifiedOrders, useAssignmentCancelledOrders, useOrderDetails, useOrderOperations } from '../hooks/useOrders';
+import { usePendingVerificationOrders, useAssignedDeliveryOrders, useVerifiedOrders, useAssignmentCancelledOrders, useOrderDetails } from '../hooks/useOrders';
 // import { useOperators } from '../hooks/useOperators'; // Para uso futuro
 import OrderTable from '../components/Order/OrderTable';
 import Tabs from '../components/Order/Tabs';
 import BackButton from '../../../components/BackButton';
 import RejectionReasonsModal from '../components/Order/RejectionReasonsModal';
-import toast from 'react-hot-toast';
 
 const PendingOrdersVerificationPage = () => {
   const navigate = useNavigate();
@@ -21,12 +20,8 @@ const PendingOrdersVerificationPage = () => {
   const assignedOrders = useAssignedDeliveryOrders();
   const rejectedOrders = useAssignmentCancelledOrders();
   
-  // Hook para operaciones de órdenes
-  const { } = useOrderOperations();
-  
   // Hook para obtener detalles de la orden seleccionada
   const { order: selectedOrder } = useOrderDetails(selectedOrderId || undefined);
-  // const { operators } = useOperators(); // Para uso futuro
 
   const handleViewOrder = (orderId: number) => {
     navigate(`/verification/pending-orders-verification/${orderId}`);
@@ -40,24 +35,9 @@ const PendingOrdersVerificationPage = () => {
   const handleCloseRejectionModal = () => {
     setIsRejectionModalOpen(false);
     setSelectedOrderId(null);
-  };
-
-  const handleReassignOrder = async (orderId: number): Promise<boolean> => {
-    try {
-      // Por ahora, simplemente cambiamos el estado a PendingVerification para que pueda ser reasignada
-      // En una implementación real, aquí se asignaría a un operador específico
-      console.log('Reasignando orden:', orderId);
-      toast.success('Orden marcada para reasignación');
-      
-      // Recargar las órdenes para actualizar la vista
-      rejectedOrders.refetch();
-      pendingOrders.refetch();
-      
-      return true;
-    } catch (error) {
-      console.error('Error al reasignar orden:', error);
-      return false;
-    }
+    // Recargar las órdenes para actualizar la vista después de cerrar el modal
+    rejectedOrders.refetch();
+    pendingOrders.refetch();
   };
 
   const handleTabChange = (tabKey: string) => {
@@ -175,7 +155,6 @@ const PendingOrdersVerificationPage = () => {
         order={selectedOrder}
         isOpen={isRejectionModalOpen}
         onClose={handleCloseRejectionModal}
-        onReassign={handleReassignOrder}
       />
     </div>
   );
