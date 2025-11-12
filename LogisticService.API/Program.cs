@@ -143,7 +143,7 @@ builder.Services.AddScoped<IRemoveOperatorToTeamCommandHandler, RemoveOperatorTo
 //Queries CRUD LogisticDeliveryTeams
 builder.Services.AddScoped<IGetAllTeamsQueryHandler, GetAllTeamsQueryHandler>();
 builder.Services.AddScoped<IGetTeamByIdQueryHandler, GetTeamByIdQueryHandler>();
-builder.Services.AddScoped<IGetTeamByDeliveryOperatorQueryHandler,IGetTeamByDeliveryOperatorQueryHandler>();
+builder.Services.AddScoped<IGetTeamByDeliveryOperatorQueryHandler, GetTeamByDeliveryOperatorQueryHandler>();
 
 //Commands CRUD LogisticDeliveryZones
 builder.Services.AddScoped<ICreateDeliveryZoneCommandHandler, CreateDeliveryZoneCommandHandler>();
