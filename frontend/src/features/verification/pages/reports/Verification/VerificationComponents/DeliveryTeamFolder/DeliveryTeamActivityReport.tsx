@@ -1,6 +1,6 @@
 import React from "react";
 import { AlertTriangle } from "lucide-react";
-import { TeamActivityReport } from "../../../../types/Report";
+import { TeamActivityReport } from "../../../../../types/Report";
 
 const DeliveryTeamActivityTable: React.FC<{ data: TeamActivityReport[] }> = ({ data }) => {
 

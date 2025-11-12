@@ -54,6 +54,8 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         {
             return await _context.DeliveryTeams
                 .Include(t => t.DeliveryOperators)
+                .Include(t => t.ZoneAssignments)
+                .ThenInclude(z => z.DeliveryZone)
                 .FirstOrDefaultAsync(t => t.DeliveryOperators.Any(a => a.OperatorUserId == operatorUserId));
         }
     }

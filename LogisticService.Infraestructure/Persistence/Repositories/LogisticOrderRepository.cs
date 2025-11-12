@@ -120,6 +120,7 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         public async Task<IEnumerable<LogisticOrder>> GetOrdersByStatus(OrderStatus status)
         {
             return await _context.LogisticOrders
+                .Where(o => o.Status == status)
                 .Include(o => o.Items)
                 .Include(o => o.AssignedDeliveryTeam)
                 .Include(o => o.AssignedDeliveryZone)

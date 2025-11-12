@@ -11,9 +11,8 @@ namespace LogisticService.Domain.Entities
     public class LogisticOrder
     {
         public int Id { get; set; }
-
         public OrderStatus Status { get; set; }
-        public DeliveryPriority? DeliveryPriority { get; set; } 
+        public DeliveryPriority? DeliveryPriority { get; set; }
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
         public DateTime? DeliveryDate { get; set; }
         public DateTime? ModifiedStatusDate { get; set; }
@@ -25,18 +24,21 @@ namespace LogisticService.Domain.Entities
         // Relacion con el cliente
         public Guid CustomerId { get; set; }
         public LogisticCustomer Customer { get; set; } = null!;
-        
+
         // Relacion con los productos del pedido
         public List<LogisticOrderItem> Items { get; set; } = [];
 
-        // Asignación ()
-        public Guid? AssignedOperatorId { get; set; } 
+        // Asignación
+        public Guid? AssignedOperatorId { get; set; }
         public DeliveryTeam? AssignedDeliveryTeam { get; set; }
-        public int? AssignedDeliveryTeamId { get; set; } 
+        public int? AssignedDeliveryTeamId { get; set; }
 
         // Guardar zona asignada (útil para búsquedas/filtrado)
         public int? AssignedDeliveryZoneId { get; set; }
         public DeliveryZone? AssignedDeliveryZone { get; set; }
+
+        // ✅ AGREGAR: Relación con DeliveryTeamAssignments
+        public List<DeliveryTeamAssignment> DeliveryTeamAssignments { get; set; } = new();
 
         // Relacion 1 a 1 con Address
         public int DeliveryAddressId { get; set; }
@@ -49,7 +51,6 @@ namespace LogisticService.Domain.Entities
         // Trazabilidad con DepotService y SalesService
         public int DepotOrderId { get; set; }
         public int SalesOrderId { get; set; }
-
 
         // --- MÉTODOS DE LÓGICA DE DOMINIO ---
 
@@ -81,8 +82,9 @@ namespace LogisticService.Domain.Entities
         /// <summary>
         /// Asigna la orden a un operador y su equipo.
         /// Cambia el estado de 'Verified' (7) a 'AssignedDelivery' (15).
+        /// Crea el registro en DeliveryTeamAssignments.
         /// </summary>
-        public void AssignToOperator(Guid operatorId, DeliveryTeam team)
+        public void AssignToOperator(Guid operatorId, DeliveryTeam team, int zoneId, Guid? assignedByUserId = null)
         {
             // Validación de Estado
             if (Status != OrderStatus.Verified &&
@@ -104,9 +106,21 @@ namespace LogisticService.Domain.Entities
             AssignedOperatorId = operatorId;
             AssignedDeliveryTeam = team;
             AssignedDeliveryTeamId = team.Id;
-            
+            AssignedDeliveryZoneId = zoneId;
             Status = OrderStatus.AssignedDelivery;
             ModifiedStatusDate = DateTime.UtcNow;
+
+            // ✅ CREAR EL REGISTRO EN DeliveryTeamAssignments
+            var teamAssignment = new DeliveryTeamAssignment
+            {
+                LogisticOrderId = this.Id,
+                DeliveryTeamId = team.Id,
+                DeliveryZoneId = zoneId,
+                AssignedAt = DateTime.UtcNow,
+                AssignedByUserId = assignedByUserId
+            };
+
+            DeliveryTeamAssignments.Add(teamAssignment);
 
             // Añadir al historial solo si es una asignación inicial o una re-asignación desde cancelación
             if (shouldAddToHistory)
@@ -133,7 +147,7 @@ namespace LogisticService.Domain.Entities
 
             AssignedOperatorId = null;
             AssignedDeliveryTeam = null;
-            AssignedDeliveryTeamId = null; // El 'private set' permite esto
+            AssignedDeliveryTeamId = null;
             Status = OrderStatus.Verified; // Vuelve a 'Verified'
             ModifiedStatusDate = DateTime.UtcNow;
 

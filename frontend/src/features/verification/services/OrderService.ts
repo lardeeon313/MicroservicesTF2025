@@ -10,6 +10,7 @@ import {
   DeliveryIncidentDto,
   DeliveryRejectionReasonDto,
 } from "../types/OrderTypes";
+import { DeliveryTeamDto } from "../types/DeliveryTeamTypes";
 
 // ========== ORDER OPERATIONS ==========
 
@@ -20,6 +21,7 @@ export const assignOperator = async (request: AssignOperatorRequest): Promise<st
     const payloadNew = {
       LogisticOrderId: request.logisticOrderId,
       OperatorUserId: request.operatorUserId,
+      ...(request.deliveryZoneId !== undefined && { DeliveryZoneId: request.deliveryZoneId }),
     };
     try {
       const response = await API.post("/logistic/VerificationManager/assign-order", payloadNew);
@@ -29,6 +31,7 @@ export const assignOperator = async (request: AssignOperatorRequest): Promise<st
       const payloadLegacy = {
         LogisticOrderId: request.logisticOrderId,
         OperatorUserId: request.operatorUserId,
+        ...(request.deliveryZoneId !== undefined && { DeliveryZoneId: request.deliveryZoneId }),
       };
       const responseLegacy = await API.post('/logistic/VerificationManager/assign-operator', payloadLegacy);
       return responseLegacy.data || 'Operador asignado correctamente.';
@@ -171,5 +174,21 @@ export const getDeliveryIncidentsByOrderId = async (logisticOrderId: number): Pr
 export const getRejectionReasonsByOrderId = async (logisticOrderId: number): Promise<DeliveryRejectionReasonDto[]> => {
   const response = await API.get(`/logistic/VerificationManager/get-rejection-reasons-by-order-id/${logisticOrderId}`);
   return response.data;
+};
+
+// ========== DELIVERY TEAM QUERIES ==========
+
+// Obtener un equipo por operador de entrega
+export const getTeamByDeliveryOperator = async (operatorUserId: string): Promise<DeliveryTeamDto | null> => {
+  try {
+    const response = await API.get(`/logistic/VerificationManager/get-team-by-operator/${operatorUserId}`);
+    return response.data;
+  } catch (error: any) {
+    // Si no se encuentra el equipo, retornar null
+    if (error.response?.status === 404) {
+      return null;
+    }
+    throw error;
+  }
 };
 

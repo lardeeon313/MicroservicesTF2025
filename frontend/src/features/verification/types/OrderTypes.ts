@@ -140,6 +140,10 @@ export interface AssignOperatorRequest {
    * Identificador del operador al que se asignará la orden de depósito.
    */
   operatorUserId: string; // GUID as string
+  /**
+   * Identificador de la zona de entrega (opcional). Si no se especifica, se usará la primera zona activa del equipo.
+   */
+  deliveryZoneId?: number;
 }
 
 export interface RemoveAssignOperatorRequest {
