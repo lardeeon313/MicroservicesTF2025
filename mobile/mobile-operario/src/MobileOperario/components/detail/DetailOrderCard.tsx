@@ -68,6 +68,7 @@ const DetailOrderCard = ({order}: Props) => {
         pedidoItems={order.items.map(item => ({
           id: item.id,
           nombre: item.productName,
+          marca : item.productBrand,
           marcado: item.isReady,
           embalaje: item.packaging, 
           cantidad: item.quantity,

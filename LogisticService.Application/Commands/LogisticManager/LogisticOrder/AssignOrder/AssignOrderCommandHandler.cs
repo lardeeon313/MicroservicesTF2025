@@ -44,7 +44,7 @@ namespace LogisticService.Application.Commands.LogisticManager.LogisticOrder.Ass
             }
 
             // Determinar zona
-            int? selectedZoneId = command.DeliveryZoneId;
+            /*int? selectedZoneId = command.DeliveryZoneId;
 
             if (selectedZoneId == null)
             {
@@ -57,10 +57,10 @@ namespace LogisticService.Application.Commands.LogisticManager.LogisticOrder.Ass
                 _logger.LogError("El equipo {TeamId} no tiene zonas activas y no se especificó una zona en la asignación.", team.Id);
                 return false;
             }
-
+            */
             try
             {               
-                order.AssignToOperator(command.OperatorUserId, team, selectedZoneId.Value);
+                order.AssignToOperator(command.OperatorUserId, team);
             }
             catch (InvalidOperationException ex)
             {

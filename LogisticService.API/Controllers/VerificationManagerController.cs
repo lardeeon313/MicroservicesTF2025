@@ -632,7 +632,8 @@ namespace LogisticService.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AssignOperator([FromBody] AssignOperatorRequest request)
         {
-            var command = new AssignOrderCommand(request.LogisticOrderId, request.OperatorUserId, request.DeliveryZoneId);
+            //var command = new AssignOrderCommand(request.LogisticOrderId, request.OperatorUserId, request.DeliveryZoneId);
+            var command = new AssignOrderCommand(request.LogisticOrderId, request.OperatorUserId);
             var result = await _assignOrderCommandHandler.HandleAsync(command);
             if (!result)
                 return BadRequest("No se pudo asignar el operador.");

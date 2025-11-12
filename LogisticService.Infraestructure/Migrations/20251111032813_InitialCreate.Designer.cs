@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LogisticService.API.Migrations
+namespace LogisticService.Infraestructure.Migrations
 {
     [DbContext(typeof(LogisticDbContext))]
-    [Migration("20251108200840_InitialCreate")]
+    [Migration("20251111032813_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

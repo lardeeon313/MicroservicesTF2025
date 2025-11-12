@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LogisticService.API.Migrations
+namespace LogisticService.Infraestructure.Migrations
 {
     [DbContext(typeof(LogisticDbContext))]
     partial class LogisticDbContextModelSnapshot : ModelSnapshot

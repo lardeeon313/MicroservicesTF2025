@@ -10,6 +10,7 @@ import { DepotOrderStatus } from "../../../types/OrderDTO";
 type OrderItem = {
   id: number;
   nombre: string;
+  marca:string;
   marcado: boolean;
   embalaje: string;
   cantidad: number;
@@ -94,6 +95,9 @@ const ItemOrdersComponent: React.FC<Props> = ({ operatorUserId, pedidoItems, ped
         }}>
           <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 4 }}>
             Producto: {item.nombre}
+          </Text>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 4 }}>
+            Marca: {item.marca}
           </Text>
           <Text style={{ fontSize: 14, color: 'gray', fontWeight: '500', marginBottom: 2 }}>
             Embalaje: {item.embalaje}
