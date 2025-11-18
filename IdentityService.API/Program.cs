@@ -20,6 +20,7 @@ using IdentityService.Application.Queries.GetAllOperators;
 using IdentityService.Application.Queries.GetAllSalesStaffs;
 using IdentityService.Application.Queries.GetCurrentUser;
 using IdentityService.Application.Queries.GetAllDeliverys;
+using IdentityService.Infraestructure.Messaging.Publisher;
 
 var builder = WebApplication.CreateBuilder(args);
 //para acceder desde el celular
@@ -97,6 +98,9 @@ builder.Services.AddScoped<IGetAllOperatorsQueryHandler,  GetAllOperatorsQueryHa
 builder.Services.AddScoped<IGetAllSalesStaffsQueryHandler, GetAllSalesStaffsQueryHandler>();
 builder.Services.AddScoped<IGetCurrentUserQueryHandler, GetCurrentUserQueryHandler>(); 
 builder.Services.AddScoped<IGetAllDeliverysQueryHandler, GetAllDeliverysQueryHandler>();
+
+// Registrar el servicio de Mensajeria RabbitMQ
+builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
 
 
 var app = builder.Build();
