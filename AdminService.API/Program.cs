@@ -1,5 +1,20 @@
-using AdminService.Infraestructure;
+using AdminService.Application.Commands.Employees.ChangeStatusEmployee;
+using AdminService.Application.Commands.Employees.RegisterEmployee;
+using AdminService.Application.Commands.Employees.UpdateEmployee;
+using AdminService.Application.Queries.Employee.GetAllEmployees;
+using AdminService.Application.Queries.Employee.GetEmployeeByDni;
+using AdminService.Application.Queries.Employees.GetEmployeeByDni;
+using AdminService.Application.Queries.Employees.GetEmployeeById;
+using AdminService.Application.Queries.Employees.GetEmployeesByStatus;
+using AdminService.Application.Services;
+using AdminService.Application.Services.DepotService;
+using AdminService.Application.Services.IdentityService;
+using AdminService.Application.Services.LogisticService;
+using AdminService.Application.Services.SalesService;
+using AdminService.Domain.IRepositories;
 using AdminService.Infraestructure.Messaging.Publishers;
+using AdminService.Infraestructure.Persistence;
+using AdminService.Infraestructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
@@ -21,7 +36,26 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(xmlPath);
 });
 
+// Register RabbitMQ Publisher
 builder.Services.AddScoped<RabbitMQPublisher>();
+
+// Register Services
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IDepotServiceClient, DepotServiceClient>();
+builder.Services.AddScoped<IIdentityServiceClient, IdentityServiceClient>();
+builder.Services.AddScoped<ISalesServiceClient, SalesServiceClient>();
+builder.Services.AddScoped<ILogisticServiceClient, LogisticServiceClient>();
+
+// Registrar Commandos y Queries de los empleados
+builder.Services.AddScoped<IRegisterEmployeeCommandHandler, RegisterEmployeeCommandHandler>();
+builder.Services.AddScoped<IUpdateEmployeeCommandHandler, UpdateEmployeeCommandHandler>();
+builder.Services.AddScoped<IChangeStatusEmployeeCommandHandler, ChangeStatusEmployeeCommandHandler>();
+builder.Services.AddScoped<IGetAllEmployeesQueryHandler, GetAllEmployeesQueryHandler>();
+builder.Services.AddScoped<IGetEmployeeByIdQueryHandler, GetEmployeeByIdQueryHandler>();
+builder.Services.AddScoped<IGetEmployeesByStatusQueryHandler, GetEmployeesByStatusQueryHandler>();
+builder.Services.AddScoped<IGetEmployeeByDniQueryHandler, GetEmployeeByDniQueryHandler>();
+
+
 
 // Get the connection string from appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

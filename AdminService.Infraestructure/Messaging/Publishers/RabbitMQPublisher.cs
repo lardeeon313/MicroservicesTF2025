@@ -1,49 +1,43 @@
-﻿using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-
+﻿using Microsoft.Extensions.Configuration;
+using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace AdminService.Infraestructure.Messaging.Publishers
 {
-
-    public class RabbitMQPublisher
+    public class RabbitMQPublisher(IConfiguration config) : IRabbitMQPublisher
     {
-        public async Task PublishMessageQueue(string routingKey, string eventData)
+        private readonly IConfiguration _config = config;
+
+        public async Task PublishAsync<T>(T message, string queueName)
         {
-            try
+            var factory = new ConnectionFactory()
             {
-
-            var factory = new ConnectionFactory 
-            { 
-                HostName = "rabbitmq",
-                UserName = "guest",
-                Password = "guest"
-
+                HostName = _config["RabbitMQ:Host"] ?? "rabbitmq",
+                Port = int.Parse(_config["RabbitMQ:Port"] ?? "5672"),
+                UserName = _config["RabbitMQ:Username"] ?? "guest",
+                Password = _config["RabbitMQ:Password"] ?? "guest"
             };
+
             using var connection = await factory.CreateConnectionAsync();
             using var channel = await connection.CreateChannelAsync();
 
-            await channel.QueueDeclareAsync(queue: "hello", durable: false, exclusive: false, autoDelete: false,
-                arguments: null);
+            await channel.QueueDeclareAsync(queue: queueName,
+                durable: true,
+                exclusive: false, 
+                autoDelete: false);
 
-            const string message = "Hello World!";
-            var body = Encoding.UTF8.GetBytes(message);
 
-            await channel.BasicPublishAsync(exchange: string.Empty, routingKey: "hello", body: body);
-            Console.WriteLine($" [x] Sent {message}");
+            var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
 
-            }
-            catch
-            {
-                Console.WriteLine("❌ Error al publicar en RabbitMQ:");
-            }
-            Console.WriteLine(" Press [enter] to exit.");
-            Console.ReadLine();
+            await channel.BasicPublishAsync(exchange: "", routingKey: queueName, body: body/*basicProperties: props*/);
+
+            Console.WriteLine($"✅ [x] Evento publicado en la cola '{queueName}': {JsonSerializer.Serialize(message)}");
         }
+
     }
 }
