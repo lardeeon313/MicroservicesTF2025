@@ -25,6 +25,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
 
 // Services
 builder.Services.AddControllers();
@@ -37,7 +39,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // Register RabbitMQ Publisher
-builder.Services.AddScoped<RabbitMQPublisher>();
+builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
 
 // Register Services
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
@@ -62,7 +64,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 // Register the DbContext
 builder.Services.AddDbContext<AdminDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(connectionString,
+        ServerVersion.AutoDetect(connectionString),
+        b => b.MigrationsAssembly("AdminService.API"))); 
 
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
