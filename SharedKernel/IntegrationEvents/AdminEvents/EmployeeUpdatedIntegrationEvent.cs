@@ -4,15 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IdentityService.Application.Commands.Register
+namespace SharedKernel.IntegrationEvents
 {
-    public class RegisterCommand
+    public class EmployeeUpdatedIntegrationEvent
     {
+        public string? IdentityUserId { get; set; } = null!;
         public string UserName { get; set; } = null!;
-        public string Name { get; set; } = null!;
+        public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
+        public string PhoneNumber { get; set; } = null!;
         public string Email { get; set; } = null!;
-        public string Password { get; set; } = null!;
         public string Role { get; set; } = null!;
+        public string Status { get; set; } = null!;
     }
 }

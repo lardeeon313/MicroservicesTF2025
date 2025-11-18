@@ -2,7 +2,9 @@
 using IdentityService.Application.Interfaces;
 using IdentityService.Domain.Entities;
 using IdentityService.Domain.Enums;
+using IdentityService.Infraestructure.Messaging.Publisher;
 using Microsoft.AspNetCore.Identity;
+using SharedKernel.IntegrationEvents.IdentityEvents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +15,13 @@ namespace IdentityService.Application.Commands.Register
 {
     public class RegisterCommandHandler(
         UserManager<ApplicationUser> userManager, 
-        RoleManager<IdentityRole> roleManager) 
+        RoleManager<IdentityRole> roleManager,
+        IRabbitMQPublisher rabbitMQPublisher) 
         : IRegisterCommandHandler
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly RoleManager<IdentityRole> _roleManager = roleManager;
+        private readonly IRabbitMQPublisher _rabbitPublisher = rabbitMQPublisher;
 
         public async Task<CommandResult> Handle(RegisterCommand command)
         {
@@ -58,6 +62,19 @@ namespace IdentityService.Application.Commands.Register
                 await _roleManager.CreateAsync(new IdentityRole(selectedRole));
 
             await _userManager.AddToRoleAsync(user, selectedRole);
+
+            // Publicar evento a AdminService
+            var integrationEvent = new UserRegisteredIntegrationEvent
+            {
+                UserIdentityId = user.Id,
+                UserName = user.UserName,
+                FirstName = user.Name,
+                LastName = user.LastName,
+                Email = user.Email,
+                Role = selectedRole
+            };
+
+            await _rabbitPublisher.PublishAsync(integrationEvent, "identity_user_registered_queue");
 
             return new CommandResult { Success = true, Message = "Usuario registrado exitosamente con rol Seleccionado." };
 
