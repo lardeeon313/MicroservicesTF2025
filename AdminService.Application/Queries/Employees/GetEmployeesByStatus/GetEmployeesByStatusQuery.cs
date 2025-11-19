@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AdminService.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +9,9 @@ namespace AdminService.Application.Queries.Employees.GetEmployeesByStatus
 {
     public class GetEmployeesByStatusQuery
     {
-        public int Status { get; set; }
+        public EmployeeStatus Status { get; set; }
 
-        public GetEmployeesByStatusQuery(int status)
+        public GetEmployeesByStatusQuery(EmployeeStatus status)
         {
             Status = status;
         }
