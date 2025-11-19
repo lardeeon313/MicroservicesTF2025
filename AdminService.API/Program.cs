@@ -5,6 +5,7 @@ using AdminService.Application.Queries.Employee.GetAllEmployees;
 using AdminService.Application.Queries.Employee.GetEmployeeByDni;
 using AdminService.Application.Queries.Employees.GetEmployeeByDni;
 using AdminService.Application.Queries.Employees.GetEmployeeById;
+using AdminService.Application.Queries.Employees.GetEmployeesBySector;
 using AdminService.Application.Queries.Employees.GetEmployeesByStatus;
 using AdminService.Application.Services;
 using AdminService.Application.Services.DepotService;
@@ -54,6 +55,7 @@ builder.Services.AddScoped<IGetAllEmployeesQueryHandler, GetAllEmployeesQueryHan
 builder.Services.AddScoped<IGetEmployeeByIdQueryHandler, GetEmployeeByIdQueryHandler>();
 builder.Services.AddScoped<IGetEmployeesByStatusQueryHandler, GetEmployeesByStatusQueryHandler>();
 builder.Services.AddScoped<IGetEmployeeByDniQueryHandler, GetEmployeeByDniQueryHandler>();
+builder.Services.AddScoped<IGetEmployeesBySectorQueryHandler, GetEmployeesBySectorQueryHandler>();
 
 
 

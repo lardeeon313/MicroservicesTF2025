@@ -1,4 +1,5 @@
 ﻿using AdminService.Domain.Entities;
+using AdminService.Domain.Enums;
 using AdminService.Domain.IRepositories;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -50,9 +51,18 @@ namespace AdminService.Infraestructure.Persistence.Repositories
                 .FirstOrDefaultAsync(e => e.Id == id);
         }
 
-        public Task<IEnumerable<Employee?>> GetEmployeesByStatusAsync(int status)
+        public async Task<IEnumerable<Employee?>> GetEmployeesBySectorAsync(EmployeeSector sector)
         {
-            throw new NotImplementedException();
+            return await _context.Employees
+                .Where(e => e.Sector == sector)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Employee?>> GetEmployeesByStatusAsync(EmployeeStatus status)
+        {
+            return await _context.Employees
+                .Where(e => e.Status == status)
+                .ToListAsync();
         }
 
         public async Task UpdateEmployeeAsync(Employee employee)
