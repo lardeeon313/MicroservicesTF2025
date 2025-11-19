@@ -1,4 +1,5 @@
 ﻿using AdminService.Domain.Entities;
+using AdminService.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +14,9 @@ namespace AdminService.Domain.IRepositories
         Task UpdateEmployeeAsync(Employee employee);
         Task<IEnumerable<Employee?>> GetAllAsync();
         Task<Employee?> GetEmployeeByIdAsync(int id);
-        Task<IEnumerable<Employee?>> GetEmployeesByStatusAsync(int status);
+        Task<IEnumerable<Employee?>> GetEmployeesByStatusAsync(EmployeeStatus status);
         Task<Employee?> GetEmployeeByDniAsync(string dni);
-        Task<Employee?> GetEmployeeByEmailAsync(string email);  
+        Task<Employee?> GetEmployeeByEmailAsync(string email);
+        Task<IEnumerable<Employee?>> GetEmployeesBySectorAsync(EmployeeSector sector);
     }
 }

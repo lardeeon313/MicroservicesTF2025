@@ -6,7 +6,9 @@ using AdminService.Application.Queries.Employee.GetAllEmployees;
 using AdminService.Application.Queries.Employee.GetEmployeeByDni;
 using AdminService.Application.Queries.Employees.GetEmployeeByDni;
 using AdminService.Application.Queries.Employees.GetEmployeeById;
+using AdminService.Application.Queries.Employees.GetEmployeesBySector;
 using AdminService.Application.Queries.Employees.GetEmployeesByStatus;
+using AdminService.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +25,8 @@ namespace AdminService.API.Controllers
         IGetAllEmployeesQueryHandler getAllEmployeesQueryHandler,
         IGetEmployeesByStatusQueryHandler getEmployeesByStatusQueryHandler,
         IGetEmployeeByDniQueryHandler getEmployeeByDniQueryHandler,
-        IGetEmployeeByIdQueryHandler getEmployeeByIdQueryHandler
+        IGetEmployeeByIdQueryHandler getEmployeeByIdQueryHandler,
+        IGetEmployeesBySectorQueryHandler getEmployeesBySectorQueryHandler
 
         ) : ControllerBase
     {
@@ -34,6 +37,7 @@ namespace AdminService.API.Controllers
         private readonly IGetEmployeeByDniQueryHandler _getEmployeeByDniQueryHandler = getEmployeeByDniQueryHandler;
         private readonly IGetEmployeeByIdQueryHandler _getEmployeeByIdQueryHandler = getEmployeeByIdQueryHandler;
         private readonly IChangeStatusEmployeeCommandHandler _changeStatusEmployeeCommandHandler = changeStatusEmployeeCommandHandler;
+        private readonly IGetEmployeesBySectorQueryHandler _getEmployeesBySectorQueryHandler = getEmployeesBySectorQueryHandler;
 
 
         /// <summary>
@@ -140,17 +144,32 @@ namespace AdminService.API.Controllers
         }
 
         /// <summary>
-        /// Devuelve un empleado por su Dni
+        /// Devuelve empleados por su estado
         /// </summary>
         /// <returns></returns>
         [HttpGet("get-employees-by-status")]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetEmployeesByStatus(int status)
+        public async Task<IActionResult> GetEmployeesByStatus(EmployeeStatus status)
         {
             var query = new GetEmployeesByStatusQuery(status);
             var result = await _getEmployeesByStatusQueryHandler.GetEmployeesByStatusAsync(query);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Devuelve los empleados por su sector
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("get-employees-by-sector")]
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetEmployeesBySector(EmployeeSector sector)
+        {
+            var query = new GetEmployeesBySectorQuery(sector);
+            var result = await _getEmployeesBySectorQueryHandler.GetEmployeesBySectorAsync(query);
             return Ok(result);
         }
 
