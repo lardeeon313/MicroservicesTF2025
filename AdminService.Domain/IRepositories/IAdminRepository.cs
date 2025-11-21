@@ -14,8 +14,7 @@ namespace AdminService.Domain.IRepositories
         Task UpdateEmployeeAsync(Employee employee);
         Task<IEnumerable<Employee?>> GetAllAsync();
         Task<Employee?> GetEmployeeByIdAsync(int id);
-        Task<IEnumerable<Employee?>> GetEmployeesByStatusAsync(EmployeeStatus status);
-        Task<Employee?> GetEmployeeByDniAsync(string dni);
+        Task<IEnumerable<Employee?>> GetEmployeesByStatusAsync(EmployeeStatus status);        
         Task<Employee?> GetEmployeeByEmailAsync(string email);
         Task<IEnumerable<Employee?>> GetEmployeesBySectorAsync(EmployeeSector sector);
     }

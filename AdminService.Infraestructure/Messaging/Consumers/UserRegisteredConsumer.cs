@@ -75,13 +75,14 @@ namespace AdminService.Infraestructure.Messaging.Consumers
                             IdentityUserId = evento.UserIdentityId,
                             UserName = evento.UserName,
                             FirstName = evento.FirstName,
-                            LastName = evento.LastName,
+                            LastName = evento.LastName,                            
+                            PhoneNumber = evento.PhoneNumber,
                             Email = evento.Email,
-                            Status = Domain.Enums.EmployeeStatus.Active,
-                            // Convertimos string a Enum
+                            Status = Domain.Enums.EmployeeStatus.Active,                            
                             Role = Enum.TryParse<EmployeeRole>(evento.Role, true, out var parsedRole)
                                     ? parsedRole
                                     : EmployeeRole.Admin
+                            
                         };
 
                         await repository.AddEmployeeAsync(employee);

@@ -33,14 +33,6 @@ namespace AdminService.Application.Commands.Employees.UpdateEmployee
                 return false;
             }
 
-            // Validación de DNI duplicado
-            var dniDuplicate = await _repository.GetEmployeeByDniAsync(command.Dni);
-            if (dniDuplicate != null && dniDuplicate.Id != command.Id)
-            {
-                _logger.LogError($"El DNI {command.Dni} ya pertenece a otro empleado.");
-                return false;
-            }
-
             // Validación de Email duplicado
             var emailDuplicate = await _repository.GetEmployeeByEmailAsync(command.Email);
             if (emailDuplicate != null && emailDuplicate.Id != command.Id)
@@ -53,8 +45,7 @@ namespace AdminService.Application.Commands.Employees.UpdateEmployee
             employeeExists.FirstName = command.FirstName;
             employeeExists.LastName = command.LastName;
             employeeExists.Email = command.Email;
-            employeeExists.PhoneNumber = command.PhoneNumber;
-            employeeExists.Dni = command.Dni;
+            employeeExists.PhoneNumber = command.PhoneNumber;            
             employeeExists.Status = command.Status;
             employeeExists.Sector = command.Sector;
             employeeExists.Role = command.Role;
