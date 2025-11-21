@@ -31,13 +31,6 @@ namespace AdminService.Infraestructure.Persistence.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Employee?> GetEmployeeByDniAsync(string dni)
-        {
-            var employee = await _context.Employees
-                .FirstOrDefaultAsync(e => e.Dni == dni);
-            return employee;
-        }
-
         public async Task<Employee?> GetEmployeeByEmailAsync(string email)
         {
             var employee = await _context.Employees

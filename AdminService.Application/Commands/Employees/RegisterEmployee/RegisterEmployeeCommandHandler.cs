@@ -26,13 +26,6 @@ namespace AdminService.Application.Commands.Employees.RegisterEmployee
         /// <returns></returns>        
         public async Task<bool> RegisterEmployeeAsync(RegisterEmployeeCommand command)
         {
-            var existingEmployee = await _repository.GetEmployeeByDniAsync(command.Dni);
-            if (existingEmployee != null)
-            {                
-                _logger.LogError("El empleado ya existe.");
-                return false;
-            }
-
             // Validamos duplicado de Email
             var emailExists = await _repository.GetEmployeeByEmailAsync(command.Email);
             if (emailExists != null)
@@ -44,8 +37,7 @@ namespace AdminService.Application.Commands.Employees.RegisterEmployee
             var newEmployee = new Employee(
                 command.UserName,
                 command.FirstName,
-                command.LastName,
-                command.Dni,
+                command.LastName,                
                 command.Email,
                 command.PhoneNumber,
                 command.Role,
@@ -66,7 +58,7 @@ namespace AdminService.Application.Commands.Employees.RegisterEmployee
             };
 
             // Publicamos un evento de integración para notificar a IdentityService para que genere el usuario.
-            await _rabbitMQPublisher.PublishAsync(integrationEvent, "identity_user_registered_queue");
+            await _rabbitMQPublisher.PublishAsync(integrationEvent, "employee_registered_queue");
 
             _logger.LogInformation($"Empleado {command.UserName} registrado con éxito.");
             return true;

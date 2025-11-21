@@ -12,21 +12,19 @@ namespace AdminService.Application.Commands.Employees.UpdateEmployee
         public int Id { get; set; }
         public string UserName { get; set; } = null!;
         public string FirstName { get; set; } = null!;
-        public string LastName { get; set; } = null!;
-        public string Dni { get; set; } = null!;
+        public string LastName { get; set; } = null!;        
         public string PhoneNumber { get; set; } = null!;
         public string Email { get; set; } = null!;
         public EmployeeRole Role { get; set; }
         public EmployeeStatus Status { get; set; }
         public EmployeeSector Sector { get; set; }
 
-        public UpdateEmployeeCommand(int id, string userName, string firstName, string lastName, string dni, string phoneNumber, string email, EmployeeRole role, EmployeeStatus status, EmployeeSector sector)
+        public UpdateEmployeeCommand(int id, string userName, string firstName, string lastName, string phoneNumber, string email, EmployeeRole role, EmployeeStatus status, EmployeeSector sector)
         {
             Id = id;
             UserName = userName;
             FirstName = firstName;
-            LastName = lastName;
-            Dni = dni;
+            LastName = lastName;            
             PhoneNumber = phoneNumber;
             Email = email;
             Role = role;
