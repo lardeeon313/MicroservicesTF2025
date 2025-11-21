@@ -20,10 +20,6 @@ namespace AdminService.Infraestructure.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Employee>()
-                .HasIndex(e => e.Dni)
-                .IsUnique();
-
             modelBuilder.Entity<Employee>(entity =>
             {
                 entity.Property(e => e.Role)
@@ -38,6 +34,10 @@ namespace AdminService.Infraestructure.Persistence
                     .HasConversion<string>()
                     .HasMaxLength(50);
             });
+
+            modelBuilder.Entity<Employee>()
+                    .HasIndex(e => e.Email)
+                    .IsUnique();
         }
     }
 }

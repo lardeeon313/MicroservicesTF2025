@@ -26,14 +26,10 @@ namespace AdminService.Domain.Entities
         [MaxLength(50)]
         public string LastName { get; set; } = null!;
 
-        [Required]
-        [MaxLength(20)]
-        public string Dni { get; set; } = null!;
-
         [MaxLength(30)]
-        public string PhoneNumber { get; set; } = null!;
+        public string? PhoneNumber { get; set; } 
 
-        [Required]
+        [Required]  
         [MaxLength(100)]
         public string Email { get; set; } = null!;
 
@@ -51,8 +47,7 @@ namespace AdminService.Domain.Entities
         public Employee(
             string userName,
             string firstName,
-            string lastName,
-            string dni,
+            string lastName,            
             string email,
             string phoneNumber,
             EmployeeRole role,
@@ -62,8 +57,7 @@ namespace AdminService.Domain.Entities
         {
             UserName = userName;
             FirstName = firstName;
-            LastName = lastName;
-            Dni = dni;
+            LastName = lastName;            
             Email = email;
             PhoneNumber = phoneNumber;
             Role = role;
