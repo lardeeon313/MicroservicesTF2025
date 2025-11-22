@@ -1,11 +1,25 @@
 import { useState, useCallback } from "react";
 import API from "../../../../../../api/axios";
 
+export type DepotOrderItem = {
+  id: number;
+  productName: string;
+  productBrand: string;
+  packaging: string | null;
+  unitPrice: number | null;
+  quantity: number;
+  total: number;
+  isReady: boolean;
+};
+
+
 export type DepotOrderDtoBilling = {
   orderId: string;
   customerName: string;
   totalAmount: number;
   orderDate: string;
+  items: DepotOrderItem[];
+  productCount: number
 };
 
 type Filters = {
@@ -30,7 +44,13 @@ export function useInvoicedOrdersByCustomer() {
       );
 
       
-      setData(res.data);
+      const mapped = res.data.map(order => ({
+        ...order,
+        productCount: order.items.reduce((acc, item) => acc + item.quantity, 0)
+      }));
+
+      setData(mapped);
+
     } catch (err: any) {
       
       setError(err.message || "Error al obtener órdenes facturadas.");

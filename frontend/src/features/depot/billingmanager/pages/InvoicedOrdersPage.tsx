@@ -14,7 +14,7 @@ const InvoicedOrdersPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchName, setSearchName] = useState('');
-  const [searchEmail, setSearchEmail] = useState('');
+  const [searchEmail] = useState('');
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
 
@@ -74,17 +74,6 @@ const InvoicedOrdersPage: React.FC = () => {
                     placeholder="Buscar por cliente..."
                     value={searchName}
                     onChange={e => { setSearchName(e.target.value); setPage(1); }}
-                    className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 w-full focus:ring-red-400 focus:outline-none transition"
-                  />
-                </div>
-                {/* Correo Electrónico */}
-                <div className="flex flex-col flex-1">
-                  <label className="text-sm font-medium text-gray-600 mb-1">Correo Electrónico:</label>
-                  <input
-                    type="text"
-                    placeholder="Buscar por correo electrónico..."
-                    value={searchEmail}
-                    onChange={e => { setSearchEmail(e.target.value); setPage(1); }}
                     className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 w-full focus:ring-red-400 focus:outline-none transition"
                   />
                 </div>
