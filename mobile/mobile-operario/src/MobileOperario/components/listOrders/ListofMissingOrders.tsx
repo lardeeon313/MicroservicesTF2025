@@ -4,6 +4,7 @@ import { OrderStatusLabels } from "../../constants/UseStatusOrderOperator";
 import { MissingCountContainer } from "./MissingCount";
 import type {DepotOrderMissingDTO } from "../../types/Missing";
 import { DepotOrderDTO, DepotOrderStatus } from "../../types/OrderDTO";
+import { ListCollapse , TriangleAlert, ListTodo} from "lucide-react-native";
 
 import { useAuth } from "../../Login/context/useAuth";
 
@@ -42,23 +43,6 @@ const ListOfMissingOrders = ({
         Cliente : {customerName}
       </Text>
 
-      <View style={{flexDirection: 'row', gap: 10, marginTop: 16}} >
-        <TouchableOpacity style={{ backgroundColor: '#3B82F6', padding: 8, borderRadius: 10 }} onPress={onVerDetalle}>
-          <Text style={{color: '#fff', fontWeight: 'bold'}}>Ver detalle </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{padding: 8, backgroundColor: '#EF4444', borderRadius: 10}} onPress={onEmitirFaltante}>
-          <Text style={{color: '#fff', fontWeight: 'bold'}}>Emitir Faltante</Text>
-        </TouchableOpacity>
-      </View>
-
-      
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10 }}>
-        {onSeccionNotificaciones && (
-          <TouchableOpacity style={{marginTop: 10,padding: 8,backgroundColor: '#ff8000',borderRadius: 10,}}onPress={onSeccionNotificaciones}>
-            <Text style={{ color: '#fff', textAlign: 'center',fontWeight:'bold' }}>ATENCION: Revisar faltantes del Pedido</Text>
-          </TouchableOpacity>
-        )}
-      </View>
 
       <Text style={{ fontSize: 20, color: '#6B7280', marginTop: 8 }}>
         Estado: {OrderStatusLabels[status as DepotOrderStatus]}
@@ -102,6 +86,52 @@ const ListOfMissingOrders = ({
           </Text>
         </View>
       )}
+
+      <View style={{flexDirection: 'row', gap: 10, marginTop: 16}} >
+        <TouchableOpacity style={{
+          backgroundColor: '#3B82F6',
+          paddingVertical: 10,
+          paddingHorizontal: 14,
+          borderRadius: 10,
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 8 
+        }} 
+          onPress={onVerDetalle}>
+          <ListCollapse size={20} color="#fff" />
+          <Text style={{color: '#fff', fontWeight: 'bold'}}>Ver detalle </Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={{
+          backgroundColor: '#e42841ff',
+          paddingVertical: 10,
+          paddingHorizontal: 14,
+          borderRadius: 10,
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 8 
+        }}
+        onPress={onEmitirFaltante}>
+          <TriangleAlert size={20} color="#fff" />
+          <Text style={{color: '#fff', fontWeight: 'bold'}}>Emitir Faltante</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10 }}>
+        {onSeccionNotificaciones && (
+          <TouchableOpacity style={{
+            backgroundColor: '#ff8000',
+            paddingVertical: 10,
+            paddingHorizontal: 14,
+            borderRadius: 10,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8 
+          }}onPress={onSeccionNotificaciones}>
+            <ListTodo size={20} color="#fff" />
+            <Text style={{ color: '#fff', textAlign: 'center',fontWeight:'bold' }}>ATENCION: Revisar faltantes del Pedido</Text>
+          </TouchableOpacity>
+        )}
+      </View>
 
 
       <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 16, marginBottom: 8 }}>

@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import type { DepotOrderDTO } from '../../types/OrderDTO';
 import { OrderStatusLabels } from '../../constants/UseStatusOrderOperator';
 import { DepotOrderStatus } from '../../types/OrderDTO';
+import { ListCollapse } from "lucide-react-native";
 
 type Props = {
   order: DepotOrderDTO;
@@ -78,9 +79,18 @@ const ListOfArmOrders = ({ order, id, customer, onSeeDetail }: Props) => {
 
       <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginTop: 12 }}>
         <TouchableOpacity
-          style={{ backgroundColor: '#3B82F6', padding: 8, borderRadius: 8 }}
+          style={{
+            backgroundColor: '#3B82F6',
+            paddingVertical: 10,
+            paddingHorizontal: 14,
+            borderRadius: 10,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8
+          }}
           onPress={onSeeDetail}
         >
+          <ListCollapse size={20} color="#fff" />
           <Text style={{ color: '#fff', fontWeight: 'bold' }}>Ver Detalle</Text>
         </TouchableOpacity>
       </View>

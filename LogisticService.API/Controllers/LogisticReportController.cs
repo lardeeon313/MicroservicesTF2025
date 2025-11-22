@@ -82,7 +82,7 @@ namespace LogisticService.API.Controllers
         [ProducesResponseType(typeof(PagedResult<DeliveryRejectionReportDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetDeliveryRejectionsReport([FromQuery] GetDeliveryRejectionsReportRequest request)
         {
-            var query = new GetDeliveryRejectionsReportQuery(request.StartDate, request.EndDate, request.OperatorId, request.DeliveryZoneId, request.PageNumber, request.PageSize);
+            var query = new GetDeliveryRejectionsReportQuery(request.StartDate, request.EndDate, request.OperatorId, request.DeliveryZoneId, request.DeliveryTeamId, request.PageNumber, request.PageSize);
             var result = await _getDeliveryRejectionsReportQueryHandler.HandleAsync(query);
             return Ok(result);
         }

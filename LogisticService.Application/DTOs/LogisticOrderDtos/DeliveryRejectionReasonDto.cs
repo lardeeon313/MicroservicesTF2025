@@ -10,7 +10,7 @@ namespace LogisticService.Application.DTOs.LogisticOrderDtos
 {
     public class DeliveryRejectionReasonDto
     {
-        public int Id { get; set; }
+        public int Id { get; set; } 
         public Guid DeliveryOperatorId { get; set; }
 
         [MaxLength(500)]

@@ -198,6 +198,8 @@ namespace LogisticService.Infraestructure.Persistence
                     TeamName = g.Key.TeamName,
                     TotalOrders = g.Count(),
                     DeliveredOrders = g.Count(o => o.Status == OrderStatus.Delivered),
+                    OnTheWayOrders = g.Count(o => o.Status == OrderStatus.OnTheWay),
+                    PendingCashVerificationOrders = g.Count(o => o.Status == OrderStatus.PendingCashVerification),
                     IncidentsCount = g.Sum(o => o.DeliveryIncidents.Count),
                     RejectionsCount = g.Sum(o => o.RejectionReasons.Count),
                     AverageDeliveryTimeHours = g.Average(o =>

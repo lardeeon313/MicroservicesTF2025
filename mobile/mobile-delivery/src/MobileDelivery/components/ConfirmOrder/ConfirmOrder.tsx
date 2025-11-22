@@ -24,11 +24,11 @@ export default function ConfirmOrderComponent({ order, loading, onConfirm }: Con
           {order.deliveryAddress.street} {order.deliveryAddress.number}, {order.deliveryAddress.city}
         </Text>
         <Text style={styles.label}>Estado:</Text>
-        <Text style={styles.text}>{order.status}</Text>
+        <Text style={styles.text}>{(order as any).statusLabel}</Text>
         <Text style={styles.label}>Tipo de Pago:</Text>
-        <Text style={styles.text}>{order.paymentType}</Text>
+        <Text style={styles.text}>{(order as any).paymentTypeLabel}</Text>
         <Text style={styles.label}>Prioridad:</Text>
-        <Text style={styles.text}>{order.deliveryPriority}</Text>
+        <Text style={styles.text}>{(order as any).deliveryPriorityLabel}</Text>
         {order.totalAmount && (
           <>
             <Text style={styles.label}>Total:</Text>

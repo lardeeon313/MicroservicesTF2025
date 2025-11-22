@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { OrderStatusLabels } from '../../constants/UseStatusOrderOperator';
 import { DepotOrderDTO, DepotOrderStatus } from '../../types/OrderDTO';
+import { ListCollapse,PackageCheck } from "lucide-react-native";
 
 type Props = {
   order: DepotOrderDTO;
@@ -79,22 +80,45 @@ const ListofConfirmedOrders = ({ order, customer, status, onSeeDetail, onAceeptO
       )}
 
       <View style={{ flexDirection: 'row', marginTop: 12, gap: 10 }}>
+  
+        {/* Botón Ver Detalle */}
         <TouchableOpacity
           onPress={onSeeDetail}
-          style={{ backgroundColor: '#3B82F6', padding: 8, borderRadius: 8 }}
+          style={{
+            backgroundColor: '#3B82F6',
+            paddingVertical: 10,
+            paddingHorizontal: 14,
+            borderRadius: 10,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8
+          }}
         >
+          <ListCollapse size={20} color="#fff" />
           <Text style={{ color: '#fff', fontWeight: 'bold' }}>Ver Detalle</Text>
         </TouchableOpacity>
 
+        {/* Botón Confirmar */}
         {status === DepotOrderStatus.Assigned && (
           <TouchableOpacity
             onPress={onAceeptOrder}
-            style={{ backgroundColor: '#F59E0B', padding: 8, borderRadius: 8 }}
+            style={{
+              backgroundColor: '#F59E0B',
+              paddingVertical: 10,
+              paddingHorizontal: 14,
+              borderRadius: 10,
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 8
+            }}
           >
+            <PackageCheck size={20} color="#fff" />
             <Text style={{ color: '#fff', fontWeight: 'bold' }}>Confirmar</Text>
           </TouchableOpacity>
         )}
+
       </View>
+
     </View>
   );
 };

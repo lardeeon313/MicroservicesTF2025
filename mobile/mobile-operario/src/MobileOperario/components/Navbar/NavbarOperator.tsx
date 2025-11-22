@@ -42,7 +42,7 @@ const NavbarOperator = ({ user, isAuthenticated, logout }: NavbarProps) => {
       {/* Logo y título */}
       <TouchableOpacity
         style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}
-        onPress={() => navigation.navigate('Home' as never)}
+        onPress={() => navigation.navigate('OperatorDashboard' as never)}
       >
         <Image
           source={require('../../../assetsImages/LogoVerona.png')}

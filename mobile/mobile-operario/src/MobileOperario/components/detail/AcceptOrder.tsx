@@ -48,7 +48,7 @@ const AcceptOrder = ({order, onAccept, onReject}: Props) => {
             textAlign: 'center',
           }}
         >
-          • {producto.productName} x {producto.quantity}
+          • {producto.productName} , {producto.productBrand} x {producto.quantity}
         </Text>
       ))}
 

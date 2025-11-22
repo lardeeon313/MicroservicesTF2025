@@ -10,11 +10,13 @@ import { RejectOrderWithReasonModal } from "../../components/additional/AlertWin
 import { useAuth } from "../../Login/context/useAuth"; 
 import GetBack from "../../../components/GetBack";
 import Footer from "../../../components/Footer";
+import { useNavigation } from "@react-navigation/native";
 
 type AcceptOrderPageProp = RouteProp<DepotStackParamList, "AcceptOrder">;
 
 const AcceptOrderPage = () => {
   const { params } = useRoute<AcceptOrderPageProp>();
+  const navigation = useNavigation();
 
   const { userId, name, role, isAuthenticated, logout, team } = useAuth();
       
@@ -36,7 +38,7 @@ const AcceptOrderPage = () => {
     showMeRejectModal,
     setShowMeRejectModal,
     ConfirmRejectWithReason,
-  } = useOrderManagment(fetchedOrder ?? params.order, user?.id ?? "");
+  } = useOrderManagment(fetchedOrder ?? params.order, user?.id ?? "",navigation);
 
   if (loading) return <ActivityIndicator size="large" color="#000" />;
   if (error) return <Text>ERROR: {error}</Text>;

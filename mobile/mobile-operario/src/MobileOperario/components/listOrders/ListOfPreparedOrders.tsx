@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { DepotOrderDTO } from '../../types/OrderDTO';
 import { OrderStatusLabels } from '../../constants/UseStatusOrderOperator';
 import { DepotOrderStatus } from '../../types/OrderDTO';
+import { ListCollapse,Receipt } from "lucide-react-native";
 
 type Props = {
   order: DepotOrderDTO;
@@ -78,11 +79,29 @@ const ListOfPreparedOrders = ({ order, id, customer, onSeeDetail, onSendToBill }
 
 
       <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginTop: 12 }}>
-        <TouchableOpacity style={{ backgroundColor: '#3B82F6', padding: 8, borderRadius: 8, marginRight: 12 }} onPress={onSeeDetail}>
+        <TouchableOpacity style={{
+            backgroundColor: '#3B82F6',
+            paddingVertical: 10,
+            paddingHorizontal: 14,
+            borderRadius: 10,
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+          onPress={onSeeDetail}>
+          <ListCollapse size={20} color="#fff" />
           <Text style={{ color: '#fff', fontWeight: 'bold' }}>Ver Detalle</Text>
         </TouchableOpacity>
         {order.status !== DepotOrderStatus.SentToBilling && (
-          <TouchableOpacity style={{ backgroundColor: '#FF0000', padding: 8, borderRadius: 8 }} onPress={openModal}>
+          <TouchableOpacity style={{
+            backgroundColor: '#FF0000',
+            paddingVertical: 10,
+            paddingHorizontal: 14,
+            borderRadius: 10,
+            flexDirection: "row",
+            alignItems: "center",
+           }} 
+            onPress={openModal}>
+            <Receipt size={20} color="#fff" />
             <Text style={{ color: '#fff', fontWeight: 'bold' }}>Enviar pedido a facturar</Text>
           </TouchableOpacity>
         )}
@@ -97,10 +116,25 @@ const ListOfPreparedOrders = ({ order, id, customer, onSeeDetail, onSendToBill }
         <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.4)', justifyContent: 'center', alignItems: 'center' }}>
           <View style={{ backgroundColor: '#fff', borderRadius: 12, padding: 20, width: '85%', alignItems: 'center', elevation: 10 }}>
             <Text style={{ fontSize: 17, fontWeight: 'bold', marginBottom: 12 }}>¿Confirmas facturación del pedido {order.depotOrderId}?</Text>
-            <Text>ID del pedido: {order.depotOrderId}</Text>
-            <Text>Cliente: {customer}</Text>
-            <Text>Email: {order.customerEmail}</Text>
-            <Text>Fecha : {order.orderDate}</Text>
+            <Text style={{fontSize: 16,color: "#374151",marginBottom: 6,}}>
+              <Text style={{fontWeight: "bold",color: "#111827",}}>Número del pedido: </Text>
+              {order.depotOrderId}
+            </Text>
+
+            <Text style={{fontSize: 16,color: "#374151",marginBottom: 6,}}>
+              <Text style={{fontWeight: "bold",color: "#111827",}}>Cliente: </Text>
+              {customer}
+            </Text>
+
+            <Text style={{fontSize: 16,color: "#374151",marginBottom: 6,}}>
+              <Text style={{fontWeight: "bold",color: "#111827",}}>Email: </Text>
+              {order.customerEmail}
+            </Text>
+
+            <Text style={{fontSize: 16,color: "#374151",marginBottom: 6,}}>
+              <Text style={{fontWeight: "bold",color: "#111827",}}>Fecha de emisión: </Text>
+              {new Date(order.orderDate).toLocaleDateString()}
+            </Text>
 
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20, width: '100%' }}>
               <Pressable style={[{ flex: 1, marginHorizontal: 5, paddingVertical: 10, borderRadius: 8, alignItems: 'center' }, { backgroundColor: '#4CAF50' }]} onPress={handleConfirm}>
@@ -116,6 +150,7 @@ const ListOfPreparedOrders = ({ order, id, customer, onSeeDetail, onSendToBill }
     </View>
   );
 };
+
 
 export default ListOfPreparedOrders;
 
