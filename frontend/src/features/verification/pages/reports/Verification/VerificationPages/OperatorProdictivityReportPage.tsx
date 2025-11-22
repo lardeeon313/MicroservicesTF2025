@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useOperatorProductivityReport } from "../VerificationHocks/useOperatorProdictivityReport";
 import { FilterOperatorProductivity } from "../VerificationFilters/FilterOperatorProdictivity";
 import { OperatorProductivityTable } from "../VerificationComponents/OperatorProdictivityFolder/OperatorProdictivityReport";
-import { GraphOperatorProductivity } from "../VerificationGraphs/GraphOperatorProdictivityReport";
+
 import { OperatorProductivityFilterEntity } from "../../../../types/FilterReports/FilterReportsEntity";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../components/BackButton";
@@ -52,7 +52,7 @@ export const OperatorProductivityPage: React.FC = () => {
         {!isLoading && (
           <div className="space-y-12 mt-8">
             <OperatorProductivityTable data={data} />
-            <GraphOperatorProductivity data={data} />
+            
           </div>
         )}
       </div>

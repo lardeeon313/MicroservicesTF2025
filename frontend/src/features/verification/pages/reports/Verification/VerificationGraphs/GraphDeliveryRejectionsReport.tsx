@@ -216,12 +216,6 @@ const GraphDeliveryRejectionsReport: React.FC<Props> = ({ data }) => {
               </p>
             </div>
           </div>
-          <div className="text-right">
-            <p className="text-sm font-medium text-gray-500">Clientes Únicos</p>
-            <p className="text-3xl font-bold bg-gradient-to-r from-violet-600 to-pink-600 bg-clip-text text-transparent">
-              {grouped.length}
-            </p>
-          </div>
         </div>
       </div>
     </div>

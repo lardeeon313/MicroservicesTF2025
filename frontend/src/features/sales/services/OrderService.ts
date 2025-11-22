@@ -33,13 +33,32 @@ export const getOrdersByCustomer = async (customerId: string): Promise<Order[]> 
   return response.data;
 };
 
-// Registrar una nueva orden
-export const registerOrder = async (data: RegisterOrderRequest): Promise<Order> => {
-  
-  const response = await API.post("/sales/Order/register", data);
-  
-  return response.data
+// Registrar una nueva orden (ACTUALIZADO : NO TIRA EL ERROR DEL LADO VISUAL)
+export const registerOrder = async (data: RegisterOrderRequest): Promise<any> => {
+  const response = await API.post("/sales/Order/register", data, {
+    validateStatus: () => true,
+  });
+
+  // Si el backend devolvió 500 pero contiene OrderId => se registró igual
+  const orderRegisteredAnyway =
+    response.status === 500 && response.data?.id;
+
+  if ((response.status >= 200 && response.status < 300) || orderRegisteredAnyway) {
+    return {
+      ok: true,
+      data: response.data ?? null,
+      status: response.status
+    };
+  }
+
+  return Promise.reject({
+    ok: false,
+    status: response.status,
+    data: response.data
+  });
 };
+
+
 
 // Actualizar orden
 export const updateOrder = async (id: number, data: UpdateOrderRequest): Promise<Order> => {

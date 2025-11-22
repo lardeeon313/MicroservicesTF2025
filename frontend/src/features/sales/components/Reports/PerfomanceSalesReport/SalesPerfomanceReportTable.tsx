@@ -97,21 +97,38 @@ export const SalesPerfomanceReportTable = ({ data, loading }: Props) => {
             ))}
           </tbody>
           <tfoot>
-            <tr className="bg-gray-50 border-t border-gray-200">
-              <td className="px-6 py-4">
-                <div className="text-sm text-gray-600">
-                  Total: {data.length} {data.length === 1 ? 'vendedor' : 'vendedores'}
-                </div>
-              </td>
-              <td className="px-6 py-4">
-                <div className="text-sm font-semibold text-gray-900">{totalOrders}</div>
-              </td>
-              <td className="px-6 py-4">
-                <div className="text-sm font-semibold text-gray-900">{totalUnitsSold}</div>
-              </td>
-              <td className="px-6 py-4"></td>
-            </tr>
-          </tfoot>
+          <tr className="bg-gray-50 border-t border-gray-200 text-sm">
+            <td className="px-6 py-4">
+              <div className="text-gray-600 font-medium">
+                Total de vendedores:
+                <span className="ml-1 text-gray-900 font-semibold">
+                  {data.length}
+                </span>
+              </div>
+            </td>
+
+            <td className="px-6 py-4">
+              <div className="text-gray-600 font-medium">
+                Total de órdenes:
+                <span className="ml-1 text-gray-900 font-semibold">
+                  {totalOrders}
+                </span>
+              </div>
+            </td>
+
+            <td className="px-6 py-4">
+              <div className="text-gray-600 font-medium">
+                Unidades vendidas:
+                <span className="ml-1 text-gray-900 font-semibold">
+                  {totalUnitsSold}
+                </span>
+              </div>
+            </td>
+
+            <td className="px-6 py-4"></td>
+          </tr>
+        </tfoot>
+
         </table>
       </div>
     </div>

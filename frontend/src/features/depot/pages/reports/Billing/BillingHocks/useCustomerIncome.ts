@@ -14,7 +14,7 @@ export const useCustomerIncome = () => {
 
       const res = await API.get<Billing[]>("/depot/billingmanager/all-invoiced-orders");
 
-      console.log("📌 Datos recibidos del back:", res.data);
+      
 
       if (!res.data || res.data.length === 0) {
         setOrders([]);
@@ -23,7 +23,7 @@ export const useCustomerIncome = () => {
         setOrders(res.data);
       }
     } catch (err: any) {
-      console.error("❌ Error fetching invoiced orders:", err);
+      
       setError("Error al conectar con el servidor.");
       setOrders([]);
     } finally {

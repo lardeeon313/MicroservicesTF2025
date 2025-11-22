@@ -4,7 +4,7 @@ import { Pagination } from "../../../../../../components/Pagination";
 import CustomerIncomeTable, {
   CustomerIncomeBillingItem,
 } from "../BillingComponents/CustomerIncomeTable";
-import GraphCustomerIncome from "../BillingGraphs/GraphCustomerIncome";
+
 import type { Billing } from "../../../../billingmanager/types/BillingType";
 import { useCustomerIncome } from "../BillingHocks/useCustomerIncome";
 import CustomerIncomeFilter from "../BillingFilters/CustomerIncomeFilter";
@@ -143,15 +143,6 @@ const CustomerIncomePage: React.FC = () => {
                             totalAmount: item.totalAmount,
                           })
                         )}
-                      />
-                    </div>
-
-                    <div className="bg-white p-4 shadow-md mb-6">
-                      <GraphCustomerIncome
-                        data={filteredOrders.map((item: Billing) => ({
-                          BillingDate: toDMY(item.orderDate),
-                          TotalAmount: item.totalAmount,
-                        }))}
                       />
                     </div>
 

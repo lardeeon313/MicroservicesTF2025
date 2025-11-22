@@ -7,7 +7,6 @@ interface Props {
 
 export const CustomerSatisfactionTable: React.FC<Props> = ({ data }) => {
 
-  // Estado vacío cuando no hay datos
   if (data.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
@@ -28,26 +27,48 @@ export const CustomerSatisfactionTable: React.FC<Props> = ({ data }) => {
         <table className="w-full">
           <thead>
             <tr className="text-xs font-medium text-gray-600 uppercase tracking-wider border-b border-gray-200">
-              <th className="px-6 py-4 text-left bg-gray-50">CLIENTE</th>
-              <th className="px-6 py-4 text-left bg-white">EMAIL</th>
-              <th className="px-6 py-4 text-left bg-white">PEDIDO ID</th>
-              <th className="px-6 py-4 text-left bg-white">SATISFACCIÓN</th>
+
+              {/* columna reducida */}
+              <th className="px-3 py-4 text-left bg-white w-24">
+                Nº Pedido
+              </th>
+
+              <th className="px-6 py-4 text-left bg-gray-50">Cliente</th>
+              <th className="px-6 py-4 text-left bg-white">Email</th>
+              <th className="px-6 py-4 text-left bg-white">Satisfacción</th>
             </tr>
           </thead>
+
           <tbody>
             {data.map((row) => (
               <tr key={row.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+
+                {/* celda más compacta */}
+                <td className="px-3 py-3 w-24">
+                  <div className="flex items-center space-x-2">
+                    <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2v8h12V6H4zm2 2h8v2H6V8zm0 4h8v2H6v-2z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm text-gray-900">
+                      {row.pedidoID ?? "N/A"}
+                    </span>
+                  </div>
+                </td>
+
                 <td className="px-6 py-4">
                   <div className="flex items-center">
                     <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
                       {row.firstName.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-gray-900">{row.firstName} {row.lastName}</div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {row.firstName} {row.lastName}
+                      </div>
                       <div className="text-xs text-gray-500">Cliente registrado</div>
                     </div>
                   </div>
                 </td>
+
                 <td className="px-6 py-4">
                   <div className="flex items-center text-gray-600">
                     <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -60,32 +81,27 @@ export const CustomerSatisfactionTable: React.FC<Props> = ({ data }) => {
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center">
-                    <svg className="w-4 h-4 mr-2 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2v8h12V6H4zm2 2h8v2H6V8zm0 4h8v2H6v-2z" clipRule="evenodd" />
-                    </svg>
-                    <div className="text-sm text-gray-900">{row.pedidoID ?? "N/A"}</div>
-                  </div>
-                </td>
+
                 <td className="px-6 py-4">
                   <CustomerSatisfactionBadge status={row.satisfaction ?? CustomerSatisfaction.Neutra} />
                 </td>
+
               </tr>
             ))}
           </tbody>
+
           <tfoot>
             <tr className="bg-gray-50 border-t border-gray-200">
-              <td className="px-6 py-4">
-                <div className="text-sm text-gray-600">
-                  Mostrando {data.length} {data.length === 1 ? 'registro' : 'registros'} de satisfacción
+              <td colSpan={4} className="px-6 py-4">
+                <div className="flex items-center justify-between text-sm text-gray-600">
+                  <span>
+                    Mostrando {data.length} {data.length === 1 ? "registro" : "registros"} de satisfacción
+                  </span>
                 </div>
               </td>
-              <td className="px-6 py-4"></td>
-              <td className="px-6 py-4"></td>
-              <td className="px-6 py-4"></td>
             </tr>
           </tfoot>
+
         </table>
       </div>
     </div>

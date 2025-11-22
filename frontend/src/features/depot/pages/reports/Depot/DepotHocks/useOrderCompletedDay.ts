@@ -43,11 +43,7 @@ export const useOrderCompletedDay = () => {
       const formattedStartDate = fechaConvertidaInicio ? `${fechaConvertidaInicio}T00:00:00` : "";
       const formattedEndDate = fechaConvertidaFin ? `${fechaConvertidaFin}T23:59:59` : "";
 
-      console.log("📤 Fetching Orders with final params:", {
-        startDate: formattedStartDate,
-        endDate: formattedEndDate,
-        page: pageNum,
-      });
+
 
       const response = await API.get("depot/depotreports/reports/orders-completed", {
         params: {
@@ -57,7 +53,7 @@ export const useOrderCompletedDay = () => {
         },
       });
 
-      console.log("📥 Response from API:", response.data);
+      
 
       const items: Order[] = response.data.items || [];
       setData(items);
@@ -65,7 +61,7 @@ export const useOrderCompletedDay = () => {
 
     } catch (error) {
       setError("Error al cargar los datos");
-      console.error("❌ Error en fetchData:", error);
+     
     } finally {
       setLoading(false);
     }
@@ -79,7 +75,7 @@ export const useOrderCompletedDay = () => {
     setStartDate("");
     setEndDate("");
     setPage(1);
-    console.log("🧹 Limpiando filtros, cargando todos los datos");
+    
     fetchData("", "", 1); // Cargar todos los datos sin filtro
   };
 
@@ -99,6 +95,3 @@ export const useOrderCompletedDay = () => {
     clearFilters,
   };
 };
-
-
-///depot/depotreports/reports/orders-completed

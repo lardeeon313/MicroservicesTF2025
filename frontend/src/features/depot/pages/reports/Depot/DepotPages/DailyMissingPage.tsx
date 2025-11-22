@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { useDailyMissing } from "../DepotHocks/useDailiyMissing";
 import DailyMissingTable, { DailyMissing } from "../DepotComponents/DailyMissingTable";
-import GraphDailyMissing from "../DepotGraph/GraphDailyMissing";
+
 import { Pagination } from "../../../../../../components/Pagination";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import DailyMissingFilter from "../DepotFilters/DailyMissingFilter";
@@ -75,7 +75,7 @@ const DailyMissingPage: React.FC = () => {
                 onPageChange={setPage}
               />
             )}
-            <GraphDailyMissing data={filteredData} />
+            
           </>
         )}
       </div>

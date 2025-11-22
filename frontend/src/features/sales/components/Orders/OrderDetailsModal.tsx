@@ -27,7 +27,7 @@ const OrderDetailsModal: React.FC<Props> = ({ order, onClose, onModify, onReissu
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">Información de la Orden</h3>
-              <p className="text-sm text-gray-600 mb-2"><span className="font-medium">Venta ID:</span> V-{order.salesOrderId}</p>
+              <p className="text-sm text-gray-600 mb-2"><span className="font-medium">Numero del pedido:</span> V-{order.salesOrderId}</p>
               <p className="text-sm text-gray-600 mb-2"><span className="font-medium">Estado:</span> <OrderStatusBadge status={order.salesOrder.status}></OrderStatusBadge></p>
               <p className="text-sm text-gray-600 mb-2"><span className="font-medium">Cliente:</span> {order.salesOrder.customerFirstName} {order.salesOrder.customerLastName}</p>
               <p className="text-sm text-gray-600 mb-2"><span className="font-medium">Fecha de Pedido:</span> {formatDate(order.salesOrder.orderDate)}</p>
@@ -35,7 +35,7 @@ const OrderDetailsModal: React.FC<Props> = ({ order, onClose, onModify, onReissu
             </div>
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">Información del Faltante</h3>
-              <p className="text-sm text-gray-600 mb-2"><span className="font-medium">Faltante ID:</span> {order.missingId}</p>
+              <p className="text-sm text-gray-600 mb-2"><span className="font-medium">Numero del faltante:</span> F-{order.missingId}</p>
               <p className="text-sm text-gray-600 mb-2"><span className="font-medium">Motivo:</span> {order.missingReason || 'N/A'}</p>
               <p className="text-sm text-gray-600 mb-2"><span className="font-medium">Descripción:</span> {order.missingDescription || 'N/A'}</p>
               <p className="text-sm text-gray-600 mb-2"><span className="font-medium">Fecha del Reporte:</span> {formatDate(order.missingDate)}</p>

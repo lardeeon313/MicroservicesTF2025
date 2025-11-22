@@ -28,10 +28,10 @@ export const useDeliveryTimesReport = () => {
         "/logistic/LogisticReport/delivery-times",
         { params }
       );
-      console.log("Datos del pedidos entregados", resp)
+      
       setData(resp.data ?? []);
     } catch (err: any) {
-      console.error("Error fetching delivery times report", err);
+      
       setError(err?.response?.data?.message ?? err.message ?? "Error");
       setData([]);
     } finally {

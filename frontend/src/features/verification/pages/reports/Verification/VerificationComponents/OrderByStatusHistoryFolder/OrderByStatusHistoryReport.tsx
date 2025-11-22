@@ -42,18 +42,19 @@ export const OrderStatusHistoryTable: React.FC<Props> = ({ data }) => {
       <table className="w-full border-collapse text-left">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">ID</th>
-            <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Pedido del cliente</th>
+            <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Numero del pedido</th>
+            <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">cliente</th>
             <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Viejo estado</th>
             <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Nuevo estado</th>
             <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Fecha de cambio</th>
             <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Duración promedio (segundos)</th>
+            <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Repartidor</th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
           {data.map((row) => (
             <tr key={row.id} className="hover:bg-gray-50 transition-colors duration-200">
-              <td className="px-6 py-4 text-sm font-medium text-gray-900">{row.id}</td>
+              <td className="px-6 py-4 text-sm font-medium text-gray-900">{row.orderId}</td>
               <td className="px-6 py-4 text-sm text-gray-900">{row.customerName}</td>
               <td className="px-6 py-4 text-sm text-gray-900">{row.oldStatus}</td>
               <td className="px-6 py-4 text-sm text-gray-900">{row.newStatus}</td>
@@ -61,6 +62,7 @@ export const OrderStatusHistoryTable: React.FC<Props> = ({ data }) => {
                 {new Date(row.changedAt).toLocaleString()}
               </td>
               <td className="px-6 py-4 text-sm text-gray-900">{row.averageDurationSeconds}</td>
+              <td className="px-6 py-4 text-sm text-gray-900">{row.fullNameDeliveringOperator}</td>
             </tr>
           ))}
         </tbody>

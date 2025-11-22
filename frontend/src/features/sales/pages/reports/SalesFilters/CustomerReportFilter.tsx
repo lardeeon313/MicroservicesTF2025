@@ -33,7 +33,7 @@ const CustomerReportFilter: React.FC<CustomerReportFilterProps> = ({ onFilterCha
         {/* Nombre */}
         <div className="flex flex-col">
           <label className="text-sm font-medium text-gray-600 mb-1">
-            Nombre
+            Buscar por Nombre
           </label>
           <input
             type="text"
@@ -47,7 +47,7 @@ const CustomerReportFilter: React.FC<CustomerReportFilterProps> = ({ onFilterCha
         {/* Email */}
         <div className="flex flex-col">
           <label className="text-sm font-medium text-gray-600 mb-1">
-            Email
+            Buscar por Email
           </label>
           <input
             type="text"
@@ -61,7 +61,7 @@ const CustomerReportFilter: React.FC<CustomerReportFilterProps> = ({ onFilterCha
         {/* Mínimo pedidos */}
         <div className="flex flex-col">
           <label className="text-sm font-medium text-gray-600 mb-1">
-            Mínimo de pedidos
+            Buscar por mínima cantidad de pedidos
           </label>
           <input
             type="number"

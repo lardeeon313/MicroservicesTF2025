@@ -28,12 +28,13 @@ const GraphCustomerReport: React.FC<Props> = ({ data }) => (
 
     {/* Container del gráfico con diseño premium */}
     <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-8 hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-1">
+      
       {/* Decoración superior */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center space-x-2">
           <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-          <div className="w-3 h-3 bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-          <div className="w-3 h-3 bg-rose-300 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+          <div className="w-3 h-3 bg-red-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+          <div className="w-3 h-3 bg-rose-300 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
         </div>
         <div className="bg-gradient-to-r from-red-50 to-rose-50 px-3 py-1 rounded-full">
           <span className="text-sm text-red-700 font-medium">
@@ -42,9 +43,9 @@ const GraphCustomerReport: React.FC<Props> = ({ data }) => (
         </div>
       </div>
 
-      {/* Gráfico mejorado con mayor altura */}
+      {/* Gráfico mejorado */}
       <ResponsiveContainer width="100%" height={400}>
-        <BarChart 
+        <BarChart
           data={data}
           margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
           className="drop-shadow-sm"
@@ -52,56 +53,58 @@ const GraphCustomerReport: React.FC<Props> = ({ data }) => (
           <defs>
             {/* Gradiente para las barras */}
             <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#DC2626" stopOpacity={0.9}/>
-              <stop offset="50%" stopColor="#EF4444" stopOpacity={0.8}/>
-              <stop offset="100%" stopColor="#F87171" stopOpacity={0.7}/>
+              <stop offset="0%" stopColor="#DC2626" stopOpacity={0.9} />
+              <stop offset="50%" stopColor="#EF4444" stopOpacity={0.8} />
+              <stop offset="100%" stopColor="#F87171" stopOpacity={0.7} />
             </linearGradient>
-            
-            {/* Sombra para las barras */}
+
+            {/* Sombra */}
             <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="2" dy="2" stdDeviation="3" floodOpacity="0.3"/>
+              <feDropShadow dx="2" dy="2" stdDeviation="3" floodOpacity="0.3" />
             </filter>
           </defs>
-          
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke="#f1f5f9" 
+
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="#f1f5f9"
             opacity={0.8}
           />
-          
-          <XAxis 
-            dataKey="fullName" 
-            tick={{ fontSize: 12, fill: '#64748b' }}
+
+          <XAxis
+            dataKey="fullName"
+            tick={{ fontSize: 12, fill: "#64748b" }}
             height={60}
             interval={0}
           />
-          
-          <YAxis 
-            tick={{ fontSize: 12, fill: '#64748b' }}
-            axisLine={{ stroke: '#e2e8f0' }}
-            tickLine={{ stroke: '#e2e8f0' }}
+
+          <YAxis
+            tick={{ fontSize: 12, fill: "#64748b" }}
+            axisLine={{ stroke: "#e2e8f0" }}
+            tickLine={{ stroke: "#e2e8f0" }}
           />
-          
-          <Tooltip 
+
+          {/* Tooltip modificado para mostrar “Cantidad de pedidos” */}
+          <Tooltip
+            formatter={(value) => [`${value}`, "Cantidad de pedidos"]}
             contentStyle={{
-              backgroundColor: 'white',
-              border: '1px solid #e2e8f0',
-              borderRadius: '12px',
-              boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
-              fontSize: '14px'
+              backgroundColor: "white",
+              border: "1px solid #e2e8f0",
+              borderRadius: "12px",
+              boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)",
+              fontSize: "14px",
             }}
-            labelStyle={{ color: '#1f2937', fontWeight: 'bold' }}
-            cursor={{ fill: 'rgba(239, 68, 68, 0.1)' }}
+            labelStyle={{ color: "#1f2937", fontWeight: "bold" }}
+            cursor={{ fill: "rgba(239, 68, 68, 0.1)" }}
           />
-          
-          <Bar 
-            dataKey="orderCount" 
+
+          <Bar
+            dataKey="orderCount"
             fill="url(#barGradient)"
             radius={[4, 4, 0, 0]}
             filter="url(#shadow)"
             className="hover:opacity-80 transition-opacity duration-200"
           />
-        </BarChart>   
+        </BarChart>
       </ResponsiveContainer>
     </div>
   </div>

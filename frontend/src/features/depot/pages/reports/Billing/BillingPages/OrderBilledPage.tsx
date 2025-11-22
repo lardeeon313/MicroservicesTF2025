@@ -1,7 +1,7 @@
 import { useInvoicedOrdersByCustomer } from "../BillingHocks/useOrderBilled";
 import InvoicedOrdersFilter from "../BillingFilters/OrderBilledFilter";
 import InvoicedOrdersTable from "../BillingComponents/OrderBilledTable";
-import OrderBilledGraph from "../BillingGraphs/GraphOrderBilled";
+
 import BackButton from "../../../../../../components/BackButton";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import EmptyState from "../../../../../../components/EmptyState";
@@ -79,9 +79,7 @@ export default function InvoicedOrdersPage() {
             {!loading && !error && filteredData.length > 0 && (
               <>
                 <InvoicedOrdersTable data={paginatedData} />
-                <div className="mt-8">
-                  <OrderBilledGraph data={filteredData} />
-                </div>
+
                 
                 {totalPages > 1 && (
                   <div className="flex justify-center mt-8">

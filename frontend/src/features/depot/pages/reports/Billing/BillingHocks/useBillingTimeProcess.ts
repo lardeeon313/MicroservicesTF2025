@@ -37,12 +37,12 @@ export const useBillingTimeProcess = (
         params.from = defaultFrom;
         params.to = defaultTo;
 
-        console.log("Enviando parámetros al backend:", params);
+        
         const response = await API.get<ApiResponse>(
           "/depot/depotreports/reports/processing-time-per-order",
           { params }
         );
-        console.log("Respuesta completa del backend:", response);
+        
 
         const formattedData = response.data.items.map(item => ({
           orderId: item.orderId,
@@ -52,7 +52,7 @@ export const useBillingTimeProcess = (
         setTotalPages(response.data.totalPages);
         setData(formattedData);
       } catch (err: any) {
-        console.error("Error en API:", err);
+        
         if (err?.response) {
           const status = err.response.status;
           const msg = err.response.data?.message || err.response.data?.title || "al obtener los datos.";

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import DeliveryTeamActivityFilter from "../VerificationFilters/FilterDeliveryTeamActivity";
 import DeliveryTeamActivityTable from "../VerificationComponents/DeliveryTeamFolder/DeliveryTeamActivityReport";
-import GraphDeliveryTeamActivity from "../VerificationGraphs/GraphDeliveryTeamActitivityReport";
+
 import { useDeliveryTeamActivity } from "../VerificationHocks/useDeliveryTeamActivityReport";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../components/BackButton";
@@ -41,9 +41,6 @@ const DeliveryTeamActivityPage = () => {
         ) : (
           <>
             <DeliveryTeamActivityTable data={data} />
-            <div className="mt-4">
-              <GraphDeliveryTeamActivity data={data} />
-            </div>
           </>
         )}
       </div>

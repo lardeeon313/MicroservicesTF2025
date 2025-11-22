@@ -53,31 +53,6 @@ export const DeliveryIncidentsFilter: React.FC<Props> = ({
         />
       </div>
 
-      {/* Equipo */}
-      <div className="flex flex-col">
-        <label className="text-sm font-medium text-gray-600 mb-1">Equipo</label>
-        <input
-          type="number"
-          name="deliveryTeamId"
-          placeholder="Ej: 5"
-          value={filters.deliveryTeamId || ""}
-          onChange={handleChange}
-          className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      {/* Operador */}
-      <div className="flex flex-col">
-        <label className="text-sm font-medium text-gray-600 mb-1">Operador (UUID)</label>
-        <input
-          type="text"
-          name="operatorId"
-          placeholder="Ej: 0af12e32..."
-          value={filters.operatorId || ""}
-          onChange={handleChange}
-          className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
 
       {/* Estado */}
       <div className="flex flex-col">

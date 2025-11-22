@@ -14,14 +14,14 @@ export const useTeamProductivity = (from: string, to: string) => {
 
   useEffect(() => {
     if (!from || !to) {
-      console.log("⏩ No se hace request porque faltan fechas:", { from, to });
+     
       return;
     }
 
     const fetchTeamProductivity = async () => {
       setLoading(true);
       setError(null);
-      console.log("📤 Fetching team productivity...", { from, to });
+     
 
       try {
         const response = await API.get<ProductivityProps[]>(
@@ -29,13 +29,13 @@ export const useTeamProductivity = (from: string, to: string) => {
           { params: { from, to } }
         );
 
-        console.log("✅ Respuesta cruda del backend:", response.data);
+        
 
         setData(response.data);
 
-        console.log("📊 Data seteada en el hook:", response.data);
+        
       } catch (error) {
-        console.error("❌ Error al obtener la productividad de los equipos:", error);
+        
         setError("Error al obtener los datos.");
       } finally {
         setLoading(false);

@@ -10,6 +10,8 @@ import BackButton from "../../../../components/BackButton";
 import InfoItem from "../../../../components/InfoItem";
 import TotalCard from "../components/TotalCard";
 import { BillingAddressDto } from "../types/OrderTypes";
+import { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 type InvoiceItem = {
   productName: string;
@@ -43,7 +45,6 @@ const InvoiceOneDetailPage = () => {
       try {
         const data = await getInvoicedOrderById(Number(billingOrderId));
         
-        // Mapeo de campos según tu backend
         const mappedInvoice: Invoice = {
           billingOrderId: data.billingOrderId ?? data.depotOrderId ?? 0,
           customerName: data.customerName ?? "",
@@ -82,19 +83,20 @@ const InvoiceOneDetailPage = () => {
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
+      <Toaster position="top-right" />
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
         <BackButton to="/depot/billingmanager/exports" />
 
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
-        {/* Header */}
+          {/* Header */}
           <div className="bg-white rounded-lg shadow-md mb-6 mt-6 overflow-hidden">
             <div className="bg-gradient-to-r from-red-500 to-red-700 px-6 py-4">
               <h1 className="text-3xl font-bold text-white">
-                Factura #{invoice.billingOrderId}
+                Pedido F-{invoice.billingOrderId}
               </h1>
             </div>
-            
+
             {/* Customer Information */}
             <div className="p-6 bg-white rounded-lg shadow-md">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">
@@ -133,7 +135,6 @@ const InvoiceOneDetailPage = () => {
                   bgColor="bg-red-100/40"
                   textColor="text-red-600"
                 />
-                
                 <InfoItem
                   icon={<User className="text-red-600 w-5 h-5" />}
                   label="Dirección"
@@ -145,7 +146,6 @@ const InvoiceOneDetailPage = () => {
                   bgColor="bg-red-100/30"
                   textColor="text-red-600"
                 />
-
               </div>
             </div>
           </div>
@@ -212,7 +212,6 @@ const InvoiceOneDetailPage = () => {
 
           <TotalCard label="TOTAL:" amount={invoice.totalAmount} size="large" />
 
-
           {/* Export Buttons */}
           <div className="bg-white rounded-lg shadow-md">
             <div className="px-6 py-6">
@@ -220,9 +219,14 @@ const InvoiceOneDetailPage = () => {
                 Exportar Factura
               </h3>
               <div className="flex flex-wrap gap-4">
+
+                {/* PDF */}
                 <button
                   disabled={exporting}
-                  onClick={() => handleExport(invoice.billingOrderId, 0)}
+                  onClick={() => {
+                    toast.success("Generando PDF...");
+                    handleExport(invoice.billingOrderId, 0);
+                  }}
                   className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {exporting ? (
@@ -237,10 +241,14 @@ const InvoiceOneDetailPage = () => {
                     </>
                   )}
                 </button>
-                
+
+                {/* XLSX */}
                 <button
                   disabled={exporting}
-                  onClick={() => handleExport(invoice.billingOrderId, 1)}
+                  onClick={() => {
+                    toast.success("Generando archivo XLSX...");
+                    handleExport(invoice.billingOrderId, 1);
+                  }}
                   className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {exporting ? (
@@ -255,10 +263,14 @@ const InvoiceOneDetailPage = () => {
                     </>
                   )}
                 </button>
-                
+
+                {/* DOCX */}
                 <button
                   disabled={exporting}
-                  onClick={() => handleExport(invoice.billingOrderId, 2)}
+                  onClick={() => {
+                    toast.success("Generando archivo DOCX...");
+                    handleExport(invoice.billingOrderId, 2);
+                  }}
                   className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {exporting ? (
@@ -273,9 +285,11 @@ const InvoiceOneDetailPage = () => {
                     </>
                   )}
                 </button>
+
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>

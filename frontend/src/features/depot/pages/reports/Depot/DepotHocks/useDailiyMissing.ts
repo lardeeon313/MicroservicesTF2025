@@ -12,13 +12,13 @@ export const useDailyMissing = (page: number, pageSize: number) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        console.log("📡 Llamando API con page:", page, "pageSize:", pageSize);
+        
 
         const response = await API.get<DailyMissing[]>(
           "/depot/depotmanager/get-all-missing-orders"
         );
 
-        console.log("✅ Datos crudos recibidos del API:", response.data);
+        
 
         const allData: DailyMissing[] = response.data.map((item: any) => ({
             orderID: item.salesOrderId,
@@ -30,21 +30,18 @@ export const useDailyMissing = (page: number, pageSize: number) => {
 
         const paginatedData = allData.slice(start, end);
 
-        console.log(
-          `📊 Mostrando registros ${start} a ${end} de un total de ${allData.length}`
-        );
-        console.log("📑 Datos paginados:", paginatedData);
+
 
         setData(paginatedData);
         setTotalPages(Math.ceil(allData.length / pageSize));
 
-        console.log("📄 Total de páginas calculado:", Math.ceil(allData.length / pageSize));
+       
       } catch (error) {
-        console.error("❌ Error al obtener los datos: ", error);
+
         setError("No se pudieron obtener los datos ");
       } finally {
         setLoading(false);
-        console.log("⏳ Finalizó la carga de datos.");
+
       }
     };
 

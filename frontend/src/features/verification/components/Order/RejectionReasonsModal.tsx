@@ -122,7 +122,7 @@ export default function RejectionReasonsModal({ order, isOpen, onClose }: Props)
                           Cancelación #{index + 1}
                         </h3>
                         <p className="text-xs font-medium text-gray-500 mt-1">
-                          ID: {reason.id}
+                          Numero del pedido: {reason.id}
                         </p>
                       </div>
                     </div>

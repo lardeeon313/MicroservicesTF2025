@@ -4,7 +4,7 @@ import AverageTimeOrderTable, { ArmTime } from "../DepotComponents/AverageTimeOr
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import { Pagination } from "../../../../../../components/Pagination";
 import AverageTimeOrderFilter from "../DepotFilters/AverageTimeOrderFilter";
-import GraphAverageTimeOrder from "../DepotGraph/GraphAverageTimeOrder";
+
 import BackButton from "../../../../../../components/BackButton";
 
 const AverageTimeOrderPage: React.FC = () => {
@@ -116,7 +116,7 @@ const AverageTimeOrderPage: React.FC = () => {
 
         <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
 
-        <GraphAverageTimeOrder data={filteredData} />
+       
       </div>
     </div>
   );
