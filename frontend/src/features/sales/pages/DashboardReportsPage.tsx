@@ -1,4 +1,4 @@
-import { User, FilePlus2, BarChart2, FileText, PieChart } from "lucide-react";
+import { User, FilePlus2, BarChart2, FileText, PieChart , CircleDollarSignIcon} from "lucide-react";
 import { Link } from "react-router-dom";
 import BackButton from "../../../components/BackButton";
 
@@ -32,6 +32,12 @@ const cards = [
     description: "Revisá cómo ha rendido el equipo de ventas.",
     icon: <BarChart2 className="h-10 w-10 text-red-600" />,
     link: "/sales/reports/salesPerfomance",
+  },
+    {
+    title: "Tipos de pago por cliente",
+    description: "Verifica los diferentes tipos de pago por los diferentes clientes registrados",
+    icon: <CircleDollarSignIcon className="h-10 w-10 text-red-600" />,
+    link: "/sales/reports/customerpaymentypereport",
   },
 ];
 

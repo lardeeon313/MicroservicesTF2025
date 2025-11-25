@@ -1,6 +1,7 @@
 import React from "react";
 import { AlertTriangle,FolderClock } from "lucide-react";
 import { OrderStatusHistoryReport } from "../../../../../types/Report";
+import { OrderStatusLabels } from "../../VerificationHocks/useOrderByStatusHistory";
 
 interface Props {
   data: OrderStatusHistoryReport[];
@@ -49,6 +50,7 @@ export const OrderStatusHistoryTable: React.FC<Props> = ({ data }) => {
             <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Fecha de cambio</th>
             <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Duración promedio (segundos)</th>
             <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Repartidor</th>
+            <th className="px-6 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Equipo</th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
@@ -56,13 +58,14 @@ export const OrderStatusHistoryTable: React.FC<Props> = ({ data }) => {
             <tr key={row.id} className="hover:bg-gray-50 transition-colors duration-200">
               <td className="px-6 py-4 text-sm font-medium text-gray-900">{row.orderId}</td>
               <td className="px-6 py-4 text-sm text-gray-900">{row.customerName}</td>
-              <td className="px-6 py-4 text-sm text-gray-900">{row.oldStatus}</td>
-              <td className="px-6 py-4 text-sm text-gray-900">{row.newStatus}</td>
+              <td className="px-6 py-4 text-sm text-gray-900">{OrderStatusLabels[row.oldStatus]}</td>
+              <td className="px-6 py-4 text-sm text-gray-900">{OrderStatusLabels[row.newStatus]}</td>
               <td className="px-6 py-4 text-sm text-gray-900">
                 {new Date(row.changedAt).toLocaleString()}
               </td>
               <td className="px-6 py-4 text-sm text-gray-900">{row.averageDurationSeconds}</td>
               <td className="px-6 py-4 text-sm text-gray-900">{row.fullNameDeliveringOperator}</td>
+              <td className="px-6 py-4 text-sm text-gray-900">{row.assignedTeamName}</td>
             </tr>
           ))}
         </tbody>

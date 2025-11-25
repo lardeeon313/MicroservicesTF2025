@@ -22,6 +22,8 @@ export const useAverageTimeOrder = (
         if (to && to.trim() !== "") params.to = to;
 
         const response = await API.get("/depot/depotreports/reports/average-time-per-status", { params });
+
+        
         
         const raw: any[] = response.data ?? [];
 
@@ -43,6 +45,8 @@ export const useAverageTimeOrder = (
               base.changedAt = undefined;
             }
           }
+          if (item.customerName) base.customerName = String(item.customerName);
+
 
           return base;
         });

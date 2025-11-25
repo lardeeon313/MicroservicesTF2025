@@ -27,6 +27,7 @@ import CustomerInactiveReportPage from "../features/sales/pages/reports/Customer
 import ModifiedCanceledOrdersPage from "../features/sales/pages/reports/ModifiedCanceledOrdersPage";
 import { SalesPerfomanceReportPage } from "../features/sales/pages/reports/SalesPerfomanceReportPage";
 import MissingOrdersSalesPage from "../features/sales/pages/orders/MissingOrderSalesPage";
+import CustomerReportPaymentTypePage from "../features/sales/pages/reports/CustomerPaymenTypeReportPage";
 
 // Depósito - Manager
 import DepotManagerDashboard from "../features/depot/depotmanager/pages/DepotManagerDashboard";
@@ -108,6 +109,7 @@ const AppRouter = () => {
             <Route path="reports/customerStatusReport" element={<CustomerInactiveReportPage />} />
             <Route path="reports/modifiedCanceledReport" element={<ModifiedCanceledOrdersPage />} />
             <Route path="reports/salesPerfomance" element={<SalesPerfomanceReportPage />} />
+            <Route path="reports/customerpaymentypereport" element={<CustomerReportPaymentTypePage/>} />
         </Route>
 
         {/* Depósito Manager */}

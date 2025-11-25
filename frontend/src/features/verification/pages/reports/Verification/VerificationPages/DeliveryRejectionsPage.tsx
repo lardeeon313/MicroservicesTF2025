@@ -21,7 +21,7 @@ export const DeliveryRejectionsPage: React.FC = () => {
   });
 
   const handleFilterChange = (filters: RejectionReportFilters) => {
-    console.log("📤 Aplicando filtros desde página:", filters);
+    
     setAppliedFilters(filters);
     setPageNumber(1); // Reiniciar al cambiar filtros
   };

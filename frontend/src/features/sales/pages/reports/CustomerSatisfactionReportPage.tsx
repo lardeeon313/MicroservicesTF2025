@@ -11,12 +11,15 @@ const CustomerSatisfactionReportPage: React.FC = () => {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
 
-  // Filtros aplicados (solo cambian cuando presiono Buscar)
+  // Filtros aplicados
   const [appliedFilters, setAppliedFilters] = useState({
     name: "",
     email: "",
     satisfaction: "Todas" as "Todas" | "Positiva" | "Negativa" | "Neutra",
   });
+
+  // 🔹 Estado para mostrar/ocultar gráfico
+  const [showGraph, setShowGraph] = useState(true);
 
   const { data: customers, loading, totalPages } = useCustomerSatisfaction(page, pageSize);
 
@@ -40,8 +43,9 @@ const CustomerSatisfactionReportPage: React.FC = () => {
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
-        <BackButton to="/sales/reports/dashboard"></BackButton>
+        <BackButton to="/sales/reports/dashboard" />
       </div>
+
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Clientes y Pedidos</h1>
         <p className="text-center text-lg text-gray-700 mb-12">
@@ -49,26 +53,42 @@ const CustomerSatisfactionReportPage: React.FC = () => {
         </p>
 
         <div className="flex flex-col md:flex-row mb-4 w-full justify-between gap-2">
-        {/* Filtros */}
-        <CustomerSatisfactionFilter
-          selectedName={appliedFilters.name}
-          selectedEmail={appliedFilters.email}
-          selectedSatisfaction={appliedFilters.satisfaction}
-          onSearch={(filters) => {
-            setPage(1); // reseteo paginación
-            setAppliedFilters(filters);
-          }}
-          onClear={() => {
-            setPage(1);
-            setAppliedFilters({ name: "", email: "", satisfaction: "Todas" });
-          }}
-        />
+          {/* Filtros */}
+          <CustomerSatisfactionFilter
+            selectedName={appliedFilters.name}
+            selectedEmail={appliedFilters.email}
+            selectedSatisfaction={appliedFilters.satisfaction}
+            onSearch={(filters) => {
+              setPage(1);
+              setAppliedFilters(filters);
+            }}
+            onClear={() => {
+              setPage(1);
+              setAppliedFilters({ name: "", email: "", satisfaction: "Todas" });
+            }}
+          />
         </div>
 
-        {/* Tabla + Paginación + Gráfico */}
+        {/* Tabla */}
         <CustomerSatisfactionTable data={satisfactionFilteredCustomers} />
+
+        {/* Paginación */}
         <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
-        <GraphSatisfactionCustomer customers={satisfactionFilteredCustomers} />
+
+        {/* 🔹 Botón para mostrar/ocultar gráfico */}
+        <div className="flex justify-center my-8">
+          <button
+            onClick={() => setShowGraph(!showGraph)}
+            className="px-6 py-2 rounded-xl shadow text-white font-medium bg-gray-600 hover:bg-blue-700 transition"
+          >
+            {showGraph ? "Ocultar gráfico" : "Mostrar gráfico"}
+          </button>
+        </div>
+
+        {/* 🔹 Render condicional del gráfico */}
+        {showGraph && (
+          <GraphSatisfactionCustomer customers={satisfactionFilteredCustomers} />
+        )}
       </div>
     </div>
   );

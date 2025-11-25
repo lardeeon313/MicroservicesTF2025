@@ -1,14 +1,10 @@
 import React from "react";
 import { ArrowRight, Clock } from "lucide-react";
 
-/**
- * Tipo exportado para que la Page / Hook lo use.
- * oldStatus/newStatus son opcionales porque la API puede venir
- * con `status` (string combinado) o con old/new numéricos.
- */
 export type ArmTime = {
   id: number;
   orderId?: number;
+  customerName?:string;
   oldStatus?: number;
   newStatus?: number;
   status?: string;
@@ -40,44 +36,66 @@ const AverageTimeOrderTable: React.FC<Props> = ({ data, loading }) => {
     );
   }
 
+  // ⭐ NUEVO: Diccionario completo basado en tu enum OrderStatus
   const getStatusName = (status?: number | string) => {
-  const map: Record<string, string> = {
-    Issued: "Emitido",
-    Received: "Recibido",
-    Assigned: "Asignado",
-    InPreparation: "En preparación",
-    MissingProduct: "Pedido con faltante",
-    ReReceived: "Re-recibido",
-    SentToBilling: "Enviado a facturación",
-    
-  };
+    const map: Record<string, string> = {
+      Received: "Recibido",
+      ReReceived: "Re-recibido",
+      Assigned: "Asignado",
+      InPreparation: "En preparación",
+      MissingProduct: "Faltante notificado",
+      SentToBilling: "Enviado a facturar",
+      PendingResolution: "Pendiente de resolución",
+      Prepared: "Preparado",
+      Invoiced: "Facturado",
+      Issued: "Emitido por ventas",
+      Cancelled: "Cancelado",
+      Deleted: "Eliminado",
+      Verify: "Verificado",
+      OnTheWay: "En camino",
+      Delivered: "Entregado",
+      PendingVerification: "Pendiente de verificación",
+      AssignedDelivery: "Asignado a reparto",
+      PendingDelivered: "Pendiente de reparto",
+      PendingIncidentResolution: "Pendiente de incidente",
+      IncidentResolved: "Incidente resuelto",
+    };
 
-  // ⭐ Si el backend manda un string combinado: "Received → Assigned"
-  if (typeof status === "string") {
-    if (status.includes("→")) {
-      const [from, to] = status.split("→").map((s) => s.trim());
-      return `${map[from] ?? from} → ${map[to] ?? to}`;
+    
+    if (typeof status === "string") {
+      if (status.includes("→")) {
+        const [from, to] = status.split("→").map(s => s.trim());
+        return `${map[from] ?? from} → ${map[to] ?? to}`;
+      }
+      return map[status] ?? status;
     }
 
-    // Si es un string simple: "Received"
-    return map[status] ?? status;
-  }
-
-  // ⭐ Si viene un número, lo mapeamos usando las claves numéricas
-  const numericMap: Record<number, string> = {
-    0: map.Issued,
-    1: map.Received,
-    2: map.Assigned,
-     3: map.InPreparation,
-    4: map.MissingProduct,
-    5: map.ReReceived,
-    6: map.SentToBilling,
     
+    const numericMap: Record<number, string> = {
+      0: map.Received,
+      1: map.ReReceived,
+      2: map.Assigned,
+      3: map.InPreparation,
+      4: map.MissingProduct,
+      5: map.SentToBilling,
+      6: map.PendingResolution,
+      7: map.Prepared,
+      8: map.Invoiced,
+      9: map.Issued,
+      10: map.Cancelled,
+      11: map.Deleted,
+      12: map.Verify,
+      13: map.OnTheWay,
+      14: map.Delivered,
+      15: map.PendingVerification,
+      16: map.AssignedDelivery,
+      17: map.PendingDelivered,
+      18: map.PendingIncidentResolution,
+      19: map.IncidentResolved,
+    };
+
+    return status !== undefined ? numericMap[status] ?? `Estado ${status}` : "N/A";
   };
-
-  return status !== undefined ? numericMap[status] ?? `Estado ${status}` : "N/A";
-};
-
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "-";
@@ -116,8 +134,10 @@ const AverageTimeOrderTable: React.FC<Props> = ({ data, loading }) => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Numero del pedido</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-24">
+                Nº Pedido
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Cliente</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Transición de Estado</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Fecha de Cambio</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -133,37 +153,37 @@ const AverageTimeOrderTable: React.FC<Props> = ({ data, loading }) => {
             {data.map((item) => (
               <tr key={item.id} className="hover:bg-gray-50 transition-colors duration-200">
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-blue-600">#{item.orderId ?? "?"}</div>
+                  <span className="text-sm font-medium text-blue-600">#{item.orderId ?? "?"}</span>
                 </td>
 
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {/* Si la API devuelve `status` combinado, lo mostramos tal cual.
-                      Si viene old/new numérico, mostramos badges separados */}
+                  <span className="text-sm font-medium text-gray-600">{item.customerName}</span>
+                </td>
+
+                <td className="px-6 py-4 whitespace-nowrap">
                   {item.status ? (
-                    <div className="text-sm text-gray-900">{getStatusName(item.status)}</div>
+                    <span className="text-sm text-gray-900">{getStatusName(item.status)}</span>
                   ) : (
-                    <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-gray-100">
-                        {getStatusName(item.oldStatus)}
-                      </span>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="px-2 py-1 rounded border bg-gray-100">{getStatusName(item.oldStatus)}</span>
                       <ArrowRight className="w-4 h-4 text-gray-400" />
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border bg-gray-100">
-                        {getStatusName(item.newStatus)}
-                      </span>
+                      <span className="px-2 py-1 rounded border bg-gray-100">{getStatusName(item.newStatus)}</span>
                     </div>
                   )}
                 </td>
 
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{formatDate(item.changedAt)}</div>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {formatDate(item.changedAt)}
                 </td>
 
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-2">
-                    <div className="text-sm font-medium text-gray-900">{formatDuration(item.averageDuration)}</div>
+                    <span className="text-sm font-medium text-gray-900">{formatDuration(item.averageDuration)}</span>
                     <div
                       className={`w-2 h-2 rounded-full ${
-                        item.averageDuration < 30 ? "bg-green-400" : item.averageDuration < 60 ? "bg-yellow-400" : "bg-red-400"
+                        item.averageDuration < 30 ? "bg-green-400"
+                        : item.averageDuration < 60 ? "bg-yellow-400"
+                        : "bg-red-400"
                       }`}
                     />
                   </div>

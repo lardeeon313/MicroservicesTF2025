@@ -15,6 +15,9 @@ const AverageTimeOrderPage: React.FC = () => {
   const [startDateFilter, setStartDateFilter] = useState("");
   const [endDateFilter, setEndDateFilter] = useState("");
 
+  const [minDurationFilter, setMinDurationFilter] = useState("");
+  const [maxDurationFilter, setMaxDurationFilter] = useState("");
+
   const { data: orders, loading, totalPages } = useAverageTimeOrder(
     page,
     pageSize,
@@ -26,6 +29,7 @@ const AverageTimeOrderPage: React.FC = () => {
   const adaptedOrders: ArmTime[] = orders.map((o, i) => ({
     id: o.id ?? i,
     orderId: o.orderId,
+    customerName: o.customerName,
     oldStatus: o.oldStatus,
     newStatus: o.newStatus,
     status: o.status,
@@ -63,6 +67,10 @@ const AverageTimeOrderPage: React.FC = () => {
   // Buscar
   const handleSearch = () => {
     const filtered = adaptedOrders.filter((order) => {
+      const matchesId = idFilter
+        ? order.orderId?.toString().includes(idFilter.trim())
+        : true;
+
       const matchesStartDate = startDateFilter
         ? !!order.changedAt && new Date(order.changedAt) >= new Date(startDateFilter)
         : true;
@@ -71,11 +79,27 @@ const AverageTimeOrderPage: React.FC = () => {
         ? !!order.changedAt && new Date(order.changedAt) <= new Date(endDateFilter)
         : true;
 
-      return matchesStartDate && matchesEndDate;
+      const matchesMinDuration = minDurationFilter
+        ? order.averageDuration >= Number(minDurationFilter)
+        : true;
+
+      const matchesMaxDuration = maxDurationFilter
+        ? order.averageDuration <= Number(maxDurationFilter)
+        : true;
+
+      return (
+        matchesId &&
+        matchesStartDate &&
+        matchesEndDate &&
+        matchesMinDuration &&
+        matchesMaxDuration
+      );
     });
 
     setFilteredData(filtered);
   };
+
+
 
   // Limpiar
   const handleClear = () => {
@@ -83,6 +107,8 @@ const AverageTimeOrderPage: React.FC = () => {
     setStartDateFilter("");
     setEndDateFilter("");
     setFilteredData(adaptedOrders);
+    setMinDurationFilter("");
+    setMaxDurationFilter("");
   };
 
   if (loading) {
@@ -111,6 +137,10 @@ const AverageTimeOrderPage: React.FC = () => {
           onEndDateChange={setEndDateFilter}
           onSearch={handleSearch}
           onClear={handleClear}
+          minDurationFilter={minDurationFilter}
+          maxDurationFilter={maxDurationFilter}
+          onMinDurationChange={setMinDurationFilter}
+          onMaxDurationChange={setMaxDurationFilter}
         />
         <AverageTimeOrderTable data={filteredData} loading={loading} />
 

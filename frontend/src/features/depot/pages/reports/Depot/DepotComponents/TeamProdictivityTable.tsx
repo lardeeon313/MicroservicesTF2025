@@ -21,20 +21,20 @@ const TeamProductivityTable: React.FC<Props> = ({ data }) => {
         <table className="min-w-full">
           <thead>
             <tr className="bg-red-500 text-white backdrop-opacity-90">
-              <th className="px-6 py-4 text-left text-sm font-medium uppercase tracking-wide">
-                ID Equipo
+              <th className="px-6 py-4 text-center text-sm font-medium uppercase tracking-wide">
+                N°Equipo
               </th>
-              <th className="px-6 py-4 text-left text-sm font-medium uppercase tracking-wide">
-                Nombre Equipo
+              <th className="px-6 py-4 text-center text-sm font-medium uppercase tracking-wide">
+                Nombre del Equipo
               </th>
-              <th className="px-6 py-4 text-right text-sm font-medium uppercase tracking-wide">
+              <th className="px-6 py-4 text-center text-sm font-medium uppercase tracking-wide">
                 Pedidos Completados
               </th>
-              <th className="px-6 py-4 text-right text-sm font-medium uppercase tracking-wide">
-                Faltantes
+              <th className="px-6 py-4 text-center text-sm font-medium uppercase tracking-wide">
+                Pedidos con Faltantes
               </th>
-              <th className="px-6 py-4 text-right text-sm font-medium uppercase tracking-wide">
-                Tiempo promedio (min)
+              <th className="px-6 py-4 text-center text-sm font-medium uppercase tracking-wide">
+                Tiempo promedio (hs)
               </th>
             </tr>
           </thead>
@@ -47,30 +47,32 @@ const TeamProductivityTable: React.FC<Props> = ({ data }) => {
                     index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
                   }`}
                 >
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
                     <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100 text-red-800 font-semibold text-sm">
                       {item.depotTeamId}
                     </span>
                   </td>
-                  <td className="px-6 py-4 font-medium text-gray-900">
+                  <td className="px-6 py-4 text-center font-medium text-gray-900">
                     {item.teamName}
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-6 py-4 text-center">
                     <span className="text-lg font-semibold text-gray-900">
                       {item.ordersHandled.toLocaleString()}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-6 py-4 text-center">
                     {item.missingItemsReported}
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    {item.averageProcessingTimeMinutes}
+                  <td className="px-6 py-4 text-center">
+                    <span className="font-semibold">
+                      {item.averageProcessingTimeMinutes} hs
+                    </span>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={3} className="px-6 py-12 text-center text-gray-500">
+                <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
                   <div>
                     <p className="text-lg font-medium mb-1">No hay datos disponibles</p>
                     <p className="text-sm">No se encontraron datos para el rango seleccionado</p>
@@ -85,6 +87,4 @@ const TeamProductivityTable: React.FC<Props> = ({ data }) => {
   );
 };
 
-export default TeamProductivityTable;
-
-
+export default TeamProductivityTable; 

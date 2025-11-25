@@ -97,12 +97,15 @@ const GraphCustomerReport: React.FC<Props> = ({ data }) => (
             cursor={{ fill: "rgba(239, 68, 68, 0.1)" }}
           />
 
+
           <Bar
             dataKey="orderCount"
             fill="url(#barGradient)"
             radius={[4, 4, 0, 0]}
             filter="url(#shadow)"
             className="hover:opacity-80 transition-opacity duration-200"
+            barSize={80}
+            maxBarSize={100}
           />
         </BarChart>
       </ResponsiveContainer>

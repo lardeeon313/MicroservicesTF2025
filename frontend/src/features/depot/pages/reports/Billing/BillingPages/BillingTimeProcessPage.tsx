@@ -54,35 +54,35 @@ const ProcessingTimeOrderPage: React.FC = () => {
           <div className="mt-12">
           {loading && <p className="text-gray-500">Cargando datos...</p>}
 
-{error && (
-  <EmptyState
-    icon={AlertTriangle}
-    title="Rango de fechas inválido"
-    description="Verifica que la fecha de inicio sea anterior a la fecha de fin para poder mostrar los resultados."
-    actionLabel="Corregir rango"
-    onAction={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-  />
-)}
+          {error && (
+            <EmptyState
+              icon={AlertTriangle}
+              title="Rango de fechas inválido"
+              description="Verifica que la fecha de inicio sea anterior a la fecha de fin para poder mostrar los resultados."
+              actionLabel="Corregir rango"
+              onAction={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            />
+          )}
 
-{!loading && !error && data.length > 0 && (
-  <>
-    <BillingTimeProcessTable data={data} />
-    <div className="mt-10">
-      <h2 className="text-xl font-semibold text-gray-700 mb-4">Visualización gráfica:</h2>
-      <GraphProcessingTimeProcess data={graphData} />
-    </div>
-  </>
-)}
+          {!loading && !error && data.length > 0 && (
+            <>
+              <BillingTimeProcessTable data={data} />
+              <div className="mt-10">
+                <h2 className="text-xl font-semibold text-gray-700 mb-4">Visualización gráfica:</h2>
+                <GraphProcessingTimeProcess data={graphData} />
+              </div>
+            </>
+          )}
 
-{!loading && !error && data.length === 0 && (
-  <EmptyState
-    icon={Search}
-    title="Sin resultados"
-    description="No se encontraron pedidos dentro del rango de fechas seleccionado. Prueba con un periodo diferente."
-    actionLabel="Reintentar con otros filtros"
-    onAction={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-  />
-)}
+          {!loading && !error && data.length === 0 && (
+            <EmptyState
+              icon={Search}
+              title="Sin resultados"
+              description="No se encontraron pedidos dentro del rango de fechas seleccionado. Prueba con un periodo diferente."
+              actionLabel="Reintentar con otros filtros"
+              onAction={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            />
+          )}
 
           </div>
           {!loading && totalPages > 1 && (
