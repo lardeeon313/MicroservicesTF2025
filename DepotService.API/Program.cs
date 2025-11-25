@@ -148,6 +148,8 @@ builder.Services.AddScoped<IInvoiceOrderCommandHandler, InvoiceOrderCommandHandl
 builder.Services.AddScoped<ISetItemUnitPricesCommandHandler, SetItemUnitPricesCommandHandler>();
 builder.Services.AddScoped<IUpdateInvoicedItemPriceCommandHandler, UpdateInvoicedItemPriceCommandHandler>();
 builder.Services.AddScoped<IExportInvoiceDocumentCommandHandler, ExportInvoiceDocumentCommandHandler>();
+builder.Services.AddScoped<IInvoicedOrdersReportPdfGenerator, InvoicedOrdersReportPdfGenerator>();
+builder.Services.AddScoped<IInvoicedOrdersByCustomerPdfGenerator, InvoicedOrdersByCustomerPdfGenerator>();
 
 
 // Add FluentValidation

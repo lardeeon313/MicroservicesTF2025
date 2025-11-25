@@ -74,7 +74,9 @@ namespace DepotService.Infraestructure.Persistence.Repositories
 
         public async Task<List<OrderStatusAverage>> GetAverageTimePerStatusAsync(DateTime? from, DateTime? to)
         {
-            var query = _context.OrderStatusHistories.AsQueryable();
+            var query = _context.OrderStatusHistories
+                .Include(h => h.DepotOrderEntity)
+                .AsQueryable();
 
             if (from.HasValue)
                 query = query.Where(h => h.ChangedAt >= from.Value);
@@ -83,9 +85,9 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 query = query.Where(h => h.ChangedAt <= to.Value);
 
             var histories = await query
-    .OrderBy(h => h.OrderId)
-    .ThenBy(h => h.ChangedAt)
-    .ToListAsync();
+                .OrderBy(h => h.OrderId)
+                .ThenBy(h => h.ChangedAt)
+                .ToListAsync();
 
             var result = new List<OrderStatusAverage>();
 
@@ -104,6 +106,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 {
                     Id = history.Id,
                     OrderId = history.OrderId,
+                    CustomerName = history.DepotOrderEntity.CustomerName,
                     OldStatus = history.OldStatus,
                     NewStatus = history.NewStatus,
                     ChangedAt = history.ChangedAt,
@@ -168,14 +171,14 @@ namespace DepotService.Infraestructure.Persistence.Repositories
 
             if (from.HasValue)
             {
-                _logger.LogInformation("Primer Filtro del FROM: {From}", from.Value);
+               
                 orders = orders.Where(o =>
                     o.OrderDate >= from.Value || (o.DeliveryDate.HasValue && o.DeliveryDate.Value >= from.Value));
             }
 
             if (to.HasValue)
             {
-                _logger.LogInformation("Segundo Filtro del TO: {To}", to.Value);
+                
                 orders = orders.Where(o =>
                     o.OrderDate <= to.Value || (o.DeliveryDate.HasValue && o.DeliveryDate.Value <= to.Value));
             }

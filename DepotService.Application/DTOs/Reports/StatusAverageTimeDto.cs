@@ -13,5 +13,6 @@ namespace DepotService.Application.DTOs.Reports
         public string Status { get; set; } = string.Empty;
         public DateTime ChangedAt { get; set; }
         public double AverageDuration { get; set; }
+        public string CustomerName { get; set; } = string.Empty;
     }
 }
