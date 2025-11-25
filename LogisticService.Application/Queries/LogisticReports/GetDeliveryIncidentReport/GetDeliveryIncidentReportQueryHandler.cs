@@ -1,5 +1,4 @@
-﻿
-using LogisticService.Application.DTOs;
+﻿using LogisticService.Application.DTOs;
 using LogisticService.Application.DTOs.LogisticReportDtos;
 using LogisticService.Application.Queries.LogisticReports.GetDeliveryIncidentReport;
 using LogisticService.Application.Services.IdentityServiceClient;

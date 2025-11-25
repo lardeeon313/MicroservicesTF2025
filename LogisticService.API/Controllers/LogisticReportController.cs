@@ -8,6 +8,7 @@ using LogisticService.Application.Queries.LogisticReports.GetDeliveryTimeReport;
 using LogisticService.Application.Queries.LogisticReports.GetOperatorProductivityReport;
 using LogisticService.Application.Queries.LogisticReports.GetOrdersByStatusReport;
 using LogisticService.Application.Queries.LogisticReports.GetOrderStatusHistoryReport;
+using LogisticService.Domain.Enums;
 using LogisticService.Application.Queries.LogisticReports.GetPendingCashVerificationReport;
 using LogisticService.Application.Queries.LogisticReports.GetZonePerformanceReport;
 using Microsoft.AspNetCore.Authorization;
@@ -58,7 +59,7 @@ namespace LogisticService.API.Controllers
             var result = await _getCustomersWithMostIncidentsReportQueryHandler.HandleAsync(query);
             return Ok(result);
         }
-        
+
         /// <summary>
         /// Incidencias en entrega
         /// </summary>
@@ -68,11 +69,22 @@ namespace LogisticService.API.Controllers
         [ProducesResponseType(typeof(PagedResult<DeliveryIncidentReportDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetDeliveryIncidentsReport([FromQuery] GetDeliveryIncidentReportRequest request)
         {
-            var query = new GetDeliveryIncidentReportQuery(request.StartDate, request.EndDate, request.OperatorId, request.DeliveryZoneId, request.DeliveryTeamId, request.PageNumber, request.PageSize);
+
+            var query = new GetDeliveryIncidentReportQuery(
+                request.StartDate,
+                request.EndDate,
+                request.OperatorId,
+                request.DeliveryZoneId,
+                request.DeliveryTeamId,
+                request.PageNumber,
+                request.PageSize
+            );
+
             var result = await _getDeliveryIncidentReportQueryHandler.HandleAsync(query);
             return Ok(result);
         }
-        
+
+
         /// <summary>
         /// Rechazos de entrega
         /// </summary>
@@ -143,6 +155,7 @@ namespace LogisticService.API.Controllers
             return Ok(result);
         }
 
+
         /// <summary>
         /// Flujo de estados (histórico)
         /// </summary>
@@ -156,7 +169,8 @@ namespace LogisticService.API.Controllers
             var result = await _getOrderStatusHistoryReportQueryHandler.HandleAsync(query);
             return Ok(result);
         }
-        
+
+
         /// <summary>
         /// Efectivo pendiente de verificación
         /// </summary>

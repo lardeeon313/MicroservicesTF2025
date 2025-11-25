@@ -55,7 +55,9 @@ namespace LogisticService.Application.Queries.LogisticReports.GetDeliveryTimeRep
                 {
                     o.AssignedOperatorId,
                     o.AssignedDeliveryZoneId,
-                    ZoneName = o.AssignedDeliveryZone?.Name
+                    ZoneName = o.AssignedDeliveryZone?.Name,
+                    TeamId = o.AssignedDeliveryTeamId,                // NUEVO
+                    TeamName = o.AssignedDeliveryTeam?.TeamName           // NUEVO
                 })
                 .Select(g =>
                 {
@@ -74,6 +76,8 @@ namespace LogisticService.Application.Queries.LogisticReports.GetDeliveryTimeRep
                         FullNameDeliveringOperator = fullName,
                         DeliveryZoneId = g.Key.AssignedDeliveryZoneId,
                         DeliveryZoneName = g.Key.ZoneName,
+                        TeamId = g.Key.TeamId,               // NUEVO
+                        TeamName = g.Key.TeamName,           // NUEVO
                         TotalDeliveredOrders = g.Count(),
                         AverageDeliveryTimeInHours = g.Average(o => (o.DeliveryDate!.Value - o.OrderDate).TotalHours),
                         MaxDeliveryTimeInHours = g.Max(o => (o.DeliveryDate!.Value - o.OrderDate).TotalHours),
