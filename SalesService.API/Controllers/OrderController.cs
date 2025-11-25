@@ -20,6 +20,7 @@ using SalesService.Application.Queries.Orders.GetByStatus;
 using SalesService.Application.Queries.Orders.GetPagedOrders;
 using SalesService.Application.Queries.Orders.GetSalesPerfomanceReport;
 using SalesService.Application.Validators.Order;
+using SalesService.Domain.Enums;
 
 namespace SalesService.API.Controllers
 {
@@ -254,10 +255,10 @@ namespace SalesService.API.Controllers
         /// <summary> Obtenemos los pedidos ordenados por creador (usuario) - perfomance</summary>
         [HttpGet("report/performance")]
         [ProducesResponseType(typeof(IEnumerable<SalesPerfomanceDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetSalesPerformanceReport([FromQuery] DateTime? from,
-                                                                   [FromQuery] DateTime? to)
+        public async Task<IActionResult> GetSalesPerformanceReport([FromQuery] DateTime? from,[FromQuery] DateTime? to,[FromQuery] SalesRangeReport range = SalesRangeReport.All)
         {
-            var query = new GetSalesPerformanceReportQuery(from, to);
+           
+            var query = new GetSalesPerformanceReportQuery(from, to, range);
 
             var result = await _getSalesPerfomanceReportQueryHandler.Handle(query);
             return Ok(result);
