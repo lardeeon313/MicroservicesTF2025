@@ -53,7 +53,7 @@ export default function OrderTable({
         <table className="w-full text-sm text-gray-800">
           <thead className="bg-gray-100 text-xs font-semibold uppercase tracking-wide text-gray-600">
             <tr>
-              <th className="px-4 py-3 text-left">ID</th>
+              <th className="px-4 py-3 text-left">Numero del Pedido</th>
               <th className="px-4 py-3 text-left">
                 <User className="inline w-4 h-4 mr-1" /> Cliente
               </th>

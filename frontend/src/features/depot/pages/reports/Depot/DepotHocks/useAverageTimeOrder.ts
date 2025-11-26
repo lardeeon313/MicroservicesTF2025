@@ -22,7 +22,7 @@ export const useAverageTimeOrder = (
         if (to && to.trim() !== "") params.to = to;
 
         const response = await API.get("/depot/depotreports/reports/average-time-per-status", { params });
-        console.log("📦 Respuesta cruda del back:", response.data)
+        
         const raw: any[] = response.data ?? [];
 
         // Normalizamos cada item al tipo ArmTime
@@ -55,7 +55,7 @@ export const useAverageTimeOrder = (
         setData(paginated);
         setTotalPages(Math.max(1, Math.ceil(normalized.length / pageSize)));
       } catch (err) {
-        console.error("❌ Error en fetchData:", err);
+        
         setError("Hubo un error al cargar los datos");
       } finally {
         setLoading(false);

@@ -1,17 +1,10 @@
 // dashboard de reportes de Billing:
 
-import { User, FileText, PieChart } from "lucide-react";
+import { User, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 import BackButton from "../../../components/BackButton";
 
 const BillingCards = [
-  {
-    title: "Tiempos de proceso de facturación",
-    description:
-      "Visualiza los tiempos que llevó la facturación de cada uno de los pedidos",
-    icon: <PieChart className="h-10 w-10 text-red-600" />,
-    link: "/depot/billingmanager/reports/billingTimeProcess",
-  },
   {
     title: "Ingresos por clientes",
     description:

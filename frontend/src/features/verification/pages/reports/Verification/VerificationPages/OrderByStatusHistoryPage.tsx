@@ -1,10 +1,9 @@
 import { useOrderStatusHistoryReport } from "../VerificationHocks/useOrderByStatusHistory";
 import { OrderStatusHistoryFiltersFilter } from "../VerificationFilters/FilterOrderByStatusHistory";
 import { OrderStatusHistoryTable } from "../VerificationComponents/OrderByStatusHistoryFolder/OrderByStatusHistoryReport";
-import { GraphOrderStatusHistory } from "../VerificationGraphs/GraphOrderByStatusHistory";
+
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
-import BackButton from "../../../../../../components/BackButton";
-import { OrderByStatusAssigmentReport } from "../VerificationComponents/OrderByStatusHistoryFolder/OrderByStatusAssigmentReport";
+import BackButton from "../../../../components/BackButton";
 
 export const OrderStatusHistoryReportPage = () => {
   const {
@@ -88,9 +87,8 @@ export const OrderStatusHistoryReportPage = () => {
               </button>
             </div>
 
-            {/* 🔹 Otros componentes visuales */}
-            <OrderByStatusAssigmentReport data={data} />
-            <GraphOrderStatusHistory data={data} />
+
+           
           </div>
         )}
       </div>

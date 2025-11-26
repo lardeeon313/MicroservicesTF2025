@@ -24,7 +24,7 @@ export const useZonePerformanceReport = () => {
           DeliveryTeamId: deliveryTeamId,
         },
       });
-      console.log("Datos Zone Perfomance" , response)
+      
       setData(response.data);
     } catch (err: any) {
       setError("Error al obtener el reporte de eficiencia por zona.");

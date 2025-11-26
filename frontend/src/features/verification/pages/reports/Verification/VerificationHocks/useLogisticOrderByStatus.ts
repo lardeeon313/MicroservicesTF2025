@@ -12,16 +12,14 @@ export const useOrdersByStatusReport = () => {
   try {
     setLoading(true);
     setError(null);
-    console.log("🔍 Filtros antes de enviar al backend:", JSON.stringify(filters, null, 2));
-
+    
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         params.append(key, String(value));
       }
     });
-    console.log("🔗 URL completa con parámetros:", `/logistic/LogisticReport/orders-by-status?${params.toString()}`);
-
+   
     const response = await API.get<OrdersByStatusDtoReport[]>(
       "/logistic/LogisticReport/orders-by-status",
       { params: filters } // filters ya incluye paymentType (camelCase)

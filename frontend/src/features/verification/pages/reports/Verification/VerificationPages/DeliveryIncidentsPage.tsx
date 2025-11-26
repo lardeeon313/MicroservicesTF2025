@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { useDeliveryIncidentsReport } from "../VerificationHocks/useDeliveryIncidentsReport";
 import { DeliveryIncidentsFilter } from "../VerificationFilters/FilterDeliveryIncidents";
 import { DeliveryIncidentsTable } from "../VerificationComponents/DeliveryIncidents/DeliveryIncidentsReport";
-import { GraphDeliveryIncidents } from "../VerificationGraphs/GraphDeliveryIncidentsReport";
+
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../../../components/BackButton";
-import { DeliveryIncidentsTeamTable } from "../VerificationComponents/DeliveryIncidents/DeliveryIncidentesTeamReport";
+//import { DeliveryIncidentsTeamTable } from "../VerificationComponents/DeliveryIncidents/DeliveryIncidentesTeamReport";
 
 export const DeliveryIncidentsPage: React.FC = () => {
   const [tempFilters, setTempFilters] = useState({});
@@ -62,8 +62,8 @@ export const DeliveryIncidentsPage: React.FC = () => {
           <>
             <div className="space-y-12 mt-8">
               <DeliveryIncidentsTable data={data} />
-              <DeliveryIncidentsTeamTable data={data} />
-              <GraphDeliveryIncidents data={data} />
+              
+              
             </div>
 
             {/* 📄 Paginación */}

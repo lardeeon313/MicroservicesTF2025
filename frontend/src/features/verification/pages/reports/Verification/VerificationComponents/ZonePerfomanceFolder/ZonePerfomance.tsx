@@ -35,13 +35,13 @@ export const ZonePerformanceTable: React.FC<Props> = ({ data }) => {
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">ID Zona</th>
+            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Numero de Zona</th>
             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Zona</th>
             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Órdenes Totales</th>
             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Entregadas</th>
-            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Tasa Éxito (%)</th>
+            
             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Incidentes</th>
-            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Rechazos</th>
+            
           </tr>
         </thead>
 
@@ -52,9 +52,9 @@ export const ZonePerformanceTable: React.FC<Props> = ({ data }) => {
               <td className="px-6 py-4 text-sm text-gray-900">{zone.deliveryZoneName || "Sin nombre"}</td>
               <td className="px-6 py-4 text-sm text-gray-900">{zone.totalOrders}</td>
               <td className="px-6 py-4 text-sm text-gray-900">{zone.deliveredOrders}</td>
-              <td className="px-6 py-4 text-sm text-gray-900">{zone.deliverySuccessRatePercent}%</td>
+              
               <td className="px-6 py-4 text-sm text-gray-900">{zone.incidentsCount}</td>
-              <td className="px-6 py-4 text-sm text-gray-900">{zone.rejectionsCount}</td>
+              
             </tr>
           ))}
         </tbody>

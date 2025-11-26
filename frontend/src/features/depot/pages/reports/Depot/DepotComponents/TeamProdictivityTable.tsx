@@ -5,6 +5,8 @@ type Props = {
     depotTeamId: number;
     teamName: string;
     ordersHandled: number;
+    missingItemsReported: number;
+    averageProcessingTimeMinutes: number;
   }[];
 };
 
@@ -27,6 +29,12 @@ const TeamProductivityTable: React.FC<Props> = ({ data }) => {
               </th>
               <th className="px-6 py-4 text-right text-sm font-medium uppercase tracking-wide">
                 Pedidos Completados
+              </th>
+              <th className="px-6 py-4 text-right text-sm font-medium uppercase tracking-wide">
+                Faltantes
+              </th>
+              <th className="px-6 py-4 text-right text-sm font-medium uppercase tracking-wide">
+                Tiempo promedio (min)
               </th>
             </tr>
           </thead>
@@ -51,6 +59,12 @@ const TeamProductivityTable: React.FC<Props> = ({ data }) => {
                     <span className="text-lg font-semibold text-gray-900">
                       {item.ordersHandled.toLocaleString()}
                     </span>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    {item.missingItemsReported}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    {item.averageProcessingTimeMinutes}
                   </td>
                 </tr>
               ))

@@ -2,11 +2,9 @@ import React, { useEffect } from "react";
 import { useZonePerformanceReport } from "../VerificationHocks/useZonePerfomance";
 import { FilterZonePerformance } from "../VerificationFilters/FilterZonePerfomance";
 import { ZonePerformanceTable } from "../VerificationComponents/ZonePerfomanceFolder/ZonePerfomance";
-import { GraphZonePerformance } from "../VerificationGraphs/GraphZonePerfomance";
-import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 
-import { ZonePerfomanceTeamTable } from "../VerificationComponents/ZonePerfomanceFolder/ZonePerfomanceTeamTable";
-import BackButton from "../../../../../../components/BackButton";
+import LoadingSpinner from "../../../../../../components/LoadingSpinner";
+import BackButton from "../../../../components/BackButton";
 
 export const ZonePerformanceReportPage: React.FC = () => {
   const { data, loading, error, fetchReport } = useZonePerformanceReport();
@@ -60,8 +58,7 @@ export const ZonePerformanceReportPage: React.FC = () => {
       {!loading && (
         <div className="space-y-12 mt-8">
           <ZonePerformanceTable data={data} />
-          <ZonePerfomanceTeamTable data={data} />
-          <GraphZonePerformance data={data} />
+
         </div>
       )}
     </div>

@@ -22,10 +22,7 @@ export const DeliveryIncidentsTable: React.FC<Props> = ({ data }) => {
       </div>
     );
   }
-
-  const total = data.length;
-  const resolved = data.filter((x) => x.resolved).length;
-  const unresolved = total - resolved;
+  
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -37,9 +34,6 @@ export const DeliveryIncidentsTable: React.FC<Props> = ({ data }) => {
             </div>
             <div>
               <h2 className="text-lg font-semibold text-gray-900">Reporte de Incidentes</h2>
-              <p className="text-sm text-gray-600">
-                {total} total • {resolved} resueltos • {unresolved} pendientes
-              </p>
             </div>
           </div>
         </div>
@@ -49,14 +43,15 @@ export const DeliveryIncidentsTable: React.FC<Props> = ({ data }) => {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Pedido ID</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Numero del pedido</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Cliente</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Incidente</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Descripción del incidente</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Reportado</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Resuelto</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Fecha del reporte</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Fecha de resolucion</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Nota de resolucion</th>
               <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Estado</th>
+              <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Repartidor</th>
             </tr>
           </thead>
 
@@ -76,6 +71,9 @@ export const DeliveryIncidentsTable: React.FC<Props> = ({ data }) => {
                 <td className="px-6 py-4 text-sm text-gray-700">{item.resolutionNote || "—"}</td>
                 <td className="px-6 py-4 text-center">
                   {item.resolved ? "✅" : "❌"}
+                </td>
+                <td className="px-6 py-4 text-center">
+                  {item.fullNameReportedByOperator}
                 </td>
               </tr>
             ))}

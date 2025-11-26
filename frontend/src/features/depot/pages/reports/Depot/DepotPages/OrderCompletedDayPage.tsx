@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useOrderCompletedDay } from "../DepotHocks/useOrderCompletedDay";
 import OrderCompletedDayTable from "../DepotComponents/OrderCompletedDayTable";
-import GraphOrderCompletedDay from "../DepotGraph/GraphOrderCompletedDay";
+
 import OrderCompletedDayFilter from "../DepotFilters/OrderCompletedDayFilter";
 import BackButton from "../../../../../../components/BackButton";
 import Pagination from "../../../../depotmanager/components/Pagination";
@@ -67,10 +67,10 @@ export default function OrderCompletedDayPage() {
         <div>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-              Pedidos Completados
+              Pedidos Armados
             </h1>
             <p className="text-center text-lg text-gray-700 mb-12">
-              Aquí podrás gestionar todos los pedidos que hayan sido completados de los distintos clientes
+              Aquí podrás gestionar todos los pedidos que hayan sido armados de los distintos clientes
             </p>
           </div>
 
@@ -111,8 +111,7 @@ export default function OrderCompletedDayPage() {
             />
           </div>
 
-          {/* Gráfico */}
-          <GraphOrderCompletedDay data={filteredData} />
+
         </div>
       </div>
     </div>

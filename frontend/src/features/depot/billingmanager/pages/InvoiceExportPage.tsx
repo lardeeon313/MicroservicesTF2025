@@ -57,7 +57,7 @@ const InvoicedOrdersPage = () => {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <StatCard title="Total Facturas" value={orders.length} icon={File} color="blue" />
+            <StatCard title="Cantidad total de pedidos facturados" value={orders.length} icon={File} color="blue" />
             <StatCard 
               title="Monto Total" 
               value={`$${orders.reduce((sum, order) => sum + order.totalAmount, 0).toLocaleString()}`} 
@@ -76,7 +76,7 @@ const InvoicedOrdersPage = () => {
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-200">
               <h2 className="text-lg font-semibold text-slate-800">
-                Lista de Facturas
+                Lista de pedidos facturados
               </h2>
             </div>
 
@@ -100,7 +100,7 @@ const InvoicedOrdersPage = () => {
                   <thead className="bg-slate-50 ">
                     <tr>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                        ID Factura
+                        Numero de pedido
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
                         Cliente
@@ -149,7 +149,7 @@ const InvoicedOrdersPage = () => {
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-6 py-4 whitespace-nowrap max-w-[260px] overflow-hidden text-ellipsis">
                           <div className="text-sm text-slate-900">
                             {order.address
                               ? `${order.address.street} ${order.address.number},${order.address.apartment}, ${order.address.city}, ${order.address.province},${order.address.country}`

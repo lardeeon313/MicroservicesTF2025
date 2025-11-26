@@ -3,12 +3,11 @@ import React, { useState } from "react";
 import { useDeliveryRejections } from "../VerificationHocks/useDeliveryRejectionsReport";
 import DeliveryRejectionsFilter from "../VerificationFilters/FilterDeliveryRejections";
 import DeliveryRejectionsTable from "../VerificationComponents/DeliveryRejections/DeliveryRejectionsReport";
-import GraphDeliveryRejectionsReport from "../VerificationGraphs/GraphDeliveryRejectionsReport";
+
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../../../components/BackButton";
 import { RejectionReportFilters } from "../../../../types/FilterReports/FilterReportsEntity";
-import DeliveryRejectionsTeamReport from "../VerificationComponents/DeliveryRejections/DeliveryRejectionsTeamReport";
-import DeliveryRejectionsZoneReport from "../VerificationComponents/DeliveryRejections/DeliveryRejectionsZoneReport";
+
 
 export const DeliveryRejectionsPage: React.FC = () => {
   const [appliedFilters, setAppliedFilters] = useState<RejectionReportFilters>({});
@@ -42,10 +41,10 @@ export const DeliveryRejectionsPage: React.FC = () => {
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
         <BackButton to="/verification/reports" />
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-          Reporte de rechazos de entrega
+          Asignaciones canceladas
         </h1>
         <p className="text-center text-lg text-gray-700 mb-12">
-          Visualiza rechazos registrados, filtra y analiza los resultados.
+          Visualiza todas las asignaciones canceladas por los repartidores, filtra y analiza los resultados.
         </p>
       </div>
 
@@ -81,9 +80,8 @@ export const DeliveryRejectionsPage: React.FC = () => {
               </button>
             </div>
 
-            <DeliveryRejectionsTeamReport data={data} />
-            <DeliveryRejectionsZoneReport data={data} />
-            <GraphDeliveryRejectionsReport data={data} />
+
+           
           </div>
         )}
       </div>

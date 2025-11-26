@@ -62,7 +62,7 @@ import PendingOrdersVerificationDetailsPage from "../features/verification/pages
 import OrdersInRoutePage from "../features/verification/pages/OrdersInRoutePage";
 import OrdersInRouteDetailsPage from "../features/verification/pages/OrdersInRouteDetailsPage";
 import { DashboardLogisticReportsPage } from "../features/verification/pages/reports/DashboardLogisticReportsPage";
-import { CustomersWithIncidentsPage } from "../features/verification/pages/reports/Verification/VerificationPages/CustomersWithIncidentsPage";
+
 import { DeliveryIncidentsPage } from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryIncidentsPage";
 import DeliveryRejectionsPage from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryRejectionsPage";
 import { OrdersByStatusReportPage } from "../features/verification/pages/reports/Verification/VerificationPages/OrderByStatusPage";
@@ -194,7 +194,7 @@ const AppRouter = () => {
             <Route path="orders-in-route/:id" element={<OrdersInRouteDetailsPage/> } />
             {/**reportes sector logistica*/}
             <Route path="reports" element={<DashboardLogisticReportsPage/>} />
-            <Route path="reports/CustomersIncidents" element={<CustomersWithIncidentsPage/>} />
+            
             <Route path="reports/OrderIncidents" element={<DeliveryIncidentsPage/>} />
             <Route path="reports/RejectOrders" element={<DeliveryRejectionsPage />} />
             <Route path="reports/OrderStatus" element={<OrdersByStatusReportPage/>} />

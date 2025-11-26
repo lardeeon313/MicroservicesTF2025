@@ -2,8 +2,12 @@ import { useState, useEffect } from "react";
 import API from "../../../../../../api/axios";
 import { OrderStatusHistoryFilter } from "../../../../types/FilterReports/FilterReportsEntity";
 import { OrderStatusHistoryReport } from "../../../../types/Report";
-import { OrderStatusLabelsReport, EnglishToSpanishStatusMap } from "../../../../types/Report";
+import { EnglishToSpanishStatusMap } from "../../../../types/Report";
 import { PagedResponse } from "../../../../types/Report";
+
+//OrderStatusLabelsReport
+//OrderStatusBackendLogisticMap
+import { OrderStatusBackendLogisticMap } from "../../../../types/Report";
 
 export const useOrderStatusHistoryReport = () => {
   const [filters, setFilters] = useState<OrderStatusHistoryFilter>({});
@@ -17,20 +21,20 @@ export const useOrderStatusHistoryReport = () => {
   const [loading, setLoading] = useState(false);
 
   // ✅ Traductor de número a string de estado
-  const statusNumberToString = (statusNumber: number | undefined): string | undefined => {
+  /*const statusNumberToString = (statusNumber: number | undefined): string | undefined => {
     if (statusNumber === undefined) return undefined;
     return Object.entries(OrderStatusLabelsReport).find(
       ([key]) => Number(key) === statusNumber
     )?.[1];
-  };
+  };*/
 
   const fetchData = async (pageNumber?: number) => {
     try {
       setLoading(true);
 
       // 🔹 Convertimos los status numéricos a string antes de enviar al backend
-      const oldStatusString = statusNumberToString(filters.oldStatus);
-      const newStatusString = statusNumberToString(filters.newStatus);
+      const oldStatusString = filters.oldStatus !== undefined ? OrderStatusBackendLogisticMap[filters.oldStatus] : undefined;
+      const newStatusString = filters.newStatus !== undefined ? OrderStatusBackendLogisticMap[filters.newStatus] : undefined;
 
       const params = {
         ...filters,
@@ -40,14 +44,11 @@ export const useOrderStatusHistoryReport = () => {
         pageSize: pagination.pageSize,
       };
 
-      console.log("📤 Filtros antes de enviar:", params);
-
       const response = await API.get<PagedResponse<OrderStatusHistoryReport>>(
         "/logistic/LogisticReport/order-status-history",
         { params }
       );
 
-      console.log("🔍 Respuesta completa del backend:", response.data);
 
       // 🔹 Mapeamos los estados a español para mostrar en la tabla
       const mappedData = response.data.items.map((item) => ({
@@ -64,8 +65,7 @@ export const useOrderStatusHistoryReport = () => {
         totalPages: response.data.totalPages,
       });
 
-      console.log("✅ Datos mapeados (primeros 3):", mappedData.slice(0, 3));
-      console.log("✅ Total registros:", response.data.totalCount);
+
 
     } catch (error: any) {
       console.error("❌ Error al obtener el historial de estados:", error);

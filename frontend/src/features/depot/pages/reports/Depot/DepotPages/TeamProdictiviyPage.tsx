@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import TeamProductivityTable from "../DepotComponents/TeamProdictivityTable";
-import TeamProdictivityGraph from "../DepotGraph/GraphTeamProdictivity";
+
 import { useTeamProductivity } from "../DepotHocks/useTeamProdictivity";
 import TeamProductivityDateFilter from "../DepotFilters/TeamProdictivityFilter";
 import BackButton from "../../../../../../components/BackButton";
@@ -16,12 +16,12 @@ type DepotTeamPerformance = {
 };
 
 // 🔹 Tipo que necesita el gráfico y la tabla
-type ProductivityProps = {
+/*type ProductivityProps = {
   teamID: number;
   completedOrders: number;
   missingItemsReported: number;
   averageProcessingTimeMinutes: number;
-};
+};*/
 
 const TeamProductivityPage: React.FC = () => {
   const today = new Date().toISOString().split("T")[0];
@@ -31,14 +31,23 @@ const TeamProductivityPage: React.FC = () => {
   const { data = [], loading, error } = useTeamProductivity(from, to);
 
   // Adaptamos los nombres a los que realmente devuelve el back
-  const GraphData: ProductivityProps[] = (data as DepotTeamPerformance[]).map(
+  //Utilizarlo para el adminservice
+  /*const GraphData: ProductivityProps[] = (data as DepotTeamPerformance[]).map(
     (item) => ({
       teamID: item.depotTeamId,
       completedOrders: item.ordersHandled,
       missingItemsReported: item.missingItemsReported,
       averageProcessingTimeMinutes: item.averageProcessingTimeMinutes,
     })
-  );
+  );*/
+
+  const tableData = (data as DepotTeamPerformance[]).map((item) => ({
+  depotTeamId: item.depotTeamId,
+  teamName: item.teamName ?? "Equipo sin nombre",
+  ordersHandled: item.ordersHandled,
+  missingItemsReported: item.missingItemsReported,
+  averageProcessingTimeMinutes: item.averageProcessingTimeMinutes,
+}));
 
   if (loading) {
     return (
@@ -74,8 +83,8 @@ const TeamProductivityPage: React.FC = () => {
             <p className="text-red-600 text-center">{error}</p>
           ) : (
             <>
-              <TeamProductivityTable data={data} />
-              <TeamProdictivityGraph data={GraphData} />
+              <TeamProductivityTable data={tableData} />
+              
             </>
           )}
       </div>

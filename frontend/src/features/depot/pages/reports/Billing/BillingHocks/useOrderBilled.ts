@@ -29,10 +29,10 @@ export function useInvoicedOrdersByCustomer() {
         `/depot/billingmanager/invoiced-orders-by-customer?${params.toString()}`
       );
 
-      console.log("✅ Datos recibidos del back:", res.data);
+      
       setData(res.data);
     } catch (err: any) {
-      console.error("🔥 Error en fetchOrders:", err);
+      
       setError(err.message || "Error al obtener órdenes facturadas.");
       setData([]);
     } finally {

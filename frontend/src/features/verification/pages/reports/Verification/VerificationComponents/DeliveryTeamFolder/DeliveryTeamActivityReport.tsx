@@ -28,7 +28,7 @@ const DeliveryTeamActivityTable: React.FC<{ data: TeamActivityReport[] }> = ({ d
                 <thead className="bg-gray-50">
                     <tr>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                            ID
+                            Numero
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             Equipo
@@ -43,7 +43,13 @@ const DeliveryTeamActivityTable: React.FC<{ data: TeamActivityReport[] }> = ({ d
                             Incidencias
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                            Rechazos
+                            Asignaciones canceladas
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            En camino
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                            Pendiente de pago en efectivo
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                             Prom. Tiempo (hs)
@@ -75,6 +81,12 @@ const DeliveryTeamActivityTable: React.FC<{ data: TeamActivityReport[] }> = ({ d
                         </td>
                         <td className="px-6 py-4 text-sm font-medium text-gray-900">
                             {team.rejectionsCount}
+                        </td>
+                        <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                            {team.onTheWayOrders}
+                        </td>
+                        <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                            {team.pendingCashVerificationOrders}
                         </td>
                         <td className="px-6 py-4 text-sm font-medium text-gray-900">
                             {team.averageDeliveryTimeHours}

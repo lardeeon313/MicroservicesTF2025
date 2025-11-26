@@ -46,7 +46,7 @@ const GraphOrderByClient: React.FC<DataProps> = ({ data }) => {
       {/* Header con gradiente */}
       <div className="mb-6">
         <h3 className="text-2xl font-bold bg-gradient-to-r from-red-500 via-red-800 to-red-600 bg-clip-text text-transparent mb-2">
-          Pedidos Completados por Cliente
+          Pedidos armados por Cliente
         </h3>
         <div className="h-1 w-16 bg-gradient-to-r from-red-500 to-red-800 rounded-full"></div>
       </div>

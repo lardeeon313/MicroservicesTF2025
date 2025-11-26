@@ -29,7 +29,7 @@ export const useDeliveryIncidentsReport = (filters: DeliveryIncidentFilters) => 
           { params }
         );
 
-        console.log("📦 DELIVERY INCIDENTS:", response.data);
+        
 
         setData(response.data.items || []);
         setTotalCount(response.data.totalCount);

@@ -32,7 +32,7 @@ export const OperatorProductivityTable: React.FC<Props> = ({ data }) => {
       <table className="w-full border-collapse text-left">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Operador</th>
+            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Repartidor</th>
             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Total de pedidos</th>
             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Entregados</th>
             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Rechazados</th>

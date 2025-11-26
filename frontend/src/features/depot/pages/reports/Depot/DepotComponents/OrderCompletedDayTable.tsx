@@ -25,8 +25,8 @@ export default function OrderCompletedDayTable({ data }: Props) {
         <table className="min-w-full">
           <thead>
             <tr className="bg-gradient-to-r from-red-400 to-red-600 text-white">
-              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">ID Pedido</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Sales Order</th>
+              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Numero de pedido</th>
+
               <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Cliente</th>
               <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Email</th>
               <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Fecha Pedido</th>
@@ -42,7 +42,7 @@ export default function OrderCompletedDayTable({ data }: Props) {
                 } hover:bg-blue-50 transition-all duration-200 hover:shadow-sm group`}
               >
                 <td className="px-6 py-4 whitespace-nowrap">{order.depotOrderId}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{order.salesOrderId}</td>
+                
                 <td className="px-6 py-4">{order.customerName}</td>
                 <td className="px-6 py-4">{order.customerEmail}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{formatDate(order.orderDate)}</td>

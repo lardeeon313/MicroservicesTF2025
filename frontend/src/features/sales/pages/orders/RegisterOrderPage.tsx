@@ -69,20 +69,38 @@ export default function RegisterOrderPage() {
 
   const handleRegisterOrder = async (values: RegisterOrderRequest) => {
   setIsSubmitting(true);
+
   try {
-    // No modifiques el objeto values directamente, envíalo tal como está
     const orderToSend = {
       ...values,
       createdByUserId: userId!,
-      deliveryAddress: values.deliveryAddressId ? undefined : values.deliveryAddress,
-      paymentType: values.paymentType ?? undefined
     };
-    console.log("Datos enviados al backend:", orderToSend);
+
     const response = await registerOrder(orderToSend);
+
     console.log("Respuesta del backend:", response);
-    toast.success("Orden registrada con éxito!");
-    navigate("/sales/orders");
-  } catch (error) {
+
+    // Si el backend respondió 200-299 ⇒ ÉXITO REAL
+    if (response.ok === true) {
+      toast.success("Orden registrada con éxito!");
+      navigate("/sales/orders");
+      return;
+    }
+
+    // Si vino ok === false ⇒ cayó en reject
+    throw response;
+
+  } catch (error: any) {
+
+    console.log("ERROR CAPTURADO:", error);
+
+    // Si el backend devolvió error pero igual registró la orden
+    if (error?.status >= 200 && error?.status < 300) {
+      // No mostrar error
+      return;
+    }
+
+    // Caso error real
     handleFormikError({
       error,
       customMessages: {
@@ -91,10 +109,15 @@ export default function RegisterOrderPage() {
         500: "Error interno del servidor.",
       },
     });
-  } finally {
+  }
+
+  finally {
     setIsSubmitting(false);
   }
 };
+
+
+
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">

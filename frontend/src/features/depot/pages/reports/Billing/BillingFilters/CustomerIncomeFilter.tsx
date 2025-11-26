@@ -41,7 +41,7 @@ const CustomerIncomeFilter: React.FC<Props> = ({
 
         {/* Fecha (única) */}
         <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-600 mb-1">Fecha:</label>
+          <label className="text-sm font-medium text-gray-600 mb-1">Buscar por fecha de factura:</label>
           <input
             type="date"
             value={filters.date} // siempre en YYYY-MM-DD
