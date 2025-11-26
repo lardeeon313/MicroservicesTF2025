@@ -15,6 +15,8 @@ namespace LogisticService.Application.DTOs.LogisticReportDtos
         public int DeliveredOrders { get; set; }
         public int IncidentsCount { get; set; }
         public int RejectionsCount { get; set; }
+        public int OnTheWayOrders { get; set; }
+        public int PendingCashVerificationOrders { get; set; }
 
         public double AverageDeliveryTimeHours { get; set; }
         public double IncidentRatePercent { get; set; }

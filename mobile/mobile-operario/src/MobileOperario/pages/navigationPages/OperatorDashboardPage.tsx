@@ -3,7 +3,6 @@ import { View } from "react-native";
 import NavbarOperator from "../../components/Navbar/NavbarOperator";
 import OperatorDashboardComponent from "../../navigation/OperatorDashboard";
 import { useAuth } from "../../Login/context/useAuth";
-import GetBack from "../../../components/GetBack";
 import Footer from "../../../components/Footer";
 
 const OperatorDashboardPage = () => {

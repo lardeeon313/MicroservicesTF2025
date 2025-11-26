@@ -13,6 +13,8 @@ namespace LogisticService.Domain.ValueObjects
 
         public int TotalOrders { get; set; }
         public int DeliveredOrders { get; set; }
+        public int OnTheWayOrders { get; set; }
+        public int PendingCashVerificationOrders { get; set; }
         public int IncidentsCount { get; set; }
         public int RejectionsCount { get; set; }
 

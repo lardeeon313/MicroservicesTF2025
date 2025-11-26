@@ -36,6 +36,8 @@ namespace LogisticService.Application.Queries.LogisticReports.GetDeliveryTeamAct
                 TeamName = r.TeamName,
                 TotalOrders = r.TotalOrders,
                 DeliveredOrders = r.DeliveredOrders,
+                OnTheWayOrders = r.OnTheWayOrders,
+                PendingCashVerificationOrders  = r.PendingCashVerificationOrders,
                 IncidentsCount = r.IncidentsCount,
                 RejectionsCount = r.RejectionsCount,
                 AverageDeliveryTimeHours = r.AverageDeliveryTimeHours,

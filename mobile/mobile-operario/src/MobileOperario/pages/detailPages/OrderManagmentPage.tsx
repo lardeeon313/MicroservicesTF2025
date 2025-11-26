@@ -9,7 +9,7 @@ import { handleRejectOrderWithReason } from "../../components/additional/AlertWi
 
 const ListOfConfirmedOrders: number[] = [101, 102, 103];
 
-export function useOrderManagment(initialOrder: DepotOrderDTO, operatorID:string) {
+export function useOrderManagment(initialOrder: DepotOrderDTO, operatorID:string,navigation: any) {
     const [order,setOrder] = useState<DepotOrderDTO>(initialOrder);
     const [showMeRejectModal,setShowMeRejectModal] = useState(false);
 
@@ -41,6 +41,8 @@ export function useOrderManagment(initialOrder: DepotOrderDTO, operatorID:string
             const response = await ConfirmedOrder(UpdatedOrder.depotOrderId, operatorID);
 
             console.log("Respuesta que se obtuvo del backend: ", response);
+
+            navigation.navigate("OperatorDashboard");
         } catch(error) {
             throw error;
         };
