@@ -74,6 +74,7 @@ import { OperatorProductivityPage } from "../features/verification/pages/reports
 import { DeliveryTimesReportPage } from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryTimesPage";
 //import DeliveryTimesReportPage from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryTimesPage";
 import { ZonePerformanceReportPage } from "../features/verification/pages/reports/Verification/VerificationPages/ZonePerfomancePage";
+
 import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
 import CreatePasswordPage from "../features/auth/pages/CreatePasswordPage";
 import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
@@ -82,6 +83,13 @@ import ProcessingTimePage from "../features/depot/pages/reports/Depot/DepotPages
 import { CompletedOrdersReportPage } from "../features/depot/pages/reports/Depot/DepotPages/OrderCompletedDayPage";
 //DepotTeamPerformancePage
 import { DepotTeamPerformancePage } from "../features/depot/pages/reports/Depot/DepotPages/TeamProdictiviyPage";
+
+import AdminDashboardPage from "../features/admin/pages/AdminDashboard";
+import EmployeesPage from "../features/admin/pages/EmployeesPage";
+import RegisterEmployeesPage from "../features/admin/pages/RegisterEmployeesPage";
+import EditEmployeesPage from "../features/admin/pages/EditEmployeesPage";
+import EmployeesDetailPage from "../features/admin/pages/EmployeesDetailPage";
+
 
 const AppRouter = () => {
   return (
@@ -219,10 +227,17 @@ const AppRouter = () => {
             path="/admin"
             element={
             <ProtectedRoute requiredRole="Admin">
-                <div>Bienvenido al panel de Administración</div>
-            </ProtectedRoute>
+                <Outlet />
+            </ProtectedRoute>   
             }
-        />
+        >
+            <Route index element={<AdminDashboardPage/>} /> 
+            <Route path="dashboard" element={<AdminDashboardPage/>} />
+            <Route path="employees" element={<EmployeesPage/>} />
+            <Route path="employees/register" element={<RegisterEmployeesPage/>} />
+            <Route path="employees/edit/:id" element={<EditEmployeesPage/>} />
+            <Route path="employees/view/:id" element={<EmployeesDetailPage/>} />
+        </Route>
       </Routes>
     
   );
