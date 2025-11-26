@@ -35,8 +35,9 @@ namespace IdentityService.Application.Commands.Register
                 Name = command.Name,
                 LastName = command.LastName,
                 Email = command.Email,
+                PhoneNumber = command.PhoneNumber,
                 HightDate = DateTime.UtcNow,
-                Employed_Status = EmployedStatus.Active
+                Employed_Status = EmployedStatus.Inactive
             };
 
             var result = await _userManager.CreateAsync(user, command.Password);
@@ -45,8 +46,7 @@ namespace IdentityService.Application.Commands.Register
                 var errorMessages = string.Join(" ", result.Errors.Select(e => e.Description));
                 return new CommandResult { Success = false, Message = $"Error al crear el usuario: {errorMessages}" };
             }
-
-            // Aplicamos logica para asignar el rol, que el usuario selecciono en el front. Temporalmente sera asi... hasta adminservice.
+            
             var selectedRole = command.Role;
             var validRoles = new[]
             {
@@ -71,6 +71,7 @@ namespace IdentityService.Application.Commands.Register
                 FirstName = user.Name,
                 LastName = user.LastName,
                 Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
                 Role = selectedRole
             };
 

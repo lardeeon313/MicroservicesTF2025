@@ -10,5 +10,6 @@ namespace IdentityService.Application.Services.Interfaces
     public interface ITokenService
     {
         Task<string> GenerateToken(ApplicationUser user);
+        Task<string> GenerateResetPasswordToken(ApplicationUser user);
     }
 }

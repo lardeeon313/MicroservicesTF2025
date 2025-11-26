@@ -107,7 +107,7 @@ const LoginForm = () => {
                     Contraseña
                   </label>
                   <div>
-                    <a href="" className=" text-red-700 text-sm/6 font-semibold hover:text-red-600">
+                    <a href="/forgot-password" className=" text-red-700 text-sm/6 font-semibold hover:text-red-600">
                       Olvide mi contraseña
                     </a>
                   </div>

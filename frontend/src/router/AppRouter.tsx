@@ -74,6 +74,9 @@ import { OperatorProductivityPage } from "../features/verification/pages/reports
 import { DeliveryTimesReportPage } from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryTimesPage";
 //import DeliveryTimesReportPage from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryTimesPage";
 import { ZonePerformanceReportPage } from "../features/verification/pages/reports/Verification/VerificationPages/ZonePerfomancePage";
+import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
+import CreatePasswordPage from "../features/auth/pages/CreatePasswordPage";
+import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
 
 import ProcessingTimePage from "../features/depot/pages/reports/Depot/DepotPages/AverageTimeOrderPage";
 import { CompletedOrdersReportPage } from "../features/depot/pages/reports/Depot/DepotPages/OrderCompletedDayPage";
@@ -89,7 +92,11 @@ const AppRouter = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/404notfound" element={<NotFoundPage />} />
-
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/create-password" element={<CreatePasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        
+        
         {/* Ventas */}
         <Route
             path="/sales"

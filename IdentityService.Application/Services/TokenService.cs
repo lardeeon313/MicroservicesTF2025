@@ -18,6 +18,33 @@ namespace IdentityService.Application.Services
         private readonly IConfiguration _config = config;
         private readonly UserManager<ApplicationUser> _userManager = userManager;
 
+        public Task<string> GenerateResetPasswordToken(ApplicationUser user)
+        {
+            var jwtKey = _config["Jwt:Key"];
+            var jwtIssuer = _config["Jwt:Issuer"];
+
+            var claims = new List<Claim>
+            {
+                new Claim("userId", user.Id),
+                new Claim("purpose", "reset_password")
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: jwtIssuer,
+                audience: null,
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(15),  // vida del token
+                signingCredentials: new SigningCredentials(
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey!)),
+                    SecurityAlgorithms.HmacSha256)
+            );
+
+
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return Task.FromResult(tokenString);
+        }
+
         public async Task<string> GenerateToken(ApplicationUser user)
         {
             var jwtKey = _config["Jwt:Key"];

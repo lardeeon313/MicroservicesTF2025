@@ -36,10 +36,9 @@ namespace IdentityService.Application.Commands.Login
                 Email = user.Email!,
                 UserName = user.UserName!,
                 Roles = roles,
-                Token = token
+                Token = token,
+                Employed_Status = user.Employed_Status
             }; 
-
-
         }
     }
 }
