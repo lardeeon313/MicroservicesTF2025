@@ -73,7 +73,7 @@ const FilterDeliveryTimes: React.FC<Props> = ({ initial, onApply }) => {
       {/* ID de Zona */}
       <div className="flex flex-col">
         <label className="text-sm font-medium text-gray-600 mb-1">
-          ID Zona
+          Numero de Zona
         </label>
         <input
           type="number"

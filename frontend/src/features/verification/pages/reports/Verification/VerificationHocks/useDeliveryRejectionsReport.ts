@@ -22,7 +22,7 @@ export const useDeliveryRejections = (filters: RejectionReportFilters & { pageNu
       Object.entries(params || {}).filter(([_, v]) => v !== undefined && v !== "")
     );
 
-    // 🔥 Normalizar nombres de parámetros al formato esperado por el backend (.NET PascalCase)
+    
     const apiParams: Record<string, any> = {
       StartDate: cleanParams.startDate,
       EndDate: cleanParams.endDate,
@@ -55,7 +55,7 @@ export const useDeliveryRejections = (filters: RejectionReportFilters & { pageNu
 
     setError(null);
   } catch (err: any) {
-    console.error("❌ Error en la solicitud:", err);
+    
     setError(err.message);
   } finally {
     setLoading(false);

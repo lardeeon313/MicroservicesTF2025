@@ -1,14 +1,12 @@
 import React from "react";
 import { OperatorProductivityReport } from "../../../../../types/Report";
-import { AlertTriangle } from "lucide-react";
-
+import { AlertTriangle , PersonStanding} from "lucide-react";
 
 interface Props {
   data: OperatorProductivityReport[];
 }
 
 export const OperatorProductivityTable: React.FC<Props> = ({ data }) => {
-
   if (!data || data.length === 0) {
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
@@ -29,6 +27,25 @@ export const OperatorProductivityTable: React.FC<Props> = ({ data }) => {
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+
+      {/* Encabezado superior bonito */}
+<div className="px-6 py-5 border-b bg-gray-50 flex items-center gap-3">
+  {/* Ícono decorativo */}
+  <div className="p-2 bg-blue-100 rounded-full">
+    <PersonStanding className="h-5 w-5 text-blue-600" />
+  </div>
+
+  <div className="flex flex-col">
+    <h2 className="text-lg font-semibold text-gray-800">
+      Reporte de Productividad por Repartidor
+    </h2>
+
+    <p className="text-sm text-gray-600">
+      Total de repartidores: <span className="font-semibold">{data.length}</span>
+    </p>
+  </div>
+</div>
+
       <table className="w-full border-collapse text-left">
         <thead className="bg-gray-50">
           <tr>
@@ -37,7 +54,7 @@ export const OperatorProductivityTable: React.FC<Props> = ({ data }) => {
             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Entregados</th>
             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Rechazados</th>
             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Pendientes</th>
-            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Cancelados</th>
+            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Asig.Canceladas</th>
             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Monto Recaudado</th>
           </tr>
         </thead>

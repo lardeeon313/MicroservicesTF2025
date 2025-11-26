@@ -6,6 +6,12 @@ interface Props {
   data: DeliveryIncidentReport[];
 }
 
+const incidentStatusToSpanish: Record<string, string> = {
+  Pending: "Pendiente",
+  Resolved: "Resuelto",
+  Delivered: "Entregado",
+};
+
 export const DeliveryIncidentsTable: React.FC<Props> = ({ data }) => {
   if (!data || data.length === 0) {
     return (
@@ -60,7 +66,9 @@ export const DeliveryIncidentsTable: React.FC<Props> = ({ data }) => {
               <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.logisticOrderId}</td>
                 <td className="px-6 py-4 text-sm text-gray-700">{item.customerName}</td>
-                <td className="px-6 py-4 text-sm text-gray-700">{item.incidentType}</td>
+                <td className="px-6 py-4 text-sm text-gray-700">
+                  {incidentStatusToSpanish[item.incidentType] ?? item.incidentType}
+                </td>
                 <td className="px-6 py-4 text-sm text-gray-700">{item.description}</td>
                 <td className="px-6 py-4 text-sm text-gray-700">
                   {new Date(item.reportedAt).toLocaleString()}
@@ -70,7 +78,7 @@ export const DeliveryIncidentsTable: React.FC<Props> = ({ data }) => {
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-700">{item.resolutionNote || "—"}</td>
                 <td className="px-6 py-4 text-center">
-                  {item.resolved ? "✅" : "❌"}
+                  {item.resolvedAt && item.resolutionNote?.trim() !== "" ? "✅" : "❌"}
                 </td>
                 <td className="px-6 py-4 text-center">
                   {item.fullNameReportedByOperator}

@@ -14,7 +14,7 @@ export type DepotOrderItem = {
 
 
 export type DepotOrderDtoBilling = {
-  orderId: string;
+  salesOrderId: string;
   customerName: string;
   totalAmount: number;
   orderDate: string;
@@ -44,10 +44,12 @@ export function useInvoicedOrdersByCustomer() {
       );
 
       
-      const mapped = res.data.map(order => ({
-        ...order,
-        productCount: order.items.reduce((acc, item) => acc + item.quantity, 0)
-      }));
+      const mapped = res.data
+        .map(order => ({
+          ...order,
+          productCount: order.items.reduce((acc, item) => acc + item.quantity, 0)
+        }))
+        .filter(order => order.totalAmount > 0);
 
       setData(mapped);
 

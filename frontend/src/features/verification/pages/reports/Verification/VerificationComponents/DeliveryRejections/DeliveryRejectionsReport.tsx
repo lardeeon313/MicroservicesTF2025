@@ -53,6 +53,9 @@ const DeliveryRejectionsTable: React.FC<Props> = ({ data }) => {
               Cliente
             </th>
             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              Numero del equipo 
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
               Nombre del equipo 
             </th>
             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -71,6 +74,7 @@ const DeliveryRejectionsTable: React.FC<Props> = ({ data }) => {
             <tr key={item.id} className="hover:bg-gray-50 transition-colors duration-200">
               <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.logisticOrderId}</td>
               <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.customerName}</td>
+              <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.deliveryTeamId}</td>
               <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.deliveryTeamName}</td>
               <td className="px-6 py-4 text-sm text-gray-900">
                 {new Date(item.rejectedAt).toLocaleString("es-AR")}

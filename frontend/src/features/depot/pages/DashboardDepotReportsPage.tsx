@@ -17,8 +17,8 @@ const cards = [
     link: "/depot/reports/dailyMissing",
   },
   {
-    title: "Pedidos completados por dia",
-    description: "Analiza la cantidad de pedidos que son completados al dia por los diferentes equipos.",
+    title: "Pedidos armados por dia",
+    description: "Analiza la cantidad de pedidos que son armados al dia por los diferentes equipos.",
     icon: <FilePlus2 className="h-10 w-10 text-red-600" />,
     link: "/depot/reports/orderCompletedDay",
   },

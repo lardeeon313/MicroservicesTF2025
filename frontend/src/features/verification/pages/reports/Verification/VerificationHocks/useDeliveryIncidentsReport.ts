@@ -17,6 +17,7 @@ export const useDeliveryIncidentsReport = (filters: DeliveryIncidentFilters) => 
     const fetchData = async () => {
       setIsLoading(true);
       setError(null);
+
       try {
         const params = {
           ...filters,
@@ -29,13 +30,11 @@ export const useDeliveryIncidentsReport = (filters: DeliveryIncidentFilters) => 
           { params }
         );
 
-        
-
         setData(response.data.items || []);
         setTotalCount(response.data.totalCount);
         setTotalPages(response.data.totalPages);
       } catch (err: any) {
-        console.error("❌ Error al obtener delivery incidents:", err);
+        
         setError("Error al obtener los reportes");
         setData([]);
       } finally {

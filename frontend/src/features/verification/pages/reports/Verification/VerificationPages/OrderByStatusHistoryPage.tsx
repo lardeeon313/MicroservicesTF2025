@@ -15,7 +15,7 @@ export const OrderStatusHistoryReportPage = () => {
     pagination,
   } = useOrderStatusHistoryReport();
 
-  // 🔁 Funciones para manejar cambio de página
+  
   const handleNextPage = () => {
     if (pagination.pageNumber < pagination.totalPages) {
       fetchData(pagination.pageNumber + 1);
@@ -28,7 +28,7 @@ export const OrderStatusHistoryReportPage = () => {
     }
   };
 
-  // Mostrar spinner mientras carga
+  
   if (loading) {
     return (
       <LoadingSpinner
@@ -40,7 +40,7 @@ export const OrderStatusHistoryReportPage = () => {
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
-      {/* 🔺 Encabezado */}
+      
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
         <BackButton to="/verification/reports" />
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
@@ -51,20 +51,20 @@ export const OrderStatusHistoryReportPage = () => {
         </p>
       </div>
 
-      {/* 🔹 Filtros */}
+      
       <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
         <OrderStatusHistoryFiltersFilter
           filters={filters}
           setFilters={setFilters}
-          onSearch={() => fetchData(1)} // Reiniciar en la página 1 al buscar
+          fetchData={fetchData} 
         />
 
-        {/* 🔸 Tabla, gráfico y paginación */}
+        
         {!loading && (
           <div className="space-y-12 mt-8">
             <OrderStatusHistoryTable data={data} />
 
-            {/* 🔸 Controles de paginación */}
+            
             <div className="flex justify-center items-center space-x-4">
               <button
                 onClick={handlePreviousPage}

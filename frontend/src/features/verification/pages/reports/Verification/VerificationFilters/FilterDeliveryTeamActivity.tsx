@@ -64,7 +64,7 @@ const DeliveryTeamActivityFilter: React.FC<Props> = ({ onFilter, onClear }) => {
       {/* ID de Equipo */}
       <div className="flex flex-col">
         <label className="text-sm font-medium text-gray-600 mb-1">
-          ID Equipo
+          Buscar por numero de equipo
         </label>
         <input
           type="number"

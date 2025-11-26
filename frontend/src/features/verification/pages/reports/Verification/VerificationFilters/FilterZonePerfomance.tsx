@@ -70,7 +70,7 @@ export const FilterZonePerformance: React.FC<Props> = ({
       
       <div className="flex flex-col">
         <label className="text-sm font-medium text-gray-600 mb-1">
-          Delivery Team ID
+          Buscar por numero de zona
         </label>
         <input
           type="number"

@@ -22,6 +22,9 @@ export const PendingCashVerificationPage: React.FC = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize] = useState(10);
 
+  // 🔹 NUEVO: mostrar/ocultar gráfico
+  const [showGraph, setShowGraph] = useState(true);
+
   const { data, isLoading, error } = usePendingCashVerificationReport(
     searchParams,
     pageNumber,
@@ -104,13 +107,26 @@ export const PendingCashVerificationPage: React.FC = () => {
           />
         </div>
 
-        {/* Tabla */}
         {!isLoading && data && (
           <div className="space-y-12 mt-8">
             <PendingCashVerificationTable data={data.items} />
-            <GraphPendingCashVerification data={data.items} />
 
-            {/* 🔹 Controles de paginación */}
+            {/* 🔘 BOTÓN MOSTRAR/OCULTAR GRÁFICO */}
+            <div className="flex justify-center mt-6 mb-4">
+              <button
+                onClick={() => setShowGraph((prev) => !prev)}
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+              >
+                {showGraph ? "Ocultar gráfico" : "Mostrar gráfico"}
+              </button>
+            </div>
+
+            {/* 📊 GRÁFICO CONDICIONAL */}
+            {showGraph && (
+              <GraphPendingCashVerification data={data.items} />
+            )}
+
+            {/* 🔹 PAGINACIÓN */}
             <div className="flex justify-center items-center gap-4 mt-6">
               <button
                 onClick={handlePrevPage}

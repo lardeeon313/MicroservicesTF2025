@@ -16,24 +16,69 @@ export default function InvoicedOrdersPage() {
   const [page, setPage] = useState<number>(1);
   const [pageSize] = useState<number>(10);
 
-  // Filtros
-  const [filters, setFilters] = useState({ customerName: "" });
+  // Estados de filtros locales
+  const [filters, setFilters] = useState({
+    customerName: "",
+    minAmount: undefined as number | undefined,
+    maxAmount: undefined as number | undefined,
+  });
 
-  const handleSearch = (newFilters: { customerName?: string }) => {
-    setFilters({ customerName: newFilters.customerName || "" });
-    fetchOrders(newFilters);
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
+
+  // Recibe filtros desde el componente visual
+  const handleSearch = (newFilters: {
+    customerName?: string;
+    fromDate?: string;
+    toDate?: string;
+    minAmount?: number;
+    maxAmount?: number;
+  }) => {
+    setFilters({
+      customerName: newFilters.customerName || "",
+      minAmount: newFilters.minAmount,
+      maxAmount: newFilters.maxAmount,
+    });
+
+    if (newFilters.fromDate !== undefined) setFromDate(newFilters.fromDate);
+    if (newFilters.toDate !== undefined) setToDate(newFilters.toDate);
+
+    fetchOrders({ customerName: newFilters.customerName });
+
     setPage(1);
   };
 
-  // Filtrado de datos en el cliente
-  const filteredData = data.filter((item) => {
-    if (filters.customerName.trim() === "") {
-      return true;
+  // 🔍 Filtrado en cliente
+  const filteredData = data.filter(item => {
+    let pass = true;
+
+    if (filters.customerName.trim() !== "") {
+      pass = item.customerName.toLowerCase().includes(filters.customerName.trim().toLowerCase());
     }
-    return item.customerName.toLowerCase().includes(filters.customerName.trim().toLowerCase());
+
+    if (pass && fromDate) {
+      pass = new Date(item.orderDate) >= new Date(fromDate);
+    }
+
+    if (pass && toDate) {
+      const endDate = new Date(toDate);
+      endDate.setDate(endDate.getDate() + 1);
+      pass = new Date(item.orderDate) < endDate;
+    }
+
+    // 💰 Filtro mínimo
+    if (pass && filters.minAmount !== undefined) {
+      pass = item.totalAmount >= filters.minAmount;
+    }
+
+    // 💰 Filtro máximo
+    if (pass && filters.maxAmount !== undefined) {
+      pass = item.totalAmount <= filters.maxAmount;
+    }
+
+    return pass;
   });
 
-  // Paginación de los datos filtrados
   const totalItems = filteredData.length;
   const totalPages = Math.ceil(totalItems / pageSize);
   const paginatedData = filteredData.slice(
@@ -41,46 +86,39 @@ export default function InvoicedOrdersPage() {
     page * pageSize
   );
 
-
-  
-
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
-        <BackButton to="/depot/billingmanager/reports"></BackButton>
-      
+        <BackButton to="/depot/billingmanager/reports" />
+
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-6">
           <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
             Pedidos facturados por cliente
           </h1>
+
           <p className="text-center text-lg text-gray-700 mb-12">
-            Aqui podras ver los pedidos facturados agrupados por cliente.
+            Aquí podrás ver los pedidos facturados agrupados por cliente.
           </p>
 
           <div className="flex flex-col md:flex-row mb-6 w-full justify-between gap-2">
-          {/* Filtro */}
-          <InvoicedOrdersFilter onSearch={handleSearch}/>
+            <InvoicedOrdersFilter onSearch={handleSearch} />
           </div>
-          
+
           <div className="mt-12">
-            {/* 1️⃣ Estado de carga */}
             {loading && <LoadingSpinner message="Cargando pedidos facturados..." height="h-32" />}
-            
-            {/* 2️⃣ Estado de error */}
+
             {error && (
               <EmptyState
                 icon={AlertCircle}
                 title="Ha habido un problema"
-                description="Se ha detectado un problema al cargar los pedidos facturados. Por favor, intenta nuevamente más tarde."
+                description="Se ha detectado un problema al cargar los pedidos facturados."
               />
             )}
 
-            {/* 3️⃣ Tabla + Gráfico + Paginación si hay datos */}
             {!loading && !error && filteredData.length > 0 && (
               <>
                 <InvoicedOrdersTable data={paginatedData} />
 
-                
                 {totalPages > 1 && (
                   <div className="flex justify-center mt-8">
                     <Pagination
@@ -95,12 +133,11 @@ export default function InvoicedOrdersPage() {
               </>
             )}
 
-            {/* 4️⃣ Estado de sin resultados */}
             {!loading && !error && filteredData.length === 0 && (
               <EmptyState
                 icon={Search}
                 title="Sin resultados"
-                description="No se encontraron pedidos para el cliente buscado. Intenta con un nombre diferente."
+                description="No se encontraron pedidos. Prueba con otro nombre, fecha o monto."
               />
             )}
           </div>

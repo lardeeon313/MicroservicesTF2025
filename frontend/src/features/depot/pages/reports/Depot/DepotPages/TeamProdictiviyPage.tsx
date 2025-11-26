@@ -27,8 +27,38 @@ const TeamProductivityPage: React.FC = () => {
   const today = new Date().toISOString().split("T")[0];
   const [from, setFrom] = useState<string>(today);
   const [to, setTo] = useState<string>(today);
+  const [filterType, setFilterType] = useState<"day"|"month"|"quincena"|"range">("range");
 
   const { data = [], loading, error } = useTeamProductivity(from, to);
+
+  const handleFilterTypeChange = (type: "day"|"month"|"quincena"|"range") => {
+    setFilterType(type);
+
+    const current = new Date();
+    const month = (current.getMonth() + 1).toString().padStart(2, "0");
+    const year = current.getFullYear();
+    const day = current.getDate().toString().padStart(2, "0");
+
+    if (type === "day") {
+      const todayStr = `${year}-${month}-${day}`;
+      setFrom(todayStr);
+      setTo(todayStr);
+    }
+
+    if (type === "month") {
+      const firstDay = `${year}-${month}-01`;
+      const lastDay = `${year}-${month}-${new Date(year, current.getMonth()+1, 0).getDate()}`;
+      setFrom(firstDay);
+      setTo(lastDay);
+    }
+
+    if (type === "quincena") {
+      const first = `${year}-${month}-01`;
+      const second = `${year}-${month}-15`;
+      setFrom(first);
+      setTo(second);
+    }
+  };
 
   // Adaptamos los nombres a los que realmente devuelve el back
   //Utilizarlo para el adminservice
@@ -42,12 +72,12 @@ const TeamProductivityPage: React.FC = () => {
   );*/
 
   const tableData = (data as DepotTeamPerformance[]).map((item) => ({
-  depotTeamId: item.depotTeamId,
-  teamName: item.teamName ?? "Equipo sin nombre",
-  ordersHandled: item.ordersHandled,
-  missingItemsReported: item.missingItemsReported,
-  averageProcessingTimeMinutes: item.averageProcessingTimeMinutes,
-}));
+    depotTeamId: item.depotTeamId,
+    teamName: item.teamName ?? "Equipo sin nombre",
+    ordersHandled: item.ordersHandled,
+    missingItemsReported: item.missingItemsReported,
+    averageProcessingTimeMinutes: Number(((item.averageProcessingTimeMinutes / 1000) / 3600).toFixed(2)) //REDONDEADO,
+  }));
 
   if (loading) {
     return (
@@ -71,12 +101,16 @@ const TeamProductivityPage: React.FC = () => {
             Aquí podés gestionar qué tanto se desempeñaron los equipos asignados.
           </h2>
         </div>
-        <TeamProductivityDateFilter
-              from={from}
-              to={to}
-              onFromChange={setFrom}
-              onToChange={setTo}
-        />
+        <div className="bg-white shadow-md rounded-xl p-6 mb-10">
+          <TeamProductivityDateFilter
+            filterType={filterType}
+            onFilterTypeChange={handleFilterTypeChange}
+            from={from}
+            to={to}
+            onFromChange={setFrom}
+            onToChange={setTo}
+          />
+        </div>
 
 
           {error ? (

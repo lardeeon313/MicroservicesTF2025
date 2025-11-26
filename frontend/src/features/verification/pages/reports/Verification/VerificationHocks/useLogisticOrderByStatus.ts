@@ -24,12 +24,9 @@ export const useOrdersByStatusReport = () => {
       "/logistic/LogisticReport/orders-by-status",
       { params: filters } // filters ya incluye paymentType (camelCase)
     );
-
-    console.log("📌 Respuesta completa del backend:", response);
-    console.log("📊 Datos recibidos del backend:", response.data);
     setData(response.data ?? []);
   } catch (err: any) {
-    console.error("❌ Error detallado en OrdersByStatusReport:", err);
+    
     setError(
       typeof err.response?.data === "string"
         ? err.response.data

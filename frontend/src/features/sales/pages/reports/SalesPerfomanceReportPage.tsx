@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { usePerfomanceSalesReport } from "../../hooks/usePerfomanceSalesReport";
 import { SalesPerfomanceReportTable } from "../../components/Reports/PerfomanceSalesReport/SalesPerfomanceReportTable";
 import { GraphSalesPerfomanceReport } from "../../components/Reports/PerfomanceSalesReport/GraphSalesPerfomanceReport";
@@ -7,6 +8,7 @@ import BackButton from "../../../../components/BackButton";
 export const SalesPerfomanceReportPage = () => {
   const {
     data,
+    filteredData,
     loading,
     salesRange,
     setSalesRange,
@@ -15,6 +17,9 @@ export const SalesPerfomanceReportPage = () => {
     dateTo,
     setDateTo,
   } = usePerfomanceSalesReport();
+
+  // 🔹 Estado para mostrar/ocultar el gráfico
+  const [showGraph, setShowGraph] = useState(true);
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
@@ -30,7 +35,7 @@ export const SalesPerfomanceReportPage = () => {
           Se visualiza el rendimiento de todos los encargados de ventas
         </p>
 
-        {/* 🔹 Filtros (componente separado) */}
+        {/* 🔹 Filtros */}
         <SalesPerfomanceReportFilter
           salesRange={salesRange}
           setSalesRange={setSalesRange}
@@ -40,9 +45,21 @@ export const SalesPerfomanceReportPage = () => {
           setDateTo={setDateTo}
         />
 
-        {/* Tabla y gráfico */}
-        <SalesPerfomanceReportTable data={data} loading={loading} />
-        <GraphSalesPerfomanceReport data={data} />
+        {/* 🔹 Tabla */}
+        <SalesPerfomanceReportTable data={filteredData} loading={loading} />
+
+        {/* 🔹 Botón mostrar/ocultar gráfico */}
+        <div className="flex justify-center mt-6 mb-4">
+          <button
+            onClick={() => setShowGraph((prev) => !prev)}
+            className="px-4 py-2 bg-gray-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+          >
+            {showGraph ? "Ocultar gráfico" : "Mostrar gráfico"}
+          </button>
+        </div>
+
+        {/* 🔹 Gráfico (condicional) */}
+        {showGraph && <GraphSalesPerfomanceReport data={data} />}
       </div>
     </div>
   );

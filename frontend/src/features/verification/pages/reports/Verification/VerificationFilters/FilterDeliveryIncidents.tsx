@@ -14,16 +14,26 @@ export const DeliveryIncidentsFilter: React.FC<Props> = ({
   onSearch,
   onClear,
 }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  // Maneja SOLO los campos string (fechas)
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
+
+    // No tocar resolved acá
+    if (name === "resolved") return;
+
     onChange({ ...filters, [name]: value });
   };
 
+  // Maneja exclusivamente el filtro resolved
   const handleResolvedChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
+
     onChange({
       ...filters,
-      resolved: value === "" ? undefined : value === "true",
+      resolved:
+        value === "" ? undefined : value === "true" ? true : false,
     });
   };
 
@@ -31,7 +41,9 @@ export const DeliveryIncidentsFilter: React.FC<Props> = ({
     <div className="p-4 bg-white shadow-md rounded-xl mb-6 flex flex-wrap items-end justify-around gap-6">
       {/* Fecha inicio */}
       <div className="flex flex-col">
-        <label className="text-sm font-medium text-gray-600 mb-1">Fecha inicio</label>
+        <label className="text-sm font-medium text-gray-600 mb-1">
+          Fecha inicio
+        </label>
         <input
           type="date"
           name="startDate"
@@ -43,7 +55,9 @@ export const DeliveryIncidentsFilter: React.FC<Props> = ({
 
       {/* Fecha fin */}
       <div className="flex flex-col">
-        <label className="text-sm font-medium text-gray-600 mb-1">Fecha fin</label>
+        <label className="text-sm font-medium text-gray-600 mb-1">
+          Fecha fin
+        </label>
         <input
           type="date"
           name="endDate"
@@ -53,14 +67,19 @@ export const DeliveryIncidentsFilter: React.FC<Props> = ({
         />
       </div>
 
-
       {/* Estado */}
       <div className="flex flex-col">
-        <label className="text-sm font-medium text-gray-600 mb-1">¿Resuelto?</label>
+        <label className="text-sm font-medium text-gray-600 mb-1">
+          ¿Resuelto?
+        </label>
         <select
           name="resolved"
           value={
-            filters.resolved === undefined ? "" : filters.resolved ? "true" : "false"
+            filters.resolved === undefined
+              ? ""
+              : filters.resolved
+              ? "true"
+              : "false"
           }
           onChange={handleResolvedChange}
           className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"

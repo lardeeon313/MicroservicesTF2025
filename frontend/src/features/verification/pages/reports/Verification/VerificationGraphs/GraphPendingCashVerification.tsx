@@ -72,6 +72,14 @@ export const GraphPendingCashVerification: React.FC<Props> = ({ data }) => {
     "#ec4899"
   ];
 
+  // 🎯 Calcular el ancho de las barras según la cantidad de datos
+  const getBarSize = () => {
+    if (chartData.length === 1) return 80;
+    if (chartData.length === 2) return 100;
+    if (chartData.length === 3) return 120;
+    return undefined; // Auto para 4 o más
+  };
+
   // Tooltip personalizado
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -140,7 +148,6 @@ export const GraphPendingCashVerification: React.FC<Props> = ({ data }) => {
             opacity={0.5}
           />
 
-
           <XAxis
             dataKey="label"
             stroke="#9ca3af"
@@ -149,13 +156,12 @@ export const GraphPendingCashVerification: React.FC<Props> = ({ data }) => {
               fontSize: 11,
               fontWeight: 500,
               textAnchor: "middle",
-              dy: 10 // separa un poco del eje
+              dy: 10
             }}
             axisLine={{ stroke: "#d1d5db" }}
             tickLine={false}
             interval={0}
           />
-
 
           <YAxis
             stroke="#9ca3af"
@@ -170,7 +176,12 @@ export const GraphPendingCashVerification: React.FC<Props> = ({ data }) => {
             cursor={{ fill: "rgba(59, 130, 246, 0.05)" }}
           />
 
-          <Bar dataKey="amount" radius={[8, 8, 0, 0]} filter="url(#shadow)">
+          <Bar 
+            dataKey="amount" 
+            radius={[8, 8, 0, 0]} 
+            filter="url(#shadow)"
+            barSize={getBarSize()}
+          >
             {chartData.map((__, index) => (
               <Cell
                 key={`cell-${index}`}

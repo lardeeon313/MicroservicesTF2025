@@ -34,13 +34,16 @@ export default function ModifiedCanceledOrdersPage() {
 
   // Filtros en edición (inputs)
   const [nameDraft, setNameDraft] = useState("");
-  const [dateDraft, setDateDraft] = useState(""); 
+  const [dateDraft, setDateDraft] = useState("");
   const [statusDraft, setStatusDraft] = useState<FilterStatus>("Todos");
 
   // Filtros aplicados (solo se actualizan al tocar Buscar)
   const [nameFilter, setNameFilter] = useState("");
-  const [modifiedDate, setModifiedDate] = useState(""); 
+  const [modifiedDate, setModifiedDate] = useState("");
   const [statusFilter, setStatusFilter] = useState<FilterStatus>("Todos");
+
+  // Mostrar / ocultar gráfico
+  const [showGraph, setShowGraph] = useState(true);
 
   const { data: orders, loading, totalPages } = useModifiedCanceled(page, pageSize);
 
@@ -55,25 +58,21 @@ export default function ModifiedCanceledOrdersPage() {
     s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
   const filteredOrders = orders.filter((o: any) => {
-    // Nombre
-      const fullName = `${o.customerFirstName ?? ""} ${o.customerLastName ?? ""}`.trim();
-      
-      const matchesName =
-        !nameFilter || normalize(fullName).includes(normalize(nameFilter));
+    const fullName = `${o.customerFirstName ?? ""} ${o.customerLastName ?? ""}`.trim();
 
-      // Fecha
-      const raw = o.modifiedDate ?? o.orderDate;
-      const d = raw ? new Date(raw) : null;
-      const matchesDate = !modifiedDate || (d && toLocalYMD(d) === modifiedDate);
+    const matchesName =
+      !nameFilter || normalize(fullName).includes(normalize(nameFilter));
 
-      // Estado (defensivo: normalizo a mayúsculas por si vienen variantes)
-    
-      const matchesStatus =
-        statusFilter === "Todos" || o.status?.toLowerCase() === statusFilter.toLowerCase();
+    const raw = o.modifiedDate ?? o.orderDate;
+    const d = raw ? new Date(raw) : null;
+    const matchesDate = !modifiedDate || (d && toLocalYMD(d) === modifiedDate);
 
-      return matchesName && matchesDate && matchesStatus;
+    const matchesStatus =
+      statusFilter === "Todos" ||
+      o.status?.toLowerCase() === statusFilter.toLowerCase();
+
+    return matchesName && matchesDate && matchesStatus;
   });
-
 
   if (loading) {
     return <LoadingSpinner message="Cargando..." height="h-screen" />;
@@ -110,7 +109,7 @@ export default function ModifiedCanceledOrdersPage() {
           Todo lo que necesitas para evaluar los Pedidos cancelados y modificados
         </p>
 
-        {/* Filtros con Buscar y Limpiar */}
+        {/* Filtros */}
         <ModifiedCanceledOrdersFilter
           nameDraft={nameDraft}
           dateDraft={dateDraft}
@@ -133,13 +132,25 @@ export default function ModifiedCanceledOrdersPage() {
         {/* Paginación */}
         <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
 
-        {/* Gráfico */}
-        <GraphModifiedCanceledOrders 
-          orders={filteredOrders.map((o: any) => ({
-            ...o,
-            statusLabel: statusMap[o.status] ?? o.status,
-          }))}
-        />
+        {/* Botón mostrar/ocultar gráfico */}
+        <div className="flex justify-center mt-6 mb-4">
+          <button
+            onClick={() => setShowGraph((prev) => !prev)}
+            className="px-4 py-2 bg-gray-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+          >
+            {showGraph ? "Ocultar gráfico" : "Mostrar gráfico"}
+          </button>
+        </div>
+
+        {/* Gráfico (condicional) */}
+        {showGraph && (
+          <GraphModifiedCanceledOrders
+            orders={filteredOrders.map((o: any) => ({
+              ...o,
+              statusLabel: statusMap[o.status] ?? o.status,
+            }))}
+          />
+        )}
       </div>
     </div>
   );

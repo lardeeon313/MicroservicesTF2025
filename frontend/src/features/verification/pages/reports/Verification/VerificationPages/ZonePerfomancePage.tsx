@@ -42,10 +42,10 @@ export const ZonePerformanceReportPage: React.FC = () => {
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
         <BackButton to="/verification/reports" />
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-          Reporte de Eficiencia por zona.
+          Mayor cantidad de pedidos por zona.
         </h1>
         <p className="text-center text-lg text-gray-700 mb-12">
-          Visualiza la eficiencia de los equipos por zona.
+         Compara la cantidad de pedidos realizados por zona.
         </p>
       </div>
 

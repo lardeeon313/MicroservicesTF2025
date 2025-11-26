@@ -23,12 +23,50 @@ export default function OrderCompletedDayPage() {
   } = useOrderCompletedDay();
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [, setPeriod] = useState("");
 
-  // 🔄 Convertimos los strings del hook a Date | null para el filtro
+  const onPeriodChange = (value: string) => {
+      setPeriod(value);
+
+      const today = new Date();
+      let start: string = "";
+      let end: string = "";
+
+      if (value === "day") {
+        start = today.toISOString().split("T")[0];
+        end = start;
+      }
+
+      if (value === "half") {
+        const day = today.getDate();
+        const isFirstHalf = day <= 15;
+        const startDate = isFirstHalf ? new Date(today.getFullYear(), today.getMonth(), 1) 
+                                  : new Date(today.getFullYear(), today.getMonth(), 16);
+        const endDate = isFirstHalf ? new Date(today.getFullYear(), today.getMonth(), 15) 
+                                : new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        start = startDate.toISOString().split("T")[0];
+        end = endDate.toISOString().split("T")[0];
+      }
+
+      if (value === "month") {
+        const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+        const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        start = startDate.toISOString().split("T")[0];
+        end = endDate.toISOString().split("T")[0];
+      }
+
+  
+      setStartDate(start);
+      setEndDate(end);
+      fetchData(start, end, 1);
+  };
+
+
+  
   const parsedStartDate = startDate ? new Date(startDate) : null;
   const parsedEndDate = endDate ? new Date(endDate) : null;
 
-  // 👉 Filtrado por fecha y búsqueda
+  
   const filteredData = useMemo(() => {
     let currentData = data;
 
@@ -55,7 +93,7 @@ export default function OrderCompletedDayPage() {
     return currentData;
   }, [data, parsedStartDate, parsedEndDate, searchTerm]);
 
-  // 🔄 Llamamos al API con las fechas en string (del hook)
+  
   useEffect(() => {
     fetchData(startDate, endDate, page);
   }, [startDate, endDate, page]);
@@ -70,7 +108,7 @@ export default function OrderCompletedDayPage() {
               Pedidos Armados
             </h1>
             <p className="text-center text-lg text-gray-700 mb-12">
-              Aquí podrás gestionar todos los pedidos que hayan sido armados de los distintos clientes
+              Aquí podrás gestionar todos los pedidos de los clientes que hayan sido armados.
             </p>
           </div>
 
@@ -87,8 +125,10 @@ export default function OrderCompletedDayPage() {
             }
             searchTerm={searchTerm}
             onSearchTermChange={setSearchTerm}
+            onPeriodChange={onPeriodChange}  
             onClear={() => {
               setSearchTerm("");
+              setPeriod("");
               clearFilters();
             }}
           />
@@ -105,8 +145,8 @@ export default function OrderCompletedDayPage() {
             <Pagination 
               currentPage={page}
               totalPages={totalPages}
-              totalItems={data.length}   // 👈 o el total real desde la API si lo tienes
-              itemsPerPage={10}          // 👈 número fijo o configurable
+              totalItems={data.length}   
+              itemsPerPage={10}          
               onPageChange={setPage}
             />
           </div>

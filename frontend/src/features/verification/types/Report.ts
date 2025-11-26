@@ -196,6 +196,8 @@ export interface OperatorProductivityReport {
 export interface DeliveryTimeReportItem {
   deliveryZoneId: number;
   deliveryZoneName: string;
+  teamId: number;
+  teamName: string;  
   operatorId: string;
   fullNameDeliveringOperator: string;
   totalDeliveredOrders: number;

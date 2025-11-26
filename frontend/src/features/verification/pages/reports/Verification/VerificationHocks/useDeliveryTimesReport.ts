@@ -28,6 +28,8 @@ export const useDeliveryTimesReport = () => {
         "/logistic/LogisticReport/delivery-times",
         { params }
       );
+
+      console.log(resp)
       
       setData(resp.data ?? []);
     } catch (err: any) {
