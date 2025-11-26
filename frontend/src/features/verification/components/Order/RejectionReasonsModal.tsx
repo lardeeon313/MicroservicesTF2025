@@ -70,7 +70,7 @@ export default function RejectionReasonsModal({ order, isOpen, onClose }: Props)
               </div>
               <div>
                 <h2 className="text-2xl font-bold">
-                  Motivos de Cancelación
+                  Motivos de la asignación cancelada
                 </h2>
                 <p className="text-sm text-white/90 mt-1">
                   Orden L-{order.id} • Cliente: {order.customer ? `${order.customer.firstName} ${order.customer.lastName}` : 'N/A'}

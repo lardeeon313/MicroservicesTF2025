@@ -51,6 +51,9 @@ export default function InvoicedOrdersTable({ data }: Props) {
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                   Fecha de Emisión
                 </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                  Productos
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -95,6 +98,12 @@ export default function InvoicedOrdersTable({ data }: Props) {
                         weekday: 'long'
                       })}
                     </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-semibold text-gray-900">
+                      {order.productCount}
+                    </div>
+                    <div className="text-xs text-gray-500">unidades</div>
                   </td>
                 </tr>
               ))}
