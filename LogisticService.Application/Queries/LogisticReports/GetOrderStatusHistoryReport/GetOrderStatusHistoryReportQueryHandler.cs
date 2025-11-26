@@ -38,8 +38,6 @@ namespace LogisticService.Application.Queries.LogisticReports.GetOrderStatusHist
                         query.PageSize
             );
 
-            _logger.LogInformation("Reporte de flujo de estados generado con {Count} registros paginados.", results.Items);
-
             // Obtener operadores desde IdentityService
             var deliveryOperators = await _identityServiceClient.GetUserWithRoleDeliveryOperator()
                 ?? new List<DeliveryOperatorDto>();

@@ -10,6 +10,8 @@ namespace LogisticService.Application.DTOs.LogisticReportDtos
     {
         public int? DeliveryZoneId { get; set; }
         public string? DeliveryZoneName { get; set; }
+        public int? TeamId { get; set; }   // NUEVO
+        public string? TeamName { get; set; }  // NUEVO
         public Guid? OperatorId { get; set; }
         public string FullNameDeliveringOperator { get; set; } = string.Empty;
         public int TotalDeliveredOrders { get; set; }

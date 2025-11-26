@@ -81,15 +81,15 @@ namespace LogisticService.Infraestructure.Persistence
             };
         }
 
-        public async Task<PagedResult<DeliveryIncident>> GetDeliveryIncidentsReportQuery(DateTime? startDate, DateTime? endDate, int? deliveryZoneId, int? deliveryTeamId, Guid? operatorId, bool? resolved, int pageNumber, int pageSize)
+        public async Task<PagedResult<DeliveryIncident>> GetDeliveryIncidentsReportQuery(DateTime? startDate,DateTime? endDate,int? deliveryZoneId,int? deliveryTeamId,Guid? operatorId,bool? resolved,int pageNumber,int pageSize)
         {
             var query = _context.DeliveryIncidents
-                    .Include(i => i.LogisticOrder)
-                        .ThenInclude(o => o.Customer)                    
-                    .Include(i => i.LogisticOrder.AssignedDeliveryZone)
-                    .Include(i => i.LogisticOrder.AssignedDeliveryTeam)
-                    .AsNoTracking()
-                    .AsQueryable();
+                .Include(i => i.LogisticOrder)
+                    .ThenInclude(o => o.Customer)
+                .Include(i => i.LogisticOrder.AssignedDeliveryZone)
+                .Include(i => i.LogisticOrder.AssignedDeliveryTeam)
+                .AsNoTracking()
+                .AsQueryable();
 
             if (startDate.HasValue)
                 query = query.Where(i => i.ReportedAt >= startDate.Value);
@@ -107,7 +107,26 @@ namespace LogisticService.Infraestructure.Persistence
                 query = query.Where(i => i.ReportedByOperatorId == operatorId.Value);
 
             if (resolved.HasValue)
-                query = query.Where(i => i.Resolved == resolved.Value);
+            {
+                if (resolved.Value)
+                {
+                    // Solo incidentes realmente resueltos
+                    query = query.Where(i =>
+                        i.Resolved == true &&
+                        i.ResolvedAt != null &&
+                        !string.IsNullOrWhiteSpace(i.ResolutionNote)
+                    );
+                }
+                else
+                {
+                    // Solo NO resueltos: false o NULL
+                    query = query.Where(i =>
+                        i.Resolved != true ||
+                        i.ResolvedAt == null ||
+                        string.IsNullOrWhiteSpace(i.ResolutionNote)
+                    );
+                }
+            }
 
             var totalCount = await query.CountAsync();
 
@@ -125,6 +144,7 @@ namespace LogisticService.Infraestructure.Persistence
                 PageSize = pageSize
             };
         }
+
 
         public async Task<PagedResult<DeliveryRejectionReason>> GetDeliveryRejectionsAsync(DateTime? startDate, DateTime? endDate, int? deliveryZoneId, int? deliveryTeamId, Guid? operatorId, int pageNumber, int pageSize)
         {
@@ -230,7 +250,11 @@ namespace LogisticService.Infraestructure.Persistence
 
         public async Task<List<LogisticOrder>> GetFilteredOrdersAsync(DateTime? startDate, DateTime? endDate, int? deliveryZoneId, int? deliveryTeamId, Guid? operatorId, PaymentType? paymentType)
         {
-            var query = _context.LogisticOrders.AsNoTracking().AsQueryable();
+            var query = _context.LogisticOrders
+                .AsNoTracking()
+                .Include(o => o.AssignedDeliveryTeam)     
+                .Include(o => o.AssignedDeliveryZone)
+                .AsQueryable();
 
             if (startDate.HasValue)
                 query = query.Where(o => o.OrderDate >= startDate.Value);
