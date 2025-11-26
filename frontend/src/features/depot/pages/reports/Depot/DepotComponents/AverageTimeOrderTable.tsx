@@ -46,7 +46,7 @@ const AverageTimeOrderTable: React.FC<Props> = ({ data, loading }) => {
       MissingProduct: "Faltante notificado",
       SentToBilling: "Enviado a facturar",
       PendingResolution: "Pendiente de resolución",
-      Prepared: "Preparado",
+      Prepared: "Armado",
       Invoiced: "Facturado",
       Issued: "Emitido por ventas",
       Cancelled: "Cancelado",

@@ -51,10 +51,26 @@ const AverageTimeOrderPage: React.FC = () => {
       // si vienen como string combinado
       if (o.status) {
         return (
+          o.status.includes("Received") ||
+          o.status.includes("ReReceived") ||
           o.status.includes("Assigned") ||
           o.status.includes("InPreparation") ||
           o.status.includes("MissingProduct") ||
-          o.status.includes("Prepared")
+          o.status.includes("SentToBilling") ||
+          o.status.includes("PendingResolution") ||
+          o.status.includes("Prepared") ||
+          o.status.includes("Invoiced") ||
+          o.status.includes("Issued") ||
+          o.status.includes("Cancelled") ||
+          o.status.includes("Deleted") ||
+          o.status.includes("Verify") ||
+          o.status.includes("OnTheWay") ||
+          o.status.includes("Delivered") ||
+          o.status.includes("PendingVerification") ||
+          o.status.includes("AssignedDelivery") ||
+          o.status.includes("PendingDelivered") ||
+          o.status.includes("PendingIncidentResolution") ||
+          o.status.includes("IncidentResolved")
         );
       }
 

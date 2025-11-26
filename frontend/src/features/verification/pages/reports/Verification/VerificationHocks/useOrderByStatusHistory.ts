@@ -102,6 +102,8 @@ export const useOrderStatusHistoryReport = () => {
         { params }
       );
 
+      console.log(response)
+
       setData(response.data.items);
       setPagination({
         totalCount: response.data.totalCount,

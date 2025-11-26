@@ -29,7 +29,7 @@ export const useTeamProductivity = (from: string, to: string) => {
           { params: { from, to } }
         );
 
-        
+        console.log(response)
 
         setData(response.data);
 
