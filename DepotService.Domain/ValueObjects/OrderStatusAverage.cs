@@ -15,5 +15,6 @@ namespace DepotService.Domain.ValueObjects
         public OrderStatus NewStatus { get; set; }
         public DateTime ChangedAt { get; set; }
         public double AverageDuration { get; set; }
+        public string CustomerName { get; set; } = null!;
     }
 }

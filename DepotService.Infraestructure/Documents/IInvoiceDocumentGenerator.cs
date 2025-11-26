@@ -28,4 +28,16 @@ namespace DepotService.Infraestructure.Documents
         byte[] Generate(DepotOrderEntity order);
     }
 
+    //NO TOCAR 
+    public interface IInvoicedOrdersReportPdfGenerator
+    {
+        byte[] Generate(List<DepotOrderEntity> orders);
+    }
+
+    public interface IInvoicedOrdersByCustomerPdfGenerator
+    {
+        byte[] Generate(List<DepotOrderEntity> orders);
+    }
+
+
 }

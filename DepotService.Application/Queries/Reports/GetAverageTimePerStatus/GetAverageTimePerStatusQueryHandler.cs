@@ -28,6 +28,7 @@ namespace DepotService.Application.Queries.Reports.GetAverageTimePerStatus
             {
                 Id = avg.Id,
                 OrderId = avg.OrderId,
+                CustomerName = avg.CustomerName,
                 Status = $"{avg.OldStatus} → {avg.NewStatus}",
                 ChangedAt = avg.ChangedAt,
                 AverageDuration = avg.AverageDuration
