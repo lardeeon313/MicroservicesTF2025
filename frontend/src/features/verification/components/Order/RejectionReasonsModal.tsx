@@ -33,6 +33,7 @@ export default function RejectionReasonsModal({ order, isOpen, onClose }: Props)
     setLoading(true);
     try {
       const data = await getRejectionReasonsByOrderId(order.id);
+      console.log(data);
       setRejectionReasons(data);
     } catch (error: any) {
       toast.error('Error al cargar los motivos de rechazo');
@@ -148,8 +149,8 @@ export default function RejectionReasonsModal({ order, isOpen, onClose }: Props)
                         <User className="w-4 h-4" />
                         <span>Operador que Canceló</span>
                       </label>
-                      <p className="text-base font-semibold text-gray-900 font-mono">
-                        {typeof reason.deliveryOperatorId === 'string' ? reason.deliveryOperatorId.slice(0, 8) + '...' : 'N/A'}
+                      <p className="text-base font-medium text-slate-900 tracking-tight">
+                        {reason.deliveryOperatorFullName}
                       </p>
                     </div>
                   </div>

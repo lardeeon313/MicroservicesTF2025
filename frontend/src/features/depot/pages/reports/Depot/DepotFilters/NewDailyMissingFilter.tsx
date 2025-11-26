@@ -18,7 +18,7 @@ const DailyMissingSelectFilter: React.FC<DailyMissingSelectFilterProps> = ({
   return (
     <div className="flex items-center gap-4 mb-6 bg-white shadow-md p-4 rounded-xl">
 
-      {/* SELECT */}
+      
       <div className="flex flex-col">
         <label className="text-sm text-gray-600 mb-1">Filtro rápido</label>
 
@@ -34,7 +34,7 @@ const DailyMissingSelectFilter: React.FC<DailyMissingSelectFilterProps> = ({
         </select>
       </div>
 
-      {/* Botones */}
+      
       <div className="flex gap-3 mt-5">
         <button
           onClick={onSearch}

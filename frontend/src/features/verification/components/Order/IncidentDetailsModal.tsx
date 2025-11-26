@@ -141,8 +141,8 @@ export default function IncidentDetailsModal({ order, isOpen, onClose }: Props) 
                         <User className="w-4 h-4" />
                         <span>Operador Reportante</span>
                       </label>
-                      <p className="text-base font-semibold text-gray-900 font-mono">
-                        {typeof incident.reportedByOperatorId === 'string' ? incident.reportedByOperatorId.slice(0, 8) + '...' : 'N/A'}
+                      <p className="text-base font-medium text-slate-900 tracking-tight">
+                        {incident.reportedByOperatorFullName}
                       </p>
                     </div>
                   </div>

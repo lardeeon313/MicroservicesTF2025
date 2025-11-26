@@ -65,30 +65,28 @@ const AverageTimeOrderFilter: React.FC<Props> = ({
         />
       </div>
 
-
-      
-<div className="flex flex-col">
-  <label className="text-sm font-medium text-gray-600 mb-1">Duración mínima (minutos)</label>
-  <input
-    type="number"
-    min="0"
-    value={minDurationFilter}
-    onChange={(e) => onMinDurationChange(e.target.value)}
-    className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
-  />
-</div>
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-600 mb-1">Duración mínima (minutos)</label>
+        <input
+          type="number"
+          min="0"
+          value={minDurationFilter}
+          onChange={(e) => onMinDurationChange(e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
 
 
-<div className="flex flex-col">
-  <label className="text-sm font-medium text-gray-600 mb-1">Duración máxima (minutos)</label>
-  <input
-    type="number"
-    min="0"
-    value={maxDurationFilter}
-    onChange={(e) => onMaxDurationChange(e.target.value)}
-    className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
-  />
-</div>
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-600 mb-1">Duración máxima (minutos)</label>
+        <input
+          type="number"
+          min="0"
+          value={maxDurationFilter}
+          onChange={(e) => onMaxDurationChange(e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
 
       {/* Botones */}
       <div className="flex gap-3">

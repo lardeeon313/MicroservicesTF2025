@@ -12,6 +12,7 @@ namespace LogisticService.Application.DTOs.LogisticOrderDtos
     {
         public int Id { get; set; } 
         public Guid DeliveryOperatorId { get; set; }
+        public string? DeliveryOperatorFullName { get; set; }
 
         [MaxLength(500)]
         [Required]

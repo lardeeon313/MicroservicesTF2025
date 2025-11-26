@@ -98,6 +98,7 @@ export interface LogisticOrderStatusHistoryDto {
 // Delivery Incident DTO
 export interface DeliveryIncidentDto {
   id: number;
+  reportedByOperatorFullName: string;
   logisticOrderId: number;
   reportedByOperatorId: string; // GUID as string
   incidentType: string;
@@ -112,6 +113,7 @@ export interface DeliveryIncidentDto {
 // Delivery Rejection Reason DTO
 export interface DeliveryRejectionReasonDto {
   id: number;
+  deliveryOperatorFullName:string; 
   deliveryOperatorId: string; // GUID as string
   reason: string;
   rejectedAt: string; // ISO date string
