@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IdentityService.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,5 +14,6 @@ namespace IdentityService.Application.DTOs
         public string Email { get; set; } = string.Empty;
         public IList<string> Roles { get; set; } = new List<string>();
         public string Token { get; set; } = string.Empty;
+        public EmployedStatus Employed_Status { get; set; }
     }
 }

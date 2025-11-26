@@ -72,11 +72,6 @@ import { PendingCashVerificationPage } from "../features/verification/pages/repo
 import { OperatorProductivityPage } from "../features/verification/pages/reports/Verification/VerificationPages/OperatorProdictivityReportPage";
 import DeliveryTimesReportPage from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryTimesPage";
 import { ZonePerformanceReportPage } from "../features/verification/pages/reports/Verification/VerificationPages/ZonePerfomancePage";
-import AdminDashboardPage from "../features/admin/pages/AdminDashboard";
-import EmployeesPage from "../features/admin/pages/EmployeesPage";
-import RegisterEmployeesPage from "../features/admin/pages/RegisterEmployeesPage";
-import EditEmployeesPage from "../features/admin/pages/EditEmployeesPage";
-import EmployeesDetailPage from "../features/admin/pages/EmployeesDetailPage";
 
 const AppRouter = () => {
   return (
@@ -87,7 +82,11 @@ const AppRouter = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/404notfound" element={<NotFoundPage />} />
-
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/create-password" element={<CreatePasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        
+        
         {/* Ventas */}
         <Route
             path="/sales"

@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, SalesStaffDto } from "../types/AuthTypes";
+import { CreateNewPasswordRequest, CreateNewPasswordResponse, ForgotPasswordRequest, ForgotPasswordResponse, LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, ResetPasswordRequest, ResetPasswordResponse, SalesStaffDto } from "../types/AuthTypes";
 import API from "../../../api/axios";
 
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
@@ -39,112 +39,53 @@ export const fetchSalesStaffs = async (): Promise<SalesStaffDto[]> => {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-import axios from "axios"
-
-/*
-export type LoginRequest = {
-    email: string;
-    password: string;
-}
-
-export type RegisterRequest = {
-    userName: string;
-    name: string;
-    lastName: string; 
-    email: string;
-    password: string;
-}
-
-export type AuthResponse = {
-    token: string;
-    userName: string;
-    name: string;
-    lastName: string;
-    email: string;
-    roles: string[];
-}
-    */
-/*
-const API = axios.create({
-    baseURL: "http://localhost:5000/api/auth",
-    headers: {
-        "Content-Type": "application/json"
-    }
-})
-
-const handleError = (error: any) => {
-    if (error.response && error.response.data) {
-      throw new Error(error.response.data.error || "Error desconocido");
-    } else {
-      throw new Error("Error de red o servidor no disponible");
-    }
-  };
-
-export const login = async (credentials: {email: string; password: string;}) => {
-    try{
-        const response = await API.post("/login", credentials);
-        return response.data;
-    } catch (error) {handleError(error)};
-}
-
-export const register = async (userData: {userName: string; name: string; lastName: string; email: string; password: string;}) => {
+export const createNewPassword = async (
+    data: CreateNewPasswordRequest
+): Promise<CreateNewPasswordResponse> => {
     try {
-        const response = await API.post("/register", userData);
+        const response = await API.post<CreateNewPasswordResponse>(
+            "/api/auth/create-new-password",
+            data
+        );
         return response.data;
-    } catch (error) {handleError(error)};
-}
-*/
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error(error.response?.data?.message || "Failed to create password");
+        }
+        throw new Error("Unexpected error");
+    }
+};
+
+export const forgotPassword = async (
+    data: ForgotPasswordRequest
+): Promise<ForgotPasswordResponse> => {
+    try {
+        const response = await API.post<ForgotPasswordResponse>(
+            "/api/auth/forgot-password",
+            data
+        );
+        return response.data;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error(error.response?.data?.message || "Forgot password failed");
+        }
+        throw new Error("Unexpected error");
+    }
+};
+
+export const resetPassword = async (
+    data: ResetPasswordRequest
+): Promise<ResetPasswordResponse> => {
+    try {
+        const response = await API.post<ResetPasswordResponse>(
+            "/api/auth/reset-password",
+            data
+        );
+        return response.data;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error(error.response?.data?.message || "Reset password failed");
+        }
+        throw new Error("Unexpected error");
+    }
+};

@@ -28,6 +28,10 @@ namespace IdentityService.Application.DTOs
         [Display(Name = "Email adress")]
         public string Email { get; set; } = string.Empty;
 
+        [Phone]
+        [Display(Name = "Phone Number")]
+        public string PhoneNumber { get; set; } = string.Empty;
+
         [Required, MinLength(6)]
         [Display(Name = "Password")]
         public string Password { get; set; } = string.Empty;
