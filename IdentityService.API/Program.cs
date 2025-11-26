@@ -1,7 +1,6 @@
 using IdentityService.Application.Services.Interfaces;
 using IdentityService.Application.Services;
 using IdentityService.Domain.Entities;
-using IdentityService.Infraestructure.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -21,6 +20,15 @@ using IdentityService.Application.Queries.GetAllSalesStaffs;
 using IdentityService.Application.Queries.GetCurrentUser;
 using IdentityService.Application.Queries.GetAllDeliverys;
 using IdentityService.Infraestructure.Messaging.Publisher;
+using IdentityService.Infraestructure.Messaging.Consumer;
+using IdentityService.Infraestructure;
+using IdentityService.Application.Commands.Employees.CreateNewPassword;
+using IdentityService.Application.Commands.Employees.ChangeEmployedStatus;
+using IdentityService.Application.Commands.Employees.SetMustCreatePassword;
+using IdentityService.Infraestructure.EmailTemplates;
+using IdentityService.Domain.Common.Interfaces;
+using IdentityService.Application.Commands.Employees.ForgotPassword;
+using IdentityService.Application.Commands.Employees.ResetPassword;
 
 var builder = WebApplication.CreateBuilder(args);
 //para acceder desde el celular
@@ -94,6 +102,11 @@ builder.Services.AddDbContext<IdentityDbContext>(options =>
 // Se registra los Command Handlers
 builder.Services.AddScoped<IRegisterCommandHandler, RegisterCommandHandler>();
 builder.Services.AddScoped<ILoginCommandHandler, LoginCommandHandler>();
+builder.Services.AddScoped<ICreateNewPasswordCommandHandler, CreateNewPasswordCommandHandler>();
+builder.Services.AddScoped<IChangeEmployedStatusCommandHandler, ChangeEmployedStatusCommandHandler>();
+builder.Services.AddScoped<ISetMustCreatePasswordCommandHandler, SetMustCreatePasswordCommandHandler>();
+builder.Services.AddScoped<IForgotPasswordCommandHandler, ForgotPasswordCommandHandler>();
+builder.Services.AddScoped<IResetPasswordCommandHandler , ResetPasswordCommandHandler>();
 builder.Services.AddScoped<IGetAllOperatorsQueryHandler,  GetAllOperatorsQueryHandler>();
 builder.Services.AddScoped<IGetAllSalesStaffsQueryHandler, GetAllSalesStaffsQueryHandler>();
 builder.Services.AddScoped<IGetCurrentUserQueryHandler, GetCurrentUserQueryHandler>(); 
@@ -102,6 +115,12 @@ builder.Services.AddScoped<IGetAllDeliverysQueryHandler, GetAllDeliverysQueryHan
 // Registrar el servicio de Mensajeria RabbitMQ
 builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
 
+// Add EmailService
+builder.Services.AddScoped<IEmailService, MailgunEmailService>();
+
+// Registrar los Consumers de RabbitMQ
+builder.Services.AddHostedService<EmployeeUpdatedConsumer>();
+builder.Services.AddHostedService<EmployeeRegisteredConsumer>();
 
 var app = builder.Build();
 

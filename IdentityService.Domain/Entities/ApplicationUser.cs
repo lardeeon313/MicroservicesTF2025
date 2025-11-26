@@ -16,8 +16,10 @@ namespace IdentityService.Domain.Entities
 
         public DateTime HightDate { get; set; } = DateTime.UtcNow;
 
-        public EmployedStatus Employed_Status { get; set; } = EmployedStatus.Active;
+        public EmployedStatus Employed_Status { get; set; } = EmployedStatus.Inactive;
 
         public DateTime Validity { get; set; }
+
+        public bool MustCreatePassword { get; set; } = false; // Indica si el usuario debe crear una contraseña
     }
 }

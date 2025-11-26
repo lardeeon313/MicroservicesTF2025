@@ -3,8 +3,6 @@ using AdminService.Application.Commands.Employees.ChangeStatusEmployee;
 using AdminService.Application.Commands.Employees.RegisterEmployee;
 using AdminService.Application.Commands.Employees.UpdateEmployee;
 using AdminService.Application.Queries.Employee.GetAllEmployees;
-using AdminService.Application.Queries.Employee.GetEmployeeByDni;
-using AdminService.Application.Queries.Employees.GetEmployeeByDni;
 using AdminService.Application.Queries.Employees.GetEmployeeById;
 using AdminService.Application.Queries.Employees.GetEmployeesBySector;
 using AdminService.Application.Queries.Employees.GetEmployeesByStatus;
@@ -23,8 +21,7 @@ namespace AdminService.API.Controllers
         IChangeStatusEmployeeCommandHandler changeStatusEmployeeCommandHandler,
 
         IGetAllEmployeesQueryHandler getAllEmployeesQueryHandler,
-        IGetEmployeesByStatusQueryHandler getEmployeesByStatusQueryHandler,
-        IGetEmployeeByDniQueryHandler getEmployeeByDniQueryHandler,
+        IGetEmployeesByStatusQueryHandler getEmployeesByStatusQueryHandler,        
         IGetEmployeeByIdQueryHandler getEmployeeByIdQueryHandler,
         IGetEmployeesBySectorQueryHandler getEmployeesBySectorQueryHandler
 
@@ -33,8 +30,7 @@ namespace AdminService.API.Controllers
         private readonly IRegisterEmployeeCommandHandler _registerEmployeeCommandHandler = registerEmployeeCommandHandler;
         private readonly IUpdateEmployeeCommandHandler _updateEmployeeCommandHandler = updateEmployeeCommandHandler;
         private readonly IGetAllEmployeesQueryHandler _getAllEmployeesQueryHandler = getAllEmployeesQueryHandler;
-        private readonly IGetEmployeesByStatusQueryHandler _getEmployeesByStatusQueryHandler = getEmployeesByStatusQueryHandler;
-        private readonly IGetEmployeeByDniQueryHandler _getEmployeeByDniQueryHandler = getEmployeeByDniQueryHandler;
+        private readonly IGetEmployeesByStatusQueryHandler _getEmployeesByStatusQueryHandler = getEmployeesByStatusQueryHandler;        
         private readonly IGetEmployeeByIdQueryHandler _getEmployeeByIdQueryHandler = getEmployeeByIdQueryHandler;
         private readonly IChangeStatusEmployeeCommandHandler _changeStatusEmployeeCommandHandler = changeStatusEmployeeCommandHandler;
         private readonly IGetEmployeesBySectorQueryHandler _getEmployeesBySectorQueryHandler = getEmployeesBySectorQueryHandler;
@@ -54,7 +50,7 @@ namespace AdminService.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> RegisterEmployee([FromBody] RegisterEmployeeRequest request)
         {
-            var command = new RegisterEmployeeCommand(request.UserName, request.FirstName, request.LastName, request.Dni, request.Email, request.PhoneNumber, request.Role, request.Status, request.Sector);
+            var command = new RegisterEmployeeCommand(request.UserName, request.FirstName, request.LastName, request.Email, request.PhoneNumber, request.Role, request.Status, request.Sector);
             var result = await _registerEmployeeCommandHandler.RegisterEmployeeAsync(command);
             return Ok(result);
         }
@@ -73,7 +69,7 @@ namespace AdminService.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateEmployee([FromBody] UpdateEmployeeRequest request)
         {
-            var command = new UpdateEmployeeCommand(request.Id,request.UserName, request.FirstName, request.LastName, request.Dni, request.Email, request.PhoneNumber, request.Role, request.Status, request.Sector);
+            var command = new UpdateEmployeeCommand(request.Id,request.UserName, request.FirstName, request.LastName, request.Email, request.PhoneNumber, request.Role, request.Status, request.Sector);
             var result = await _updateEmployeeCommandHandler.UpdateEmployeeAsync(command);
             return Ok(result);
         }
@@ -125,21 +121,6 @@ namespace AdminService.API.Controllers
         {
             var query = new GetEmployeeByIdQuery(EmployeeId);
             var result = await _getEmployeeByIdQueryHandler.GetEmployeeById(query);
-            return Ok(result);
-        }
-
-        /// <summary>
-        /// Devuelve un empleado por su Dni
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("get-employee-by-dni")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetEmployeeByDni(string dni)
-        {
-            var query = new GetEmployeeByDniQuery(dni);
-            var result = await _getEmployeeByDniQueryHandler.GetEmployeeByDniAsync(query);
             return Ok(result);
         }
 

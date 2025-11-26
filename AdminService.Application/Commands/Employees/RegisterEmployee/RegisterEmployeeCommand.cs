@@ -18,13 +18,13 @@ namespace AdminService.Application.Commands.Employees.RegisterEmployee
         public EmployeeStatus Status { get; set; }
         public EmployeeSector Sector { get; set; }
 
-        public RegisterEmployeeCommand(string userName, string firstName, string lastName, string phoneNumber, string email, EmployeeRole role, EmployeeStatus status, EmployeeSector sector)
+        public RegisterEmployeeCommand(string userName, string firstName, string lastName, string email, string phoneNumber, EmployeeRole role, EmployeeStatus status, EmployeeSector sector)
         {
             UserName = userName;
             FirstName = firstName;
-            LastName = lastName;            
-            PhoneNumber = phoneNumber;
+            LastName = lastName;
             Email = email;
+            PhoneNumber = phoneNumber;
             Role = role;
             Status = status;
             Sector = sector;
