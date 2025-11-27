@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DepotService.Domain.Entities;
 
 namespace DepotService.Application.Commands.DepotOperator.MarkItemReady
 {
@@ -57,9 +58,29 @@ namespace DepotService.Application.Commands.DepotOperator.MarkItemReady
             if (allItemsReady)
             {
                 var order = item.DepotOrderEntity;
-                order.Status = OrderStatus.Prepared; // Cambiamos el estado de la orden a "Preparada"
+
+                // Guardamos el estado anterior
+                var oldStatus = order.Status;
+
+                // Cambiamos el estado de la orden a "Prepared"
+                var newStatus = OrderStatus.Prepared;
+                order.Status = newStatus;
+
+
+                // Registrar historial del cambio de estado
+                var history = new OrderStatusHistory
+                {
+                    OrderId = order.DepotOrderId,
+                    OldStatus = oldStatus,
+                    NewStatus = newStatus,
+                    ChangedAt = DateTime.UtcNow
+                };
+
+                _context.OrderStatusHistories.Add(history);
+
                 await _repository.UpdateOrderAsync(order);
                 await _context.SaveChangesAsync();
+
                 _logger.LogInformation($"Order with ID {order.DepotOrderId} is now fully prepared.");
 
                 var integrationEvent = new OrderPreparedIntegrationEvent

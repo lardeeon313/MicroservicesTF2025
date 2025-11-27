@@ -10,10 +10,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DepotService.Domain.Entities;
 
 namespace DepotService.Application.Commands.DepotOperator.ConfirmAssignedOrder
 {
-    public class ConfirmAssignedOrderCommandHandler(IEmailService emailService,IRabbitMQPublisher publisher, DepotDbContext context, IDepotOrderRepository repository, ILogger<ConfirmAssignedOrderCommandHandler> logger) : IConfirmAssignedOrderCommandHandler
+    public class ConfirmAssignedOrderCommandHandler(IEmailService emailService, IRabbitMQPublisher publisher, DepotDbContext context, IDepotOrderRepository repository, ILogger<ConfirmAssignedOrderCommandHandler> logger) : IConfirmAssignedOrderCommandHandler
     {
         private readonly IRabbitMQPublisher _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
         private readonly DepotDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -21,12 +22,6 @@ namespace DepotService.Application.Commands.DepotOperator.ConfirmAssignedOrder
         private readonly ILogger<ConfirmAssignedOrderCommandHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         private readonly IEmailService _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
 
-        /// <summary>
-        /// Handler para confirmar un pedido asignado a un operador en el Depósito.
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public async Task HandleAsync(ConfirmAssignedOrderCommand command)
         {
             var order = await _repository.GetByIdAsync(command.DepotOrderId);
@@ -42,11 +37,28 @@ namespace DepotService.Application.Commands.DepotOperator.ConfirmAssignedOrder
                 throw new InvalidOperationException($"Order with ID {command.DepotOrderId} is not assigned to operator {command.OperatorUserId}.");
             }
 
-            order.ConfirmAssigment(); // Esto cambia el estado de la orden a "En progreso".
+            var oldStatus = order.Status;
+
+            // ⬅️ Esto cambia el estado a InPreparation
+            order.ConfirmAssigment();
+
+            var newStatus = order.Status;
+
+            // 🟩 Registrar historial del cambio de estado
+            var history = new OrderStatusHistory
+            {
+                OrderId = order.DepotOrderId,   // Ojo: en tu entidad se llama OrderId
+                OldStatus = oldStatus,
+                NewStatus = newStatus,
+                ChangedAt = DateTime.UtcNow
+            };
+
+            _context.OrderStatusHistories.Add(history);
 
             await _repository.UpdateOrderAsync(order);
             await _context.SaveChangesAsync();
-            _logger.LogInformation($"Order with ID {command.DepotOrderId} has been confirmed by operator {command.OperatorUserId}.");
+
+            _logger.LogInformation($"Order {command.DepotOrderId} moved to {order.Status} and history recorded.");
 
             // Publicamos evento para SalesService
             var integrationEvent = new OrderInPreparationIntegrationEvent
