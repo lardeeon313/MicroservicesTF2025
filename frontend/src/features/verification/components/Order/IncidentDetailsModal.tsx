@@ -154,7 +154,7 @@ export default function IncidentDetailsModal({ order, isOpen, onClose }: Props) 
                     </label>
                     <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-100 to-red-100 rounded-lg border border-orange-300">
                       <p className="text-sm font-bold text-gray-900 capitalize">
-                        {incident.incidentType}
+                        {DeliveryIncidentStatusLabels[String(incident.deliveryIncidentStatus).toLowerCase()]}
                       </p>
                     </div>
                   </div>
