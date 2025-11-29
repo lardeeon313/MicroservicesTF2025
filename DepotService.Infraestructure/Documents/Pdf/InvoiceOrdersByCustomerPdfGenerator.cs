@@ -246,7 +246,7 @@ namespace DepotService.Infraestructure.Documents
                         text.TotalPages().FontSize(9).Bold().FontColor(ColorRojo);
                     });
 
-                    row.RelativeItem().AlignRight().Text("Confidencial").FontSize(9).FontColor(ColorRojoOscuro).Italic();
+                    
                 });
             });
         }

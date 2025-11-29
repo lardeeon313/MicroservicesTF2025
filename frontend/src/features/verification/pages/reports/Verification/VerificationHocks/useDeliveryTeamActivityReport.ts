@@ -20,6 +20,8 @@ export const useDeliveryTeamActivity = () => {
       const res = await API.get("/logistic/LogisticReport/delivery-team-activity", {
         params: filters,
       });
+      
+      console.log(res)
 
       
       setData(res.data);

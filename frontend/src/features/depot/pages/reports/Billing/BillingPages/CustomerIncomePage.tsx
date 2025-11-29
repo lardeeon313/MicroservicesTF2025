@@ -23,12 +23,12 @@ const toYMD = (value: string | Date): string => {
 };
 
 /** Para mostrar en la tabla como dd/mm/aaaa */
-const toDMY = (value: string | Date): string => {
+/*const toDMY = (value: string | Date): string => {
   const ymd = toYMD(value);
   if (!ymd) return "";
   const [y, m, d] = ymd.split("-");
   return `${d}/${m}/${y}`;
-};
+};*/
 
 const CustomerIncomePage: React.FC = () => {
 
@@ -139,7 +139,7 @@ const CustomerIncomePage: React.FC = () => {
                           (item: Billing): CustomerIncomeBillingItem => ({
                             customerName: item.customerName,
                             customerEmail: item.customerEmail,
-                            billingDate: toDMY(item.orderDate),
+                            billingDate: item.orderDate ,
                             totalAmount: item.totalAmount,
                           })
                         )}

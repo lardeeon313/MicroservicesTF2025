@@ -47,9 +47,9 @@ const CustomerSatisfactionReportPage: React.FC = () => {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Clientes y Pedidos</h1>
+        <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Satisfacción del cliente</h1>
         <p className="text-center text-lg text-gray-700 mb-12">
-          Todo lo que necesitás para gestionar los pedidos y clientes
+          Visualiza la cantidad de satisfacción obtenida por los diferentes clientes. 
         </p>
 
         <div className="flex flex-col md:flex-row mb-4 w-full justify-between gap-2">

@@ -210,6 +210,8 @@ namespace LogisticService.Infraestructure.Persistence
             if (deliveryZoneId.HasValue)
                 query = query.Where(o => o.AssignedDeliveryZoneId == deliveryZoneId.Value);
 
+            query = query.Where(o => o.AssignedDeliveryTeamId != null);
+
             var grouped = await query
                 .GroupBy(o => new { o.AssignedDeliveryTeamId, TeamName = o.AssignedDeliveryTeam!.TeamName })
                 .Select(g => new TeamActivityReport
@@ -304,7 +306,7 @@ namespace LogisticService.Infraestructure.Persistence
             var totalCount = await query.CountAsync();
 
             var results = await query
-                .OrderByDescending(h => h.ChangedAt)
+                .OrderBy(h => h.Id)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -350,6 +352,8 @@ namespace LogisticService.Infraestructure.Persistence
 
             if (deliveryTeamId.HasValue)
                 query = query.Where(o => o.AssignedDeliveryTeamId == deliveryTeamId.Value);
+
+            query = query.Where(o => o.AssignedDeliveryZoneId != null);
 
             var grouped = await query
                 .GroupBy(o => new { o.AssignedDeliveryZoneId, ZoneName = o.AssignedDeliveryZone!.Name })

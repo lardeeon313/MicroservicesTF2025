@@ -36,6 +36,8 @@ namespace LogisticService.Application.Queries.LogisticReports.GetOperatorProduct
                 query.PaymentType
             );
 
+            orders = orders.Where(o => o.AssignedOperatorId != null).ToList();
+
             var grouped = orders
                 .GroupBy(o => new { o.AssignedOperatorId })
                 .Select(g => new OperatorProductivityReportDto

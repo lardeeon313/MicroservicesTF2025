@@ -384,6 +384,15 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
                     .ToListAsync();
         }
 
+        //NUEVO METODO: PERMITE OBTENER LAS DURACIONES PROMEDIO ENTRE LOS CAMBIOS DE PEDIDO 
+        public async Task<OrderStatusHistory?> GetLastStatusHistoryAsync(int orderId)
+        {
+            return await _context.OrderStatusHistories
+                .Where(h => h.OrderId == orderId)
+                .OrderByDescending(h => h.ChangedAt)
+                .FirstOrDefaultAsync();
+        }
+
 
     }
 }

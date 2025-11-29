@@ -10,7 +10,7 @@ const cards = [
     link: "/sales/reports/customersReport",
   },
   {
-    title: "Estados de los clientes inactivos",
+    title: "Estados de los clientes",
     description: "Analiza los clientes que hayan dejado de realizar pedidos en un lapso de tiempo.",
     icon: <PieChart className="h-10 w-10 text-red-600" />,
     link: "/sales/reports/customerStatusReport",

@@ -24,6 +24,10 @@ export type DepotOrderDtoBilling = {
 
 type Filters = {
   customerName?: string;
+  fromDate?: string;
+  toDate?: string;
+  minAmount?: number;
+  maxAmount?: number;
 };
 
 export function useInvoicedOrdersByCustomer() {
@@ -32,35 +36,39 @@ export function useInvoicedOrdersByCustomer() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchOrders = useCallback(async (filters: Filters) => {
-    setLoading(true);
-    setError(null);
+  setLoading(true);
+  setError(null);
 
-    try {
-      const params = new URLSearchParams();
-      if (filters.customerName) params.append("CustomerName", filters.customerName);
+  try {
+    const params = new URLSearchParams();
 
-      const res = await API.get<DepotOrderDtoBilling[]>(
-        `/depot/billingmanager/invoiced-orders-by-customer?${params.toString()}`
-      );
+    if (filters.customerName) params.append("CustomerName", filters.customerName);
+    if (filters.fromDate) params.append("FromDate", filters.fromDate);
+    if (filters.toDate) params.append("ToDate", filters.toDate);
+    if (filters.minAmount !== undefined) params.append("MinAmount", filters.minAmount.toString());
+    if (filters.maxAmount !== undefined) params.append("MaxAmount", filters.maxAmount.toString());
 
-      
-      const mapped = res.data
-        .map(order => ({
-          ...order,
-          productCount: order.items.reduce((acc, item) => acc + item.quantity, 0)
-        }))
-        .filter(order => order.totalAmount > 0);
+    const res = await API.get<DepotOrderDtoBilling[]>(
+      `/depot/billingmanager/invoiced-orders-by-customer?${params.toString()}`
+    );
 
-      setData(mapped);
+    const mapped = res.data
+      .map(order => ({
+        ...order,
+        productCount: order.items.reduce((acc, item) => acc + item.quantity, 0)
+      }))
+      .filter(order => order.totalAmount > 0);
 
-    } catch (err: any) {
-      
-      setError(err.message || "Error al obtener órdenes facturadas.");
-      setData([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    setData(mapped);
+
+  } catch (err: any) {
+    setError(err.message || "Error al obtener órdenes facturadas.");
+    setData([]);
+  } finally {
+    setLoading(false);
+  }
+}, []);
+
 
   return { data, loading, error, fetchOrders };
 }

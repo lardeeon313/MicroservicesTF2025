@@ -43,7 +43,14 @@ export default function InvoicedOrdersPage() {
     if (newFilters.fromDate !== undefined) setFromDate(newFilters.fromDate);
     if (newFilters.toDate !== undefined) setToDate(newFilters.toDate);
 
-    fetchOrders({ customerName: newFilters.customerName });
+    fetchOrders({
+  customerName: newFilters.customerName || "",
+  fromDate: newFilters.fromDate || "",
+  toDate: newFilters.toDate || "",
+  minAmount: newFilters.minAmount,
+  maxAmount: newFilters.maxAmount,
+});
+
 
     setPage(1);
   };
