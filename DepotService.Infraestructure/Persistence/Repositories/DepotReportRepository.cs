@@ -143,8 +143,9 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         public async Task<PaginatedResult<CompletedOrdersReport>> GetCompletedOrdersAsync(DateTime? from, DateTime? to, int page, int pageSize)
         {
             var query = _context.DepotOrders
-                .AsNoTracking()
-                .Where(o => o.Status == OrderStatus.Prepared);
+        .AsNoTracking()
+        .Include(o => o.StatusHistory)
+        .Where(o => o.Status >= OrderStatus.Prepared);
 
             if (from.HasValue)
                 query = query.Where(o => o.OrderDate >= from.Value);
@@ -161,16 +162,17 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 .Select(o => new CompletedOrdersReport
                 {
                     DepotOrderId = o.DepotOrderId,
-                    SalesOrderId = o.SalesOrderId,
                     CustomerName = o.CustomerName,
-                    CustomerEmail = o.CustomerEmail,
+                    OperatorId = o.AssignedOperatorId,
                     OrderDate = o.OrderDate,
-                    CompletedAt = o.StatusHistory
+
+                    PreparedAt = o.StatusHistory
                         .Where(h => h.NewStatus == OrderStatus.Prepared)
-                        .OrderByDescending(h => h.ChangedAt)
+                        .OrderBy(h => h.ChangedAt)
                         .Select(h => h.ChangedAt)
                         .FirstOrDefault(),
-                    DeliveryDate = o.DeliveryDate,
+
+                    DeliveryDate = o.DeliveryDate
                 })
                 .ToListAsync();
 
@@ -179,7 +181,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 Items = items,
                 TotalItems = totalCount,
                 CurrentPage = page,
-                TotalPages = pageSize
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
             };
         }
 
