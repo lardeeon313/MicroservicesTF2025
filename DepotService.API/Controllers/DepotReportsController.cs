@@ -82,10 +82,12 @@ namespace DepotService.API.Controllers
         }
 
         /// <summary>
-        /// Endpoint para obtener el tiempo de procesamiento promedio por orden.
+        /// Endpoint para obtener el tiempo de procesamiento por orden.
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
+        /// <param name="oper"></param>
+        /// <param name="customer"></param>
         /// <param name="page"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
@@ -96,10 +98,12 @@ namespace DepotService.API.Controllers
         public async Task<IActionResult> GetProcessingTimePerOrder(
             [FromQuery] DateTime? from,
             [FromQuery] DateTime? to,
+            [FromQuery] string? oper,
+            [FromQuery] string? customer,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10)
         {
-            var query = new GetProcessingTimePerOrderQuery(from, to, page, pageSize);
+            var query = new GetProcessingTimePerOrderQuery(from, to, oper, customer, page, pageSize);
             var orderProcessingTimes = await _getProcessingTimePerOrderQueryHandler.HandleAsync(query);
             return Ok(orderProcessingTimes);
         }
