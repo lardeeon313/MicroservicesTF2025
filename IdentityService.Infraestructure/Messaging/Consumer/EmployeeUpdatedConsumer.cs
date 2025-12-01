@@ -84,6 +84,7 @@ namespace IdentityService.Infraestructure.Messaging.Consumer
                     user.Name = evento.FirstName;
                     user.LastName = evento.LastName;
                     user.Email = evento.Email;
+                    user.PhoneNumber = evento.PhoneNumber;
 
                     await userManager.UpdateAsync(user);
 
