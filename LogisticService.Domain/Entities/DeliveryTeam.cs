@@ -21,10 +21,14 @@ namespace LogisticService.Domain.Entities
         public List<DeliveryTeamZoneAssignment> ZoneAssignments { get; set; } = new();
 
         // Constructor por defecto
-        protected DeliveryTeam()
-        {            
+        public DeliveryTeam()
+        {
+            
         }
-
+        public DeliveryTeam(string teamName)
+        {
+            TeamName = teamName;
+        }
         public DeliveryTeam(string teamName, string? teamDescription)
         {
             if (string.IsNullOrWhiteSpace(teamName))
@@ -33,6 +37,15 @@ namespace LogisticService.Domain.Entities
             TeamName = teamName;
             TeamDescription = teamDescription;
         }
+
+        public DeliveryTeam(int id, string teamName, bool isActive)
+        {
+            Id = id;
+            TeamName = teamName;
+            IsActive = isActive;
+        }
+
+
 
         // Metodo para actualizar el equipo
         public void UpdateTeam(string name, string? teamDescription)

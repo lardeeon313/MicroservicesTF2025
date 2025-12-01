@@ -20,7 +20,10 @@ namespace LogisticService.Application.Commands.LogisticManager.DeliveryZone.Disa
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
         public async Task<bool> HandleAsync(DisableDeliveryZoneCommand command)
-        {
+        {            
+            if (command is null)
+                throw new ArgumentNullException(nameof(command));
+
             var zone = await _repository.GetByIdAsync(command.ZoneId);
             if (zone == null)
             {
@@ -42,3 +45,4 @@ namespace LogisticService.Application.Commands.LogisticManager.DeliveryZone.Disa
         }
     }
 }
+    
