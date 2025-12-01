@@ -13,7 +13,7 @@ export default function CustomerInactiveReportPage() {
   const pageSize = 10;
 
   // 🔹 Estado para mostrar/ocultar gráfico
-  const [showGraph, setShowGraph] = useState(true);
+  const [showGraph, setShowGraph] = useState(false);
 
   // 🔑 ahora manejamos todos los filtros en un objeto
   const [filters, setFilters] = useState({

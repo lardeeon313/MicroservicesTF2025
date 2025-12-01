@@ -73,25 +73,7 @@ export default function InvoicedOrdersFilter({ onSearch }: Props) {
           />
         </div>
 
-        <div className="flex-1">
-          <label className="text-sm font-medium px-2 text-gray-600 mb-1">Monto mínimo:</label>
-          <input
-            type="number"
-            value={minAmount}
-            onChange={(e) => setMinAmount(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 w-full"
-          />
-        </div>
 
-        <div className="flex-1">
-          <label className="text-sm font-medium px-2 text-gray-600 mb-1">Monto máximo:</label>
-          <input
-            type="number"
-            value={maxAmount}
-            onChange={(e) => setMaxAmount(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 w-full"
-          />
-        </div>
 
         <div className="flex w-1/5 justify-around">
           <button

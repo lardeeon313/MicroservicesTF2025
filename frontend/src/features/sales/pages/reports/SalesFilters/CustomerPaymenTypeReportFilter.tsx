@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { CustomerReportFilters } from "../SalesPages/useSalesPaymentTypeReport";
+import { CustomerReportFilters, paymentTypeReportMapper } from "../SalesPages/useSalesPaymentTypeReport";
 
 interface Props {
   filters: CustomerReportFilters;
@@ -7,26 +7,40 @@ interface Props {
 }
 
 const CustomerReportFilterPayment: React.FC<Props> = ({ filters, setFilters }) => {
-  // Estado local (inputs sin activar filtro aún)
+  const paymentOptions = Object.values(paymentTypeReportMapper);
+
   const [temp, setTemp] = useState<CustomerReportFilters>({
     name: filters.name || "",
     startDate: filters.startDate || "",
     endDate: filters.endDate || "",
-    paymentType: filters.paymentType || "",
+    paymentType: filters.paymentType || [],
   });
 
-  // Si los filtros externos cambian → sincroniza el estado temporal
+  const [openDropdown, setOpenDropdown] = useState(false);
+
   useEffect(() => {
     setTemp({
       name: filters.name || "",
       startDate: filters.startDate || "",
       endDate: filters.endDate || "",
-      paymentType: filters.paymentType || "",
+      paymentType: filters.paymentType || [],
     });
   }, [filters]);
 
-  const update = (field: keyof CustomerReportFilters, value: string) => {
+  const update = (
+    field: keyof CustomerReportFilters,
+    value: string | string[]
+  ) => {
     setTemp((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const togglePaymentType = (value: string) => {
+    const current = temp.paymentType;
+    if (current.includes(value)) {
+      update("paymentType", current.filter((v) => v !== value));
+    } else {
+      update("paymentType", [...current, value]);
+    }
   };
 
   const handleSearch = () => {
@@ -38,7 +52,7 @@ const CustomerReportFilterPayment: React.FC<Props> = ({ filters, setFilters }) =
       name: "",
       startDate: "",
       endDate: "",
-      paymentType: "",
+      paymentType: [],
     };
 
     setTemp(cleared);
@@ -49,9 +63,8 @@ const CustomerReportFilterPayment: React.FC<Props> = ({ filters, setFilters }) =
     <div className="w-full bg-white border border-gray-200 shadow-md rounded-xl p-6">
       <h3 className="text-lg font-semibold mb-4 text-gray-700">Filtros del reporte</h3>
 
-      {/* GRID */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        
+
         {/* Nombre */}
         <div className="flex flex-col">
           <label className="text-sm font-medium text-gray-600 mb-1">Nombre del cliente</label>
@@ -64,20 +77,61 @@ const CustomerReportFilterPayment: React.FC<Props> = ({ filters, setFilters }) =
           />
         </div>
 
-        {/* Tipo de pago */}
-        <div className="flex flex-col">
+        {/* Select mejorado */}
+        <div className="flex flex-col relative">
           <label className="text-sm font-medium text-gray-600 mb-1">Tipo de pago</label>
-          <input
-            type="text"
-            placeholder="Escribe el tipo de pago"
-            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400 focus:outline-none"
-            value={temp.paymentType}
-            onChange={(e) => update("paymentType", e.target.value)}
-          />
+
+          <div
+            className="border border-gray-300 rounded-lg px-3 py-2 cursor-pointer bg-white min-h-[42px] flex flex-wrap gap-2"
+            onClick={() => setOpenDropdown(!openDropdown)}
+          >
+            {temp.paymentType.length === 0 && (
+              <span className="text-gray-400">Seleccionar...</span>
+            )}
+
+            {temp.paymentType.map((pt) => (
+              <span
+                key={pt}
+                className="bg-red-100 text-red-600 px-2 py-1 rounded-md text-sm flex items-center gap-2"
+              >
+                {pt}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    togglePaymentType(pt);
+                  }}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  ✕
+                </button>
+              </span>
+            ))}
+          </div>
+
+          {/* Dropdown */}
+          {openDropdown && (
+            <div className="absolute top-full left-0 mt-1 w-full bg-white border border-gray-300 shadow-lg rounded-lg z-20 max-h-48 overflow-y-auto">
+              {paymentOptions.map((opt, i) => (
+                <div
+                  key={i}
+                  className="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
+                  onClick={() => togglePaymentType(opt)}
+                >
+                  <input
+                    type="checkbox"
+                    className="cursor-pointer"
+                    checked={temp.paymentType.includes(opt)}
+                    readOnly
+                  />
+                  <span>{opt}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* BOTONES */}
+      {/* Botones */}
       <div className="flex justify-end gap-4 mt-6">
         <button
           onClick={handleClear}

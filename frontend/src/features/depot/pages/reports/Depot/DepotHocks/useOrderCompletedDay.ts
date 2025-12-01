@@ -53,6 +53,8 @@ export const useOrderCompletedDay = () => {
         },
       });
 
+      console.log(response)
+
       
 
       const items: Order[] = response.data.items || [];

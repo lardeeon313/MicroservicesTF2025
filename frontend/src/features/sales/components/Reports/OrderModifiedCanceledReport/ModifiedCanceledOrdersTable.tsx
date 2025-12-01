@@ -7,12 +7,15 @@ type Props = {
   orders: Order[];
 };
 
+
 const ModifiedCanceledOrdersTable: React.FC<Props> = ({ orders }) => {
   const filteredOrders = orders.filter(
     (order) =>
       order.status === OrderStatus.Canceled ||
-      order.status === OrderStatus.Issued ||
-      order.status === OrderStatus.Pending
+      order.status === OrderStatus.PendingReissued || 
+      order.status === OrderStatus.Pending || 
+      order.status === OrderStatus.PendingResolution || 
+      order.status === OrderStatus.ReIssued  
   );
 
   // Estado vacío cuando no hay pedidos filtrados

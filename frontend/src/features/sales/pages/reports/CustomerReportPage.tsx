@@ -16,7 +16,7 @@ export default function CustomerReportPage() {
   const [minOrdersFilter, setMinOrdersFilter] = useState(0);
 
   // 🔹 Estado para ocultar/mostrar gráfico
-  const [showGraph, setShowGraph] = useState(true);
+  const [showGraph, setShowGraph] = useState(false);
 
   const { data: customers, loading, totalPages } = useCustomerReport(page, pageSize);
 
@@ -41,10 +41,10 @@ export default function CustomerReportPage() {
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-          Clientes y Pedidos
+          Ventas por clientes
         </h1>
         <p className="text-center text-lg text-gray-700 mb-12">
-          Todo lo que necesitás para gestionar los pedidos y clientes
+          Visualizá todos los pedidos creados por cliente.
         </p>
 
         {/* Filtros */}

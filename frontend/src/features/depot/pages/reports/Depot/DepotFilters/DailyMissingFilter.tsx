@@ -18,11 +18,11 @@ const DailyMissingFilter: React.FC<DailyMissingFilterProps> = ({
       {/* Input de fecha + hora */}
       <div className="flex flex-col">
         <label className="text-sm text-gray-600 mb-1">
-          Seleccione fecha 
+          Seleccione una fecha 
         </label>
 
         <input
-          type="datetime-local"
+          type="date"
           value={selectedTime}
           onChange={(e) => onHourChange(e.target.value)}
           className="border border-gray-300 px-3 py-2 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"

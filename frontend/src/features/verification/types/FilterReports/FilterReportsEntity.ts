@@ -92,6 +92,8 @@ export interface OperatorProductivityFilterEntity {
   deliveryZoneId?: number;
   deliveryTeamId?: number;
   paymentType?: string;
+  operatorName?: string;  
+  teamName?: string;      
 }
 
 //Delivery times Filter: 

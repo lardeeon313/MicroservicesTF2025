@@ -19,7 +19,7 @@ export const SalesPerfomanceReportPage = () => {
   } = usePerfomanceSalesReport();
 
   // 🔹 Estado para mostrar/ocultar el gráfico
-  const [showGraph, setShowGraph] = useState(true);
+  const [showGraph, setShowGraph] = useState(false);
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
@@ -29,10 +29,10 @@ export const SalesPerfomanceReportPage = () => {
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-36">
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-          Rendimiento de Ventas
+          Desempeño de ventas
         </h1>
         <p className="text-center text-lg text-gray-700 mb-12">
-          Se visualiza el rendimiento de todos los encargados de ventas
+          Se visualiza el rendimiento de todos los usuarios con el rol de encargado de ventas
         </p>
 
         {/* 🔹 Filtros */}

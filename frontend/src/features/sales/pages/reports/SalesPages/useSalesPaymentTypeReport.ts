@@ -17,7 +17,7 @@ export interface CustomerReportFilters {
   name: string;
   startDate?: string;
   endDate?: string;
-  paymentType: string;
+  paymentType: string[];
 }
 
 export const paymentTypeReportMapper: Record<string, string> = {
@@ -80,9 +80,9 @@ export const useCustomerReport = (filters: CustomerReportFilters) => {
         filters.name === "" ||
         row.fullName.toLowerCase().includes(filters.name.toLowerCase());
 
-      const matchPayment =
-        filters.paymentType === "" ||
-        row.paymentTypes.includes(filters.paymentType);
+        const matchPayment =
+          filters.paymentType.length === 0 ||
+          filters.paymentType.every((pt) => row.paymentTypes.includes(pt));
 
       // Filtrado por fechas → aún no tenés fecha en la respuesta, queda libre
       const matchDate = true;

@@ -21,7 +21,8 @@ const DailyMissingPage: React.FC = () => {
     if (!data) return [];
     if (!selectedTime) return data;
 
-    const selectedDate = new Date(selectedTime);
+    // selectedTime viene como "2025-11-30"
+    const selected = new Date(selectedTime + "T00:00:00");
 
     return data.filter((d) => {
       if (!d.missingDate) return false;
@@ -29,12 +30,13 @@ const DailyMissingPage: React.FC = () => {
       const itemDate = new Date(d.missingDate);
 
       return (
-        itemDate.getFullYear() === selectedDate.getFullYear() &&
-        itemDate.getMonth() === selectedDate.getMonth() &&
-        itemDate.getDate() === selectedDate.getDate()
+        itemDate.getFullYear() === selected.getFullYear() &&
+        itemDate.getMonth() === selected.getMonth() &&
+        itemDate.getDate() === selected.getDate()
       );
     });
   }, [data, selectedTime]);
+
 
 
   // ============================ NUEVO FILTRO: DÍA / MES / QUINCENA ============================

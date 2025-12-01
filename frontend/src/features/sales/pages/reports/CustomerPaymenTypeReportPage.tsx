@@ -19,7 +19,7 @@ const CustomerReportPaymentTypePage: React.FC = () => {
     name: "",
     startDate: "",
     endDate: "",
-    paymentType: "",
+    paymentType: [],
   });
 
   const { data, loading } = useCustomerReport(filters);
