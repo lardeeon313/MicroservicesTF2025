@@ -5,6 +5,7 @@ using SalesService.Application.DTOs.Customer;
 using SalesService.Application.DTOs.Order;
 using SalesService.Application.DTOs.Order.Request;
 using SalesService.Domain.Common.Interfaces;
+using SalesService.Domain.Entities;
 using SalesService.Domain.Entities.CustomerEntity;
 using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.Enums;
@@ -48,9 +49,9 @@ namespace SalesService.Tests.Handlers
             var command = new RegisterOrderCommand(
                 Guid.NewGuid(),
                 new List<RegisterOrderItemRequest> {
-                    new() { ProductName = "Agua", ProductBrand = "Eco", Quantity = 2 }
+            new() { ProductName = "Agua", ProductBrand = "Eco", Quantity = 2 }
                 },
-                null,
+                null, // <-- DeliveryAddressId debe ser null
                 "Entrega mañana",
                 "User123",
                 new AddressRequest
@@ -65,23 +66,39 @@ namespace SalesService.Tests.Handlers
                     Latitude = -34.6037,
                     Longitude = -58.3816
                 },
-                2,
+                null, 
                 PaymentType.Cash
             );
 
+            var customer = new Customer
+            {
+                Id = command.CustomerId,
+                FirstName = "Milton",
+                LastName = "Arguello",
+                Email = "milton@test.com",
+                Addresses = new List<Address>() 
+            };
+
+            _customerRepo.Setup(c => c.GetByIdAsync(command.CustomerId))
+                .ReturnsAsync(customer);
+
+            _orderRepo.Setup(o => o.AddAsync(It.IsAny<Order>()))
+                .Returns(Task.CompletedTask);
+
+            _customerRepo.Setup(c => c.UpdateAsync(It.IsAny<Customer>()))
+                .Returns(Task.CompletedTask);
+
+            _publisher.Setup(p => p.PublishAsync(It.IsAny<OrderRegisteredIntegrationEvent>(),
+                "order_registered_queue"))
+                .Returns(Task.CompletedTask);
+
             // Act
-            var customer = new Customer { Id = command.CustomerId };
-
-            _customerRepo.Setup(c => c.GetByIdAsync(command.CustomerId)).ReturnsAsync(customer);
-            _orderRepo.Setup(o => o.AddAsync(It.IsAny<Order>())).Returns(Task.CompletedTask);
-
-            // Result
             var result = await _handler.HandleAsync(command);
 
+            // Assert
             result.Should().NotBeNull();
             result.CustomerId.Should().Be(command.CustomerId);
 
-            // Assert
             _publisher.Verify(p => p.PublishAsync(
                 It.IsAny<OrderRegisteredIntegrationEvent>(), "order_registered_queue"), Times.Once);
         }

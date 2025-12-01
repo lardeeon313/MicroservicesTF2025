@@ -25,6 +25,12 @@ namespace LogisticService.Domain.Entities
 
             Name = name;
             Description = description;
+            IsActive = true; 
+        }
+
+        public DeliveryZone(string name, string? description, bool isActive) : this(name, description)
+        {
+            IsActive = isActive;
         }
 
         public void Update(string name, string? description)
