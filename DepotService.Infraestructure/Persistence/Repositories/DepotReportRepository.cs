@@ -22,50 +22,72 @@ namespace DepotService.Infraestructure.Persistence.Repositories
             _logger = logger;
         }
 
-        public async Task<PaginatedResult<OrderProcessingTime>> GetAverageProcessingTimePerOrderAsync(DateTime? from, DateTime? to, int page, int pageSize)
+        public async Task<PaginatedResult<OrderProcessingTime>> GetAverageProcessingTimePerOrderAsync(DateTime? from, DateTime? to, string? operatorId, string? customer, int page, int pageSize)
         {
-            var query = _context.OrderStatusHistories.AsQueryable();
+            var query = _context.DepotOrders
+                .Include(o => o.StatusHistory)
+                .AsQueryable();
 
+            // filtro por rango de fechas
             if (from.HasValue)
-                query = query.Where(h => h.ChangedAt >= from.Value);
-            if (to.HasValue)
-                query = query.Where(h => h.ChangedAt <= to.Value);
+                query = query.Where(o => o.StatusHistory.Any(h => h.ChangedAt >= from.Value));
 
-            var grouped = query
-                .GroupBy(h => h.OrderId)
-                .Select(g => new
+            if (to.HasValue)
+                query = query.Where(o => o.StatusHistory.Any(h => h.ChangedAt <= to.Value));
+
+            if (!string.IsNullOrEmpty(operatorId)
+                && Guid.TryParse(operatorId, out var opGuid))
+                query = query.Where(o => o.AssignedOperatorId == opGuid);
+
+            if (!string.IsNullOrEmpty(customer))
+                query = query.Where(o => o.CustomerName.Contains(customer));
+
+            // proceso de calculo de tiempos
+            var processed = query
+                .Select(o => new
                 {
-                    OrderId = g.Key,
-                    Start = g
+                    o.DepotOrderId,
+                    o.CustomerName,
+                    o.AssignedOperatorId,
+
+                    StartPreparation = o.StatusHistory
                         .Where(h => h.NewStatus == OrderStatus.InPreparation)
                         .OrderBy(h => h.ChangedAt)
                         .Select(h => h.ChangedAt)
                         .FirstOrDefault(),
-                    End = g
-                        .Where(h => h.NewStatus == OrderStatus.SentToBilling)
-                        .OrderByDescending(h => h.ChangedAt)
+
+                    Prepared = o.StatusHistory
+                        .Where(h => h.NewStatus == OrderStatus.Prepared)
+                        .OrderBy(h => h.ChangedAt)
                         .Select(h => h.ChangedAt)
                         .FirstOrDefault()
                 })
-                .Where(x => x.Start != default && x.End != default && x.End > x.Start);
-
-            var totalItems = await grouped.CountAsync();
+                .Where(x =>
+                    x.StartPreparation != default &&
+                    x.Prepared != default &&
+                    x.Prepared > x.StartPreparation);
+            // paginacion
+            var totalItems = await processed.CountAsync();
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
-            var results = await grouped
-                .OrderByDescending(x => x.End)
+            var items = await processed
+                .OrderByDescending(x => x.Prepared)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Select(x => new OrderProcessingTime
                 {
-                    OrderId = x.OrderId,
-                    DurationMinutes = EF.Functions.DateDiffMinute(x.Start, x.End)
+                    OrderId = x.DepotOrderId,
+                    CustomerName = x.CustomerName,
+                    OperatorId = x.AssignedOperatorId,
+                    StartPreparation = x.StartPreparation,
+                    Prepared = x.Prepared,
+                    DurationMinutes = EF.Functions.DateDiffMinute(x.StartPreparation, x.Prepared)
                 })
                 .ToListAsync();
 
             return new PaginatedResult<OrderProcessingTime>
             {
-                Items = results,
+                Items = items,
                 TotalItems = totalItems,
                 TotalPages = totalPages,
                 CurrentPage = page
