@@ -36,7 +36,7 @@ const RegisterForm = () => {
         </h2>
 
         <Formik 
-          initialValues={{userName: "", name: "", lastName: "", email: "", password: "", confirmPassword: "", role: ""}} // Campo Rol TEMPORAL
+          initialValues={{userName: "", name: "", lastName: "", email: "",  phoneNumber: "",  password: "", confirmPassword: "", role: ""}} // Campo Rol TEMPORAL
           validationSchema={registerValidationSchema}
           onSubmit={handleSubmit}
         >
@@ -99,11 +99,27 @@ const RegisterForm = () => {
                     name="email"
                     type="email"
                     required
-                    autoComplete="email"
+                    autoComplete="Tu Correo Electronico"
                     placeholder="tu-correo@gmail.com"
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-red-200 sm:text-sm/6"
                   />
                   <ErrorMessage name="email" component="div" className="text-red-700 text-sm"/>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="phoneNumber" className="block text-sm/6 font-medium text-gray-900">
+                  Teléfono
+                </label>
+                <div className="mt-2">
+                  <Field
+                    name="phoneNumber"
+                    type="text"
+                    required
+                    placeholder="Tu número de teléfono"
+                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-red-200 sm:text-sm/6"
+                  />
+                  <ErrorMessage name="phoneNumber" component="div" className="text-red-700 text-sm"/>
                 </div>
               </div>
 

@@ -10,6 +10,9 @@ export const registerValidationSchema = Yup.object({
     email: Yup.string()
         .email("Formato de correo inválido")
         .required("El correo electrónico es obligatorio"),
+    phoneNumber: Yup.string()
+        .required("El número de teléfono es obligatorio")
+        .matches(/^[0-9+() -]{6,20}$/, "Número de teléfono inválido"),        
     password: Yup.string()
         .required("La contraseña es obligatoria")
         .min(6, "La contraseña debe tener al menos 6 caracteres")

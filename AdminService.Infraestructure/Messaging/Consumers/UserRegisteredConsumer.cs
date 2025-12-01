@@ -78,11 +78,12 @@ namespace AdminService.Infraestructure.Messaging.Consumers
                             LastName = evento.LastName,                            
                             PhoneNumber = evento.PhoneNumber,
                             Email = evento.Email,
+                            CreatedAt = evento.CreateAt,
                             Status = Domain.Enums.EmployeeStatus.Active,                            
                             Role = Enum.TryParse<EmployeeRole>(evento.Role, true, out var parsedRole)
                                     ? parsedRole
-                                    : EmployeeRole.Admin
-                            
+                                    : EmployeeRole.Admin                            
+
                         };
 
                         await repository.AddEmployeeAsync(employee);
