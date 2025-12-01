@@ -18,6 +18,7 @@ export interface RegisterRequest {
     name: string;
     lastName: string;
     email: string;
+    phoneNumber: string;
     password: string;
     role: string; // Temporal!
 }

@@ -19,14 +19,14 @@ namespace AdminService.Application.Commands.Employees.UpdateEmployee
         public EmployeeStatus Status { get; set; }
         public EmployeeSector Sector { get; set; }
 
-        public UpdateEmployeeCommand(int id, string userName, string firstName, string lastName, string phoneNumber, string email, EmployeeRole role, EmployeeStatus status, EmployeeSector sector)
+        public UpdateEmployeeCommand(int id, string userName, string firstName, string lastName, string email, string phoneNumber, EmployeeRole role, EmployeeStatus status, EmployeeSector sector)
         {
             Id = id;
             UserName = userName;
             FirstName = firstName;
-            LastName = lastName;            
-            PhoneNumber = phoneNumber;
+            LastName = lastName;
             Email = email;
+            PhoneNumber = phoneNumber;            
             Role = role;
             Status = status;
             Sector = sector;

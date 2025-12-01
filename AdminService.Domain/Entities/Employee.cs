@@ -37,7 +37,7 @@ namespace AdminService.Domain.Entities
         public EmployeeStatus Status { get; set; }
         public EmployeeSector Sector { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; }
 
         public Employee()

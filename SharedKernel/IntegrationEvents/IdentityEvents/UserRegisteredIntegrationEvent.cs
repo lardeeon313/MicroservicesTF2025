@@ -15,5 +15,6 @@ namespace SharedKernel.IntegrationEvents.IdentityEvents
         public string PhoneNumber { get; set; } = null!;
         public string Email { get; set; } = null!;       
         public string Role { get; set; } = null!;
+        public DateTime CreateAt { get; set; }
     }
 }
