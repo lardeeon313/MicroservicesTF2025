@@ -19,6 +19,9 @@ namespace LogisticService.Application.Commands.LogisticManager.DeliveryZone.Upda
         /// <exception cref="NotImplementedException"></exception>
         public async Task<bool> HandleAsync(UpdateDeliveryZoneCommand command)
         {
+            if (command is null)
+                throw new ArgumentNullException(nameof(command));
+
             var zone = await _repository.GetByIdAsync(command.Id);
             if (zone == null) return false;
 

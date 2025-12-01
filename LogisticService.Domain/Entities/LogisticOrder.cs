@@ -52,6 +52,23 @@ namespace LogisticService.Domain.Entities
         public int DepotOrderId { get; set; }
         public int SalesOrderId { get; set; }
 
+        // --- CONSTRUCTORES ---
+
+        public LogisticOrder()
+        {
+            
+        }
+
+        public LogisticOrder(int id, int assignedDeliveryTeamId)
+        {
+            Id = id;
+            AssignedDeliveryTeamId = assignedDeliveryTeamId;
+        }
+
+
+
+
+
         // --- MÉTODOS DE LÓGICA DE DOMINIO ---
 
         /// <summary>
