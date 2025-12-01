@@ -72,7 +72,8 @@ namespace IdentityService.Application.Commands.Register
                 LastName = user.LastName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                Role = selectedRole
+                Role = selectedRole,
+                CreateAt = user.HightDate
             };
 
             await _rabbitPublisher.PublishAsync(integrationEvent, "identity_user_registered_queue");
