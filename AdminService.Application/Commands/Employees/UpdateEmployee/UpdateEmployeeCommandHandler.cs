@@ -63,6 +63,7 @@ namespace AdminService.Application.Commands.Employees.UpdateEmployee
                 Email = employeeExists.Email,
                 Role = employeeExists.Role.ToString(),
                 Status = employeeExists.Status.ToString(),
+                PhoneNumber = employeeExists.PhoneNumber,                
             };
 
             await _rabbitMQPublisher.PublishAsync(integrationEvent, "employee_updated_queue");
