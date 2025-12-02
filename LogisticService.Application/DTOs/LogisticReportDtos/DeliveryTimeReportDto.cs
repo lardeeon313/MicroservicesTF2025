@@ -8,6 +8,7 @@ namespace LogisticService.Application.DTOs.LogisticReportDtos
 {
     public class DeliveryTimeReportDto
     {
+        public int? OrderId { get; set; }
         public int? DeliveryZoneId { get; set; }
         public string? DeliveryZoneName { get; set; }
 

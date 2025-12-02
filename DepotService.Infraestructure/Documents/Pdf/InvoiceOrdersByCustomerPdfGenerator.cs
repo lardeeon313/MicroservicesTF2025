@@ -31,6 +31,7 @@ namespace DepotService.Infraestructure.Documents
         public InvoicedOrdersByCustomerDocument(List<DepotOrderEntity> orders)
         {
             _orders = orders.Where(o => o.TotalAmount > 0).ToList();
+            
         }
 
         public DocumentMetadata GetMetadata() => new DocumentMetadata

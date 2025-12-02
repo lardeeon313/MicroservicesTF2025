@@ -1,87 +1,67 @@
-import React, { useEffect, useState } from "react";
-import useDeliveryTimesReport from "../VerificationHocks/useDeliveryTimesReport";
-import FilterDeliveryTimes from "../VerificationFilters/FilterDeliveryTimes";
-import DeliveryTimesTable from "../VerificationComponents/DeliveryTimesFolder/DeliveryTimesReport";
-import GraphDeliveryTimes from "../VerificationGraphs/GraphDeliveryTimesReport";
-import { DeliveryTimeFilterEntity } from "../../../../types/FilterReports/FilterReportsEntity";
-import LoadingSpinner from "../../../../../../components/LoadingSpinner";
-import BackButton from "../../../../components/BackButton";
 
+import { DeliveryTimesFilter } from "../VerificationFilters/FilterDeliveryTimes";
+import { DeliveryReportGeneralTable } from "../VerificationComponents/DeliveryTimesFolder/DeliveryTimesReport";
+import { DeliveryReportOnTimeTable } from "../VerificationComponents/DeliveryTimesFolder/DeliveryReportLateTable"; // Nota: Revisa si la importación coincide con el nombre real del componente
+import { DeliveryReportLateTable } from "../VerificationComponents/DeliveryTimesFolder/DeliveryReportOnTimeTable"; // Nota: Revisa si la importación coincide con el nombre real del componente
+import { useDeliveryTimesReport } from "../VerificationHocks/useDeliveryTimesReport";
+import LoadingSpinner from "../../../../../../components/LoadingSpinner"; // Asegúrate que la ruta sea correcta
+import BackButton from "../../../../components/BackButton"; // Asegúrate que la ruta sea correcta
 
+export const DeliveryTimesReportPage = () => {
+  const {
+    filters,
+    setFilters,
+    generalGrid,
+    onTimeList,
+    lateList,
+    fetchReport,
+    resetFilters,
+    loading,
+  } = useDeliveryTimesReport();
 
-export const DeliveryTimesReportPage: React.FC = () => {
-  const { data, loading, error, fetchReport } = useDeliveryTimesReport();
-  const [filter, setFilter] = useState<DeliveryTimeFilterEntity>({});
-  const [showGraph, setShowGraph] = useState(false);
-
-  useEffect(() => {
-    fetchReport(filter);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const onApplyFilter = (f: DeliveryTimeFilterEntity) => {
-    setFilter(f);
-    fetchReport(f);
-  };
+  // Opcional: Cargar datos al inicio si se desea
+  // useEffect(() => { fetchReport(); }, []);
 
   if (loading) {
-    return <LoadingSpinner message="Cargando reporte de actividad..." height="h-screen" />;
+    return <LoadingSpinner message="Cargando reporte de entregas..." height="h-screen" />;
   }
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
         <BackButton to="/verification/reports" />
-          <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-            Reporte de Tiempos de entrega
-          </h1>
-          <p className="text-center text-lg text-gray-700 mb-12">
-             Visualiza todos los pedidos que han sido entregados por los equipos de reparto.
-          </p>
+        
+        <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
+          Reporte de Tiempos de entrega
+        </h1>
+        
+        <p className="text-center text-lg text-gray-700 mb-12">
+          Visualiza el cumplimiento de tiempos y estado de las entregas.
+        </p>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <FilterDeliveryTimes initial={filter} onApply={onApplyFilter} />
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-10">
+        <DeliveryTimesFilter
+          filters={filters}
+          setFilters={setFilters}
+          onSearch={fetchReport}
+          onClear={resetFilters}
+        />
 
-        <div className="mb-6 flex items-center justify-between">
-          <div className="text-sm text-gray-600 font-medium">
-            {loading ? "Cargando..." : `Resultados: ${data.length}`}
-          </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => fetchReport(filter)}
-              className="px-4 py-2 bg-green-600 text-white font-semibold rounded-xl shadow-sm hover:bg-green-700 hover:shadow-md transition-all duration-200"
-            >
-              Refrescar
-            </button>
-            <button
-              onClick={() => setShowGraph((s) => !s)}
-              className={`px-4 py-2 font-semibold rounded-xl shadow-sm transition-all duration-200 ${
-                showGraph
-                  ? "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-md"
-                  : "bg-gray-300 text-gray-800 hover:bg-gray-400 hover:shadow-md"
-              }`}
-            >
-              {showGraph ? "Ocultar gráfico " : "Mostrar gráfico "}
-            </button>
-          </div>
-        </div>
-
-        {error && (
-          <div className="mb-6 p-4 bg-red-100 border border-red-300 text-red-700 rounded-lg">
-            {error}
+        {/* Mensaje si no hay datos y no está cargando */}
+        {!loading && generalGrid.length === 0 && (
+          <div className="text-center py-10">
+             <p className="text-gray-500 text-lg">No hay datos para mostrar con los filtros actuales.</p>
           </div>
         )}
 
-        {/* Tabla */}
-        <div className="mt-8 mb-12 bg-white shadow rounded-2xl p-4">
-          <DeliveryTimesTable data={data} />
-        </div>
+        {/* Tablas de resultados */}
+        {!loading && generalGrid.length > 0 && (
+          <div className="flex flex-col gap-8 mt-8">
+            <DeliveryReportGeneralTable data={generalGrid} />
 
-        {/* Gráfico */}
-        {showGraph && (
-          <div className="mt-12 bg-white shadow rounded-2xl p-6">
-            <GraphDeliveryTimes data={data} />
+            {!filters.onlyLate && <DeliveryReportOnTimeTable data={onTimeList} />}
+            {!filters.onlyOnTime && <DeliveryReportLateTable data={lateList} />}
           </div>
         )}
       </div>

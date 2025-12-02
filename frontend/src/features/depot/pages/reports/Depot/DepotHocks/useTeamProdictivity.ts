@@ -1,49 +1,51 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import API from "../../../../../../api/axios";
 
-type ProductivityProps = {
-  depotTeamId: number;
-  teamName: string;
+export interface DepotTeamPerformanceDto {
+  depotTeamId: number | null;
+  name: string;
   ordersHandled: number;
-};
+  missingItemsReported: number;
+  isTeam: boolean;
+  operatorId: string | null;
+}
 
-export const useTeamProductivity = (from: string, to: string) => {
-  const [data, setData] = useState<ProductivityProps[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface Filters {
+  from?: string | null;
+  to?: string | null;
+  agruparPorEquipo: boolean;
+}
 
-  useEffect(() => {
-    if (!from || !to) {
-     
-      return;
-    }
+export const useDepotTeamPerformance = () => {
+  const [data, setData] = useState<DepotTeamPerformanceDto[]>([]);
+  const [loading, setLoading] = useState(false);
 
-    const fetchTeamProductivity = async () => {
+  const fetchData = async (filters: Filters) => {
+    try {
       setLoading(true);
-      setError(null);
-     
 
-      try {
-        const response = await API.get<ProductivityProps[]>(
-          "/depot/depotreports/reports/depot-team-performance",
-          { params: { from, to } }
-        );
+      const response = await API.get(
+        "/depot/depotreports/reports/depot-team-performance",
+        {
+          params: {
+            from: filters.from || null,
+            to: filters.to || null,
+            agruparPorEquipo: filters.agruparPorEquipo,
+          },
+        }
+      );
 
-        console.log(response)
+      setData(response.data);
+    } catch (err) {
+      console.error("Error loading performance report:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        setData(response.data);
-
-        
-      } catch (error) {
-        
-        setError("Error al obtener los datos.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTeamProductivity();
-  }, [from, to]);
-
-  return { data, loading, error };
+  return {
+    data,
+    loading,
+    fetchData,
+  };
 };
