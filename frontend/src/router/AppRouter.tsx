@@ -80,6 +80,7 @@ import EmployeesPage from "../features/admin/pages/EmployeesPage";
 import RegisterEmployeesPage from "../features/admin/pages/RegisterEmployeesPage";
 import EmployeesDetailPage from "../features/admin/pages/EmployeesDetailPage";
 import EditEmployeesPage from "../features/admin/pages/EditEmployeesPage";
+import { AdminReportsDashboardPage } from "../features/admin/pages/AdminReportsDashboardPage";
 
 const AppRouter = () => {
   return (
@@ -222,6 +223,7 @@ const AppRouter = () => {
         >
             <Route index element={<AdminDashboardPage/>} /> 
             <Route path="dashboard" element={<AdminDashboardPage/>} />
+            <Route path="reports" element={<AdminReportsDashboardPage />} />
             <Route path="employees" element={<EmployeesPage/>} />
             <Route path="employees/register" element={<RegisterEmployeesPage/>} />
             <Route path="employees/edit/:id" element={<EditEmployeesPage/>} />

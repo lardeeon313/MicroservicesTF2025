@@ -61,8 +61,3 @@ export interface UpdateEmployeeRequest {
   status: EmployeeStatus;
   sector: EmployeeSector;
 }
-
-export interface ChangeStatusEmployeeRequest {
-  id: number;
-  status: EmployeeStatus;
-}

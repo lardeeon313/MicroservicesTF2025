@@ -1,13 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
-import { handleFormikError } from "../../../components/ErrorHandler";
 import { useEmployees } from "../hooks/useEmployees";
 import EmployeesTable from "../components/EmployeesTable";
 import BackButton from "../../../components/BackButton";
 import { EmployeeStatus, EmployeeSector } from "../types/Employee";
-import { changeEmployeeStatus } from "../services/EmployeeService";
-import { getEmployeeStatusLabel, getEmployeeSectorLabel } from "../constants/EmployeeLabels";
+import { getEmployeeSectorLabel, getEmployeeStatusLabel } from "../constants/EmployeeLabels";
 
 export default function EmployeesPage() {
   const [searchName, setSearchName] = useState("");
@@ -25,50 +22,6 @@ export default function EmployeesPage() {
       .toLowerCase();
     return searchText.includes(searchName.toLowerCase());
   });
-
-  const handleStatusChange = async (id: number, newStatus: EmployeeStatus) => {
-    const employee = employees.find((e) => e.id === id);
-    if (!employee || employee.status === newStatus) return;
-
-    const confirmResult = await Swal.fire({
-      title: "¿Cambiar estado?",
-      text: `¿Cambiar el estado de ${employee.firstName} ${employee.lastName} a ${getEmployeeStatusLabel(newStatus)}?`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Sí, cambiar",
-      cancelButtonText: "Cancelar",
-    });
-
-    if (!confirmResult.isConfirmed) {
-      // Si cancela, recargamos para restaurar el estado anterior
-      refetch();
-      return;
-    }
-
-    try {
-      await changeEmployeeStatus({
-        id,
-        status: newStatus,
-      });
-      await Swal.fire(
-        "¡Estado actualizado!",
-        `El estado del empleado ha sido cambiado a ${getEmployeeStatusLabel(newStatus)}.`,
-        "success"
-      );
-      refetch();
-    } catch (error) {
-      handleFormikError({
-        error,
-        customMessages: {
-          400: "Datos inválidos al cambiar el estado",
-          404: "Empleado no encontrado",
-          500: "Error interno al cambiar el estado del empleado",
-        },
-      });
-      // Si hay error, recargamos para restaurar el estado anterior
-      refetch();
-    }
-  };
 
   const handleView = (id: number) => {
     navigate(`/admin/employees/view/${id}`);
@@ -136,7 +89,6 @@ export default function EmployeesPage() {
           onRefetch={refetch}
           onView={handleView}
           onEdit={handleEdit}
-          onStatusChange={handleStatusChange}
           isFiltered={employees.length > 0 && filteredEmployees.length === 0}
         />
 

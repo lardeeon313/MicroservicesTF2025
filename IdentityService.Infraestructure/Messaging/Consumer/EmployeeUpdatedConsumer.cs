@@ -1,4 +1,5 @@
 ﻿using IdentityService.Domain.Entities;
+using IdentityService.Domain.Enums; // <--- IMPORTANTE: Asegúrate de tener este using para EmployedStatus
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +9,6 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using SharedKernel.IntegrationEvents;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -87,33 +87,36 @@ namespace IdentityService.Infraestructure.Messaging.Consumer
                     user.Email = evento.Email;
                     user.PhoneNumber = evento.PhoneNumber;
 
+                    // --- CORRECCIÓN: CONVERSIÓN DE STRING A ENUM ---
+                    // Intentamos convertir el string (ej: "Active") al Enum EmployedStatus
+                    if (Enum.TryParse<EmployedStatus>(evento.Status, true, out var newStatus)) // 'true' ignora mayúsculas/minúsculas
+                    {
+                        user.Employed_Status = newStatus;
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"⚠ El estado '{evento.Status}' recibido no coincide con ningún valor de EmployedStatus. Se omitió la actualización de estado.");
+                    }
+
                     // --- 1. INTENTO DE ACTUALIZACIÓN DEL USUARIO ---
                     var updateResult = await userManager.UpdateAsync(user);
 
                     if (!updateResult.Succeeded)
                     {
-                        // AQUÍ ESTÁ EL CAMBIO IMPORTANTE:
-                        // Capturamos los errores de Identity (ej: Email duplicado, Username inválido)
                         var errors = string.Join(", ", updateResult.Errors.Select(e => e.Description));
                         _logger.LogError($"❌ Error actualizando usuario ID {user.Id}: {errors}");
-
-                        // Si falla la actualización de datos básicos, salimos para no dejar datos inconsistentes
                         return;
                     }
 
                     // --- 2. ACTUALIZACIÓN DE ROLES ---
-                    // (Solo llegamos aquí si el usuario se actualizó correctamente)
-
                     var currentRoles = await userManager.GetRolesAsync(user);
                     var removeResult = await userManager.RemoveFromRolesAsync(user, currentRoles);
 
                     if (!removeResult.Succeeded)
                     {
-                        var removeErrors = string.Join(", ", removeResult.Errors.Select(e => e.Description));
-                        _logger.LogWarning($"⚠ Advertencia al remover roles antiguos: {removeErrors}");
+                        _logger.LogWarning($"⚠ Advertencia al remover roles antiguos: {string.Join(", ", removeResult.Errors.Select(e => e.Description))}");
                     }
 
-                    // Verificar si el nuevo rol existe en la DB, si no, crearlo
                     if (!await roleManager.RoleExistsAsync(evento.Role))
                     {
                         await roleManager.CreateAsync(new IdentityRole(evento.Role));
@@ -128,19 +131,18 @@ namespace IdentityService.Infraestructure.Messaging.Consumer
                     }
                     else
                     {
-                        _logger.LogInformation("✅ User updated successfully from AdminService. ID={UserId}", user.Id);
+                        _logger.LogInformation("✅ User updated successfully (Status: {Status}). ID={UserId}", user.Employed_Status, user.Id);
                     }
                 }
                 catch (Exception ex)
                 {
-                    // Captura errores generales (ej: Base de datos caída, JSON corrupto)
                     _logger.LogError(ex, "❌ Critical Error processing EmployeeUpdatedIntegrationEvent");
                 }
             };
 
             await channel.BasicConsumeAsync(
                 queue: "employee_updated_queue",
-                autoAck: true, // Nota: Si quieres mayor seguridad de datos, considera cambiar a autoAck: false y hacer el Ack manual al final del try.
+                autoAck: true,
                 consumer: consumer
             );
 

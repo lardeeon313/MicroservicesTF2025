@@ -5,25 +5,25 @@ import BackButton from "../../../components/BackButton";
 const reportSectors = [
   {
     title: "Ventas",
-    description: "Accedé a los indicadores y reportes comerciales.",
+    description: "Accedé a los indicadores y reportes comerciales de los clientes.",
     icon: <BarChart2 className="h-10 w-10 text-red-600" />,
     link: "/admin/reports/sales",
   },
   {
     title: "Depósito",
-    description: "Supervisá la productividad y el armado de pedidos.",
+    description: "Supervisá la productividad de los equipos y el armado de pedidos.",
     icon: <Boxes className="h-10 w-10 text-red-600" />,
     link: "/admin/reports/depot",
   },
   {
     title: "Facturación",
-    description: "Revisa los tiempos y estados del proceso de facturación.",
+    description: "Revisa los tiempos y estados del proceso de facturación de los clientes.",
     icon: <Receipt className="h-10 w-10 text-red-600" />,
     link: "/admin/reports/billing",
   },
   {
     title: "Logística",
-    description: "Controlá incidencias, desempeño y entregas.",
+    description: "Controlá incidencias, desempeño y entregas de los pedidos.",
     icon: <Truck className="h-10 w-10 text-red-600" />,
     link: "/admin/reports/logistics",
   },
