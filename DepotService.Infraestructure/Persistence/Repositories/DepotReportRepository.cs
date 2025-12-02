@@ -183,54 +183,69 @@ namespace DepotService.Infraestructure.Persistence.Repositories
             };
         }
 
-        public async Task<List<DepotTeamPerformance>> GetDepotTeamPerformancesAsync(DateTime? from, DateTime? to)
+        public async Task<List<DepotTeamPerformance>> GetDepotTeamPerformancesAsync(DateTime? from, DateTime? to, bool agruparPorEquipo)
         {
             var orders = _context.DepotOrders
                 .Include(o => o.AssignedDepotTeam)
                 .Include(o => o.StatusHistory)
                 .Include(o => o.Missings)
-                .Where(o => o.AssignedDepotTeamId != null)
                 .AsQueryable();
 
-            if (from.HasValue)
+            // Filtrar por rango de fechas
+            if (from.HasValue && to.HasValue)
             {
-               
                 orders = orders.Where(o =>
-                    o.OrderDate >= from.Value || (o.DeliveryDate.HasValue && o.DeliveryDate.Value >= from.Value));
+                    (o.OrderDate >= from.Value && o.OrderDate <= to.Value) ||
+                    (o.DeliveryDate != null &&
+                     o.DeliveryDate >= from.Value && o.DeliveryDate <= to.Value));
             }
 
-            if (to.HasValue)
+            if (agruparPorEquipo)
             {
-                
-                orders = orders.Where(o =>
-                    o.OrderDate <= to.Value || (o.DeliveryDate.HasValue && o.DeliveryDate.Value <= to.Value));
+                return await orders
+                    .Where(o => o.AssignedDepotTeamId != null)
+                    .GroupBy(o => new { o.AssignedDepotTeamId, o.AssignedDepotTeam!.TeamName })
+                    .Select(g => new DepotTeamPerformance
+                    {
+                        DepotTeamId = g.Key.AssignedDepotTeamId!.Value,
+                        TeamName = g.Key.TeamName,
+                        IsTeam = true,
+                        OrdersHandled = g.Count(),
+                        MissingItemsReported = g.Sum(x => x.Missings.Count)
+                    })
+                    .ToListAsync();
             }
 
-            var grouped = await orders
+            // Si NO agrupo por equipo → equipo + operarios
+            var equipoData = await orders
+                .Where(o => o.AssignedDepotTeamId != null)
                 .GroupBy(o => new { o.AssignedDepotTeamId, o.AssignedDepotTeam!.TeamName })
                 .Select(g => new DepotTeamPerformance
                 {
                     DepotTeamId = g.Key.AssignedDepotTeamId!.Value,
                     TeamName = g.Key.TeamName,
+                    IsTeam = true,
                     OrdersHandled = g.Count(),
-                    MissingItemsReported = g.SelectMany(o => o.Missings).Count(),
-                    AverageProcessingTimeMinutes = (int)g.Average(o =>
-                        EF.Functions.DateDiffMinute(
-                            o.StatusHistory
-                                .Where(s => s.NewStatus == OrderStatus.InPreparation)
-                                .OrderBy(s => s.ChangedAt)
-                                .Select(s => s.ChangedAt)
-                                .FirstOrDefault(),
-                            o.StatusHistory
-                                .Where(s => s.NewStatus == OrderStatus.SentToBilling)
-                                .OrderByDescending(s => s.ChangedAt)
-                                .Select(s => s.ChangedAt)
-                                .FirstOrDefault()
-                        ))
+                    MissingItemsReported = g.Sum(o => o.Missings.Count)
                 })
                 .ToListAsync();
 
-            return grouped;
+            var operadoresData = await orders
+                .Where(o => o.AssignedOperatorId != null)
+                .GroupBy(o => new { o.AssignedOperatorId, o.AssignedDepotTeam!.TeamName })
+                .Select(g => new DepotTeamPerformance
+                {
+                    DepotTeamId = null,
+                    OperatorId = g.Key.AssignedOperatorId!.Value,
+                    TeamName = g.Key.TeamName,
+                    OperatorFullName = "",
+                    IsTeam = false,
+                    OrdersHandled = g.Count(),
+                    MissingItemsReported = g.Sum(o => o.Missings.Count)
+                })
+                .ToListAsync();
+
+            return equipoData.Concat(operadoresData).ToList();
         }
 
         public async Task<List<OrderStatusCount>> GetOrderCountPerStatusAsync(DateTime? from, DateTime? to)

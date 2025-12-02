@@ -8,10 +8,13 @@ namespace DepotService.Application.DTOs.Reports
 {
     public class DepotTeamPerformanceDto
     {
-        public int DepotTeamId { get; set; }
-        public string TeamName { get; set; } = string.Empty;
+        public int? DepotTeamId { get; set; }        // Equipo (si aplica)
+        public string Name { get; set; } = null!;    // Equipo u Operario
+
         public int OrdersHandled { get; set; }
         public int MissingItemsReported { get; set; }
-        public int AverageProcessingTimeMinutes { get; set; }
+
+        public bool IsTeam { get; set; }             // True = fila de equipo
+        public Guid? OperatorId { get; set; }        // Si es operador
     }
 }

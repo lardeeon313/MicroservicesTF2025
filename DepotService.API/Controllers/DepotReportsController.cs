@@ -109,18 +109,21 @@ namespace DepotService.API.Controllers
         }
 
         /// <summary>
-        /// Endpoint para obtener el rendimiento del equipo del depósito.
+        /// Endpoint para obtener el desempeño del equipo del depósito.
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
+        /// <param name="agruparPorEquipo"></param>
         /// <returns></returns>
         [HttpGet("reports/depot-team-performance")]
         [ProducesResponseType(typeof(List<DepotTeamPerformanceDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetDepotTeamPerformance([FromQuery] DateTime? from, [FromQuery] DateTime? to)
+        public async Task<IActionResult> GetDepotTeamPerformance([FromQuery] DateTime? from,
+                                                                 [FromQuery] DateTime? to,
+                                                                 [FromQuery] bool agruparPorEquipo = true)
         {
-            var query = new GetDepotTeamPerformanceQuery(from, to);
+            var query = new GetDepotTeamPerformanceQuery(from, to, agruparPorEquipo);
             var performanceData = await _getDepotTeamPerformanceQueryHandler.HandleAsync(query);
             return Ok(performanceData);
         }
