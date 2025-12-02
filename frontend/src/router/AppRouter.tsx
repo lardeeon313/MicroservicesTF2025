@@ -72,6 +72,14 @@ import { PendingCashVerificationPage } from "../features/verification/pages/repo
 import { OperatorProductivityPage } from "../features/verification/pages/reports/Verification/VerificationPages/OperatorProdictivityReportPage";
 import DeliveryTimesReportPage from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryTimesPage";
 import { ZonePerformanceReportPage } from "../features/verification/pages/reports/Verification/VerificationPages/ZonePerfomancePage";
+import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
+import CreatePasswordPage from "../features/auth/pages/CreatePasswordPage";
+import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
+import AdminDashboardPage from "../features/admin/pages/AdminDashboard";
+import EmployeesPage from "../features/admin/pages/EmployeesPage";
+import RegisterEmployeesPage from "../features/admin/pages/RegisterEmployeesPage";
+import EmployeesDetailPage from "../features/admin/pages/EmployeesDetailPage";
+import EditEmployeesPage from "../features/admin/pages/EditEmployeesPage";
 
 const AppRouter = () => {
   return (

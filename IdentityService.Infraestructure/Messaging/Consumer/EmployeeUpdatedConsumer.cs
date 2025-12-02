@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace IdentityService.Infraestructure.Messaging.Consumer
 {
     /// <summary>
-    /// Consumidor de eventos para el registro de usuarios.
+    /// Consumidor de eventos para la actualización de empleados (usuarios).
     /// </summary>
     public class EmployeeUpdatedConsumer : BackgroundService
     {
@@ -58,20 +58,20 @@ namespace IdentityService.Infraestructure.Messaging.Consumer
             {
                 var json = Encoding.UTF8.GetString(ea.Body.ToArray());
 
-                var evento = JsonSerializer.Deserialize<EmployeeUpdatedIntegrationEvent>(json);
-
-                if (evento == null)
-                {
-                    _logger.LogWarning("❌ Event invalid or null.");
-                    return;
-                }
-
-                using var scope = _scopeFactory.CreateScope();
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
                 try
                 {
+                    var evento = JsonSerializer.Deserialize<EmployeeUpdatedIntegrationEvent>(json);
+
+                    if (evento == null)
+                    {
+                        _logger.LogWarning("❌ Event invalid or null.");
+                        return;
+                    }
+
+                    using var scope = _scopeFactory.CreateScope();
+                    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
                     var user = await userManager.FindByIdAsync(evento.IdentityUserId);
 
                     if (user == null)
@@ -80,34 +80,67 @@ namespace IdentityService.Infraestructure.Messaging.Consumer
                         return;
                     }
 
+                    // --- Mapeo de propiedades ---
                     user.UserName = evento.UserName;
                     user.Name = evento.FirstName;
                     user.LastName = evento.LastName;
                     user.Email = evento.Email;
                     user.PhoneNumber = evento.PhoneNumber;
 
-                    await userManager.UpdateAsync(user);
+                    // --- 1. INTENTO DE ACTUALIZACIÓN DEL USUARIO ---
+                    var updateResult = await userManager.UpdateAsync(user);
 
-                    // Actualizamos el rol
+                    if (!updateResult.Succeeded)
+                    {
+                        // AQUÍ ESTÁ EL CAMBIO IMPORTANTE:
+                        // Capturamos los errores de Identity (ej: Email duplicado, Username inválido)
+                        var errors = string.Join(", ", updateResult.Errors.Select(e => e.Description));
+                        _logger.LogError($"❌ Error actualizando usuario ID {user.Id}: {errors}");
+
+                        // Si falla la actualización de datos básicos, salimos para no dejar datos inconsistentes
+                        return;
+                    }
+
+                    // --- 2. ACTUALIZACIÓN DE ROLES ---
+                    // (Solo llegamos aquí si el usuario se actualizó correctamente)
+
                     var currentRoles = await userManager.GetRolesAsync(user);
-                    await userManager.RemoveFromRolesAsync(user, currentRoles);
+                    var removeResult = await userManager.RemoveFromRolesAsync(user, currentRoles);
 
+                    if (!removeResult.Succeeded)
+                    {
+                        var removeErrors = string.Join(", ", removeResult.Errors.Select(e => e.Description));
+                        _logger.LogWarning($"⚠ Advertencia al remover roles antiguos: {removeErrors}");
+                    }
+
+                    // Verificar si el nuevo rol existe en la DB, si no, crearlo
                     if (!await roleManager.RoleExistsAsync(evento.Role))
+                    {
                         await roleManager.CreateAsync(new IdentityRole(evento.Role));
+                    }
 
-                    await userManager.AddToRoleAsync(user, evento.Role);
+                    var addRoleResult = await userManager.AddToRoleAsync(user, evento.Role);
 
-                    _logger.LogInformation("✅ User updated from AdminService. ID={UserId}", user.Id);
+                    if (!addRoleResult.Succeeded)
+                    {
+                        var roleErrors = string.Join(", ", addRoleResult.Errors.Select(e => e.Description));
+                        _logger.LogError($"❌ Error asignando el nuevo rol '{evento.Role}': {roleErrors}");
+                    }
+                    else
+                    {
+                        _logger.LogInformation("✅ User updated successfully from AdminService. ID={UserId}", user.Id);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "❌ Error processing EmployeeUpdatedIntegrationEvent");
+                    // Captura errores generales (ej: Base de datos caída, JSON corrupto)
+                    _logger.LogError(ex, "❌ Critical Error processing EmployeeUpdatedIntegrationEvent");
                 }
             };
 
             await channel.BasicConsumeAsync(
                 queue: "employee_updated_queue",
-                autoAck: true,
+                autoAck: true, // Nota: Si quieres mayor seguridad de datos, considera cambiar a autoAck: false y hacer el Ack manual al final del try.
                 consumer: consumer
             );
 
@@ -115,4 +148,3 @@ namespace IdentityService.Infraestructure.Messaging.Consumer
         }
     }
 }
-
