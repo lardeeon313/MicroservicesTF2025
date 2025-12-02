@@ -10,13 +10,24 @@ namespace LogisticService.Application.DTOs.LogisticReportDtos
     {
         public int? DeliveryZoneId { get; set; }
         public string? DeliveryZoneName { get; set; }
-        public int? TeamId { get; set; }   // NUEVO
-        public string? TeamName { get; set; }  // NUEVO
+
+        public int? TeamId { get; set; }
+        public string? TeamName { get; set; }
+
         public Guid? OperatorId { get; set; }
         public string FullNameDeliveringOperator { get; set; } = string.Empty;
+
+        // Cantidad por agrupación
         public int TotalDeliveredOrders { get; set; }
-        public double AverageDeliveryTimeInHours { get; set; } // tiempo promedio en horas
-        public double MaxDeliveryTimeInHours { get; set; }
-        public double MinDeliveryTimeInHours { get; set; }
+
+        // fechas
+        public DateTime? EstimatedDeliveryDate { get; set; }
+        public DateTime? ActualDeliveryDate { get; set; }
+
+        // Estado entregado a tiempo
+        public bool DeliveredOnTime { get; set; }
+
+        // Retraso en horas (positivo = tarde, negativo = adelantado) --> OPCIONAL (formatear en Front) 
+        public double? DelayInHours { get; set; }
     }
 }
