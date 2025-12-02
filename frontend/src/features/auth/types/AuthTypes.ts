@@ -1,6 +1,12 @@
 import { JSX } from "react/jsx-dev-runtime";
 
-
+export enum EmployedStatus {
+    Active = 0,
+    Inactive = 1,
+    OnLicense = 2,
+    Dismissed = 3,
+    ResignationProcess = 4,
+}
 export interface LoginRequest {
     email: string;
     password: string;
@@ -11,6 +17,7 @@ export interface LoginResponse {
     email: string;
     roles: string[];
     token: string;
+    employed_Status: EmployedStatus;
 }
   
 export interface RegisterRequest {
@@ -53,33 +60,3 @@ export interface SalesStaffDto {
   firstName: string;
   lastName: string;
 }
-
-export interface CreateNewPasswordRequest {
-    userIdentityId: string;
-    newPassword: string;     
-}
-
-export interface CreateNewPasswordResponse {
-    message: string;
-}
-
-export interface ForgotPasswordRequest {
-    email: string;
-}
-
-export interface ForgotPasswordResponse {
-    message: string;
-    requiresPasswordCreation: boolean; 
-    userId?: string;
-}
-
-export interface ResetPasswordRequest {
-    email: string;
-    token: string;
-    newPassword: string;
-}
-
-export interface ResetPasswordResponse {
-    message: string;
-}
-

@@ -11,7 +11,6 @@ interface Props {
   onRefetch: () => void;
   onView: (id: number) => void;
   onEdit: (id: number) => void;
-  onStatusChange: (id: number, newStatus: EmployeeStatus) => void;
   isFiltered?: boolean;
 }
 
@@ -22,9 +21,17 @@ export default function EmployeesTable({
   onRefetch,
   onView,
   onEdit,
-  onStatusChange,
   isFiltered = false,
 }: Props) {
+  const STATUS_BADGE_CLASSES: Record<EmployeeStatus, string> = {
+    [EmployeeStatus.Active]: "bg-green-100 text-green-800 border-green-200",
+    [EmployeeStatus.Inactive]: "bg-orange-100 text-orange-800 border-orange-200",
+    [EmployeeStatus.OnLicense]: "bg-orange-100 text-orange-800 border-orange-200",
+    [EmployeeStatus.Vacation]: "bg-orange-100 text-orange-800 border-orange-200",
+    [EmployeeStatus.Dismissed]: "bg-red-100 text-red-800 border-red-200",
+    [EmployeeStatus.ResignationProcess]: "bg-red-100 text-red-800 border-red-200",
+  };
+
   if (loading) return (
     <LoadingSpinner message="Cargando empleados..."/>
   );
@@ -73,22 +80,11 @@ export default function EmployeesTable({
                 <td className="px-4 py-2">{getEmployeeRoleLabel(e.role)}</td>
                 <td className="px-4 py-2">{getEmployeeSectorLabel(e.sector)}</td>
                 <td className="px-4 py-2">
-                  <select
-                    value={e.status}
-                    onChange={(event) => {
-                      const newStatus = event.target.value as EmployeeStatus;
-                      if (e.id && newStatus !== e.status) {
-                        onStatusChange(e.id, newStatus);
-                      }
-                    }}
-                    className="px-3 py-1.5 text-sm font-medium rounded-md bg-blue-50 text-blue-900 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer hover:bg-blue-100 transition-colors"
+                  <span
+                    className={`inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full border ${STATUS_BADGE_CLASSES[e.status]}`}
                   >
-                    {Object.values(EmployeeStatus).map((status) => (
-                      <option key={status} value={status}>
-                        {getEmployeeStatusLabel(status)}
-                      </option>
-                    ))}
-                  </select>
+                    {getEmployeeStatusLabel(e.status)}
+                  </span>
                 </td>
                 <td className="px-4 py-2 text-center space-x-2">
                   <button onClick={() => e.id && onView(e.id)} title="Ver">

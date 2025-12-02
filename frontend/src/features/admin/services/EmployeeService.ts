@@ -1,6 +1,5 @@
 import API from "../../../api/axios";
 import {
-  ChangeStatusEmployeeRequest,
   EmployeeDto,
   EmployeeRole,
   EmployeeSector,
@@ -168,15 +167,6 @@ export const updateEmployee = async (
   data: UpdateEmployeeRequest
 ): Promise<void> => {
   await API.post("/admin/admin/Update-employee", toBackendEmployeePayload(data));
-};
-
-export const changeEmployeeStatus = async (
-  data: ChangeStatusEmployeeRequest
-): Promise<void> => {
-  await API.post("/admin/admin/change-status-employee", {
-    Id: data.id,
-    Status: statusToNumber(data.status),
-  });
 };
 
 // ===== Queries =====
