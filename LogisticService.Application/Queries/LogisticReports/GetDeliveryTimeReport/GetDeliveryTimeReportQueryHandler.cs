@@ -27,7 +27,7 @@ namespace LogisticService.Application.Queries.LogisticReports.GetDeliveryTimeRep
         /// <returns></returns>        
         public async Task<List<DeliveryTimeReportDto>> GetDeliveryTimeReportAsync(GetDeliveryTimeReportQuery query)
         {
-            // Obtenemos solo órdenes entregadas
+            // Obtener órdenes con filtros
             var orders = await _repository.GetFilteredOrdersAsync(
                 query.StartDate,
                 query.EndDate,
@@ -42,46 +42,71 @@ namespace LogisticService.Application.Queries.LogisticReports.GetDeliveryTimeRep
                 .Where(o => o.Status == OrderStatus.Delivered)
                 .ToList();
 
-            // Obtener operadores desde IdentityService
+            // Obtener operadores desde Identity
             var deliveryOperators = await _identityServiceClient.GetUserWithRoleDeliveryOperator()
                 ?? new List<DeliveryOperatorDto>();
 
-            // Crear diccionario para búsqueda rápida
-            var operatorsById = deliveryOperators.ToDictionary(op => op.Id.ToLowerInvariant(), op => op);
+            var operatorsById = deliveryOperators
+                .ToDictionary(op => op.Id.ToLowerInvariant(), op => op);
 
-            // Agrupar por operador y zona
+            // Agrupar (igual que tenías)
             var grouped = deliveredOrders
                 .GroupBy(o => new
                 {
                     o.AssignedOperatorId,
                     o.AssignedDeliveryZoneId,
                     ZoneName = o.AssignedDeliveryZone?.Name,
-                    TeamId = o.AssignedDeliveryTeamId,                // NUEVO
-                    TeamName = o.AssignedDeliveryTeam?.TeamName           // NUEVO
+                    TeamId = o.AssignedDeliveryTeamId,
+                    TeamName = o.AssignedDeliveryTeam?.TeamName
                 })
                 .Select(g =>
                 {
                     string fullName = string.Empty;
 
+                    // Recuperar nombre del operador
                     if (g.Key.AssignedOperatorId.HasValue)
                     {
-                        var opId = g.Key.AssignedOperatorId.Value.ToString().ToLowerInvariant();
-                        if (operatorsById.TryGetValue(opId, out var op))
-                            fullName = op.FullName;
+                        var opKey = g.Key.AssignedOperatorId.Value.ToString().ToLowerInvariant();
+                        if (operatorsById.TryGetValue(opKey, out var op))
+                            fullName = op.FullName ?? string.Empty;
+                    }
+
+                    // Calcular fechas por grupo
+                    var estimated = g.Select(o => o.DeliveryDate).FirstOrDefault();
+                    var actual = g
+                        .SelectMany(o => o.StatusHistory)
+                        .Where(h => h.NewStatus == OrderStatus.Delivered)
+                        .OrderBy(h => h.ChangedAt)
+                        .Select(h => h.ChangedAt)
+                        .FirstOrDefault();
+
+                    bool deliveredOnTime = false;
+                    double? delayHours = null;
+
+                    if (estimated.HasValue && actual != default)
+                    {
+                        deliveredOnTime = actual <= estimated.Value;
+                        delayHours = (actual - estimated.Value).TotalHours;
                     }
 
                     return new DeliveryTimeReportDto
                     {
                         OperatorId = g.Key.AssignedOperatorId,
                         FullNameDeliveringOperator = fullName,
+
                         DeliveryZoneId = g.Key.AssignedDeliveryZoneId,
                         DeliveryZoneName = g.Key.ZoneName,
-                        TeamId = g.Key.TeamId,               // NUEVO
-                        TeamName = g.Key.TeamName,           // NUEVO
+
+                        TeamId = g.Key.TeamId,
+                        TeamName = g.Key.TeamName,
+
                         TotalDeliveredOrders = g.Count(),
-                        AverageDeliveryTimeInHours = g.Average(o => (o.DeliveryDate!.Value - o.OrderDate).TotalHours),
-                        MaxDeliveryTimeInHours = g.Max(o => (o.DeliveryDate!.Value - o.OrderDate).TotalHours),
-                        MinDeliveryTimeInHours = g.Min(o => (o.DeliveryDate!.Value - o.OrderDate).TotalHours)
+
+                        EstimatedDeliveryDate = estimated,
+                        ActualDeliveryDate = actual == default ? null : actual,
+
+                        DeliveredOnTime = deliveredOnTime,
+                        DelayInHours = delayHours
                     };
                 })
                 .OrderBy(r => r.DeliveryZoneName)
@@ -90,6 +115,7 @@ namespace LogisticService.Application.Queries.LogisticReports.GetDeliveryTimeRep
             _logger.LogInformation("Generated DeliveryTime report with {Count} entries", grouped.Count);
 
             return grouped;
-        }    
-    }
+        }
+    }    
 }
+
