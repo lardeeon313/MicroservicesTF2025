@@ -194,6 +194,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 .Where(o => o.CustomerName.Contains(customerName))
                 .Include(o => o.Items)
                 .Include(o => o.DeliveryAddress)
+                .Include(o => o.StatusHistory)
                 .ToListAsync();
         }
 

@@ -81,6 +81,7 @@ export default function InvoicedOrdersTable({ data }: Props) {
       <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full">
+            
             <thead>
               <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
                 <th className="px-3 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider w-24">
@@ -90,74 +91,36 @@ export default function InvoicedOrdersTable({ data }: Props) {
                   Cliente
                 </th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  Monto Total
-                </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
                   Fecha de Emisión
                 </th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                  Productos
+                  Cantidad de productos
                 </th>
               </tr>
             </thead>
+
             <tbody className="divide-y divide-gray-200">
               {data.map((order, index) => (
-                <tr 
-                  key={order.salesOrderId} 
-                  className={`
-                    hover:bg-gray-50 transition-colors duration-200
-                    ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
-                  `}
-                >
-                  <td className="px-3 py-4 w-24 text-sm font-semibold text-gray-900">
+                <tr key={order.salesOrderId} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                  <td className="px-3 py-4 font-semibold text-gray-900">
                     {order.salesOrderId}
                   </td>
 
-                  <td className="px-6 py-4">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 bg-gradient-to-br from-red-100 to-red-500 rounded-full flex items-center justify-center text-white font-medium text-sm mr-3">
-                        {order.customerName.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{order.customerName}</div>
-                      </div>
-                    </div>
+                  <td className="px-6 py-4 text-sm font-semibold text-gray-900">
+                    {order.customerName}
                   </td>
 
-                  <td className="px-6 py-4">
-                    <div className="text-sm font-semibold text-gray-900">
-                      ${order.totalAmount.toLocaleString("es-AR", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </div>
-                    <div className="text-xs text-gray-500">ARS</div>
+                  <td className="px-6 py-4 text-sm font-semibold text-gray-900">
+                    {new Date(order.orderDate).toLocaleDateString("es-AR")}
                   </td>
 
-                  <td className="px-6 py-4">
-                    <div className="text-sm font-semibold text-gray-900">
-                      {new Date(order.orderDate).toLocaleDateString("es-AR", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {new Date(order.orderDate).toLocaleDateString("es-AR", {
-                        weekday: "long",
-                      })}
-                    </div>
-                  </td>
-
-                  <td className="px-6 py-4">
-                    <div className="text-sm font-semibold text-gray-900">
-                      {order.productCount}
-                    </div>
-                    <div className="text-xs text-gray-500">unidades</div>
+                  <td className="px-6 py-4 text-sm font-semibold text-gray-900">
+                    {order.productCount}
                   </td>
                 </tr>
               ))}
             </tbody>
+
           </table>
         </div>
 

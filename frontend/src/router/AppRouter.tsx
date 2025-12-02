@@ -40,7 +40,7 @@ import { DashboardDepotReportsPage } from "../features/depot/pages/DashboardDepo
 import DailyMissingPage from "../features/depot/pages/reports/Depot/DepotPages/DailyMissingPage";
 import OrderCompletedDayPage from "../features/depot/pages/reports/Depot/DepotPages/OrderCompletedDayPage";
 import TeamProdictivityPage from "../features/depot/pages/reports/Depot/DepotPages/TeamProdictiviyPage";
-import AverageTimeOrderPage from "../features/depot/pages/reports/Depot/DepotPages/AverageTimeOrderPage";
+//import AverageTimeOrderPage from "../features/depot/pages/reports/Depot/DepotPages/AverageTimeOrderPage";
 
 // Depósito - Facturación
 import BillingManagerDashboard from "../features/depot/billingmanager/pages/BillingManagerDashboard";
@@ -73,6 +73,8 @@ import { PendingCashVerificationPage } from "../features/verification/pages/repo
 import { OperatorProductivityPage } from "../features/verification/pages/reports/Verification/VerificationPages/OperatorProdictivityReportPage";
 import DeliveryTimesReportPage from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryTimesPage";
 import { ZonePerformanceReportPage } from "../features/verification/pages/reports/Verification/VerificationPages/ZonePerfomancePage";
+
+import ProcessingTimePage from "../features/depot/pages/reports/Depot/DepotPages/AverageTimeOrderPage";
 
 const AppRouter = () => {
   return (
@@ -128,7 +130,7 @@ const AppRouter = () => {
             <Route path="prepared-orders" element={<PreparedOrdersPage />} />
             <Route path="missing-orders" element={<MissingOrdersPage />} />
             <Route path="reports" element={<DashboardDepotReportsPage />} />
-            <Route path="reports/averageTimeOrder" element={<AverageTimeOrderPage />} />
+            <Route path="reports/averageTimeOrder" element={<ProcessingTimePage />} />
             <Route path="reports/dailyMissing" element={<DailyMissingPage />} />
             <Route path="reports/orderCompletedDay" element={<OrderCompletedDayPage />} />
             <Route path="reports/teamProdictivity" element={<TeamProdictivityPage />} />

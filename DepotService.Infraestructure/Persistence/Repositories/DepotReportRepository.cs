@@ -182,26 +182,6 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 TotalPages = pageSize
             };
         }
-        /*
-        public async Task<List<OperatorPreparedCount>> GetOperatorsPreparedReportAsync()
-        {
-            return await _context.DepotOrders
-                .Where(o => o.Status == OrderStatus.Prepared)
-                .Where(o => o.AssignedOperatorId != null)
-                .GroupBy(o => new
-                {
-                    o.AssignedOperatorId,
-                    OperatorName = o.AssignedDepotTeam!.Name
-                })
-                .Select(g => new OperatorPreparedCount
-                {
-                    OperatorId = g.Key.AssignedOperatorId!.Value,
-                    OperatorName = g.Key.OperatorName,
-                    PreparedCount = g.Count()
-                })
-                .OrderByDescending(x => x.PreparedCount)
-                .ToListAsync();
-        }*/
 
         public async Task<List<DepotTeamPerformance>> GetDepotTeamPerformancesAsync(DateTime? from, DateTime? to)
         {
