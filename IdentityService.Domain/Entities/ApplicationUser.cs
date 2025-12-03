@@ -16,7 +16,7 @@ namespace IdentityService.Domain.Entities
 
         public DateTime HightDate { get; set; } = DateTime.UtcNow;
 
-        public EmployedStatus Employed_Status { get; set; } = EmployedStatus.Inactive;
+        public EmployedStatus Employed_Status { get; set; } = EmployedStatus.Active;
 
         public DateTime Validity { get; set; }
 
