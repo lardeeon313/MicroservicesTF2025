@@ -67,6 +67,7 @@ namespace AdminService.Application.Commands.Employees.UpdateEmployee
             };
 
             await _rabbitMQPublisher.PublishAsync(integrationEvent, "employee_updated_queue");
+            _logger.LogInformation($"Empleado {command.UserName} actualizado  con éxito.");
 
             return true;
         }

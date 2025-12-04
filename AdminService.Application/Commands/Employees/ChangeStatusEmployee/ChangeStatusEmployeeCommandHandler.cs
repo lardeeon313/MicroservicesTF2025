@@ -44,7 +44,9 @@ namespace AdminService.Application.Commands.Employees.ChangeStatusEmployee
 
             await _repository.UpdateEmployeeAsync(employee);
 
+            _logger.LogInformation($"Empleado {command.EmployeeId} registrado con éxito.");
             return true;
+
 
         }
     }

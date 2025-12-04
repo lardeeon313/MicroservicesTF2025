@@ -27,7 +27,6 @@ import CustomerInactiveReportPage from "../features/sales/pages/reports/Customer
 import ModifiedCanceledOrdersPage from "../features/sales/pages/reports/ModifiedCanceledOrdersPage";
 import { SalesPerfomanceReportPage } from "../features/sales/pages/reports/SalesPerfomanceReportPage";
 import MissingOrdersSalesPage from "../features/sales/pages/orders/MissingOrderSalesPage";
-import CustomerReportPaymentTypePage from "../features/sales/pages/reports/CustomerPaymenTypeReportPage";
 
 // Depósito - Manager
 import DepotManagerDashboard from "../features/depot/depotmanager/pages/DepotManagerDashboard";
@@ -63,7 +62,7 @@ import PendingOrdersVerificationDetailsPage from "../features/verification/pages
 import OrdersInRoutePage from "../features/verification/pages/OrdersInRoutePage";
 import OrdersInRouteDetailsPage from "../features/verification/pages/OrdersInRouteDetailsPage";
 import { DashboardLogisticReportsPage } from "../features/verification/pages/reports/DashboardLogisticReportsPage";
-
+import { CustomersWithIncidentsPage } from "../features/verification/pages/reports/Verification/VerificationPages/CustomersWithIncidentsPage";
 import { DeliveryIncidentsPage } from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryIncidentsPage";
 import DeliveryRejectionsPage from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryRejectionsPage";
 import { OrdersByStatusReportPage } from "../features/verification/pages/reports/Verification/VerificationPages/OrderByStatusPage";
@@ -76,6 +75,11 @@ import { ZonePerformanceReportPage } from "../features/verification/pages/report
 import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
 import CreatePasswordPage from "../features/auth/pages/CreatePasswordPage";
 import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
+import AdminDashboardPage from "../features/admin/pages/AdminDashboard";
+import EmployeesPage from "../features/admin/pages/EmployeesPage";
+import RegisterEmployeesPage from "../features/admin/pages/RegisterEmployeesPage";
+import EmployeesDetailPage from "../features/admin/pages/EmployeesDetailPage";
+import EditEmployeesPage from "../features/admin/pages/EditEmployeesPage";
 
 const AppRouter = () => {
   return (
@@ -116,7 +120,6 @@ const AppRouter = () => {
             <Route path="reports/customerStatusReport" element={<CustomerInactiveReportPage />} />
             <Route path="reports/modifiedCanceledReport" element={<ModifiedCanceledOrdersPage />} />
             <Route path="reports/salesPerfomance" element={<SalesPerfomanceReportPage />} />
-            <Route path="reports/customerpaymentypereport" element={<CustomerReportPaymentTypePage/>} />
         </Route>
 
         {/* Depósito Manager */}
@@ -196,7 +199,7 @@ const AppRouter = () => {
             <Route path="orders-in-route/:id" element={<OrdersInRouteDetailsPage/> } />
             {/**reportes sector logistica*/}
             <Route path="reports" element={<DashboardLogisticReportsPage/>} />
-            
+            <Route path="reports/CustomersIncidents" element={<CustomersWithIncidentsPage/>} />
             <Route path="reports/OrderIncidents" element={<DeliveryIncidentsPage/>} />
             <Route path="reports/RejectOrders" element={<DeliveryRejectionsPage />} />
             <Route path="reports/OrderStatus" element={<OrdersByStatusReportPage/>} />
@@ -213,10 +216,17 @@ const AppRouter = () => {
             path="/admin"
             element={
             <ProtectedRoute requiredRole="Admin">
-                <div>Bienvenido al panel de Administración</div>
-            </ProtectedRoute>
+                <Outlet />
+            </ProtectedRoute>   
             }
-        />
+        >
+            <Route index element={<AdminDashboardPage/>} /> 
+            <Route path="dashboard" element={<AdminDashboardPage/>} />
+            <Route path="employees" element={<EmployeesPage/>} />
+            <Route path="employees/register" element={<RegisterEmployeesPage/>} />
+            <Route path="employees/edit/:id" element={<EditEmployeesPage/>} />
+            <Route path="employees/view/:id" element={<EmployeesDetailPage/>} />
+        </Route>
       </Routes>
     
   );
