@@ -1,7 +1,7 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { login } from "../services/AuthService";
 import { loginValidationSchema } from "../validations/loginValidation";
-import { LoginRequest } from "../types/AuthTypes";
+import { EmployedStatus, LoginRequest } from "../types/AuthTypes";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
@@ -16,6 +16,12 @@ const LoginForm = () => {
   const handleSubmit = async (values: LoginRequest) => {
   try {
     const result = await login(values);
+
+    if (result.employed_Status !== EmployedStatus.Active) {
+      toast.error("Tu usuario no está habilitado para ingresar. Por favor contactá al administrador.");
+      return;
+    }
+
     localStorage.setItem("token", result.token);
     loginContext(result.token);
 
