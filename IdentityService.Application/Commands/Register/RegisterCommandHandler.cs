@@ -37,7 +37,7 @@ namespace IdentityService.Application.Commands.Register
                 Email = command.Email,
                 PhoneNumber = command.PhoneNumber,
                 HightDate = DateTime.UtcNow,
-                Employed_Status = EmployedStatus.Inactive
+                Employed_Status = EmployedStatus.Active
             };
 
             var result = await _userManager.CreateAsync(user, command.Password);
