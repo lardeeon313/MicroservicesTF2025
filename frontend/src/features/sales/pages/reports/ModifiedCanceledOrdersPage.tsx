@@ -8,42 +8,39 @@ import { useModifiedCanceled } from "../../hooks/useModifiedCanceled";
 import ModifiedCanceledOrdersFilter from "./SalesFilters/ModifiedCanceledOrdersFilter";
 import BackButton from "../../../../components/BackButton";
 
-// SOLO las opciones que usás en filtros
-export type FilterStatus = "Todos" | "Pending" | "Issued" | "Canceled";
+export type FilterStatus =
+  | "Todos"
+  | "Pending"
+  | "PendingResolution"
+  | "reIssued"
+  | "PendingReissued"
+  | "Canceled";
 
-// Mapa inglés → español para mostrar en UI
 export const statusMap: Record<string, string> = {
   Pending: "Pendiente",
-  Issued: "Emitido",
-  Confirmed: "Confirmado por depósito",
-  InPreparation: "En preparación",
-  Prepared: "Preparado",
-  SentToBilling: "Enviado a facturar",
-  Invoiced: "Facturado",
-  Verify: "Verificado",
-  OnTheWay: "En camino",
-  Delivered: "Entregado",
-  Canceled: "Cancelado por ventas",
   PendingResolution: "Pendiente de resolución",
   ReIssued: "Reemitido",
+  PendingReissued: "Pendiente de reemision",
+  Canceled: "Cancelado por ventas",
 };
 
 export default function ModifiedCanceledOrdersPage() {
   const [page, setPage] = useState(1);
   const pageSize = 10;
 
-  // Filtros en edición (inputs)
+  // BORRADORES
   const [nameDraft, setNameDraft] = useState("");
-  const [dateDraft, setDateDraft] = useState("");
+  const [dateFromDraft, setDateFromDraft] = useState("");
+  const [dateToDraft, setDateToDraft] = useState("");
   const [statusDraft, setStatusDraft] = useState<FilterStatus>("Todos");
 
-  // Filtros aplicados (solo se actualizan al tocar Buscar)
+  // APLICADOS
   const [nameFilter, setNameFilter] = useState("");
-  const [modifiedDate, setModifiedDate] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
   const [statusFilter, setStatusFilter] = useState<FilterStatus>("Todos");
 
-  // Mostrar / ocultar gráfico
-  const [showGraph, setShowGraph] = useState(true);
+  const [showGraph, setShowGraph] = useState(false);
 
   const { data: orders, loading, totalPages } = useModifiedCanceled(page, pageSize);
 
@@ -57,13 +54,22 @@ export default function ModifiedCanceledOrdersPage() {
   const normalize = (s: string) =>
     s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
+  // 🔥 FILTRO FINAL
   const filteredOrders = orders.filter((o: any) => {
     const fullName = `${o.customerFirstName ?? ""} ${o.customerLastName ?? ""}`.trim();
-    const matchesName = !nameFilter || normalize(fullName).includes(normalize(nameFilter));
 
-    // Usar modifiedDate si existe, sino orderDate
-    const dateToCheck = o.modifiedDate ? new Date(o.modifiedDate) : new Date(o.orderDate);
-    const matchesDate = !modifiedDate || (dateToCheck && toLocalYMD(dateToCheck) === modifiedDate);
+    const matchesName =
+      !nameFilter || normalize(fullName).includes(normalize(nameFilter));
+
+    const dateToCheck = o.modifiedDate
+      ? new Date(o.modifiedDate)
+      : new Date(o.orderDate);
+
+    const ymd = toLocalYMD(dateToCheck);
+
+    const matchesDate =
+      (!dateFrom || ymd >= dateFrom) &&
+      (!dateTo || ymd <= dateTo);
 
     const matchesStatus =
       statusFilter === "Todos" ||
@@ -78,17 +84,21 @@ export default function ModifiedCanceledOrdersPage() {
 
   const handleBuscar = () => {
     setNameFilter(nameDraft);
-    setModifiedDate(dateDraft);
+    setDateFrom(dateFromDraft);
+    setDateTo(dateToDraft);
     setStatusFilter(statusDraft);
     setPage(1);
   };
 
   const handleLimpiar = () => {
     setNameDraft("");
-    setDateDraft("");
+    setDateFromDraft("");
+    setDateToDraft("");
     setStatusDraft("Todos");
+
     setNameFilter("");
-    setModifiedDate("");
+    setDateFrom("");
+    setDateTo("");
     setStatusFilter("Todos");
     setPage(1);
   };
@@ -96,7 +106,7 @@ export default function ModifiedCanceledOrdersPage() {
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
-        <BackButton to="/sales/reports/dashboard"></BackButton>
+        <BackButton to="/sales/reports/dashboard" />
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -107,19 +117,20 @@ export default function ModifiedCanceledOrdersPage() {
           Todo lo que necesitas para evaluar los Pedidos cancelados y modificados
         </p>
 
-        {/* Filtros */}
+        {/* 🔥 NUEVO: filtros con 2 fechas */}
         <ModifiedCanceledOrdersFilter
           nameDraft={nameDraft}
-          dateDraft={dateDraft}
+          dateFromDraft={dateFromDraft}
+          dateToDraft={dateToDraft}
           statusDraft={statusDraft}
           onNameDraftChange={setNameDraft}
-          onDateDraftChange={setDateDraft}
+          onDateFromDraftChange={setDateFromDraft}
+          onDateToDraftChange={setDateToDraft}
           onStatusDraftChange={setStatusDraft}
           onBuscar={handleBuscar}
           onLimpiar={handleLimpiar}
         />
 
-        {/* Tabla */}
         <ModifiedCanceledOrdersTable
           orders={filteredOrders.map((o: any) => ({
             ...o,
@@ -127,10 +138,8 @@ export default function ModifiedCanceledOrdersPage() {
           }))}
         />
 
-        {/* Paginación */}
         <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
 
-        {/* Botón mostrar/ocultar gráfico */}
         <div className="flex justify-center mt-6 mb-4">
           <button
             onClick={() => setShowGraph((prev) => !prev)}
@@ -140,7 +149,6 @@ export default function ModifiedCanceledOrdersPage() {
           </button>
         </div>
 
-        {/* Gráfico (condicional) */}
         {showGraph && (
           <GraphModifiedCanceledOrders
             orders={filteredOrders.map((o: any) => ({

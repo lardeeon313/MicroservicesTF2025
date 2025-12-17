@@ -6,11 +6,11 @@ interface Props {
   data: DeliveryIncidentReport[];
 }
 
-const incidentStatusToSpanish: Record<string, string> = {
+/*const incidentStatusToSpanish: Record<string, string> = {
   Pending: "Pendiente",
   Resolved: "Resuelto",
   Delivered: "Entregado",
-};
+};*/
 
 export const DeliveryIncidentsTable: React.FC<Props> = ({ data }) => {
   if (!data || data.length === 0) {
@@ -51,12 +51,14 @@ export const DeliveryIncidentsTable: React.FC<Props> = ({ data }) => {
             <tr>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Numero del pedido</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Cliente</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Incidente</th>
+              
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Descripción del incidente</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Fecha del reporte</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Fecha de resolucion</th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Nota de resolucion</th>
-              <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Estado</th>
+              <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase whitespace-nowrap">
+                ¿Fue resuelto?
+              </th>
               <th className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Repartidor</th>
             </tr>
           </thead>
@@ -66,9 +68,7 @@ export const DeliveryIncidentsTable: React.FC<Props> = ({ data }) => {
               <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.logisticOrderId}</td>
                 <td className="px-6 py-4 text-sm text-gray-700">{item.customerName}</td>
-                <td className="px-6 py-4 text-sm text-gray-700">
-                  {incidentStatusToSpanish[item.incidentType] ?? item.incidentType}
-                </td>
+
                 <td className="px-6 py-4 text-sm text-gray-700">{item.description}</td>
                 <td className="px-6 py-4 text-sm text-gray-700">
                   {new Date(item.reportedAt).toLocaleString()}

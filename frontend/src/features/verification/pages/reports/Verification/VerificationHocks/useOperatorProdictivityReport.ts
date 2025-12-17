@@ -17,6 +17,8 @@ export const useOperatorProductivityReport = (filters: OperatorProductivityFilte
           params: filters,
         });
 
+        console.log(data)
+
       
         setData(data);
       } catch (err: any) {

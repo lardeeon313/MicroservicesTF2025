@@ -13,7 +13,7 @@ const BillingCards = [
     link: "/depot/billingmanager/reports/customerIncome",
   },
   {
-    title: "Pedidos facturados",
+    title: "Cantidad de pedidos facturados por cliente",
     description: "Visualiza todos los pedidos que ya han sido facturados.",
     icon: <FileText className="h-10 w-10 text-red-600" />,
     link: "/depot/billingmanager/reports/orderBilled",

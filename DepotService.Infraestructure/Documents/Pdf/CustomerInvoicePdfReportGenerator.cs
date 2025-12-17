@@ -13,14 +13,14 @@ public class InvoicedOrdersReportPdfGenerator : IInvoicedOrdersReportPdfGenerato
     private static class ReportStyles
     {
         public static readonly string RojoOscuro = "#8B0000";     // Rojo oscuro principal
-        public static readonly string Rojo = "#DC143C";            // Rojo vibrante
-        public static readonly string Verde = "#228B22";           // Verde forest
-        public static readonly string VerdeClaro = "#90EE90";      // Verde claro
-        public static readonly string Negro = "#1A1A1A";           // Negro
-        public static readonly string GrisOscuro = "#2D2D2D";      // Gris muy oscuro
-        public static readonly string GrisClaro = "#F5F5F5";       // Gris claro
-        public static readonly string Blanco = "#FFFFFF";          // Blanco
-        public static readonly string RojoClaro = "#FFE5E5";       // Rojo muy claro
+        public static readonly string Rojo = "#DC143C";         // Rojo vibrante
+        public static readonly string Verde = "#228B22";        // Verde forest
+        public static readonly string VerdeClaro = "#90EE90";   // Verde claro
+        public static readonly string Negro = "#1A1A1A";        // Negro
+        public static readonly string GrisOscuro = "#2D2D2D";   // Gris muy oscuro
+        public static readonly string GrisClaro = "#F5F5F5";    // Gris claro
+        public static readonly string Blanco = "#FFFFFF";       // Blanco
+        public static readonly string RojoClaro = "#FFE5E5";    // Rojo muy claro
     }
 
     public InvoicedOrdersReportPdfGenerator()
@@ -39,7 +39,6 @@ public class InvoicedOrdersReportPdfGenerator : IInvoicedOrdersReportPdfGenerato
             {
                 page.Margin(35);
                 page.Size(PageSizes.A4);
-
                 page.Header().Element(header => ComposeHeader(header, orders.Count));
                 page.Content().PaddingVertical(20).Element(content => BuildContent(content, orders));
                 page.Footer().Element(ComposeFooter);
@@ -72,12 +71,10 @@ public class InvoicedOrdersReportPdfGenerator : IInvoicedOrdersReportPdfGenerato
                         .FontSize(22)
                         .Bold()
                         .FontColor(ReportStyles.RojoOscuro);
-
-                    col.Item().PaddingTop(5).Text("Reporte de Órdenes Facturadas")
+                    col.Item().PaddingTop(5).Text("Reporte de Ingresos por Cliente")
                         .FontSize(14)
                         .SemiBold()
                         .FontColor(ReportStyles.Negro);
-
                     col.Item().PaddingTop(10).Row(infoRow =>
                     {
                         infoRow.AutoItem().Width(120).Background(ReportStyles.RojoClaro)
@@ -126,7 +123,7 @@ public class InvoicedOrdersReportPdfGenerator : IInvoicedOrdersReportPdfGenerato
     private void BuildContent(IContainer container, List<DepotOrderEntity> orders)
     {
         var totalAmount = orders.Sum(o => o.TotalAmount);
-        var avgAmount = orders.Count > 0 ? totalAmount / orders.Count : 0;
+        var totalClients = orders.Select(o => o.CustomerName).Distinct().Count();
 
         container.Column(column =>
         {
@@ -135,21 +132,21 @@ public class InvoicedOrdersReportPdfGenerator : IInvoicedOrdersReportPdfGenerato
             {
                 row.RelativeItem().Element(c => StatCard(c, "Monto Total", $"${totalAmount:N2}", ReportStyles.Verde));
                 row.Spacing(15);
-                row.RelativeItem().Element(c => StatCard(c, "Promedio", $"${avgAmount:N2}", ReportStyles.Rojo));
+                row.RelativeItem().Element(c => StatCard(c, "Promedio", $"${(orders.Count > 0 ? totalAmount / orders.Count : 0):N2}", ReportStyles.Rojo));
                 row.Spacing(15);
-                row.RelativeItem().Element(c => StatCard(c, "Órdenes", orders.Count.ToString(), ReportStyles.RojoOscuro));
+                row.RelativeItem().Element(c => StatCard(c, "Clientes", totalClients.ToString(), ReportStyles.RojoOscuro));
             });
 
             // Título de la tabla
             column.Item().PaddingBottom(10).Background(ReportStyles.Negro).Padding(10)
-                .Text("DETALLE DE ÓRDENES")
+                .Text("DETALLE DE INGRESOS POR CLIENTE")
                 .FontSize(14).Bold().FontColor(ReportStyles.Blanco);
 
             // Tabla de órdenes
             column.Item().Element(content => BuildTable(content, orders));
 
             // Total general destacado
-            column.Item().PaddingTop(3).Element(content => BuildTotalSection(content, totalAmount));
+            column.Item().PaddingTop(3).Element(content => BuildTotalSection(content, totalAmount, totalClients));
         });
     }
 
@@ -175,61 +172,62 @@ public class InvoicedOrdersReportPdfGenerator : IInvoicedOrdersReportPdfGenerato
     // ========================================
     private void BuildTable(IContainer container, List<DepotOrderEntity> orders)
     {
+        // Agrupar órdenes por cliente
+        var groupedOrders = orders
+            .GroupBy(o => new { o.CustomerName, o.CustomerEmail })
+            .Select(g => new
+            {
+                CustomerName = g.Key.CustomerName,
+                CustomerEmail = g.Key.CustomerEmail,
+                TotalOrders = g.Count(),
+                TotalIncome = g.Sum(o => o.TotalAmount)
+            })
+            .ToList();
+
         container.Table(table =>
         {
             table.ColumnsDefinition(cols =>
             {
-                cols.ConstantColumn(50);       // ID
                 cols.RelativeColumn(2.5f);     // Cliente
                 cols.RelativeColumn(3f);       // Email
-                cols.ConstantColumn(85);       // Fecha
-                cols.ConstantColumn(95);       // Total
+                cols.ConstantColumn(85);       // Total de Pedidos
+                cols.ConstantColumn(95);       // Total de Ingresos
             });
 
             // HEADER con gradiente visual usando los tres colores
             table.Header(header =>
             {
                 header.Cell().Background(ReportStyles.RojoOscuro).Padding(10)
-                    .AlignCenter().Text("N.P").FontColor(ReportStyles.Blanco).Bold().FontSize(10);
-
-                header.Cell().Background(ReportStyles.RojoOscuro).Padding(10)
                     .Text("CLIENTE").FontColor(ReportStyles.Blanco).Bold().FontSize(10);
-
                 header.Cell().Background(ReportStyles.RojoOscuro).Padding(10)
                     .Text("EMAIL").FontColor(ReportStyles.Blanco).Bold().FontSize(10);
-
                 header.Cell().Background(ReportStyles.RojoOscuro).Padding(10)
-                    .AlignCenter().Text("FECHA").FontColor(ReportStyles.Blanco).Bold().FontSize(10);
-
+                    .AlignCenter().Text("TOTAL DE PEDIDOS").FontColor(ReportStyles.Blanco).Bold().FontSize(10);
                 header.Cell().Background(ReportStyles.RojoOscuro).Padding(10)
-                    .AlignRight().Text("TOTAL").FontColor(ReportStyles.Blanco).Bold().FontSize(10);
+                    .AlignRight().Text("TOTAL DE INGRESOS").FontColor(ReportStyles.Blanco).Bold().FontSize(10);
             });
 
             // FILAS con estilos alternados
             int index = 0;
-            foreach (var order in orders)
+            foreach (var group in groupedOrders)
             {
                 bool isEven = index % 2 == 0;
                 var bg = isEven ? ReportStyles.Blanco : ReportStyles.GrisClaro;
 
                 table.Cell().Background(bg).BorderBottom(1).BorderColor("#DEDEDE")
-                    .Padding(9).AlignCenter().Text(order.DepotOrderId.ToString())
-                    .FontSize(10).Bold().FontColor(ReportStyles.Negro);
-
-                table.Cell().Background(bg).BorderBottom(1).BorderColor("#DEDEDE")
-                    .Padding(9).Text(order.CustomerName ?? "-")
+                    .Padding(9).Text(group.CustomerName ?? "-")
                     .FontSize(10).FontColor(ReportStyles.Negro);
 
                 table.Cell().Background(bg).BorderBottom(1).BorderColor("#DEDEDE")
-                    .Padding(9).Text(order.CustomerEmail ?? "-")
+                    .Padding(9).Text(group.CustomerEmail ?? "-")
                     .FontSize(9).FontColor(ReportStyles.GrisOscuro);
 
                 table.Cell().Background(bg).BorderBottom(1).BorderColor("#DEDEDE")
-                    .Padding(9).AlignCenter().Text(order.OrderDate.ToString("dd/MM/yyyy"))
-                    .FontSize(9).FontColor(ReportStyles.GrisOscuro);
+                    .Padding(9).AlignCenter().Text(group.TotalOrders.ToString())
+                    .FontSize(10).FontColor(ReportStyles.Negro);
 
                 table.Cell().Background(bg).BorderBottom(1).BorderColor("#DEDEDE")
-                    .Padding(9).AlignRight().Text($"${order.TotalAmount:N2}")
+                    .Padding(9).AlignRight().Text($"${group.TotalIncome:N2}")
                     .FontSize(10).Bold().FontColor(ReportStyles.Verde);
 
                 index++;
@@ -240,7 +238,7 @@ public class InvoicedOrdersReportPdfGenerator : IInvoicedOrdersReportPdfGenerato
     // ========================================
     // SECCIÓN DE TOTAL
     // ========================================
-    private void BuildTotalSection(IContainer container, decimal totalAmount)
+    private void BuildTotalSection(IContainer container, decimal totalAmount, int totalClients)
     {
         container.Row(row =>
         {
@@ -250,7 +248,10 @@ public class InvoicedOrdersReportPdfGenerator : IInvoicedOrdersReportPdfGenerato
             // Contenido del total
             row.RelativeItem().Background(ReportStyles.RojoOscuro).Padding(15).Row(innerRow =>
             {
-                innerRow.RelativeItem().AlignRight().Text("TOTAL GENERAL:")
+                innerRow.RelativeItem().Text($"Mostrando {totalClients} clientes")
+                    .FontColor(ReportStyles.Blanco).FontSize(12);
+
+                innerRow.RelativeItem().AlignRight().Text("TOTAL:")
                     .FontColor(ReportStyles.Blanco).Bold().FontSize(14);
 
                 innerRow.ConstantItem(150).AlignRight().Text($"${totalAmount:N2}")

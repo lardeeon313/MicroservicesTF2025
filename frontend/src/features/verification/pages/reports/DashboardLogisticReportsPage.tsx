@@ -47,7 +47,7 @@ const cards = [
         link: "/verification/reports/OperatorProdictivity",
     },
     {
-        title: "Eficiencia por Zona",
+        title: "Cantidad de pedidos por zona",
         description: "Visualiza la cantidad de pedidos entregados por las diferentes zonas",
         icon: <LandPlot className="h-10 w-10 text-purple-600"/>,
         link: "/verification/reports/ZonePerfomance"

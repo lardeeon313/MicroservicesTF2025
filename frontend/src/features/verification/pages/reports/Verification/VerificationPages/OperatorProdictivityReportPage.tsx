@@ -51,7 +51,23 @@ export const OperatorProductivityPage: React.FC = () => {
         {/* Tabla y gráfico simplificado */}
         {!isLoading && (
           <div className="space-y-12 mt-8">
-            <OperatorProductivityTable data={data} />
+            <OperatorProductivityTable 
+              data={data.filter(op => {
+
+                const matchOperator = filters.operatorName
+                  ? op.fullNameDeliveringOperator
+                      .toLowerCase()
+                      .includes(filters.operatorName.toLowerCase())
+                  : true;
+
+                const matchTeam = filters.teamName
+                  ? (op.teamName || "").toLowerCase().includes(filters.teamName.toLowerCase())
+                  : true;
+
+                return matchOperator && matchTeam;
+              })}
+            />
+
             
           </div>
         )}

@@ -136,7 +136,7 @@ const AverageTimeOrderPage: React.FC = () => {
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
         <BackButton to="/depot/reports"></BackButton>
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-          Tiempo promedio para el armado del pedido:
+          Tiempo para el armado del pedido:
         </h1>
         <p className="text-center text-lg text-gray-700 mb-12">
           Aquí podrás visualizar cuánto tiempo lleva armar los pedidos realizados por los clientes.

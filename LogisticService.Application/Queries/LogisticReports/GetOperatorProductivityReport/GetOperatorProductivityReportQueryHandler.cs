@@ -42,7 +42,9 @@ namespace LogisticService.Application.Queries.LogisticReports.GetOperatorProduct
                 .GroupBy(o => new { o.AssignedOperatorId })
                 .Select(g => new OperatorProductivityReportDto
                 {
-                    OperatorId = g.Key.AssignedOperatorId ?? Guid.Empty,                    
+                    OperatorId = g.Key.AssignedOperatorId ?? Guid.Empty,
+                    DeliveryTeamId = g.First().AssignedDeliveryTeamId,
+                    TeamName = g.First().AssignedDeliveryTeam?.TeamName ?? "Sin equipo",
                     TotalOrders = g.Count(),
                     DeliveredOrders = g.Count(o => o.Status == OrderStatus.Delivered),
                     RejectedOrders = g.Count(o => o.Status == OrderStatus.AssignmentCancelled),
@@ -65,7 +67,9 @@ namespace LogisticService.Application.Queries.LogisticReports.GetOperatorProduct
             {
                 var opId = item.OperatorId.ToString().ToLowerInvariant();
                 if (operatorsById.TryGetValue(opId, out var op))
+                {
                     item.FullNameDeliveringOperator = op.FullName;
+                }
             }
 
             return grouped;

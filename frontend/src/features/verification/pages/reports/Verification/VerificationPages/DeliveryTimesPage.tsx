@@ -12,7 +12,7 @@ import BackButton from "../../../../../../components/BackButton";
 export const DeliveryTimesReportPage: React.FC = () => {
   const { data, loading, error, fetchReport } = useDeliveryTimesReport();
   const [filter, setFilter] = useState<DeliveryTimeFilterEntity>({});
-  const [showGraph, setShowGraph] = useState(true);
+  const [showGraph, setShowGraph] = useState(false);
 
   useEffect(() => {
     fetchReport(filter);

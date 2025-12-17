@@ -182,6 +182,8 @@ export interface PendingCashVerificationReport {
 
 export interface OperatorProductivityReport {
   operatorId: string;
+  deliveryTeamId: number | null;   // ← viene desde la DB de Logistic
+  teamName: string | null;         // ← viene desde AssignedDeliveryTeam
   fullNameDeliveringOperator: string;
   totalOrders: number;
   deliveredOrders: number;

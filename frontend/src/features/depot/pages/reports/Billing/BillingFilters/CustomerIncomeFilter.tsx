@@ -3,7 +3,7 @@ import React from "react";
 type Filters = {
   customerName: string;
   date: string;          // YYYY-MM-DD (valor de <input type="date" />)
-  totalAmount?: string;  // string para poder limpiar fácilmente
+  totalAmount: string;  // string para poder limpiar fácilmente
 };
 
 type Props = {

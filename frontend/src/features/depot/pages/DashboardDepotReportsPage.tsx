@@ -5,8 +5,8 @@ import BackButton from "../../../components/BackButton";
 const cards = [
     //reportes de deposito
   {
-    title: "Tiempos promedio de armado",
-    description: "Visualizá el tiempo promedio que le toma a cada equipo armar el pedido para su pronta facturacion.",
+    title: "Tiempos para el armado del pedido ",
+    description: "Visualizá el tiempo le toma a cada equipo armar el pedido para su pronta facturacion.",
     icon: <FileText className="h-10 w-10 text-red-600" />,
     link: "/depot/reports/averageTimeOrder",
   },

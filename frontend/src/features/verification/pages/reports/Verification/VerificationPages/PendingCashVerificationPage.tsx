@@ -23,7 +23,7 @@ export const PendingCashVerificationPage: React.FC = () => {
   const [pageSize] = useState(10);
 
   // 🔹 NUEVO: mostrar/ocultar gráfico
-  const [showGraph, setShowGraph] = useState(true);
+  const [showGraph, setShowGraph] = useState(false);
 
   const { data, isLoading, error } = usePendingCashVerificationReport(
     searchParams,

@@ -29,7 +29,7 @@ const fetchData = useCallback(async () => {
             ...o,
             customerInfo: customer ? { ...customer } : null,
             };
-      });
+        });
 
       setData(combined);
       setTotalPages(customerData.totalPages);

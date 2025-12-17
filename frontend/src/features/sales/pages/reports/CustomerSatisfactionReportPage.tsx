@@ -19,7 +19,7 @@ const CustomerSatisfactionReportPage: React.FC = () => {
   });
 
   // 🔹 Estado para mostrar/ocultar gráfico
-  const [showGraph, setShowGraph] = useState(true);
+  const [showGraph, setShowGraph] = useState(false);
 
   const { data: customers, loading, totalPages } = useCustomerSatisfaction(page, pageSize);
 
@@ -49,7 +49,7 @@ const CustomerSatisfactionReportPage: React.FC = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">Satisfacción del cliente</h1>
         <p className="text-center text-lg text-gray-700 mb-12">
-          Visualiza la cantidad de satisfacción obtenida por los diferentes clientes. 
+          Visualiza la satisfacción obtenida de los diferentes clientes. 
         </p>
 
         <div className="flex flex-col md:flex-row mb-4 w-full justify-between gap-2">

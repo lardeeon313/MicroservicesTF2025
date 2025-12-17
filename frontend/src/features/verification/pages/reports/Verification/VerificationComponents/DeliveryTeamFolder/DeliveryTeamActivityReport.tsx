@@ -39,82 +39,80 @@ const DeliveryTeamActivityTable: React.FC<{ data: TeamActivityReport[] }> = ({ d
                     </div>
                 </div>
             </div>
-
-            <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+            <table className="min-w-full table-fixed divide-y divide-gray-200">
+                <thead className="bg-gray-100">
                     <tr>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                            Numero
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap w-20">
+                            Número
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap w-40">
                             Equipo
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                            Total Pedidos
+                        <th className="px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap w-24">
+                            Total
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <th className="px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap w-24">
                             Entregados
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <th className="px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap w-24">
                             Incidencias
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <th className="px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap w-32">
                             Asignaciones canceladas
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        <th className="px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap w-24">
                             En camino
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                            Pendiente de pago en efectivo
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                            Prom. Tiempo (hs)
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                            % Éxito
+                        <th className="px-4 py-2 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap w-40">
+                            Pago en Efectivo
                         </th>
                     </tr>
                 </thead>
 
                 <tbody className="bg-white divide-y divide-gray-200">
                     {data.map((team) => (
-                        <tr key={team.deliveryTeamId} className="hover:bg-gray-50 transition-colors duration-200">
-                            <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                                <span className="inline-flex items-center justify-center bg-red-600 text-white rounded-full w-8 h-8 font-bold">
+                        <tr
+                            key={team.deliveryTeamId}
+                            className="hover:bg-gray-50 transition-colors duration-150"
+                        >
+                            <td className="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">
+                                <span className="inline-flex items-center justify-center bg-red-600 text-white rounded-full w-7 h-7 text-sm font-bold">
                                     {team.deliveryTeamId}
                                 </span>
                             </td>
-                            <td className="px-6 py-4 text-sm font-medium text-gray-900">
+
+                            <td className="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">
                                 {team.teamName}
                             </td>
-                            <td className="px-6 py-4 text-sm font-medium text-gray-900">
+
+                            <td className="px-4 py-3 text-sm text-center text-gray-900 whitespace-nowrap">
                                 {team.totalOrders}
                             </td>
-                            <td className="px-6 py-4 text-sm font-medium text-gray-900">
+
+                            <td className="px-4 py-3 text-sm text-center text-gray-900 whitespace-nowrap">
                                 {team.deliveredOrders}
                             </td>
-                            <td className="px-6 py-4 text-sm font-medium text-gray-900">
+
+                            <td className="px-4 py-3 text-sm text-center text-gray-900 whitespace-nowrap">
                                 {team.incidentsCount}
                             </td>
-                            <td className="px-6 py-4 text-sm font-medium text-gray-900">
+
+                            <td className="px-4 py-3 text-sm text-center text-gray-900 whitespace-nowrap">
                                 {team.rejectionsCount}
                             </td>
-                            <td className="px-6 py-4 text-sm font-medium text-gray-900">
+
+                            <td className="px-4 py-3 text-sm text-center text-gray-900 whitespace-nowrap">
                                 {team.onTheWayOrders}
                             </td>
-                            <td className="px-6 py-4 text-sm font-medium text-gray-900">
+
+                            <td className="px-4 py-3 text-sm text-center text-gray-900 whitespace-nowrap">
                                 {team.pendingCashVerificationOrders}
-                            </td>
-                            <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                                {team.averageDeliveryTimeHours?.toFixed(2)}
-                            </td>
-                            <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                                {team.deliverySuccessRatePercent}%
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
+
         </div>
     );
 };

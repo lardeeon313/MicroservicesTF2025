@@ -33,7 +33,7 @@ const CustomerReportTable: React.FC<Props> = ({ data }) => {
               <th className="px-6 py-4 text-left bg-gray-50">CLIENTE</th>
               <th className="px-6 py-4 text-left bg-white">EMAIL</th>
               <th className="px-6 py-4 text-left bg-white">TELÉFONO</th>
-              <th className="px-6 py-4 text-left bg-white">CANTIDAD DE PEDIDOS</th>
+              <th className="px-6 py-4 text-left bg-white">CANTIDAD DE PEDIDOS POR CLIENTE</th>
             </tr>
           </thead>
           <tbody>
