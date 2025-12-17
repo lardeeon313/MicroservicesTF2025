@@ -18,7 +18,7 @@ const DailyMissingFilter: React.FC<DailyMissingFilterProps> = ({
       {/* Input de fecha + hora */}
       <div className="flex flex-col">
         <label className="text-sm text-gray-600 mb-1">
-          Seleccione fecha y hora
+          Seleccione fecha 
         </label>
 
         <input

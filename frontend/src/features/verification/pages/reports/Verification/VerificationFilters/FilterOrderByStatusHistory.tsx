@@ -64,7 +64,7 @@ export const OrderStatusHistoryFiltersFilter: React.FC<FilterProps> = ({
           onChange={handleChange}
           className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
         >
-          <option value="">-- Selecciona el estado anterior --</option>
+          <option value="">Selecciona el estado anterior...</option>
           {Object.entries(OrderStatusLabels).map(([key, value]) => (
             <option key={key} value={key}>{value}</option>
           ))}
@@ -80,7 +80,7 @@ export const OrderStatusHistoryFiltersFilter: React.FC<FilterProps> = ({
           onChange={handleChange}
           className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
         >
-          <option value="">-- Selecciona el nuevo estado --</option>
+          <option value="">Selecciona el nuevo estado...</option>
           {Object.entries(OrderStatusLabels).map(([key, value]) => (
             <option key={key} value={key}>{value}</option>
           ))}

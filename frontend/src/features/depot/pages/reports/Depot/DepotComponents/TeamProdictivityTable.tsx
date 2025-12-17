@@ -28,7 +28,7 @@ const TeamProductivityTable: React.FC<Props> = ({ data }) => {
                 Nombre del Equipo
               </th>
               <th className="px-6 py-4 text-center text-sm font-medium uppercase tracking-wide">
-                Pedidos Completados
+                Pedidos Armados
               </th>
               <th className="px-6 py-4 text-center text-sm font-medium uppercase tracking-wide">
                 Pedidos con Faltantes

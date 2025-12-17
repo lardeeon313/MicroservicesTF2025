@@ -39,7 +39,7 @@ namespace LogisticService.Application.Queries.LogisticReports.GetDeliveryTimeRep
 
             // Filtrar solo las entregadas
             var deliveredOrders = orders
-                .Where(o => o.Status == OrderStatus.Delivered)
+                .Where(o => o.Status == OrderStatus.Delivered && o.AssignedOperatorId != null)
                 .ToList();
 
             // Obtener operadores desde Identity

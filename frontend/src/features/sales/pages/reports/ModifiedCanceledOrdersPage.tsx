@@ -59,13 +59,11 @@ export default function ModifiedCanceledOrdersPage() {
 
   const filteredOrders = orders.filter((o: any) => {
     const fullName = `${o.customerFirstName ?? ""} ${o.customerLastName ?? ""}`.trim();
+    const matchesName = !nameFilter || normalize(fullName).includes(normalize(nameFilter));
 
-    const matchesName =
-      !nameFilter || normalize(fullName).includes(normalize(nameFilter));
-
-    const raw = o.modifiedDate ?? o.orderDate;
-    const d = raw ? new Date(raw) : null;
-    const matchesDate = !modifiedDate || (d && toLocalYMD(d) === modifiedDate);
+    // Usar modifiedDate si existe, sino orderDate
+    const dateToCheck = o.modifiedDate ? new Date(o.modifiedDate) : new Date(o.orderDate);
+    const matchesDate = !modifiedDate || (dateToCheck && toLocalYMD(dateToCheck) === modifiedDate);
 
     const matchesStatus =
       statusFilter === "Todos" ||

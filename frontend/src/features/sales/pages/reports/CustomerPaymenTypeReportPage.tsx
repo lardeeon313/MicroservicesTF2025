@@ -42,7 +42,7 @@ const CustomerReportPaymentTypePage: React.FC = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Título */}
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-          Clientes por Tipo de Pago
+          Tipos de pago por cliente
         </h1>
 
         <p className="text-center text-lg text-gray-700 mb-12">

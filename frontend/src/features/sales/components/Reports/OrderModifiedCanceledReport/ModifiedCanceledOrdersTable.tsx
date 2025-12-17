@@ -95,7 +95,9 @@ const ModifiedCanceledOrdersTable: React.FC<Props> = ({ orders }) => {
                     </svg>
                     <div>
                       <div className="text-sm text-gray-900">
-                        {formatDate(order.modifiedStatusDate ?? "Desconocido")}
+                        {order.modifiedStatusDate || order.orderDate
+                          ? formatDate(order.modifiedStatusDate ?? order.orderDate)
+                          : "Desconocido"}
                       </div>
                       <div className="text-xs text-gray-500">Última modificación</div>
                     </div>

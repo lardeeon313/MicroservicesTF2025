@@ -280,7 +280,7 @@ public class InvoicedOrdersReportPdfGenerator : IInvoicedOrdersReportPdfGenerato
             // Contenido del footer
             col.Item().Background(ReportStyles.Negro).Padding(12).Row(row =>
             {
-                row.RelativeItem().Text("Distribuidora Verona © 2025 - Confidencial")
+                row.RelativeItem().Text("Distribuidora Verona © 2025")
                     .FontSize(9).FontColor(ReportStyles.Blanco);
 
                 row.RelativeItem().AlignCenter().Text(text =>

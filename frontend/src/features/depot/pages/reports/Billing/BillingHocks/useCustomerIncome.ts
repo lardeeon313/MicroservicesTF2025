@@ -14,7 +14,7 @@ export const useCustomerIncome = () => {
 
       const res = await API.get<Billing[]>("/depot/billingmanager/all-invoiced-orders");
 
-      
+      console.log("RTA:" , res);
 
       if (!res.data || res.data.length === 0) {
         setOrders([]);

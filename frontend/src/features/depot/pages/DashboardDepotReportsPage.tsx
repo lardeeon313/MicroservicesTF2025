@@ -1,4 +1,4 @@
-import { User, FilePlus2, FileText, PieChart } from "lucide-react";
+import { User, FilePlus2, FileText, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import BackButton from "../../../components/BackButton";
 
@@ -13,7 +13,7 @@ const cards = [
   {
     title: "Faltantes diarios",
     description: "Muestra aquellos pedidos los cuales se producieron faltantes de tales productos",
-    icon: <PieChart className="h-10 w-10 text-red-600" />,
+    icon: <AlertCircle className="h-10 w-10 text-red-600" />,
     link: "/depot/reports/dailyMissing",
   },
   {
