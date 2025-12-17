@@ -25,11 +25,13 @@ namespace DepotService.Application.DTOs.DepotOrder
 
         // Relacion con Faltantes
         public ICollection<DepotOrderMissing> Missings { get; set; } = [];
-        
+
         public Guid? AssignedOperatorId { get; set; }
         public DepotTeamEntity? AssignedDepotTeam { get; set; }
         public int? AssignedDepotTeamId { get; private set; }
         public OrderAddressDto? Address { get; set; }
+
+        public DateTime? BillingDate { get; set; }
 
     }
 }

@@ -12,55 +12,56 @@ import Pagination from "../../../../depotmanager/components/Pagination";
 export default function InvoicedOrdersPage() {
   const { data, loading, error, fetchOrders } = useInvoicedOrdersByCustomer();
 
-  // Paginación
   const [page, setPage] = useState<number>(1);
   const [pageSize] = useState<number>(10);
 
-  // Estados de filtros locales
   const [filters, setFilters] = useState({
     customerName: "",
     minAmount: undefined as number | undefined,
     maxAmount: undefined as number | undefined,
+    period: undefined as "day" | "week" | "month" | "fortnight" | undefined,
   });
 
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
 
-  // Recibe filtros desde el componente visual
   const handleSearch = (newFilters: {
     customerName?: string;
     fromDate?: string;
     toDate?: string;
     minAmount?: number;
     maxAmount?: number;
+    period?: "day" | "week" | "month" | "fortnight";
   }) => {
     setFilters({
       customerName: newFilters.customerName || "",
       minAmount: newFilters.minAmount,
       maxAmount: newFilters.maxAmount,
+      period: newFilters.period,
     });
 
     if (newFilters.fromDate !== undefined) setFromDate(newFilters.fromDate);
     if (newFilters.toDate !== undefined) setToDate(newFilters.toDate);
 
     fetchOrders({
-  customerName: newFilters.customerName || "",
-  fromDate: newFilters.fromDate || "",
-  toDate: newFilters.toDate || "",
-  minAmount: newFilters.minAmount,
-  maxAmount: newFilters.maxAmount,
-});
-
+      customerName: newFilters.customerName || "",
+      fromDate: newFilters.fromDate || "",
+      toDate: newFilters.toDate || "",
+      minAmount: newFilters.minAmount,
+      maxAmount: newFilters.maxAmount,
+      period: newFilters.period,
+    });
 
     setPage(1);
   };
 
-  // 🔍 Filtrado en cliente
   const filteredData = data.filter(item => {
     let pass = true;
 
     if (filters.customerName.trim() !== "") {
-      pass = item.customerName.toLowerCase().includes(filters.customerName.trim().toLowerCase());
+      pass = item.customerName
+        .toLowerCase()
+        .includes(filters.customerName.trim().toLowerCase());
     }
 
     if (pass && fromDate) {
@@ -73,14 +74,34 @@ export default function InvoicedOrdersPage() {
       pass = new Date(item.orderDate) < endDate;
     }
 
-    // 💰 Filtro mínimo
     if (pass && filters.minAmount !== undefined) {
       pass = item.totalAmount >= filters.minAmount;
     }
 
-    // 💰 Filtro máximo
     if (pass && filters.maxAmount !== undefined) {
       pass = item.totalAmount <= filters.maxAmount;
+    }
+
+    // 🔥 FILTRO DE PERÍODO EN CLIENTE (opcional)
+    if (pass && filters.period) {
+      const orderDate = new Date(item.orderDate);
+      const now = new Date();
+      const diff = (now.getTime() - orderDate.getTime()) / (1000 * 60 * 60 * 24);
+
+      switch (filters.period) {
+        case "day":
+          pass = diff <= 1;
+          break;
+        case "week":
+          pass = diff <= 7;
+          break;
+        case "fortnight":
+          pass = diff <= 14;
+          break;
+        case "month":
+          pass = diff <= 30;
+          break;
+      }
     }
 
     return pass;
@@ -100,7 +121,7 @@ export default function InvoicedOrdersPage() {
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-6">
           <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-            Cantidad de pedidos facturados por clientes
+            Cantidad de pedidos facturados
           </h1>
 
           <p className="text-center text-lg text-gray-700 mb-12">
@@ -112,7 +133,12 @@ export default function InvoicedOrdersPage() {
           </div>
 
           <div className="mt-12">
-            {loading && <LoadingSpinner message="Cargando pedidos facturados..." height="h-32" />}
+            {loading && (
+              <LoadingSpinner
+                message="Cargando pedidos facturados..."
+                height="h-32"
+              />
+            )}
 
             {error && (
               <EmptyState

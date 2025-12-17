@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+type PeriodType = "day" | "week" | "month" | "fortnight";
+
 type Props = {
   onSearch: (filters: {
     customerName?: string;
@@ -7,6 +9,7 @@ type Props = {
     toDate?: string;
     minAmount?: number;
     maxAmount?: number;
+    period?: PeriodType;
   }) => void;
 };
 
@@ -17,6 +20,9 @@ export default function InvoicedOrdersFilter({ onSearch }: Props) {
   const [minAmount, setMinAmount] = useState("");
   const [maxAmount, setMaxAmount] = useState("");
 
+  // 💡 period bien tipado
+  const [period, setPeriod] = useState<PeriodType | undefined>(undefined);
+
   const handleSearch = () => {
     onSearch({
       customerName,
@@ -24,6 +30,7 @@ export default function InvoicedOrdersFilter({ onSearch }: Props) {
       toDate,
       minAmount: minAmount ? Number(minAmount) : undefined,
       maxAmount: maxAmount ? Number(maxAmount) : undefined,
+      period: period ?? undefined,
     });
   };
 
@@ -33,6 +40,7 @@ export default function InvoicedOrdersFilter({ onSearch }: Props) {
     setToDate("");
     setMinAmount("");
     setMaxAmount("");
+    setPeriod(undefined);
 
     onSearch({});
   };
@@ -44,7 +52,7 @@ export default function InvoicedOrdersFilter({ onSearch }: Props) {
       <div className="flex gap-2 items-end">
 
         <div className="flex-1">
-          <label className="text-sm font-medium px-2 text-gray-600 mb-1">Nombre del Cliente:</label>
+          <label className="text-sm font-medium px-2 text-gray-600 mb-1">Cliente:</label>
           <input
             type="text"
             value={customerName}
@@ -54,7 +62,7 @@ export default function InvoicedOrdersFilter({ onSearch }: Props) {
         </div>
 
         <div className="flex-1">
-          <label className="text-sm font-medium px-2 text-gray-600 mb-1">Fecha desde:</label>
+          <label className="text-sm px-2 text-gray-600">Fecha desde:</label>
           <input
             type="date"
             value={fromDate}
@@ -64,7 +72,7 @@ export default function InvoicedOrdersFilter({ onSearch }: Props) {
         </div>
 
         <div className="flex-1">
-          <label className="text-sm font-medium px-2 text-gray-600 mb-1">Fecha hasta:</label>
+          <label className="text-sm px-2 text-gray-600">Fecha hasta:</label>
           <input
             type="date"
             value={toDate}
@@ -73,7 +81,23 @@ export default function InvoicedOrdersFilter({ onSearch }: Props) {
           />
         </div>
 
-
+        <div className="flex-1">
+          <label className="text-sm px-2 text-gray-600">Período:</label>
+          <select
+            value={period ?? ""}
+            onChange={(e) => {
+              const val = e.target.value;
+              setPeriod(val === "" ? undefined : (val as PeriodType));
+            }}
+            className="border border-gray-300 rounded-lg px-3 py-2 w-full"
+          >
+            <option value="">Seleccionar...</option>
+            <option value="day">Día</option>
+            <option value="week">Semana</option>
+            <option value="month">Mes</option>
+            <option value="fortnight">Quincena</option>
+          </select>
+        </div>
 
         <div className="flex w-1/5 justify-around">
           <button
@@ -89,7 +113,6 @@ export default function InvoicedOrdersFilter({ onSearch }: Props) {
             Limpiar
           </button>
         </div>
-
       </div>
     </div>
   );

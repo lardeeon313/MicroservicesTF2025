@@ -1,3 +1,4 @@
+// useOrderBilled.ts
 import { useState, useCallback } from "react";
 import API from "../../../../../../api/axios";
 
@@ -12,14 +13,13 @@ export type DepotOrderItem = {
   isReady: boolean;
 };
 
-
 export type DepotOrderDtoBilling = {
   salesOrderId: string;
   customerName: string;
   totalAmount: number;
   orderDate: string;
   items: DepotOrderItem[];
-  productCount: number
+  productCount: number;
 };
 
 type Filters = {
@@ -28,6 +28,7 @@ type Filters = {
   toDate?: string;
   minAmount?: number;
   maxAmount?: number;
+  period?: "day" | "week" | "month" | "fortnight";
 };
 
 export function useInvoicedOrdersByCustomer() {
@@ -36,39 +37,40 @@ export function useInvoicedOrdersByCustomer() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchOrders = useCallback(async (filters: Filters) => {
-  setLoading(true);
-  setError(null);
+    setLoading(true);
+    setError(null);
 
-  try {
-    const params = new URLSearchParams();
+    try {
+      const params = new URLSearchParams();
 
-    if (filters.customerName) params.append("CustomerName", filters.customerName);
-    if (filters.fromDate) params.append("FromDate", filters.fromDate);
-    if (filters.toDate) params.append("ToDate", filters.toDate);
-    if (filters.minAmount !== undefined) params.append("MinAmount", filters.minAmount.toString());
-    if (filters.maxAmount !== undefined) params.append("MaxAmount", filters.maxAmount.toString());
+      if (filters.customerName) params.append("CustomerName", filters.customerName);
+      if (filters.fromDate) params.append("FromDate", filters.fromDate);
+      if (filters.toDate) params.append("ToDate", filters.toDate);
+      if (filters.minAmount !== undefined) params.append("MinAmount", filters.minAmount.toString());
+      if (filters.maxAmount !== undefined) params.append("MaxAmount", filters.maxAmount.toString());
+      if (filters.period) params.append("Period", filters.period); // 🔥 nuevo filtro
 
-    const res = await API.get<DepotOrderDtoBilling[]>(
-      `/depot/billingmanager/invoiced-orders-by-customer?${params.toString()}`
-    );
+      const res = await API.get<DepotOrderDtoBilling[]>(
+        `/depot/billingmanager/invoiced-orders-by-customer?${params.toString()}`
+      );
 
-    const mapped = res.data
-      .map(order => ({
-        ...order,
-        productCount: order.items.reduce((acc, item) => acc + item.quantity, 0)
-      }))
-      .filter(order => order.totalAmount > 0);
+      console.log(res)
 
-    setData(mapped);
+      const mapped = res.data
+        .map(order => ({
+          ...order,
+          productCount: order.items.reduce((acc, item) => acc + item.quantity, 0),
+        }))
+        .filter(order => order.totalAmount > 0);
 
-  } catch (err: any) {
-    setError(err.message || "Error al obtener órdenes facturadas.");
-    setData([]);
-  } finally {
-    setLoading(false);
-  }
-}, []);
-
+      setData(mapped);
+    } catch (err: any) {
+      setError(err.message || "Error al obtener órdenes facturadas.");
+      setData([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   return { data, loading, error, fetchOrders };
 }
