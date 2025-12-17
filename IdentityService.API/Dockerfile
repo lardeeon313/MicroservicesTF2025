@@ -6,6 +6,10 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 COPY ["IdentityService.API/IdentityService.API.csproj", "IdentityService.API/"]
+COPY ["IdentityService.Application/IdentityService.Application.csproj", "IdentityService.Application/"]
+COPY ["IdentityService.Domain/IdentityService.Domain.csproj", "IdentityService.Domain/"]
+COPY ["IdentityService.Infraestructure/IdentityService.Infraestructure.csproj", "IdentityService.Infraestructure/"]
+
 RUN dotnet restore "IdentityService.API/IdentityService.API.csproj"
 
 COPY . .

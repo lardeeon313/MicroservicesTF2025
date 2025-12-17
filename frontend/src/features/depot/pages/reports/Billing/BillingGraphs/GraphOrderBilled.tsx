@@ -10,7 +10,7 @@ const OrderBilledGraph: React.FC<Props> = ({ data }) => {
 
   // Generar etiquetas limpias y en varias líneas
   const chartData = data.map((order) => ({
-    name: [order.customerName || "Sin nombre", order.orderId ? `ID: ${order.orderId}` : ""],
+    name: order.customerName ,
     amount: order.totalAmount ?? 0,
   }));
 

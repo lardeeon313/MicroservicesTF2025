@@ -15,6 +15,15 @@ export enum OrderStatus {
     Delivered = "delivered",  
     Canceled = "canceled",
     Modified = "modified",
+    Verified = "verified",
+    PendingCashVerification = "pendingCashVerification",
+    PendingDelivery = "pendingDelivery",
+    AssignmentCancelled = "assignmentCancelled",
+    AssignedDelivery = "assignedDelivery",
+    PendingVerification = "pendingVerification",
+    CashVerified = "cashVerified",
+    PendingIncidentResolution = "pendingIncidentResolution",
+    IncidentResolved = "incidentResolved",
     SentToBilling = "sentToBilling"
 }
 

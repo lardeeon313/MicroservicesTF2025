@@ -89,4 +89,12 @@ export const orderStatusStyles: Record<OrderStatus, { text: string; bg: string }
     text: "text-green-600",
     bg: "bg-green-200", // verde = incidente resuelto
   },
+  [OrderStatus.Modified]: {
+    text: "text-gray-800",
+    bg: "bg-gray-300", // gris oscuro = modificado
+  },
+  [OrderStatus.Verify]: {
+    text: "text-yellow-700",
+    bg: "bg-yellow-200", // amarillo = por verificar
+  },
 }

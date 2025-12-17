@@ -3,12 +3,18 @@ services:
     image: mysql:8.0
     container_name: mysql-db
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: depot_db
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}      
     ports:
-      - "3307:3306"
+      - "${MYSQL_PORT}:3306"
     volumes:
+      - mysql_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping","-h","localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
     networks:
       - micro_net
 
@@ -17,16 +23,18 @@ services:
       context: .
       dockerfile: ./ApiGateway/Dockerfile
     ports:
-      - "5000:8080"
+      - "${APIGATEWAY_PORT}:8080"
+    environment:
+    - Jwt__Key=${JWT_KEY}
+    - Jwt__Issuer=${JWT_ISSUER}
     depends_on:
       - mysql
-      - adminservice
-      - deliveryservice
-      - salesservice
-      - depotservice
-      - verificationservice
-      - identityservice
-      - logisticservice
+      - rabbitmq
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - micro_net
 
@@ -36,9 +44,15 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-    environment:
+    environment:        
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
     networks:
     - micro_net
 
@@ -47,58 +61,94 @@ services:
       context: .
       dockerfile: ./AdminService.API/Dockerfile
     ports:
-      - "5001:8080"
+      - "${ADMIN_PORT}:8080"
+    environment:
+      # Database Connection String
+      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=admin_db;User=root;Password=${MYSQL_ROOT_PASSWORD}
+     
+      # JWT Settings
+      - Jwt__Key=${JWT_KEY}
+      - Jwt__Issuer=${JWT_ISSUER}
+      
+      # Mailgun
+      - MailSettings__ApiKey=${MAILGUN_API_KEY}
+      - MailSettings__Domain=${MAILGUN_DOMAIN}
+      - MailSettings__FromEmail=${MAILGUN_FROM}
+      - MailSettings__FromName=SalesService
+
+      # RabbitMQ Settings
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
     depends_on:
       - mysql
       - rabbitmq
+      - apigateway
     networks:
-      - micro_net
-  
-  deliveryservice:
-    build:
-      context: .
-      dockerfile: ./DeliveryService.API/Dockerfile
-    ports:
-      - "5002:8080"
-    depends_on:
-      - mysql
-      - rabbitmq
-    networks:
-      - micro_net
+      - micro_net   
 
   depotservice:
     build:
       context: .
       dockerfile: ./DepotService.API/Dockerfile
     ports:
-      - "5003:8080"
+      - "${DEPOT_PORT}:8080"
+    environment:
+      # Database Connection String
+      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=depot_db;User=root;Password=${MYSQL_ROOT_PASSWORD}
+     
+      # JWT Settings
+      - Jwt__Key=${JWT_KEY}
+      - Jwt__Issuer=${JWT_ISSUER}
+      
+      # Mailgun
+      - MailSettings__ApiKey=${MAILGUN_API_KEY}
+      - MailSettings__Domain=${MAILGUN_DOMAIN}
+      - MailSettings__FromEmail=${MAILGUN_FROM}
+      - MailSettings__FromName=SalesService
+
+      # RabbitMQ Settings
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
     depends_on:
       - mysql
       - rabbitmq
+      - apigateway
     networks:
       - micro_net
 
   salesservice:
     build:
       context: .
-      dockerfile: SalesService.API/Dockerfile
+      dockerfile: ./SalesService.API/Dockerfile
     ports:
-      - "5004:8080"
-    depends_on:
-      - mysql
-      - rabbitmq
-    networks:
-      - micro_net
+      - "${SALES_PORT}:8080"
+    environment:
+      # Database Connection String
+      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=sales_db;User=root;Password=${MYSQL_ROOT_PASSWORD}
+     
+      # JWT Settings
+      - Jwt__Key=${JWT_KEY}
+      - Jwt__Issuer=${JWT_ISSUER}
+      
+      # Mailgun
+      - MailSettings__ApiKey=${MAILGUN_API_KEY}
+      - MailSettings__Domain=${MAILGUN_DOMAIN}
+      - MailSettings__FromEmail=${MAILGUN_FROM}
+      - MailSettings__FromName=SalesService
 
-  verificationservice:
-    build:
-      context: .
-      dockerfile: ./VerificationService.API/Dockerfile
-    ports:
-      - "5005:8080"
+      # RabbitMQ Settings
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
     depends_on:
       - mysql
       - rabbitmq
+      - apigateway
     networks:
       - micro_net
 
@@ -107,10 +157,30 @@ services:
       context: .
       dockerfile: ./LogisticService.API/Dockerfile
     ports:
-      - "5007:8080"
+      - "${LOGISTIC_PORT}:8080"
+    environment:
+      # Database Connection String
+      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=logistic_db;User=root;Password=${MYSQL_ROOT_PASSWORD}
+     
+      # JWT Settings
+      - Jwt__Key=${JWT_KEY}
+      - Jwt__Issuer=${JWT_ISSUER}
+      
+      # Mailgun
+      - MailSettings__ApiKey=${MAILGUN_API_KEY}
+      - MailSettings__Domain=${MAILGUN_DOMAIN}
+      - MailSettings__FromEmail=${MAILGUN_FROM}
+      - MailSettings__FromName=SalesService
+
+      # RabbitMQ Settings
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
     depends_on:
       - mysql
       - rabbitmq
+      - apigateway
     networks:
       - micro_net
 
@@ -120,19 +190,39 @@ services:
       context: .
       dockerfile: ./IdentityService.API/Dockerfile
     ports:
-      - "5006:8080"
+      - "${IDENTITY_PORT}:8080"
+    environment:
+      # Database Connection String
+      - ConnectionStrings__DefaultConnection=Server=mysql;Port=3306;Database=identity_db;User=root;Password=${MYSQL_ROOT_PASSWORD}
+     
+      # JWT Settings
+      - Jwt__Key=${JWT_KEY}
+      - Jwt__Issuer=${JWT_ISSUER}
+      
+      # Mailgun
+      - MailSettings__ApiKey=${MAILGUN_API_KEY}
+      - MailSettings__Domain=${MAILGUN_DOMAIN}
+      - MailSettings__FromEmail=${MAILGUN_FROM}
+      - MailSettings__FromName=SalesService
+
+      # RabbitMQ Settings
+      - RabbitMQ__Host=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest      
     depends_on:
       - mysql
       - rabbitmq
+      - apigateway 
     networks:
       - micro_net
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: docker/Dockerfile
+      dockerfile: /Dockerfile
     ports:
-     - "3000:80"
+     - "${FRONTEND_PORT}:80"
     depends_on:
      - apigateway
     networks:
@@ -143,12 +233,11 @@ services:
       context: ./mobile/mobile-operario
       dockerfile: docker/Dockerfile
     ports:
-      - "3001:80"
+      - "${MOBILE_PORT}:80"
     depends_on:
       - apigateway
     networks:
       - micro_net
-
 
 networks:
   micro_net:

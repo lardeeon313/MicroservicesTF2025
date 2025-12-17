@@ -361,3 +361,20 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/LogisticService.API/Migrations/20251028153144_InitialCreate.cs
+/LogisticService.API/Migrations/20251028153144_InitialCreate.Designer.cs
+/LogisticService.API/Migrations/20251101144501_initialCreate.cs
+/LogisticService.API/Migrations/20251101144501_initialCreate.Designer.cs
+/LogisticService.API/Migrations/LogisticDbContextModelSnapshot.cs
+/SalesService.Infraestructure/Migrations/20250821234823_updateSalesDomain.cs
+/SalesService.Infraestructure/Migrations/SalesDbContextModelSnapshot.cs
+/SalesService.Infraestructure/Migrations/20250821234823_updateSalesDomain.cs
+/SalesService.Infraestructure/Migrations/SalesDbContextModelSnapshot.cs
+/SalesService.API/appsettings.json
+/AdminService.API/Migrations
+/SalesService.API/Migrations
+/DepotService.Infraestructure/Migrations
+/IdentityService.Infraestructure/Migrations
+/SalesService/API/Migrations
+/.env
+

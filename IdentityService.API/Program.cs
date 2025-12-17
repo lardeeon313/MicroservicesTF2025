@@ -30,7 +30,11 @@ using IdentityService.Domain.Common.Interfaces;
 using IdentityService.Application.Commands.Employees.ForgotPassword;
 using IdentityService.Application.Commands.Employees.ResetPassword;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"
+});
 //para acceder desde el celular
 //builder.WebHost.UseUrls("http://0.0.0.0:5006");
 
@@ -64,9 +68,15 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<IdentityDbContext>()
     .AddDefaultTokenProviders();
 
-// JWT Oauth
+// Obtener las variables de configuración
+var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
+var rabbitHost = builder.Configuration["RabbitMQ:Host"];
+var rabbitPort = builder.Configuration["RabbitMQ:Port"];
+var rabbitUser = builder.Configuration["RabbitMQ:Username"];
+var rabbitPass = builder.Configuration["RabbitMQ:Password"];
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var mailApi = builder.Configuration["MailSettings:ApiKey"];
 
 builder.Services.AddAuthentication(options =>
 {
@@ -89,9 +99,6 @@ builder.Services.AddAuthentication(options =>
 // FluentValidation
 builder.Services.AddScoped<IValidator<RegisterRequest>, RegisterRequestValidator>();
 builder.Services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
-
-// Obtener la cadena de conexión del appsettings.json
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Registrar el DbContext
 builder.Services.AddDbContext<IdentityDbContext>(options =>

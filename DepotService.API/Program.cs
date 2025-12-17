@@ -71,7 +71,12 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"
+});
+
 //para acceder desde el celular
 //builder.WebHost.UseUrls("http://0.0.0.0:5003");
 
@@ -193,8 +198,15 @@ builder.Services.AddScoped<InvoicePdfGenerator>();
 builder.Services.AddScoped<InvoiceWordGenerator>();
 builder.Services.AddScoped<InvoiceExcelGenerator>();
 
-// Obtener la cadena de conexión del appsettings.json
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// Obtener las variables de configuración
+var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
+var rabbitHost = builder.Configuration["RabbitMQ:Host"];
+var rabbitPort = builder.Configuration["RabbitMQ:Port"];
+var rabbitUser = builder.Configuration["RabbitMQ:Username"];
+var rabbitPass = builder.Configuration["RabbitMQ:Password"];
+var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var mailApi = builder.Configuration["MailSettings:ApiKey"];
 
 // Registrar los repositorios
 builder.Services.AddScoped<ITeamRepository, TeamRepository>();
@@ -215,9 +227,6 @@ builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
 builder.Services.AddDbContext<DepotDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
     b => b.MigrationsAssembly("DepotService.Infraestructure")));
-
-var jwtKey = builder.Configuration["Jwt:Key"];
-var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 
 // Configuración de autenticación JWT
 builder.Services.AddAuthentication("Bearer")

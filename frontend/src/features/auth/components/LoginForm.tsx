@@ -35,7 +35,7 @@ const LoginForm = () => {
 
     switch (role) {
       case "Admin":
-        navigate("/admin/dashboard");
+        navigate("/admin");
         break;
       case "SalesStaff":
         navigate("/sales/home");

@@ -8,6 +8,7 @@ WORKDIR /app
 
 # Copiar solo archivos de dependencias primero para aprovechar cache
 COPY package*.json ./
+COPY .env .env
 
 # Instalar dependencias con `--force` para resolver conflictos de binarios
 RUN npm install --force

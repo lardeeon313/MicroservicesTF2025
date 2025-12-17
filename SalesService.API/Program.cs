@@ -50,7 +50,11 @@ using SalesService.Application.Queries.Customers.GetCustomerPaymentTypes;
 using SalesService.Infraestructure.Messaging.Consumer.DepotConsumers;
 using SalesService.Infraestructure.Messaging.Consumer.LogisticConsumers;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"
+});
 
 // Add services to the container.
 builder.Services.AddControllers()
@@ -150,16 +154,20 @@ builder.Services.AddHostedService<OrderDeliveryIncidentConsumer>();
 builder.Services.AddHostedService<OrderOnTheWayConsumer>();
 builder.Services.AddHostedService<OrderResolveIncidentConsumer>();
 
-// Obtener la cadena de conexión del appsettings.json
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// Obtener las variables de configuración
+var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
+var rabbitHost = builder.Configuration["RabbitMQ:Host"];
+var rabbitPort = builder.Configuration["RabbitMQ:Port"];
+var rabbitUser = builder.Configuration["RabbitMQ:Username"];
+var rabbitPass = builder.Configuration["RabbitMQ:Password"];
+var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var mailApi = builder.Configuration["MailSettings:ApiKey"];
 
 // Registrar el DbContext
 builder.Services.AddDbContext<SalesDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-        b => b.MigrationsAssembly("SalesService.Infraestructure")));
-
-var jwtKey = builder.Configuration["Jwt:Key"];
-var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+        b => b.MigrationsAssembly("SalesService.API")));
 
 // Configuración de autenticación JWT
 builder.Services.AddAuthentication("Bearer")
