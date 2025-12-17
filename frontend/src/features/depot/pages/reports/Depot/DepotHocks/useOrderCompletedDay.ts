@@ -1,99 +1,71 @@
-import { useState } from "react";
-import API from "../../../../../../api/axios";
+import { useState, useEffect } from "react";
+import { getCompletedOrdersReports } from "./GetOrdersCompletedReport";
 
-/**
- * Convierte una fecha de formato "DD/MM/YYYY" a "YYYY-MM-DD".
- * Si la fecha es inválida o vacía, devuelve un string vacío.
- */
-const convertirFechaA_YYYYMMDD = (fechaDDMMYYYY: string): string => {
-  if (!fechaDDMMYYYY) return "";
-  const partes = fechaDDMMYYYY.split('/');
-  if (partes.length !== 3) return ""; // Formato inválido
-  const [dia, mes, anio] = partes;
-  return `${anio}-${mes}-${dia}`;
-};
-
-export interface Order {
-  depotOrderId: number;
-  salesOrderId: number;
-  customerName: string;
-  customerEmail: string;
-  orderDate: string;
-  deliveryDate: string;
+export interface OrdersCompletedFilter {
+  from?: string | null;
+  to?: string | null;
 }
 
-export const useOrderCompletedDay = () => {
-  const [data, setData] = useState<Order[]>([]);
+export interface CompletedOrderItem {
+  operatorFullName: string | null;
+}
+
+export interface OperatorCompletedCount {
+  operatorName: string;
+  count: number;
+}
+
+export const useCompletedOrdersReport = (filters: OrdersCompletedFilter) => {
+  const [data, setData] = useState<OperatorCompletedCount[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
 
-  const fetchData = async (startDate: string, endDate: string, pageNum: number) => {
-    try {
-      setLoading(true);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
 
-      // 1. Convertimos las fechas del formato UI (DD/MM/YYYY) al formato API (YYYY-MM-DD)
-      const fechaConvertidaInicio = convertirFechaA_YYYYMMDD(startDate);
-      const fechaConvertidaFin = convertirFechaA_YYYYMMDD(endDate);
+        console.log("▶️ FILTROS ENTRANTES:", filters);
 
-      // 2. Añadimos la hora para crear un rango de tiempo completo y válido
-      const formattedStartDate = fechaConvertidaInicio ? `${fechaConvertidaInicio}T00:00:00` : "";
-      const formattedEndDate = fechaConvertidaFin ? `${fechaConvertidaFin}T23:59:59` : "";
+        const response = await getCompletedOrdersReports(filters.from, filters.to);
 
+        console.log("📌 RESPONSE RAW:", response);
+        console.log("📌 RESPONSE ITEMS:", response.items);
 
+        const items: CompletedOrderItem[] = response.items ?? [];
 
-      const response = await API.get("depot/depotreports/reports/orders-completed", {
-        params: {
-          startDate: formattedStartDate,
-          endDate: formattedEndDate,
-          page: pageNum,
-        },
-      });
+        console.log("📌 ITEMS RECIBIDOS:", items);
 
-      console.log(response)
+        // --- Agrupado ---
+        const grouped = items.reduce<Record<string, number>>((acc, item) => {
+          const name = item.operatorFullName ?? "Sin Operador";
 
-      
+          acc[name] = (acc[name] || 0) + 1;
+          return acc;
+        }, {});
 
-      const items: Order[] = response.data.items || [];
-      setData(items);
-      setTotalPages(response.data.totalPages || 1);
+        console.log("📊 AGRUPADO POR OPERADOR:", grouped);
 
-    } catch (error) {
-      setError("Error al cargar los datos");
-     
-    } finally {
-      setLoading(false);
-    }
-  };
+        const result: OperatorCompletedCount[] = Object.entries(grouped).map(
+          ([operatorName, count]) => ({
+            operatorName,
+            count,
+          })
+        );
 
-  const onSearch = () => {
-    fetchData(startDate, endDate, 1);
-  };
+        console.log("📈 RESULT FINAL:", result);
 
-  const clearFilters = () => {
-    setStartDate("");
-    setEndDate("");
-    setPage(1);
-    
-    fetchData("", "", 1); // Cargar todos los datos sin filtro
-  };
+        setData(result);
+      } catch (err) {
+        console.log("❌ ERROR FETCH:", err);
+        setError("Error obteniendo reporte");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  return {
-    data,
-    loading,
-    error,
-    page,
-    setPage,
-    totalPages,
-    startDate,
-    setStartDate,
-    endDate,
-    setEndDate,
-    onSearch,
-    fetchData,
-    clearFilters,
-  };
+    fetchData();
+  }, [filters]);
+
+  return { data, loading, error };
 };

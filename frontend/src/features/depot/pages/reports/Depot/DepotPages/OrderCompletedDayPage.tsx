@@ -1,159 +1,107 @@
-import { useEffect, useState, useMemo } from "react";
-import { useOrderCompletedDay } from "../DepotHocks/useOrderCompletedDay";
-import OrderCompletedDayTable from "../DepotComponents/OrderCompletedDayTable";
-
-import OrderCompletedDayFilter from "../DepotFilters/OrderCompletedDayFilter";
+import { useState } from "react";
+import { useCompletedOrdersReport, OrdersCompletedFilter } from "../DepotHocks/useOrderCompletedDay";
+import { CompletedOrdersFilter } from "../DepotFilters/OrderCompletedDayFilter";
+import { CompletedOrdersTable } from "../DepotComponents/OrderCompletedDayTable";
 import BackButton from "../../../../../../components/BackButton";
-import Pagination from "../../../../depotmanager/components/Pagination";
 
-export default function OrderCompletedDayPage() {
-  const {
-    data,
-    loading,
-    error,
-    page,
-    setPage,
-    totalPages,
-    startDate,
-    setStartDate,
-    endDate,
-    setEndDate,
-    fetchData,
-    clearFilters,
-  } = useOrderCompletedDay();
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [, setPeriod] = useState("");
-
-  const onPeriodChange = (value: string) => {
-      setPeriod(value);
-
-      const today = new Date();
-      let start: string = "";
-      let end: string = "";
-
-      if (value === "day") {
-        start = today.toISOString().split("T")[0];
-        end = start;
-      }
-
-      if (value === "half") {
-        const day = today.getDate();
-        const isFirstHalf = day <= 15;
-        const startDate = isFirstHalf ? new Date(today.getFullYear(), today.getMonth(), 1) 
-                                  : new Date(today.getFullYear(), today.getMonth(), 16);
-        const endDate = isFirstHalf ? new Date(today.getFullYear(), today.getMonth(), 15) 
-                                : new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        start = startDate.toISOString().split("T")[0];
-        end = endDate.toISOString().split("T")[0];
-      }
-
-      if (value === "month") {
-        const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-        const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-        start = startDate.toISOString().split("T")[0];
-        end = endDate.toISOString().split("T")[0];
-      }
-
+export const CompletedOrdersReportPage = () => {
   
-      setStartDate(start);
-      setEndDate(end);
-      fetchData(start, end, 1);
+  // ❤️ Filtro que REALMENTE se usa en la API
+  const [filters, setFilters] = useState<OrdersCompletedFilter>({
+    from: null,
+    to: null,
+  });
+
+  // ✏️ Filtro temporal mientras el usuario escribe
+  const [filtersDraft, setFiltersDraft] = useState<OrdersCompletedFilter>({
+    from: null,
+    to: null,
+  });
+
+  // Hook → solo escucha "filters"
+  const { data, loading } = useCompletedOrdersReport(filters);
+
+  const handleSearch = () => {
+    setFilters(filtersDraft);  // ← ahora sí ejecuta el hook
   };
 
-
-  
-  const parsedStartDate = startDate ? new Date(startDate) : null;
-  const parsedEndDate = endDate ? new Date(endDate) : null;
-
-  
-  const filteredData = useMemo(() => {
-    let currentData = data;
-
-    if (parsedStartDate && parsedEndDate) {
-      currentData = currentData.filter(order => {
-        const orderDate = new Date(order.orderDate);
-        return (
-          orderDate.getTime() >= parsedStartDate.getTime() &&
-          orderDate.getTime() <= parsedEndDate.getTime()
-        );
-      });
-    }
-
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      currentData = currentData.filter(order =>
-        order.customerName.toLowerCase().includes(term) ||
-        order.customerEmail.toLowerCase().includes(term) ||
-        String(order.salesOrderId).toLowerCase().includes(term) ||
-        String(order.depotOrderId).toLowerCase().includes(term)
-      );
-    }
-
-    return currentData;
-  }, [data, parsedStartDate, parsedEndDate, searchTerm]);
-
-  
-  useEffect(() => {
-    fetchData(startDate, endDate, page);
-  }, [startDate, endDate, page]);
+  const handleClear = () => {
+    setFiltersDraft({ from: null, to: null });
+    setFilters({ from: null, to: null });
+  };
 
   return (
-    <div className="container m-0 pt-10 min-w-full min-h-full">
-      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
-        <BackButton to="/depot/reports"></BackButton>
-        <div>
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-              Pedidos Armados
-            </h1>
-            <p className="text-center text-lg text-gray-700 mb-12">
-              Aquí podrás gestionar todos los pedidos de los clientes que hayan sido armados.
-            </p>
-          </div>
-
-
-          {/* Filtros */}
-          <OrderCompletedDayFilter
-            startDate={parsedStartDate}
-            endDate={parsedEndDate}
-            onStartDateChange={(date) =>
-              setStartDate(date ? date.toISOString().split("T")[0] : "")
-            }
-            onEndDateChange={(date) =>
-              setEndDate(date ? date.toISOString().split("T")[0] : "")
-            }
-            searchTerm={searchTerm}
-            onSearchTermChange={setSearchTerm}
-            onPeriodChange={onPeriodChange}  
-            onClear={() => {
-              setSearchTerm("");
-              setPeriod("");
-              clearFilters();
-            }}
-          />
-
-          {/* Estados */}
-          {loading && <p className="text-red-500">Cargando...</p>}
-          {error && <p className="text-red-500">{error}</p>}
-
-          {/* Tabla */}
-          <OrderCompletedDayTable data={filteredData} />
-
-          {/* Paginación */}
-          <div className="flex justify-center mt-6 gap-4">
-            <Pagination 
-              currentPage={page}
-              totalPages={totalPages}
-              totalItems={data.length}   
-              itemsPerPage={10}          
-              onPageChange={setPage}
-            />
-          </div>
-
-
+    <div className="w-full min-h-screen pt-10">
+      <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8 max-w-7xl">
+        
+        <div className="mb-6">
+          <BackButton to="/depot/reports" />
         </div>
+
+        {/* Header Section */}
+        <div className="mx-auto max-w-4xl text-center mb-10">
+          <h1 className="text-4xl font-bold text-red-600 mb-3">
+            Reporte de Pedidos Completados
+          </h1>
+          <p className="text-lg text-gray-600">
+            Visualiza la cantidad de pedidos completados por cada operario en un rango de fechas.
+          </p>
+        </div>
+
+        {/* Filter Section */}
+        <div className="mb-8">
+          <CompletedOrdersFilter 
+            filters={filtersDraft} 
+            setFilters={setFiltersDraft}
+            onSearch={handleSearch}
+            onClear={handleClear}
+          />
+        </div>
+
+        {/* Divider */}
+        <div className="mb-8">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+             
+            </div>
+            <div className="relative flex justify-center">
+
+            </div>
+          </div>
+        </div>
+
+        {/* Table Section */}
+        <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
+          {loading ? (
+            <div className="p-16 text-center text-gray-500 flex flex-col items-center">
+              <svg 
+                className="animate-spin h-10 w-10 text-red-600 mb-4" 
+                xmlns="http://www.w3.org/2000/svg" 
+                fill="none" 
+                viewBox="0 0 24 24"
+              >
+                <circle 
+                  className="opacity-25" 
+                  cx="12" 
+                  cy="12" 
+                  r="10" 
+                  stroke="currentColor" 
+                  strokeWidth="4"
+                ></circle>
+                <path 
+                  className="opacity-75" 
+                  fill="currentColor" 
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              <p className="text-base font-medium">Cargando datos...</p>
+            </div>
+          ) : (
+            <CompletedOrdersTable data={data} />
+          )}
+        </div>
+
       </div>
     </div>
   );
-}
+};

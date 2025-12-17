@@ -38,8 +38,8 @@ import PreparedOrdersPage from "../features/depot/depotmanager/pages/PreparedOrd
 import MissingOrdersPage from "../features/depot/depotmanager/pages/MissingOrdersPage";
 import { DashboardDepotReportsPage } from "../features/depot/pages/DashboardDepotReportsPage";
 import DailyMissingPage from "../features/depot/pages/reports/Depot/DepotPages/DailyMissingPage";
-import OrderCompletedDayPage from "../features/depot/pages/reports/Depot/DepotPages/OrderCompletedDayPage";
-import TeamProdictivityPage from "../features/depot/pages/reports/Depot/DepotPages/TeamProdictiviyPage";
+//import OrderCompletedDayPage from "../features/depot/pages/reports/Depot/DepotPages/OrderCompletedDayPage";
+//import TeamProdictivityPage from "../features/depot/pages/reports/Depot/DepotPages/TeamProdictiviyPage";
 //import AverageTimeOrderPage from "../features/depot/pages/reports/Depot/DepotPages/AverageTimeOrderPage";
 
 // Depósito - Facturación
@@ -71,7 +71,8 @@ import { OrderStatusHistoryReportPage } from "../features/verification/pages/rep
 import DeliveryTeamActivityPage from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryTeamActivityPage";
 import { PendingCashVerificationPage } from "../features/verification/pages/reports/Verification/VerificationPages/PendingCashVerificationPage";
 import { OperatorProductivityPage } from "../features/verification/pages/reports/Verification/VerificationPages/OperatorProdictivityReportPage";
-import DeliveryTimesReportPage from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryTimesPage";
+import { DeliveryTimesReportPage } from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryTimesPage";
+//import DeliveryTimesReportPage from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryTimesPage";
 import { ZonePerformanceReportPage } from "../features/verification/pages/reports/Verification/VerificationPages/ZonePerfomancePage";
 import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
 import CreatePasswordPage from "../features/auth/pages/CreatePasswordPage";
@@ -82,6 +83,9 @@ import RegisterEmployeesPage from "../features/admin/pages/RegisterEmployeesPage
 import EditEmployeesPage from "../features/admin/pages/EditEmployeesPage";
 
 import ProcessingTimePage from "../features/depot/pages/reports/Depot/DepotPages/AverageTimeOrderPage";
+import { CompletedOrdersReportPage } from "../features/depot/pages/reports/Depot/DepotPages/OrderCompletedDayPage";
+//DepotTeamPerformancePage
+import { DepotTeamPerformancePage } from "../features/depot/pages/reports/Depot/DepotPages/TeamProdictiviyPage";
 
 const AppRouter = () => {
   return (
@@ -143,8 +147,8 @@ const AppRouter = () => {
             <Route path="reports" element={<DashboardDepotReportsPage />} />
             <Route path="reports/averageTimeOrder" element={<ProcessingTimePage />} />
             <Route path="reports/dailyMissing" element={<DailyMissingPage />} />
-            <Route path="reports/orderCompletedDay" element={<OrderCompletedDayPage />} />
-            <Route path="reports/teamProdictivity" element={<TeamProdictivityPage />} />
+            <Route path="reports/orderCompletedDay" element={<CompletedOrdersReportPage />} />
+            <Route path="reports/teamProdictivity" element={<DepotTeamPerformancePage />} />
         </Route>
 
         {/* Depósito Facturación */}
