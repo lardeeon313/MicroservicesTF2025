@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+/*import React, { useState } from "react";
 import { PieChart, Pie, Cell, Tooltip, Legend, Sector } from "recharts";
 import type { ArmTime } from "../DepotComponents/AverageTimeOrderTable";
 
@@ -95,7 +95,7 @@ const chartData = Object.values(grouped).map((g) => {
 
     return (
       <g>
-        {/* Slice principal con glow effect */}
+        {/* Slice principal con glow effect 
         <Sector
           cx={cx}
           cy={cy}
@@ -110,7 +110,7 @@ const chartData = Object.values(grouped).map((g) => {
           }}
         />
         
-        {/* Label con fondo redondeado */}
+        {/* Label con fondo redondeado 
         <g>
           <rect
             x={mx - 60}
@@ -139,9 +139,9 @@ const chartData = Object.values(grouped).map((g) => {
 
   return (
     <div className="w-full bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 rounded-3xl shadow-2xl border-0 ring-1 ring-gray-200/50 overflow-hidden backdrop-blur-sm">
-      {/* Header con gradiente dinámico */}
+      {/* Header con gradiente dinámico 
       <div className="px-8 py-6 bg-gradient-to-r from-red-500 via-red-600 to-red-700 relative overflow-hidden">
-        {/* Patrón de fondo sutil */}
+        {/* Patrón de fondo sutil 
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
             backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
@@ -168,17 +168,17 @@ const chartData = Object.values(grouped).map((g) => {
         </div>
       </div>
 
-      {/* Contenido del gráfico */}
+      {/* Contenido del gráfico 
       <div className="p-8">
         <div className="h-[450px] flex justify-center items-center relative">
           {hasData ? (
             <div className="relative">
-              {/* Efecto de glow sutil detrás del gráfico */}
+              {/* Efecto de glow sutil detrás del gráfico 
               <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 via-purple-400/10 to-indigo-400/10 rounded-full blur-3xl scale-150"></div>
               
               <PieChart width={500} height={450}>
                 <defs>
-                  {/* Gradientes para cada slice */}
+                  {/* Gradientes para cada slice 
                   {COLORS.map((color, index) => (
                     <linearGradient key={`gradient-${index}`} id={`gradient-${index}`} x1="0%" y1="0%" x2="100%" y2="100%">
                       <stop offset="0%" stopColor={color} stopOpacity={0.8} />
@@ -242,4 +242,4 @@ const chartData = Object.values(grouped).map((g) => {
   );
 };
 
-export default GraphAverageTimeOrder;
+export default GraphAverageTimeOrder; */ 

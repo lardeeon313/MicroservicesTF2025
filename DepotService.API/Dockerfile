@@ -6,6 +6,10 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 COPY ["DepotService.API/DepotService.API.csproj", "DepotService.API/"]
+COPY ["DepotService.Application/DepotService.Application.csproj", "DepotService.Application/"]
+COPY ["DepotService.Domain/DepotService.Domain.csproj", "DepotService.Domain/"]
+COPY ["DepotService.Infraestructure/DepotService.Infraestructure.csproj", "DepotService.Infraestructure/"]
+
 RUN dotnet restore "DepotService.API/DepotService.API.csproj"
 
 COPY . .

@@ -1,25 +1,13 @@
 // DeliveryReportGeneralTable.tsx
 import React from "react";
 import { GeneralGridRow } from "../../VerificationHocks/useDeliveryTimesReport";
-import { Package,CheckCircle2,AlertCircle } from "lucide-react";
+import { Package } from "lucide-react";
 
 interface Props {
   data: GeneralGridRow[];
 }
 
 export const DeliveryReportGeneralTable: React.FC<Props> = ({ data }) => {
-  const calculatePercentage = (value: number, total: number) => {
-    return total > 0 ? ((value / total) * 100).toFixed(1) : "0.0";
-  };
-
-  const totals = data.reduce(
-    (acc, row) => ({
-      total: acc.total + row.total,
-      onTime: acc.onTime + row.onTime,
-      late: acc.late + row.late,
-    }),
-    { total: 0, onTime: 0, late: 0 }
-  );
 
   return (
     <div className="w-full bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl overflow-hidden border border-gray-200">
@@ -51,8 +39,8 @@ export const DeliveryReportGeneralTable: React.FC<Props> = ({ data }) => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {data.map((row, i) => {
-              const efficiency = calculatePercentage(row.onTime, row.total);
-              const efficiencyNum = parseFloat(efficiency);
+              
+              
               
               return (
                 <tr key={i} className="hover:bg-blue-50 transition-all duration-200">

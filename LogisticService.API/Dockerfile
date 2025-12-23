@@ -6,6 +6,10 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 COPY ["LogisticService.API/LogisticService.API.csproj", "LogisticService.API/"]
+COPY ["LogisticService.Application/LogisticService.Application.csproj", "LogisticService.Application/"]
+COPY ["LogisticService.Domain/LogisticService.Domain.csproj", "LogisticService.Domain/"]
+COPY ["LogisticService.Infraestructure/LogisticService.Infraestructure.csproj", "LogisticService.Infraestructure/"]
+
 RUN dotnet restore "./LogisticService.API/LogisticService.API.csproj"
 
 COPY . .

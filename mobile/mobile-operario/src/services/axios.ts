@@ -8,7 +8,13 @@ const API_BASE_URL =
     ? "http://localhost:5000/"       // Para navegador / pruebas en PC
     : "http://192.168.100.10:5000/";  // Para Expo Go en celular (poné la IP de tu PC)
 
-// Crear instancia de axios
+
+{/* Aqui deberiamos de realizar pruebas, utilizando la variable de entorno
+    La cual es, la manera en la que deberia de realizarse, ya que estariamos
+    en modo produccion, cuando presentemos la tesis.
+    Realizar pruebas, al utilizar el API_BASE_URL del "".env"                */}
+
+// Crear instancia de axios 
 const API = axios.create({
   baseURL: API_BASE_URL,
   headers: { "Content-Type": "application/json" },

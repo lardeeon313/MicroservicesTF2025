@@ -59,4 +59,34 @@ export interface SalesStaffDto {
   id: string;
   firstName: string;
   lastName: string;
+
+}
+
+export interface CreateNewPasswordRequest {
+    userIdentityId: string;
+    newPassword: string;     
+}
+
+export interface CreateNewPasswordResponse {
+    message: string;
+}
+
+export interface ForgotPasswordRequest {
+    email: string;
+}
+
+export interface ForgotPasswordResponse {
+    message: string;
+    requiresPasswordCreation: boolean; 
+    userId?: string;
+}
+
+export interface ResetPasswordRequest {
+    email: string;
+    token: string;
+    newPassword: string;
+}
+
+export interface ResetPasswordResponse {
+    message: string;
 }

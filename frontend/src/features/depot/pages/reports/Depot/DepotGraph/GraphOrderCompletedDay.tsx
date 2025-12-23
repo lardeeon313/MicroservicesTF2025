@@ -1,5 +1,5 @@
-import React from "react";
-import type { Order } from "../DepotHocks/useOrderCompletedDay";
+/*import React from "react";
+import type { Order } from "../../../../../sales/types/OrderTypes";
 import {
   BarChart,
   Bar,
@@ -43,7 +43,7 @@ const GraphOrderByClient: React.FC<DataProps> = ({ data }) => {
 
   return (
     <div className="w-full h-96 bg-gradient-to-br from-white via-blue-50/30 to-purple-50/20 rounded-2xl shadow-lg border border-gray-100/50 p-6 mt-6 backdrop-blur-sm">
-      {/* Header con gradiente */}
+      {/* Header con gradiente 
       <div className="mb-6">
         <h3 className="text-2xl font-bold bg-gradient-to-r from-red-500 via-red-800 to-red-600 bg-clip-text text-transparent mb-2">
           Pedidos armados por Cliente
@@ -129,3 +129,4 @@ const GraphOrderByClient: React.FC<DataProps> = ({ data }) => {
 export default GraphOrderByClient;
 
 
+*/

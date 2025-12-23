@@ -1,5 +1,5 @@
 import API from "../../../api/axios";
-import { Order, OrderMissingDto, OrderReissuedRequest, SalesPerfomanceDto } from "../types/OrderTypes";
+import { Order, OrderMissingDto, OrderReissuedRequest } from "../types/OrderTypes";
 import {
    UpdateOrderRequest, 
    UpdateOrderStatusRequest, 
