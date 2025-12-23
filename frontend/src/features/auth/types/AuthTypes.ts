@@ -59,7 +59,6 @@ export interface SalesStaffDto {
   id: string;
   firstName: string;
   lastName: string;
-
 }
 
 export interface CreateNewPasswordRequest {
