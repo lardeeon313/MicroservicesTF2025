@@ -33,7 +33,7 @@ export const AdminReportsDashboardPage = () => {
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="container mx-auto py-8 px-16 sm:max-w-8xl">
-        <BackButton to="/admin/dashboard" />
+        <BackButton to="/admin" />
       </div>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">

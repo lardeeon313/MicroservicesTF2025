@@ -18,10 +18,10 @@ const CustomerSatisfactionReportPage: React.FC = () => {
     satisfaction: "Todas" as "Todas" | "Positiva" | "Negativa" | "Neutra",
   });
 
-  // 🔹 Estado para mostrar/ocultar gráfico
+  // Estado para mostrar/ocultar gráfico
   const [showGraph, setShowGraph] = useState(false);
 
-  const { data: customers, loading, totalPages } = useCustomerSatisfaction(page, pageSize);
+  const { data: customers, loading, totalPages, refetch } = useCustomerSatisfaction(page, pageSize);
 
   // Filtrado usando los filtros aplicados
   const filteredCustomers = customers.filter((c) => {
@@ -36,6 +36,13 @@ const CustomerSatisfactionReportPage: React.FC = () => {
     if (appliedFilters.satisfaction === "Todas") return true;
     return c.satisfaction === appliedFilters.satisfaction;
   });
+
+  const handleRefresh = () => {
+    // Refresca el reporte completo
+    if (refetch) {
+      refetch();
+    }
+  };
 
   if (loading)
     return <LoadingSpinner message="Cargando..." height="h-screen" />;
@@ -52,8 +59,8 @@ const CustomerSatisfactionReportPage: React.FC = () => {
           Visualiza la satisfacción obtenida de los diferentes clientes. 
         </p>
 
-        <div className="flex flex-col md:flex-row mb-4 w-full justify-between gap-2">
-          {/* Filtros */}
+        {/* Filtros */}
+        <div className="mb-4">
           <CustomerSatisfactionFilter
             selectedName={appliedFilters.name}
             selectedEmail={appliedFilters.email}
@@ -69,25 +76,60 @@ const CustomerSatisfactionReportPage: React.FC = () => {
           />
         </div>
 
+        {/* Botones alineados a la derecha, debajo de los filtros */}
+        <div className="flex justify-end gap-2 mb-6">
+          <button
+            onClick={() => setShowGraph(!showGraph)}
+            className="px-4 py-2 rounded-lg shadow text-white font-medium bg-blue-600 hover:bg-blue-700 transition flex items-center gap-2 whitespace-nowrap"
+          >
+            <svg 
+              className="w-5 h-5" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" 
+              />
+            </svg>
+            {showGraph ? "Ocultar Gráfico" : "Mostrar Gráfico"}
+          </button>
+          
+          <button
+            onClick={handleRefresh}
+            className="px-4 py-2 rounded-lg shadow text-white font-medium bg-red-600 hover:bg-red-700 transition flex items-center gap-2 whitespace-nowrap"
+          >
+            <svg 
+              className="w-5 h-5" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" 
+              />
+            </svg>
+            Refrescar Reporte
+          </button>
+        </div>
+
         {/* Tabla */}
         <CustomerSatisfactionTable data={satisfactionFilteredCustomers} />
 
         {/* Paginación */}
         <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
 
-        {/* 🔹 Botón para mostrar/ocultar gráfico */}
-        <div className="flex justify-center my-8">
-          <button
-            onClick={() => setShowGraph(!showGraph)}
-            className="px-6 py-2 rounded-xl shadow text-white font-medium bg-gray-600 hover:bg-blue-700 transition"
-          >
-            {showGraph ? "Ocultar gráfico" : "Mostrar gráfico"}
-          </button>
-        </div>
-
-        {/* 🔹 Render condicional del gráfico */}
+        {/* Render condicional del gráfico */}
         {showGraph && (
-          <GraphSatisfactionCustomer customers={satisfactionFilteredCustomers} />
+          <div className="mt-8">
+            <GraphSatisfactionCustomer customers={satisfactionFilteredCustomers} />
+          </div>
         )}
       </div>
     </div>

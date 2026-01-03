@@ -15,10 +15,10 @@ export default function CustomerReportPage() {
   const [emailFilter, setEmailFilter] = useState("");
   const [minOrdersFilter, setMinOrdersFilter] = useState(0);
 
-  // 🔹 Estado para ocultar/mostrar gráfico
+  // Estado para ocultar/mostrar gráfico
   const [showGraph, setShowGraph] = useState(false);
 
-  const { data: customers, loading, totalPages } = useCustomerReport(page, pageSize);
+  const { data: customers, loading, totalPages, refetch } = useCustomerReport(page, pageSize);
 
   const filteredCustomers = customers.filter((c) => {
     const fullName = `${c.firstName} ${c.lastName}`.toLowerCase();
@@ -28,6 +28,18 @@ export default function CustomerReportPage() {
       c.orderCount >= minOrdersFilter
     );
   });
+
+  const handleRefresh = () => {
+    // Refresca el reporte completo
+    if (refetch) {
+      refetch();
+    }
+    // También puedes resetear filtros si lo deseas
+    // setNameFilter("");
+    // setEmailFilter("");
+    // setMinOrdersFilter(0);
+    // setPage(1);
+  };
 
   if (loading) {
     return <LoadingSpinner message="Cargando..." height="h-screen" />;
@@ -48,7 +60,7 @@ export default function CustomerReportPage() {
         </p>
 
         {/* Filtros */}
-        <div className="flex flex-col md:flex-row mb-4 w-full justify-between gap-2">
+        <div className="mb-4">
           <CustomerReportFilter
             onFilterChange={({ name, email, minOrders }) => {
               setNameFilter(name);
@@ -59,21 +71,58 @@ export default function CustomerReportPage() {
           />
         </div>
 
-        <CustomerReportTable data={filteredCustomers} />
-        <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
-
-        {/* 🔹 Botón para mostrar/ocultar gráfico */}
-        <div className="flex justify-center my-8">
+        {/* Botones alineados a la derecha, debajo de los filtros */}
+        <div className="flex justify-end gap-2 mb-6">
           <button
             onClick={() => setShowGraph(!showGraph)}
-            className="px-6 py-2 rounded-xl shadow text-white font-medium bg-gray-600 hover:bg-blue-700 transition"
+            className="px-4 py-2 rounded-lg shadow text-white font-medium bg-blue-600 hover:bg-blue-700 transition flex items-center gap-2 whitespace-nowrap"
           >
-            {showGraph ? "Ocultar gráfico" : "Mostrar gráfico"}
+            <svg 
+              className="w-5 h-5" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" 
+              />
+            </svg>
+            {showGraph ? "Ocultar Gráfico" : "Mostrar Gráfico"}
+          </button>
+          
+          <button
+            onClick={handleRefresh}
+            className="px-4 py-2 rounded-lg shadow text-white font-medium bg-red-600 hover:bg-red-700 transition flex items-center gap-2 whitespace-nowrap"
+          >
+            <svg 
+              className="w-5 h-5" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" 
+              />
+            </svg>
+            Refrescar Reporte
           </button>
         </div>
 
-        {/* 🔹 Gráfico condicional */}
-        {showGraph && <GraphCustomerReport data={filteredCustomers} />}
+        <CustomerReportTable data={filteredCustomers} />
+        <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+
+        {/* Gráfico condicional */}
+        {showGraph && (
+          <div className="mt-8">
+            <GraphCustomerReport data={filteredCustomers} />
+          </div>
+        )}
       </div>
     </div>
   );

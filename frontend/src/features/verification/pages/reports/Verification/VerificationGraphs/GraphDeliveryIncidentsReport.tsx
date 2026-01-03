@@ -2,12 +2,12 @@ import React from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 
 // Tipos de ejemplo para la demo
-interface DeliveryIncidentReport {
+export interface DeliveryIncidentReportBoolean {
   resolved: boolean;
 }
 
 interface Props {
-  data: DeliveryIncidentReport[];
+  data: DeliveryIncidentReportBoolean[];
 }
 
 export const GraphDeliveryIncidents: React.FC<Props> = ({ data }) => {
