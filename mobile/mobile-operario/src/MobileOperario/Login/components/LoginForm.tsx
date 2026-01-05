@@ -101,7 +101,9 @@ const LoginForm = () => {
             />
             {touched.password && errors.password && <Text style={styles.error}>{errors.password}</Text>}
 
-            <TouchableOpacity onPress={() => Alert.alert('Recuperar contraseña', 'Funcionalidad no implementada')}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("ForgotPassword" as never)}
+            >
               <Text style={styles.forgotPassword}>Olvidé mi contraseña</Text>
             </TouchableOpacity>
 

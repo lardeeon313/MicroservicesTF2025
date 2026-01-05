@@ -5,8 +5,8 @@ import { Platform } from "react-native";
 // Detecta la URL base según plataforma
 const API_BASE_URL =
   Platform.OS === "web"
-    ? "http://localhost:5000/"       // Para navegador / pruebas en PC
-    : "http://192.168.100.10:5000/";  // Para Expo Go en celular (poné la IP de tu PC)
+    ? "http://localhost:5000/"
+    : "http://192.168.100.206:5000/";
 
 
 {/* Aqui deberiamos de realizar pruebas, utilizando la variable de entorno
