@@ -18,7 +18,7 @@ using SalesService.Domain.IRepositories;
 
 namespace DepotService.API.Controllers
 {
-    [Authorize(Roles = "DepotManager, DepotOperator, BillingManager")]
+    [Authorize(Roles = "DepotManager, DepotOperator, BillingManager, Admin")]
     [ApiController]
     [Route("api/depotreports")]
     public class DepotReportsController(

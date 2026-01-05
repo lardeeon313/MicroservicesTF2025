@@ -78,7 +78,7 @@ var mailApi = builder.Configuration["MailSettings:ApiKey"];
 builder.Services.AddDbContext<AdminDbContext>(options =>
     options.UseMySql(connectionString,
         ServerVersion.AutoDetect(connectionString),
-        b => b.MigrationsAssembly("AdminService.API")));
+        b => b.MigrationsAssembly("AdminService.Infraestructure")));
 
 // Configuración de autenticación JWT
 builder.Services.AddAuthentication("Bearer")

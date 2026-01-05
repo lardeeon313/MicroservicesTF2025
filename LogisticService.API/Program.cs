@@ -89,30 +89,26 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
     EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"
 });
 
-//////////////////// Controllers & JSON ////////////////////
+// Add services to the container.
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-        options.JsonSerializerOptions.Converters.Add(
-            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
-        );
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
     });
-
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddSwaggerGen(options =>
 {
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    options.IncludeXmlComments(xmlPath, true);
+    options.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
 
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "Logistic Service API",
         Version = "v1",
-        Description = "Microservicio encargado de la verificación de pagos y gestión logística.",
+        Description = "Microservicio encargado de la verificacion de pagos y gestion de la logistca del pedido.",
         Contact = new OpenApiContact
         {
             Name = "Milton Argüello, Bustos Santiago, Diego Aguirre"
@@ -120,34 +116,139 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-//////////////////// Variables de Configuración ////////////////////
+//////////////// Inyeccion de dependencias //////////////////////
 
-var connectionString =
-    builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? builder.Configuration["ConnectionStrings:DefaultConnection"];
+// Add FluentValidation
+builder.Services.AddScoped<IValidator<CreateDeliveryTeamRequest>, CreateDeliveryTeamRequestValidator>();
+builder.Services.AddScoped<IValidator<UpdateDeliveryTeamRequest>, UpdateDeliveryTeamRequestValidator>();
 
+builder.Services.AddScoped<IValidator<UpdateDeliveryZoneRequest>, UpdateDeliveryZoneRequestValidator>();
+builder.Services.AddScoped<IValidator<CreateDeliveryZoneRequest>, CreateDeliveryZoneRequestValidator>();
+
+// Add RepositoriesS
+builder.Services.AddScoped<IDeliveryTeamRepository, DeliveryTeamRepository>();
+builder.Services.AddScoped<ILogisticOrderRepository, LogisticOrderRepository>();
+builder.Services.AddScoped<ILogisticReportRepository, LogisticReportRepository>();
+builder.Services.AddScoped<IDeliveryZoneRepository, DeliveryZoneRepository>();
+
+///// Add Commands and Queries /////
+
+//Commands CRUD LogisticDeliveryTeams
+builder.Services.AddScoped<ICreateDeliveryTeamCommandHandler, CreateDeliveryTeamCommandHandler>();
+builder.Services.AddScoped<IUpdateDeliveryTeamCommandHandler, UpdateDeliveryTeamCommandHandler>();
+builder.Services.AddScoped<IDeleteDeliveryTeamCommandHandler, DeleteDeliveryTeamCommandHandler>();
+builder.Services.AddScoped<IActiveDeliveryTeamCommandHandler, ActiveDeliveryTeamCommandHandler>();
+builder.Services.AddScoped<IDisableDeliveryTeamCommandHandler, DisableDeliveryTeamCommandHandler>();
+builder.Services.AddScoped<IAssignZoneToTeamCommandHandler, AssignZoneToTeamCommandHandler>();
+builder.Services.AddScoped<IRemoveZoneFromTeamCommandHandler, RemoveZoneFromTeamCommandHandler>();
+builder.Services.AddScoped<IAssignOperatorToTeamCommandHandler, AssignOperatorToTeamCommandHandler>();
+builder.Services.AddScoped<IRemoveOperatorToTeamCommandHandler, RemoveOperatorToTeamCommandHandler>();
+
+//Queries CRUD LogisticDeliveryTeams
+builder.Services.AddScoped<IGetAllTeamsQueryHandler, GetAllTeamsQueryHandler>();
+builder.Services.AddScoped<IGetTeamByIdQueryHandler, GetTeamByIdQueryHandler>();
+builder.Services.AddScoped<IGetTeamByDeliveryOperatorQueryHandler, GetTeamByDeliveryOperatorQueryHandler>();
+
+//Commands CRUD LogisticDeliveryZones
+builder.Services.AddScoped<ICreateDeliveryZoneCommandHandler, CreateDeliveryZoneCommandHandler>();
+builder.Services.AddScoped<IUpdateDeliveryZoneCommandHandler, UpdateDeliveryZoneCommandHandler>();
+builder.Services.AddScoped<IDeleteDeliverZoneCommandHandler, DeleteDeliverZoneCommandHandler>();
+builder.Services.AddScoped<IActiveDeliveryZoneCommandHandler, ActiveDeliveryZoneCommandHandler>();
+builder.Services.AddScoped<IDisableDeliveryZoneCommandHandler, DisableDeliveryZoneCommandHandler>();
+
+//Queries CRUD LogisticDeliveryZones 
+builder.Services.AddScoped<IGetAllDeliveryZonesQueryHandler, GetAllDeliveryZonesQueryHandler>();
+builder.Services.AddScoped<IGetDeliveryZoneByIdQueryHandler, GetDeliveryZoneByIdQueryHandler>();
+
+//Commands LogisticOrders
+builder.Services.AddScoped<IAssignOrderCommandHandler, AssignOrderCommandHandler>();
+builder.Services.AddScoped<IRemoveAssignOrderCommandHandler, RemoveAssignOrderCommandHandler>();
+builder.Services.AddScoped<ISetDeliveryPriorityOrderCommandHandler, SetDeliveryPriorityOrderCommandHandler>();
+builder.Services.AddScoped<IVerifiedOrderCommandHandler, VerifiedOrderCommandHandler>();
+builder.Services.AddScoped<ICheckCashOrderCommandHandler, CheckCashOrderCommandHandler>();
+
+//Queries LogisticOrders
+builder.Services.AddScoped<IGetOrdersByDeliveryPriorityQueryHandler, GetOrdersByDeliveryPriorityQueryHandler>();
+builder.Services.AddScoped<IGetAllOrdersQueryHandler, GetAllOrdersQueryHandler>();
+builder.Services.AddScoped<IGetOrderByIdCustomerQueryHandler, GetOrderByIdCustomerQueryHandler>();
+builder.Services.AddScoped<IGetOrderByIdQueryHandler, GetOrderByIdQueryHandler>();
+builder.Services.AddScoped<IGetOrdersByStatusQueryHandler, GetOrdersByStatusQueryHandler>();
+builder.Services.AddScoped<IGetPagedOrdersQueryHandler, GetPagedOrdersQueryHandler>();
+builder.Services.AddScoped<IGetOrdersByDeliveryZoneIdQueryHandler, GetOrdersByDeliveryZoneIdQueryHandler>();
+builder.Services.AddScoped<IGetOrdersByOperatorIdQueryHandler, GetOrdersByOperatorIdQueryHandler>();
+builder.Services.AddScoped<IGetOrdersByTeamIdQueryHandler, GetOrdersByTeamIdQueryHandler>();
+builder.Services.AddScoped<IGetOrdersDeliveryRejectionsQueryHandler, GetOrdersDeliveryRejectionsQueryHandler>();
+builder.Services.AddScoped<IGetOrdersWithDeliveryIncidentQueryHandler, GetOrdersWithDeliveryIncidentQueryHandler>();
+builder.Services.AddScoped<IGetRejectionReasonsByOrderIdQueryHandler, GetRejectionReasonsByOrderIdQueryHandler>();
+builder.Services.AddScoped<IGetDeliveryIncidentByOrderIdQueryHandler, GetDeliveryIncidentByOrderIdQueryHandler>();
+
+//Commands DeliveryOperator
+builder.Services.AddScoped<IConfirmAssignedOrderCommandHandler, ConfirmAssignedOrderCommandHandler>();
+builder.Services.AddScoped<IRejectAssignedOrderCommandHandler, RejectAssignedOrderCommandHandler>();
+builder.Services.AddScoped<IMarkOrderDeliveredCommandHandler, MarkOrderDeliveredCommandHandler>();
+builder.Services.AddScoped<IMarkOrderOnTheWayCommandHandler, MarkOrderOnTheWayCommandHandler>();
+builder.Services.AddScoped<IReportDeliveryIncidentCommandHandler, ReportDeliveryIncidentCommandHandler>();
+builder.Services.AddScoped<IResolveDeliveryIncidentCommandHandler, ResolveDeliveryIncidentCommandHandler>();
+
+//Queries DeliveryOperator
+builder.Services.AddScoped<IGetMyAssignedOrdersQueryHandler, GetMyAssignedOrdersQueryHandler>();
+builder.Services.AddScoped<IGetMyPendingCashOrdersQueryHandler, GetMyPendingCashOrdersQueryHandler>();
+builder.Services.AddScoped<IGetMyDeliveredOrdersQueryHandler, GetMyDeliveredOrdersQueryHandler>();
+builder.Services.AddScoped<IGetMyPendingDeliveredOrdersQueryHandler, GetMyPendingDeliveredOrdersQueryHandler>();
+builder.Services.AddScoped<IGetMyOnTheWayOrdersQueryHandler, GetMyOnTheWayOrdersQueryHandler>();
+builder.Services.AddScoped<IGetMyOrdersWithDeliveryIncidentQueryHandler, GetMyOrdersWithDeliveryIncidentQueryHandler>();
+builder.Services.AddScoped<IGetMyRejectOrdersQueryHandler, GetMyRejectOrdersQueryHandler>();
+
+//Queries Logistic Reports
+builder.Services.AddScoped<IGetCustomersWithMostIncidentsReportQueryHandler, GetCustomersWithMostIncidentsReportQueryHandler>();
+builder.Services.AddScoped<IGetDeliveryIncidentReportQueryHandler, GetDeliveryIncidentReportQueryHandler>();
+builder.Services.AddScoped<IGetDeliveryRejectionsReportQueryHandler, GetDeliveryRejectionsReportQueryHandler>();
+builder.Services.AddScoped<IGetDeliveryTeamActivityReportQueryHandler, GetDeliveryTeamActivityReportQueryHandler>();
+builder.Services.AddScoped<IGetDeliveryTimeReportQueryHandler, GetDeliveryTimeReportQueryHandler>();
+builder.Services.AddScoped<IGetOperatorProductivityReportQueryHandler, GetOperatorProductivityReportQueryHandler>();
+builder.Services.AddScoped<IGetOrdersByStatusReportQueryHandler, GetOrdersByStatusReportQueryHandler>();
+builder.Services.AddScoped<IGetOrderStatusHistoryReportQueryHandler, GetOrderStatusHistoryReportQueryHandler>();
+builder.Services.AddScoped<IGetPendingCashVerificationReportQueryHandler, GetPendingCashVerificationReportQueryHandler>();
+builder.Services.AddScoped<IGetZonePerformanceReportQueryHandler, GetZonePerformanceReportQueryHandler>();
+
+// Add EmailService
+builder.Services.AddScoped<IEmailService, MailgunEmailService>();
+
+// Add Nominatim
+builder.Services.AddHttpClient<INominatimService, NominatimService>();
+
+// RabbitMQ Consumer
+builder.Services.AddHostedService<OrderInvoicedConsumer>();
+
+// Identity Service Client 
+builder.Services.AddHttpClient("IdentityService", client =>
+{
+    client.BaseAddress = new Uri("http://identityservice:8080/api/auth/");
+});
+builder.Services.AddScoped<IIdentityServiceClient, IdentityServiceClient>();
+builder.Services.AddHttpContextAccessor();
+
+// Add RabbitMQ Producer
+builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
+
+//////////////////// Configuracion DbContext //////////////////////
+
+// Obtener las variables de configuración
+var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
 var rabbitHost = builder.Configuration["RabbitMQ:Host"];
 var rabbitPort = builder.Configuration["RabbitMQ:Port"];
 var rabbitUser = builder.Configuration["RabbitMQ:Username"];
 var rabbitPass = builder.Configuration["RabbitMQ:Password"];
-
 var jwtKey = builder.Configuration["Jwt:Key"];
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
-
 var mailApi = builder.Configuration["MailSettings:ApiKey"];
 
-//////////////////// DbContext ////////////////////
-
+// Registrar el DbContext
 builder.Services.AddDbContext<LogisticDbContext>(options =>
-    options.UseMySql(
-        connectionString,
-        ServerVersion.AutoDetect(connectionString),
-        b => b.MigrationsAssembly("LogisticService.Infraestructure")
-    )
-);
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+        b => b.MigrationsAssembly("LogisticService.API")));
 
-//////////////////// JWT ////////////////////
-
+// Configuración de autenticación JWT
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
@@ -158,43 +259,27 @@ builder.Services.AddAuthentication("Bearer")
             ValidIssuer = jwtIssuer,
             ValidateAudience = false,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtKey!)
-            ),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey!)),
             ValidateLifetime = true,
             ClockSkew = TimeSpan.Zero
         };
     });
 
+// Configuración de autorización
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("LogisticAcces", policy =>
         policy.RequireClaim("role", "VerificationManager, DeliveryOperator"));
 
-//////////////////// Infraestructura ////////////////////
-
-builder.Services.AddScoped<IEmailService, MailgunEmailService>();
-builder.Services.AddHttpClient<INominatimService, NominatimService>();
-builder.Services.AddHostedService<OrderInvoicedConsumer>();
-builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
-
-builder.Services.AddHttpClient("IdentityService", client =>
-{
-    client.BaseAddress = new Uri("http://identityservice:8080/api/auth/");
-});
-
-builder.Services.AddScoped<IIdentityServiceClient, IdentityServiceClient>();
-builder.Services.AddHttpContextAccessor();
-
-//////////////////// Build & Pipeline ////////////////////
 
 var app = builder.Build();
 
-// Migraciones automáticas
+// Migrar automaticamente, cada vez que levante el servicio.
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<LogisticDbContext>();
     dbContext.Database.Migrate();
 }
+
 
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
@@ -206,8 +291,19 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     });
 }
 
-app.UseDeveloperExceptionPage();
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 app.UseAuthentication();
+
 app.UseAuthorization();
+
+app.UseDeveloperExceptionPage();
+
 app.MapControllers();
+
 app.Run();

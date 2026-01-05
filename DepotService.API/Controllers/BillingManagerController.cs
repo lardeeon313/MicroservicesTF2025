@@ -19,7 +19,7 @@ using FluentValidation;
 namespace DepotService.API.Controllers
 {
 
-    [Authorize(Roles = "BillingManager")]
+    [Authorize(Roles = "BillingManager,Admin")]
     [ApiController]
     [Route("api/billingmanager")]
     public class BillingManagerController(
