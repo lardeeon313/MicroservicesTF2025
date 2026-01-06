@@ -79,6 +79,9 @@ const DailyMissingTable: React.FC<Props> = ({ data }) => {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-4 py-3 w-20 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Nº Pedido
+              </th>
+              <th className="px-4 py-3 w-20 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Nº Producto
               </th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -108,6 +111,9 @@ const DailyMissingTable: React.FC<Props> = ({ data }) => {
                 key={`${item.orderID}-${item.productId}-${index}`}
                 className="hover:bg-gray-50 transition-colors duration-200"
               >
+                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 text-center w-20">
+                  {item.orderID}
+                </td>
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 text-center w-20">
                   {item.productId}
                 </td>

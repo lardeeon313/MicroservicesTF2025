@@ -42,7 +42,7 @@ export default function ModifiedCanceledOrdersPage() {
 
   const [showGraph, setShowGraph] = useState(false);
 
-  const { data: orders, loading, totalPages } = useModifiedCanceled(page, pageSize);
+  const { data: orders, loading, totalPages, refetch } = useModifiedCanceled(page, pageSize);
 
   const toLocalYMD = (d: Date) => {
     const y = d.getFullYear();
@@ -78,10 +78,6 @@ export default function ModifiedCanceledOrdersPage() {
     return matchesName && matchesDate && matchesStatus;
   });
 
-  if (loading) {
-    return <LoadingSpinner message="Cargando..." height="h-screen" />;
-  }
-
   const handleBuscar = () => {
     setNameFilter(nameDraft);
     setDateFrom(dateFromDraft);
@@ -103,6 +99,17 @@ export default function ModifiedCanceledOrdersPage() {
     setPage(1);
   };
 
+  const handleRefresh = () => {
+    // Refresca el reporte completo
+    if (refetch) {
+      refetch();
+    }
+  };
+
+  if (loading) {
+    return <LoadingSpinner message="Cargando..." height="h-screen" />;
+  }
+
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
@@ -117,19 +124,64 @@ export default function ModifiedCanceledOrdersPage() {
           Todo lo que necesitas para evaluar los Pedidos cancelados y modificados
         </p>
 
-        {/* 🔥 NUEVO: filtros con 2 fechas */}
-        <ModifiedCanceledOrdersFilter
-          nameDraft={nameDraft}
-          dateFromDraft={dateFromDraft}
-          dateToDraft={dateToDraft}
-          statusDraft={statusDraft}
-          onNameDraftChange={setNameDraft}
-          onDateFromDraftChange={setDateFromDraft}
-          onDateToDraftChange={setDateToDraft}
-          onStatusDraftChange={setStatusDraft}
-          onBuscar={handleBuscar}
-          onLimpiar={handleLimpiar}
-        />
+        {/* Filtros */}
+        <div className="mb-4">
+          <ModifiedCanceledOrdersFilter
+            nameDraft={nameDraft}
+            dateFromDraft={dateFromDraft}
+            dateToDraft={dateToDraft}
+            statusDraft={statusDraft}
+            onNameDraftChange={setNameDraft}
+            onDateFromDraftChange={setDateFromDraft}
+            onDateToDraftChange={setDateToDraft}
+            onStatusDraftChange={setStatusDraft}
+            onBuscar={handleBuscar}
+            onLimpiar={handleLimpiar}
+          />
+        </div>
+
+        {/* Botones alineados a la derecha, debajo de los filtros */}
+        <div className="flex justify-end gap-2 mb-6">
+          <button
+            onClick={() => setShowGraph(!showGraph)}
+            className="px-4 py-2 rounded-lg shadow text-white font-medium bg-blue-600 hover:bg-blue-700 transition flex items-center gap-2 whitespace-nowrap"
+          >
+            <svg 
+              className="w-5 h-5" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" 
+              />
+            </svg>
+            {showGraph ? "Ocultar Gráfico" : "Mostrar Gráfico"}
+          </button>
+          
+          <button
+            onClick={handleRefresh}
+            className="px-4 py-2 rounded-lg shadow text-white font-medium bg-red-600 hover:bg-red-700 transition flex items-center gap-2 whitespace-nowrap"
+          >
+            <svg 
+              className="w-5 h-5" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" 
+              />
+            </svg>
+            Refrescar Reporte
+          </button>
+        </div>
 
         <ModifiedCanceledOrdersTable
           orders={filteredOrders.map((o: any) => ({
@@ -140,22 +192,15 @@ export default function ModifiedCanceledOrdersPage() {
 
         <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
 
-        <div className="flex justify-center mt-6 mb-4">
-          <button
-            onClick={() => setShowGraph((prev) => !prev)}
-            className="px-4 py-2 bg-gray-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
-          >
-            {showGraph ? "Ocultar gráfico" : "Mostrar gráfico"}
-          </button>
-        </div>
-
         {showGraph && (
-          <GraphModifiedCanceledOrders
-            orders={filteredOrders.map((o: any) => ({
-              ...o,
-              statusLabel: statusMap[o.status] ?? o.status,
-            }))}
-          />
+          <div className="mt-8">
+            <GraphModifiedCanceledOrders
+              orders={filteredOrders.map((o: any) => ({
+                ...o,
+                statusLabel: statusMap[o.status] ?? o.status,
+              }))}
+            />
+          </div>
         )}
       </div>
     </div>

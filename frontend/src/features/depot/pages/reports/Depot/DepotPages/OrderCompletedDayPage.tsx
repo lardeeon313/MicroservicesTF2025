@@ -6,13 +6,13 @@ import BackButton from "../../../../../../components/BackButton";
 
 export const CompletedOrdersReportPage = () => {
   
-  // ❤️ Filtro que REALMENTE se usa en la API
+  
   const [filters, setFilters] = useState<OrdersCompletedFilter>({
     from: null,
     to: null,
   });
 
-  // ✏️ Filtro temporal mientras el usuario escribe
+  
   const [filtersDraft, setFiltersDraft] = useState<OrdersCompletedFilter>({
     from: null,
     to: null,

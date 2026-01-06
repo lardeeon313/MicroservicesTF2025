@@ -74,7 +74,7 @@ export const GraphSatisfactionCustomer: React.FC<Props> = ({ customers }) => {
         Clasificación de Comentarios
       </h1>
       <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full mb-2"></div>
-      <p className="text-gray-600 text-sm">Análisis de sentimientos por categoría</p>
+      
     </div>
 
     {/* Container del gráfico con diseño premium */}
@@ -86,11 +86,7 @@ export const GraphSatisfactionCustomer: React.FC<Props> = ({ customers }) => {
           <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
           <div className="w-3 h-3 bg-indigo-400 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
         </div>
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 px-3 py-1 rounded-full">
-          <span className="text-sm text-blue-700 font-medium">
-            💬 Análisis de Sentimientos
-          </span>
-        </div>
+
       </div>
 
       {/* Gráfico mejorado con mayor altura */}
