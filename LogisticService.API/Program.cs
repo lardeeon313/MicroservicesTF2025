@@ -1,4 +1,4 @@
-using FluentValidation;
+锘縰sing FluentValidation;
 using LogisticService.API.RequestDtos.LogisticOrders;
 using LogisticService.API.RequestDtos.Reports;
 using LogisticService.API.RequestDtos.VerificationManager.DeliveryTeams;
@@ -111,7 +111,7 @@ builder.Services.AddSwaggerGen(options =>
         Description = "Microservicio encargado de la verificacion de pagos y gestion de la logistca del pedido.",
         Contact = new OpenApiContact
         {
-            Name = "Milton Arg黣llo, Bustos Santiago, Diego Aguirre"
+            Name = "Milton Arg眉ello, Bustos Santiago, Diego Aguirre"
         }
     });
 });
@@ -132,15 +132,15 @@ builder.Services.AddScoped<ILogisticReportRepository, LogisticReportRepository>(
 builder.Services.AddScoped<IDeliveryZoneRepository, DeliveryZoneRepository>();
 
 ///// Add Commands and Queries /////
-    
+
 //Commands CRUD LogisticDeliveryTeams
 builder.Services.AddScoped<ICreateDeliveryTeamCommandHandler, CreateDeliveryTeamCommandHandler>();
 builder.Services.AddScoped<IUpdateDeliveryTeamCommandHandler, UpdateDeliveryTeamCommandHandler>();
 builder.Services.AddScoped<IDeleteDeliveryTeamCommandHandler, DeleteDeliveryTeamCommandHandler>();
 builder.Services.AddScoped<IActiveDeliveryTeamCommandHandler, ActiveDeliveryTeamCommandHandler>();
 builder.Services.AddScoped<IDisableDeliveryTeamCommandHandler, DisableDeliveryTeamCommandHandler>();
-builder.Services.AddScoped<IAssignZoneToTeamCommandHandler , AssignZoneToTeamCommandHandler>();
-builder.Services.AddScoped<IRemoveZoneFromTeamCommandHandler , RemoveZoneFromTeamCommandHandler>();
+builder.Services.AddScoped<IAssignZoneToTeamCommandHandler, AssignZoneToTeamCommandHandler>();
+builder.Services.AddScoped<IRemoveZoneFromTeamCommandHandler, RemoveZoneFromTeamCommandHandler>();
 builder.Services.AddScoped<IAssignOperatorToTeamCommandHandler, AssignOperatorToTeamCommandHandler>();
 builder.Services.AddScoped<IRemoveOperatorToTeamCommandHandler, RemoveOperatorToTeamCommandHandler>();
 
@@ -206,9 +206,9 @@ builder.Services.AddScoped<IGetDeliveryRejectionsReportQueryHandler, GetDelivery
 builder.Services.AddScoped<IGetDeliveryTeamActivityReportQueryHandler, GetDeliveryTeamActivityReportQueryHandler>();
 builder.Services.AddScoped<IGetDeliveryTimeReportQueryHandler, GetDeliveryTimeReportQueryHandler>();
 builder.Services.AddScoped<IGetOperatorProductivityReportQueryHandler, GetOperatorProductivityReportQueryHandler>();
-builder.Services.AddScoped<IGetOrdersByStatusReportQueryHandler , GetOrdersByStatusReportQueryHandler>();
-builder.Services.AddScoped<IGetOrderStatusHistoryReportQueryHandler , GetOrderStatusHistoryReportQueryHandler>();
-builder.Services.AddScoped<IGetPendingCashVerificationReportQueryHandler , GetPendingCashVerificationReportQueryHandler>();
+builder.Services.AddScoped<IGetOrdersByStatusReportQueryHandler, GetOrdersByStatusReportQueryHandler>();
+builder.Services.AddScoped<IGetOrderStatusHistoryReportQueryHandler, GetOrderStatusHistoryReportQueryHandler>();
+builder.Services.AddScoped<IGetPendingCashVerificationReportQueryHandler, GetPendingCashVerificationReportQueryHandler>();
 builder.Services.AddScoped<IGetZonePerformanceReportQueryHandler, GetZonePerformanceReportQueryHandler>();
 
 // Add EmailService
@@ -233,7 +233,7 @@ builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
 
 //////////////////// Configuracion DbContext //////////////////////
 
-// Obtener las variables de configuraci髇
+// Obtener las variables de configuraci贸n
 var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
 var rabbitHost = builder.Configuration["RabbitMQ:Host"];
 var rabbitPort = builder.Configuration["RabbitMQ:Port"];
@@ -248,7 +248,7 @@ builder.Services.AddDbContext<LogisticDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
         b => b.MigrationsAssembly("LogisticService.API")));
 
-// Configuraci髇 de autenticaci髇 JWT
+// Configuraci贸n de autenticaci贸n JWT
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
@@ -265,7 +265,7 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
-// Configuraci髇 de autorizaci髇
+// Configuraci贸n de autorizaci贸n
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("LogisticAcces", policy =>
         policy.RequireClaim("role", "VerificationManager, DeliveryOperator"));

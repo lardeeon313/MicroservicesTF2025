@@ -180,7 +180,7 @@ var mailApi = builder.Configuration["MailSettings:ApiKey"];
 // Registrar el DbContext
 builder.Services.AddDbContext<SalesDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-        b => b.MigrationsAssembly("SalesService.API")));
+        b => b.MigrationsAssembly("SalesService.Infraestructure")));
 
 // Configuración de autenticación JWT
 builder.Services.AddAuthentication("Bearer")

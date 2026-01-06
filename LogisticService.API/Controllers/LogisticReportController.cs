@@ -18,7 +18,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace LogisticService.API.Controllers
 {
-    [Authorize(Roles = "VerificationManager")]
+    [Authorize(Roles = "VerificationManager, Admin")]
     [ApiController]
     [Route("api/LogisticReport")]
     public class LogisticReportController(
