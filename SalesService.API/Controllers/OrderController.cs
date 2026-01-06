@@ -18,7 +18,6 @@ using SalesService.Application.Queries.Orders.GetById;
 using SalesService.Application.Queries.Orders.GetByIdCustomer;
 using SalesService.Application.Queries.Orders.GetByStatus;
 using SalesService.Application.Queries.Orders.GetPagedOrders;
-using SalesService.Application.Queries.Orders.GetSalesPerfomanceReport;
 using SalesService.Application.Validators.Order;
 using SalesService.Domain.Enums;
 
@@ -38,8 +37,7 @@ namespace SalesService.API.Controllers
         IGetOrderByStatusQueryHandler getOrderByStatusQueryHandler,
         IGetAllOrdersQueryHandler getAllOrdersQueryHandler,
         IGetOrderByIdCustomerQueryHandler getOrderByIdCustomerQueryHandler,
-        IGetPagedOrdersQueryHandler getPagedOrdersQueryHandler,
-        IGetSalesPerfomanceReportQueryHandler getSalesPerfomanceReportQueryHandler,
+        IGetPagedOrdersQueryHandler getPagedOrdersQueryHandler,        
         IValidator<UpdateOrderStatusRequest> updateOrderStatusValidator,
         IValidator<RegisterOrderRequest> registerOrderValidator,
         IValidator<RegisterOrderItemRequest> registerOrderItemValidator,
@@ -66,8 +64,7 @@ namespace SalesService.API.Controllers
         private readonly IGetPagedOrdersQueryHandler _getPagedOrdersQueryHandler = getPagedOrdersQueryHandler;
         private readonly IGetOrderByIdQueryHandler _getOrderByIdQueryHandler = getOrderByIdQueryHandler;
         private readonly IGetOrderByStatusQueryHandler _getOrderByStatusQueryHandler = getOrderByStatusQueryHandler;
-        private readonly IGetAllOrdersQueryHandler _getAllOrdersQueryHandler = getAllOrdersQueryHandler;
-        private readonly IGetSalesPerfomanceReportQueryHandler _getSalesPerfomanceReportQueryHandler = getSalesPerfomanceReportQueryHandler;
+        private readonly IGetAllOrdersQueryHandler _getAllOrdersQueryHandler = getAllOrdersQueryHandler;       
         private readonly IGetOrderByIdCustomerQueryHandler _getOrderByIdCustomerQueryHandler = getOrderByIdCustomerQueryHandler;
         private readonly IValidator<UpdateOrderStatusRequest> _updateOrderStatusValidator = updateOrderStatusValidator;
         private readonly IValidator<RegisterOrderRequest> _registerOrderValidator = registerOrderValidator;
@@ -249,18 +246,6 @@ namespace SalesService.API.Controllers
         {
             var query = new GetPagedOrdersQuery(pageNumber, pageSize);
             var result = await _getPagedOrdersQueryHandler.Handle(query, cancellationToken);
-            return Ok(result);
-        }
-
-        /// <summary> Obtenemos los pedidos ordenados por creador (usuario) - perfomance</summary>
-        [HttpGet("report/performance")]
-        [ProducesResponseType(typeof(IEnumerable<SalesPerfomanceDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetSalesPerformanceReport([FromQuery] DateTime? from,[FromQuery] DateTime? to,[FromQuery] SalesRangeReport range = SalesRangeReport.All)
-        {
-           
-            var query = new GetSalesPerformanceReportQuery(from, to, range);
-
-            var result = await _getSalesPerfomanceReportQueryHandler.Handle(query);
             return Ok(result);
         }
 

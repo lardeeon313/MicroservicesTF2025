@@ -20,6 +20,7 @@ namespace SalesService.Infraestructure
         public DbSet<OrderStatusHistory> OrderStatusHistories { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<CustomerPaymentType> CustomerPaymentTypes { get; set; }
+        public DbSet<OrderSatisfaction> OrderSatisfactions { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

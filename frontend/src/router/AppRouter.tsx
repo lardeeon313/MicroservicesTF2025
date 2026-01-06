@@ -178,17 +178,6 @@ const AppRouter = () => {
             <Route path="reports/orderBilled" element={<OrderBilledPage />} />
         </Route>
 
-        {/* Delivery */}
-        {/** 
-        <Route
-            path="/delivery"
-            element={
-            <ProtectedRoute requiredRole="Delivery">
-                <DeliveryDashboard />
-            </ProtectedRoute>
-            }
-        />*/}
-
         {/* Verificación */}
         <Route
             path="/verification"

@@ -59,7 +59,7 @@ namespace DepotService.Infraestructure.Documents.Excel
 
             worksheet.Cell(currentRow, 1).Value = "Tipo de pago:";
             worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
-            worksheet.Cell(currentRow, 2).Value = GetPaymentTypeName((int)order.PaymentType);
+            worksheet.Cell(currentRow, 2).Value = GetPaymentTypeName((int)order.PaymentType!);
             currentRow++;
 
 

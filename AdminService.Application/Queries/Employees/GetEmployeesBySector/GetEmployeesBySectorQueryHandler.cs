@@ -30,7 +30,7 @@ namespace AdminService.Application.Queries.Employees.GetEmployeesBySector
 
             return employees.Select(e => new EmployeeDto
             {
-                Id = e.Id,
+                Id = e!.Id,
                 UserName = e.UserName,
                 FirstName = e.FirstName,
                 LastName = e.LastName,                

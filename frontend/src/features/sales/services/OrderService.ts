@@ -1,5 +1,5 @@
 import API from "../../../api/axios";
-import { Order, OrderMissingDto, OrderReissuedRequest, SalesPerfomanceDto } from "../types/OrderTypes";
+import { Order, OrderMissingDto, OrderReissuedRequest } from "../types/OrderTypes";
 import {
    UpdateOrderRequest, 
    UpdateOrderStatusRequest, 
@@ -154,7 +154,7 @@ export const getSalesPerfomance = async (
     if (to) params.append('to', to);
     if (range) params.append('range', range); // Añadir el parámetro range
 
-    const response = await API.get(`/sales/Order/report/performance?${params.toString()}`);
+    const response = await API.get(`/sales/salesreport/report/performance?${params.toString()}`);
     return response.data;
 };
 

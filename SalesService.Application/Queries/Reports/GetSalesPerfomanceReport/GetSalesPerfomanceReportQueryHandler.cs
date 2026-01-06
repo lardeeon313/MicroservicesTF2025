@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SalesService.Application.Queries.Orders.GetSalesPerfomanceReport
+namespace SalesService.Application.Queries.Reports.GetSalesPerfomanceReport
 {
     public class GetSalesPerfomanceReportQueryHandler(IOrderRepository repository, IIdentityServiceClient identityClient) : IGetSalesPerfomanceReportQueryHandler
     {
