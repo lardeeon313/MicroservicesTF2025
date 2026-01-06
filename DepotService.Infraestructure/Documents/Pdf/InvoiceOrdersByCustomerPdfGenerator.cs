@@ -26,7 +26,7 @@ namespace DepotService.Infraestructure.Documents
         private static readonly string ColorNegro = "#1A1A1A";        
         private static readonly string ColorRojoClaro = "#FFE5E5";
         private static readonly string ColorFondoTabla = "#F8F9FA";
-        private static readonly string ColorVerdeClaro = "#C8E6C9";
+        private static readonly string ColorVerdeClaro = "#32CD32";
 
         public InvoicedOrdersByCustomerDocument(List<DepotOrderEntity> orders)
         {

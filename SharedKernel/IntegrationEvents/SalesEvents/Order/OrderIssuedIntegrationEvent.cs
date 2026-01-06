@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.Enums;
 using SharedKernel.IntegrationEvents.PaymentTypes;
 using SharedKernel.IntegrationEvents.SalesEvents.DTOs;

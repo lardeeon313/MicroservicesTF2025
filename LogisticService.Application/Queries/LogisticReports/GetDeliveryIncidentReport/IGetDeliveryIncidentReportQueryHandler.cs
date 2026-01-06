@@ -1,5 +1,5 @@
 ﻿using LogisticService.Application.DTOs.LogisticReportDtos;
-using SharedKernel.Application.Utils;
+using SalesService.Domain.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;

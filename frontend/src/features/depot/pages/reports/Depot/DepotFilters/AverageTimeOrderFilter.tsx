@@ -54,7 +54,7 @@ const ProcessingTimeFilter: React.FC<Props> = ({ onSearch }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {/* Fecha Desde */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+            <label className="block text-sm font-medium text-gray-700 items-center gap-2">
               <Calendar size={16} className="text-gray-500" />
               Fecha Desde
             </label>
@@ -68,7 +68,7 @@ const ProcessingTimeFilter: React.FC<Props> = ({ onSearch }) => {
 
           {/* Fecha Hasta */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+            <label className="block text-sm font-medium text-gray-700 items-center gap-2">
               <Calendar size={16} className="text-gray-500" />
               Fecha Hasta
             </label>
@@ -82,7 +82,7 @@ const ProcessingTimeFilter: React.FC<Props> = ({ onSearch }) => {
 
           {/* Operario */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+            <label className="block text-sm font-medium text-gray-700 items-center gap-2">
               <User size={16} className="text-gray-500" />
               Operario
             </label>
@@ -97,7 +97,7 @@ const ProcessingTimeFilter: React.FC<Props> = ({ onSearch }) => {
 
           {/* Cliente */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+            <label className="block text-sm font-medium text-gray-700 items-center gap-2">
               <Building2 size={16} className="text-gray-500" />
               Cliente
             </label>

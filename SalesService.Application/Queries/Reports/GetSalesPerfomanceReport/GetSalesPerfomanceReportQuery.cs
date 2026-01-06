@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SalesService.Domain.Enums;
 
-namespace SalesService.Application.Queries.Orders.GetSalesPerfomanceReport
+namespace SalesService.Application.Queries.Reports.GetSalesPerfomanceReport
 {
     public class GetSalesPerformanceReportQuery
     {

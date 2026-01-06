@@ -152,6 +152,7 @@ const AppRouter = () => {
         <Route path="reports/customerpaymentypereport" element={<CustomerReportPaymentTypePage />} />
       </Route>
 
+<<<<<<< HEAD
       {/* DEPOT OPERATIVO */}
       <Route
         path="/depot"
@@ -226,6 +227,9 @@ const AppRouter = () => {
         <Route index element={<BillingDispatcherReportsIndex />} />
 
         {/* Billing */}
+=======
+        {/* Verificación */}
+>>>>>>> 1ad2cc0 (Se crean queries para los Reportes de SalesService - Ademas se crea OrderSatisfaction, una entidad para persistir las valoraciones de los clientes.)
         <Route
           path="customerIncome"
           element={<CustomerIncomePage />}

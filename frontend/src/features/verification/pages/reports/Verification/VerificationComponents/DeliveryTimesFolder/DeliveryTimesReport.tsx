@@ -8,7 +8,6 @@ interface Props {
 }
 
 export const DeliveryReportGeneralTable: React.FC<Props> = ({ data }) => {
-
   return (
     <div className="w-full bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl overflow-hidden border border-gray-200">
       {/* Header */}
@@ -38,10 +37,7 @@ export const DeliveryReportGeneralTable: React.FC<Props> = ({ data }) => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {data.map((row, i) => {
-              
-              
-              
+            {data.map((row, i) => {              
               return (
                 <tr key={i} className="hover:bg-blue-50 transition-all duration-200">
                   <td className="px-6 py-4 whitespace-nowrap">

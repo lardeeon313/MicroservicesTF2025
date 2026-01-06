@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SalesService.Application.Queries.Orders.GetSalesPerfomanceReport
+namespace SalesService.Application.Queries.Reports.GetSalesPerfomanceReport
 {
     public interface IGetSalesPerfomanceReportQueryHandler
     {

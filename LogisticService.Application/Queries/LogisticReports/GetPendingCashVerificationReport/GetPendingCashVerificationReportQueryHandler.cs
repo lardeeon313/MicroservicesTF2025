@@ -4,7 +4,7 @@ using LogisticService.Application.Queries.LogisticReports.GetOrderStatusHistoryR
 using LogisticService.Application.Services.IdentityServiceClient;
 using LogisticService.Domain.IRepositories;
 using Microsoft.Extensions.Logging;
-using SharedKernel.Application.Utils;
+using SalesService.Domain.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
