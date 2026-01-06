@@ -1,5 +1,16 @@
 import React from 'react';
-import {View,Text,TextInput,TouchableOpacity,Image,StyleSheet,Alert,KeyboardAvoidingView,Platform,ScrollView} from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Formik } from 'formik';
 import { registerValidationSchema } from '../validations/registerValidation';
@@ -8,6 +19,21 @@ import { RegisterRequest } from '../types/AuthType';
 import { useNavigation } from '@react-navigation/native';
 
 const logoVerona = require('../../../assetsImages/LogoVerona.png');
+
+/**
+ * Roles:
+ * - label: lo que ve el usuario
+ * - value: lo que viaja al backend (NO TOCAR)
+ */
+const ROLES = [
+  { label: 'Administrador', value: 'Admin' },
+  { label: 'Ventas', value: 'SalesStaff' },
+  { label: 'Encargado Facturación', value: 'BillingManager' },
+  { label: 'Encargado Depósito', value: 'DepotManager' },
+  { label: 'Operario Depósito', value: 'DepotOperator' },
+  { label: 'Operario Logística', value: 'DeliveryOperator' },
+  { label: 'Encargado Verificación', value: 'VerificationStaff' },
+];
 
 const RegisterForm = () => {
   const navigation = useNavigation();
@@ -18,7 +44,7 @@ const RegisterForm = () => {
       Alert.alert('Éxito', 'Registro exitoso! Ahora podés iniciar sesión.');
       navigation.navigate('Login' as never);
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Ocurrió un error inesperado');
+      Alert.alert('Error', error?.message || 'Ocurrió un error inesperado');
     }
   };
 
@@ -37,6 +63,7 @@ const RegisterForm = () => {
             name: '',
             lastName: '',
             email: '',
+            phoneNumber: '',
             password: '',
             confirmPassword: '',
             role: '',
@@ -44,15 +71,44 @@ const RegisterForm = () => {
           validationSchema={registerValidationSchema}
           onSubmit={handleSubmit}
         >
-          {({ handleChange, handleBlur, handleSubmit, values, errors, touched, setFieldValue }) => (
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            values,
+            errors,
+            touched,
+            setFieldValue,
+          }) => (
             <>
               {[
-                { key: 'userName', label: 'Usuario', placeholder: 'Tu usuario', secure: false },
-                { key: 'name', label: 'Nombre', placeholder: 'Tu nombre', secure: false },
-                { key: 'lastName', label: 'Apellido', placeholder: 'Tu apellido', secure: false },
-                { key: 'email', label: 'Correo electrónico', placeholder: 'tu-correo@gmail.com', secure: false, keyboardType: 'email-address' },
-                { key: 'password', label: 'Contraseña', placeholder: 'Contraseña', secure: true },
-                { key: 'confirmPassword', label: 'Confirmar contraseña', placeholder: 'Confirmar contraseña', secure: true },
+                { key: 'userName', label: 'Usuario', placeholder: 'Tu usuario' },
+                { key: 'name', label: 'Nombre', placeholder: 'Tu nombre' },
+                { key: 'lastName', label: 'Apellido', placeholder: 'Tu apellido' },
+                {
+                  key: 'email',
+                  label: 'Correo electrónico',
+                  placeholder: 'tu-correo@gmail.com',
+                  keyboardType: 'email-address',
+                },
+                {
+                  key: 'phoneNumber',
+                  label: 'Teléfono',
+                  placeholder: 'Tu número de teléfono',
+                  keyboardType: 'phone-pad',
+                },
+                {
+                  key: 'password',
+                  label: 'Contraseña',
+                  placeholder: 'Contraseña',
+                  secure: true,
+                },
+                {
+                  key: 'confirmPassword',
+                  label: 'Confirmar contraseña',
+                  placeholder: 'Confirmar contraseña',
+                  secure: true,
+                },
               ].map(({ key, label, placeholder, secure, keyboardType }) => (
                 <View key={key} style={styles.inputContainer}>
                   <Text style={styles.label}>{label}</Text>
@@ -72,25 +128,27 @@ const RegisterForm = () => {
                 </View>
               ))}
 
+              {/* ROL */}
               <View style={styles.inputContainer}>
                 <Text style={styles.label}>Rol</Text>
                 <View style={styles.pickerContainer}>
                   <Picker
                     selectedValue={values.role}
                     onValueChange={(value) => setFieldValue('role', value)}
-                    onBlur={handleBlur('role')}
                   >
                     <Picker.Item label="Selecciona un rol..." value="" />
-                    <Picker.Item label="Admin" value="Admin" />
-                    <Picker.Item label="SalesStaff" value="SalesStaff" />
-                    <Picker.Item label="BillingManager" value="BillingManager" />
-                    <Picker.Item label="DepotManager" value="DepotManager" />
-                    <Picker.Item label="DepotOperator" value="DepotOperator" />
-                    <Picker.Item label="Delivery" value="Delivery" />
-                    <Picker.Item label="VerificationStaff" value="VerificationStaff" />
+                    {ROLES.map((role) => (
+                      <Picker.Item
+                        key={role.value}
+                        label={role.label}
+                        value={role.value}
+                      />
+                    ))}
                   </Picker>
                 </View>
-                {touched.role && errors.role && <Text style={styles.error}>{errors.role}</Text>}
+                {touched.role && errors.role && (
+                  <Text style={styles.error}>{errors.role}</Text>
+                )}
               </View>
 
               <TouchableOpacity onPress={() => handleSubmit()} style={styles.button}>
@@ -99,7 +157,10 @@ const RegisterForm = () => {
 
               <Text style={styles.footerText}>
                 ¿Ya tenés cuenta?{' '}
-                <Text style={styles.linkText} onPress={() => navigation.navigate('Login' as never)}>
+                <Text
+                  style={styles.linkText}
+                  onPress={() => navigation.navigate('Login' as never)}
+                >
                   Iniciar Sesión
                 </Text>
               </Text>
@@ -112,6 +173,7 @@ const RegisterForm = () => {
 };
 
 export default RegisterForm;
+
 
 const styles = StyleSheet.create({
   container: {
