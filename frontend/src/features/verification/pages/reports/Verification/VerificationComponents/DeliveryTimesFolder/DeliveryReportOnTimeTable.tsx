@@ -33,9 +33,6 @@ export const DeliveryReportLateTable: React.FC<Props> = ({ data }) => {
     return { bg: "bg-orange-100", text: "text-orange-800", label: "Moderado" };
   };
 
- 
- 
-
   return (
     <div className="w-full bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl overflow-hidden border border-gray-200">
       {/* Header */}

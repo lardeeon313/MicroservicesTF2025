@@ -7,6 +7,8 @@ using RabbitMQ.Client.Events;
 using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
+using SalesService.Infraestructure.Email;
+using SalesService.Infraestructure.Email.EmailTemplates;
 using SharedKernel.IntegrationEvents.LogisticEvents;
 using System;
 using System.Collections.Generic;
@@ -90,6 +92,7 @@ namespace SalesService.Infraestructure.Messaging.Consumer.LogisticConsumers
                         using var scope = _scopeFactory.CreateScope();
                         var repository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
                         var context = scope.ServiceProvider.GetRequiredService<SalesDbContext>();
+                        var emailService = scope.ServiceProvider.GetRequiredService<MailgunEmailService>();
 
                         var order = await repository.GetByIdAsync(evento.SalesOrderId);
                         if (order != null)
@@ -100,16 +103,46 @@ namespace SalesService.Infraestructure.Messaging.Consumer.LogisticConsumers
                             await repository.UpdateAsync(order);
                             await context.SaveChangesAsync();
 
+                            var token = new OrderSatisfactionToken(
+                                order.Id,
+                                TimeSpan.FromDays(7) // link válido 7 dia
+                            );
+
+                            var satisfactionUrl = $"http://localhost:3000/order-satisfaction?token={token.Token}";
+                            var bodyHtml = EmailTemplateGenerator.BuildOrderDeliveredSatisfactionBody(order.Id,satisfactionUrl);
+
+                            var html = EmailTemplateGenerator.Generate(
+                                subject: "¿Cómo fue tu experiencia con Verona?",
+                                title: "Tu pedido fue entregado 📦",
+                                recipientName: order.Customer.FirstName,
+                                bodyHtml: bodyHtml
+                            );
+
+                            await repository.AddSatisfactionTokenAsync(token);
+                            await context.SaveChangesAsync();
+
                             var statusHistory = new OrderStatusHistory
                             {
                                 OrderId = order.Id,
-                                OldStatus = OrderStatus.Verify,
-                                NewStatus = OrderStatus.AssignedDelivery,
+                                OldStatus = OrderStatus.OnTheWay,
+                                NewStatus = OrderStatus.Delivered,
                                 ChangedAt = evento.DeliveredAt,
                             };
 
                             await context.OrderStatusHistories.AddAsync(statusHistory);
                             await context.SaveChangesAsync();
+
+                            await emailService.SendEmailAsync(
+                                order.Customer.Email,
+                                "Valorá tu pedido – Verona",
+                                html
+                            );
+
+                            _logger.LogInformation(
+                                "📧 Satisfaction email sent for Order {OrderId} to {Email}",
+                                order.Id,
+                                order.Customer.Email
+                            );
 
                             _logger.LogInformation("📦 Order {OrderId} marked as Delivered.", order.Id);
                             await _channel.BasicAckAsync(ea.DeliveryTag, multiple: false);

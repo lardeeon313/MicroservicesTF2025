@@ -54,6 +54,8 @@ using SalesService.Application.Queries.Reports.CustomerInactiveReport;
 using SalesService.Application.Queries.Reports.ModifiedCanceledOrders;
 using SalesService.Application.Queries.Reports.GetSalesPerfomanceReport;
 using SalesService.Application.Queries.Reports.CustomerPaymenTypeReport;
+using SalesService.Application.Commands.Orders.CreateOrderSatisfaction;
+using SalesService.Application.Queries.Orders.GetOrderForSatisfaction;
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
@@ -128,6 +130,8 @@ builder.Services.AddScoped<IOrderReissuedCommandHandler, OrderReissuedCommandHan
 builder.Services.AddScoped<IUpdateMissingOrderCommandHandler, UpdateMissingOrderCommandHandler>();
 builder.Services.AddScoped<IGetAllMissingOrdersQueryHandler, GetAllMissingOrdersQueryHandler>();
 builder.Services.AddScoped<IGetCustomerAddressesQueryHandler, GetCustomerAddressesQueryHandler>();
+builder.Services.AddScoped<ICreateOrderSatisfactionCommandHandler, CreateOrderSatisfactionCommandHandler>();
+builder.Services.AddScoped<IGetOrderForSatisfactionQueryHandler, GetOrderForSatisfactionQueryHandler>();
 
 // Add Services Query Handlers / Reports
 builder.Services.AddScoped<IGetCustomerReportQueryHandler, GetCustomerReportQueryHandler>();

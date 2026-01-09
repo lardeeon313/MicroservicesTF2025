@@ -25,6 +25,9 @@ import CustomerReportPage from "../features/sales/pages/reports/CustomerReportPa
 import CustomerSatisfactionPage from "../features/sales/pages/reports/CustomerSatisfactionReportPage";
 import CustomerInactiveReportPage from "../features/sales/pages/reports/CustomerInactiveReportPage";
 import ModifiedCanceledOrdersPage from "../features/sales/pages/reports/ModifiedCanceledOrdersPage";
+import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
+import CreatePasswordPage from "../features/auth/pages/CreatePasswordPage";
+import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
 //SalesStaffPerfomancePage
 import { SalesStaffPerfomancePage } from "../features/sales/pages/reports/SalesPerfomanceReportPage";
 import MissingOrdersSalesPage from "../features/sales/pages/orders/MissingOrderSalesPage";
@@ -134,6 +137,10 @@ const AppRouter = () => {
       <Route path="/unauthorized" element={<Unauthorized />} />
       <Route path="/404notfound" element={<NotFoundPage />} />
 
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/create-password" element={<CreatePasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
+      
       {/* SALES */}
       <Route
         path="/sales"
