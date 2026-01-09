@@ -39,6 +39,11 @@ export const getTokenPayload = (token: string): JwtPayload | null => {
   }
 };
 
+// Helper para normalizar roles (convierte array en string)
+export const getNormalizedRole = (role: string | string[] | undefined): string | null => {
+  if (!role) return null;
+  return Array.isArray(role) ? role[0] : role;
+};
 
 export const getUserIdFromToken = (token: string): string | null => {
   if (!token) return null;

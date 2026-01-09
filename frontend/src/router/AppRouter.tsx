@@ -127,9 +127,11 @@ const AppRouter = () => {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
       <Route path="/404notfound" element={<NotFoundPage />} />
+
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/create-password" element={<CreatePasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
+      
 
       {/* SALES */}
       <Route

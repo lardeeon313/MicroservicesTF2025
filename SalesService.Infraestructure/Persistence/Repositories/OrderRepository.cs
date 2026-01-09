@@ -138,6 +138,17 @@ namespace SalesService.Infraestructure.Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
-        
+        public async Task<OrderSatisfactionToken?> GetOrderSatisfactionByTokenAsync(string token)
+        {
+            return await _context.OrderSatisfactionTokens
+                .Include(x => x.Order)
+                    .ThenInclude(o => o.Items)
+                .FirstOrDefaultAsync(x => x.Token == token);
+        }
+
+        public async Task AddSatisfactionTokenAsync(OrderSatisfactionToken token)
+        {
+            await _context.OrderSatisfactionTokens.AddAsync(token);
+        }
     }
 }

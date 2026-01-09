@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SalesService.Domain.Common.Interfaces;
+using SalesService.Infraestructure.Email.EmailTemplates;
 using System;
 using System.Collections.Generic;
 using System.Linq;

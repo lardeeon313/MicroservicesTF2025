@@ -114,6 +114,32 @@ namespace SalesService.Infraestructure.Email.EmailTemplates
             </body>
             </html>";
         }
+
+        public static string BuildOrderDeliveredSatisfactionBody(int orderId,string satisfactionUrl)
+        {
+            return $@"
+                <p>Tu pedido <strong>#{orderId}</strong> fue entregado correctamente.</p>
+
+                <p>Nos gustaría conocer tu experiencia para seguir mejorando nuestro servicio.</p>
+
+                <div style='margin:24px 0;text-align:center;'>
+                    <a href='{satisfactionUrl}'
+                       style='background:#dc2626;
+                              color:white;
+                              padding:12px 20px;
+                              border-radius:6px;
+                              text-decoration:none;
+                              display:inline-block;'>
+                       Valorar pedido
+                    </a>
+                </div>
+
+                <p style='font-size:13px;color:#6b7280;'>
+                    Este enlace es válido por 7 días y solo puede utilizarse una vez.
+                </p>
+            ";
+        }
+
     }
 
 

@@ -21,6 +21,8 @@ namespace SalesService.Infraestructure
         public DbSet<Address> Addresses { get; set; }
         public DbSet<CustomerPaymentType> CustomerPaymentTypes { get; set; }
         public DbSet<OrderSatisfaction> OrderSatisfactions { get; set; }
+        public DbSet<OrderSatisfactionToken> OrderSatisfactionTokens => Set<OrderSatisfactionToken>();
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -93,6 +95,16 @@ namespace SalesService.Infraestructure
                 .HasOne(cpt => cpt.Customer)
                 .WithMany(c => c.PaymentTypes)
                 .HasForeignKey(cpt => cpt.CustomerId);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(os => os.Satisfaction)
+                .WithOne()
+                .HasForeignKey<OrderSatisfaction>(s => s.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OrderSatisfactionToken>()
+                .HasIndex(x => x.Token)
+                .IsUnique();
         }
     }
 }

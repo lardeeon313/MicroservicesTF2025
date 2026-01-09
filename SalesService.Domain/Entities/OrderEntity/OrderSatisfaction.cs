@@ -25,6 +25,9 @@ namespace SalesService.Domain.Entities.OrderEntity
             int score,
             string? comment)
         {
+            if (score < 1 || score > 10)
+                throw new ArgumentOutOfRangeException(nameof(score), "Score must be between 1 and 10.");
+
             OrderId = orderId;
             CustomerId = customerId;
             Score = score;
