@@ -112,7 +112,7 @@ export const AdminGraphZonePerformance: React.FC<Props> = ({ data }) => {
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
             <div className="w-1 h-6 bg-red-600 rounded-full"></div>
-            Comparativa de órdenes totales, entregadas e incidentes
+            Comparativa de pedidos totales, entregados y con incidentes
           </h2>
         </div>
 

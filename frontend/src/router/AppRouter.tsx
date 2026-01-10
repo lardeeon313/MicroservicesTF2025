@@ -25,7 +25,8 @@ import CustomerReportPage from "../features/sales/pages/reports/CustomerReportPa
 import CustomerSatisfactionPage from "../features/sales/pages/reports/CustomerSatisfactionReportPage";
 import CustomerInactiveReportPage from "../features/sales/pages/reports/CustomerInactiveReportPage";
 import ModifiedCanceledOrdersPage from "../features/sales/pages/reports/ModifiedCanceledOrdersPage";
-import { SalesPerfomanceReportPage } from "../features/sales/pages/reports/SalesPerfomanceReportPage";
+//SalesStaffPerfomancePage
+import { SalesStaffPerfomancePage } from "../features/sales/pages/reports/SalesPerfomanceReportPage";
 import MissingOrdersSalesPage from "../features/sales/pages/orders/MissingOrderSalesPage";
 import CustomerReportPaymentTypePage from "../features/sales/pages/reports/CustomerPaymenTypeReportPage";
 
@@ -62,7 +63,6 @@ import PendingOrdersVerificationPage from "../features/verification/pages/Pendin
 import PendingOrdersVerificationDetailsPage from "../features/verification/pages/PendingOrderVerificationDetailsPage";
 import OrdersInRoutePage from "../features/verification/pages/OrdersInRoutePage";
 import OrdersInRouteDetailsPage from "../features/verification/pages/OrdersInRouteDetailsPage";
-//import { DashboardLogisticReportsPage } from "../features/verification/pages/reports/DashboardLogisticReportsPage";
 import { DeliveryIncidentsPage } from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryIncidentsPage";
 import DeliveryRejectionsPage from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryRejectionsPage";
 import { OrdersByStatusReportPage } from "../features/verification/pages/reports/Verification/VerificationPages/OrderByStatusPage";
@@ -83,7 +83,16 @@ import { AdminDashboardSalesReportPage } from "../features/admin/pages/AdminDash
 import { AdminDashboardBillingReportPage } from "../features/admin/pages/AdminDashboardFeatures/AdminDashboardBillingReport";
 import { AdminDashboardDepotReportPage } from "../features/admin/pages/AdminDashboardFeatures/AdminDashboardDepotReport";
 import { AdminDashboardLogisticReportPage } from "../features/admin/pages/AdminDashboardFeatures/AdminDashboardLogisticReport";
+import EmployeesDetailPage from "../features/admin/pages/EmployeesDetailPage";
 
+//REPORTES DE SALES PARA ADMIN
+//AdminCustomerReportPaymentTypePage
+import AdminCustomerReportPaymentTypePage from "../features/admin/pages/AdminDashboardFeatures/ReportsSales/Pages/AdminCustomerPaymentReportPage";
+import AdminCustomerReportPage from "../features/admin/pages/AdminDashboardFeatures/ReportsSales/Pages/AdminCustomerReportPage";
+import { AdminCustomerStatusReportPage } from "../features/admin/pages/AdminDashboardFeatures/ReportsSales/Pages/AdminCustomerStatusPage";
+import AdminModifiedCanceledOrdersPage from "../features/admin/pages/AdminDashboardFeatures/ReportsSales/Pages/AdminModifiedCanceledOrdersPage";
+import { AdminSalesStaffPerfomancePage } from "../features/admin/pages/AdminDashboardFeatures/ReportsSales/Pages/AdminSalesStaffPerfomancePage";
+import AdminCustomerSatisfactionReportPage from "../features/admin/pages/AdminDashboardFeatures/ReportsSales/Pages/AdminCustomerSatisfacctionReportPage";
 
 //REPORTES DE BILLING PARA ADMIN 
 import AdminInvoiceOrdersBilled from "../features/admin/pages/AdminDashboardFeatures/ReportsBilling/Pages/OrderBilledPage";
@@ -112,6 +121,7 @@ import { AdminReportZonePerformanceReportPage } from "../features/admin/pages/Ad
 import BillingDispatcherReportsIndex from "../features/admin/dispatcher/BillingDispatcherConst";
 import DepotDispatcherReportsIndex from "../features/admin/dispatcher/DepotDispatcherConst";
 import LogisticDispatcherReportsIndex from "../features/admin/dispatcher/LogisticDispatcherConst";
+import SalesDispatcherReportsIndex from "../features/admin/dispatcher/SalesDispatcherConst";
 
 const AppRouter = () => {
   return (
@@ -148,11 +158,38 @@ const AppRouter = () => {
         <Route path="reports/customerSatisfactionReport" element={<CustomerSatisfactionPage />} />
         <Route path="reports/customerStatusReport" element={<CustomerInactiveReportPage />} />
         <Route path="reports/modifiedCanceledReport" element={<ModifiedCanceledOrdersPage />} />
-        <Route path="reports/salesPerfomance" element={<SalesPerfomanceReportPage />} />
+        <Route path="reports/salesPerfomance" element={<SalesStaffPerfomancePage />} />
         <Route path="reports/customerpaymentypereport" element={<CustomerReportPaymentTypePage />} />
       </Route>
 
-<<<<<<< HEAD
+      {/* SALES REPORTES (SalesStaff + Admin) */}
+      <Route
+        path="/sales/reports"
+        element={
+          <ProtectedRoute requiredRoles={["SalesStaff", "Admin"]}>
+            <Outlet />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<SalesDispatcherReportsIndex />} />
+
+        {/* SalesStaff / Dispatcher (equivalente a DepotManager) */}
+        <Route path="customersReport" element={<CustomerReportPage />} />
+        <Route path="customerSatisfactionReport" element={<CustomerSatisfactionPage />} />
+        <Route path="customerStatusReport" element={<CustomerInactiveReportPage />} />
+        <Route path="modifiedCanceledReport" element={<ModifiedCanceledOrdersPage />} />
+        <Route path="salesPerfomance" element={<SalesStaffPerfomancePage/>} />
+        <Route path="customerpaymentypereport" element={<CustomerReportPaymentTypePage />} />
+
+        {/* Admin */}
+        <Route path="admin/customerpaymentypereport" element={<AdminCustomerReportPaymentTypePage />} />
+        <Route path="admin/customersReport" element={<AdminCustomerReportPage/>} />
+        <Route path="admin/customerStatusReport" element={<AdminCustomerStatusReportPage />} />
+        <Route path="admin/modifiedCanceledReport" element={<AdminModifiedCanceledOrdersPage />} />
+        <Route path="admin/salesPerfomance" element={<AdminSalesStaffPerfomancePage /> } />
+        <Route path="admin/customerSatisfactionReport" element={<AdminCustomerSatisfactionReportPage />} /> 
+      </Route>
+
       {/* DEPOT OPERATIVO */}
       <Route
         path="/depot"
@@ -227,9 +264,6 @@ const AppRouter = () => {
         <Route index element={<BillingDispatcherReportsIndex />} />
 
         {/* Billing */}
-=======
-        {/* Verificación */}
->>>>>>> 1ad2cc0 (Se crean queries para los Reportes de SalesService - Ademas se crea OrderSatisfaction, una entidad para persistir las valoraciones de los clientes.)
         <Route
           path="customerIncome"
           element={<CustomerIncomePage />}
@@ -319,6 +353,7 @@ const AppRouter = () => {
         <Route path="employees" element={<EmployeesPage />} />
         <Route path="employees/register" element={<RegisterEmployeesPage />} />
         <Route path="employees/edit/:id" element={<EditEmployeesPage />} />
+        <Route path="employees/view/:id" element={<EmployeesDetailPage/>} />
       </Route>
 
     </Routes>

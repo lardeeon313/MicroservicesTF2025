@@ -39,7 +39,7 @@ export const DeliveryTimesFilter: React.FC<Props> = ({ filters, setFilters, onSe
       <div className="flex items-center mb-6 border-b pb-2 border-gray-100">
         <span className="text-red-700 font-bold flex items-center text-lg">
           <Icons.Search />
-          Filtros de Búsqueda
+          Filtros de Búsqueda (Fecha de entrega)
         </span>
       </div>
 

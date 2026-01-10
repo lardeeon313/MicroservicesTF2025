@@ -1,16 +1,6 @@
 import React, { useMemo } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
-
-// Colores para cada tipo de pago
-const PAYMENT_COLORS: Record<string, string> = {
-  "Transferencia": "#3b82f6",
-  "Tarjeta de crédito": "#8b5cf6", 
-  "Tarjeta de débito": "#ec4899",
-  "Efectivo": "#10b981",
-  "Cuenta corriente": "#f59e0b",
-  "Cheque": "#06b6d4",
-  "Pagaré": "#6366f1"
-};
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { TrendingUp, Package, Calculator } from "lucide-react";
 
 interface CustomerReportRow {
   customerId: string;
@@ -23,6 +13,17 @@ interface CustomerReportRow {
 interface Props {
   data: CustomerReportRow[];
 }
+
+// Paleta de colores rojos/rosados para cada tipo de pago
+const RED_PALETTE = [
+  "#dc2626", // rojo fuerte
+  "#ef4444", // rojo medio
+  "#f87171", // rojo claro
+  "#fb923c", // naranja-rojo
+  "#ec4899", // rosa fuerte
+  "#f43f5e", // rosa-rojo
+  "#be123c", // rojo oscuro
+];
 
 const GraphCustomerPaymenTypeReport: React.FC<Props> = ({ data }) => {
   // Calcular frecuencia de cada tipo de pago
@@ -37,10 +38,10 @@ const GraphCustomerPaymenTypeReport: React.FC<Props> = ({ data }) => {
 
     // Convertir a array y ordenar por cantidad (descendente)
     return Object.entries(paymentCount)
-      .map(([name, count]) => ({
+      .map(([name, count], index) => ({
         name,
         cantidad: count,
-        color: PAYMENT_COLORS[name] || "#94a3b8"
+        color: RED_PALETTE[index % RED_PALETTE.length]
       }))
       .sort((a, b) => b.cantidad - a.cantidad);
   }, [data]);
@@ -48,95 +49,129 @@ const GraphCustomerPaymenTypeReport: React.FC<Props> = ({ data }) => {
   const totalCustomers = data.length;
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
+    <div className="bg-white rounded-3xl shadow-xl p-8" style={{ boxShadow: '0 10px 40px rgba(0,0,0,0.08)' }}>
       {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+      <div className="mb-8 text-center">
+        <h2 className="text-3xl font-bold text-red-500 mb-3">
           Distribución de Tipos de Pago
         </h2>
-        <p className="text-gray-600">
-          Total de clientes analizados: <span className="font-semibold text-red-600">{totalCustomers}</span>
+        <p className="text-gray-600 text-sm font-bold">
+          Total de clientes analizados: <span className="text-red-700">{totalCustomers}</span>
         </p>
       </div>
 
-      {/* Gráfico de barras */}
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart
-          data={chartData}
-          margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis 
-            dataKey="name" 
-            angle={-45}
-            textAnchor="end"
-            height={100}
-            tick={{ fill: "#4b5563", fontSize: 12 }}
-          />
-          <YAxis 
-            tick={{ fill: "#4b5563", fontSize: 12 }}
-            label={{ value: "Cantidad de clientes", angle: -90, position: "insideLeft", fill: "#4b5563" }}
-          />
-          <Tooltip 
-            contentStyle={{ 
-              backgroundColor: "#ffffff",
-              border: "1px solid #e5e7eb",
-              borderRadius: "8px",
-              boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)"
-            }}
-            formatter={(value: number) => [`${value} clientes`, "Cantidad"]}
-          />
-          <Legend 
-            wrapperStyle={{ paddingTop: "20px" }}
-            formatter={() => "Cantidad de clientes"}
-          />
-          <Bar 
-            dataKey="cantidad" 
-            radius={[8, 8, 0, 0]}
-            maxBarSize={80}
-          >
-            {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-
       {/* Estadísticas resumidas */}
-      <div className="mt-6 pt-6 border-t border-gray-200">
+      <div className="mb-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="text-center p-4 bg-blue-50 rounded-lg">
-            <p className="text-sm text-gray-600 mb-1">Tipo más usado</p>
-            <p className="text-xl font-bold text-blue-600">
-              {chartData[0]?.name || "N/A"}
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
+          {/* Tipo más usado */}
+          <div className="bg-red-50 rounded-xl p-5 border border-red-100 relative overflow-hidden">
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <p className="text-sm text-gray-600 mb-2">Tipo más usado</p>
+                <p className="text-2xl font-bold text-red-600">
+                  {chartData[0]?.name || "N/A"}
+                </p>
+              </div>
+              <div className="bg-red-100 p-3 rounded-lg">
+                <TrendingUp className="w-6 h-6 text-red-500" />
+              </div>
+            </div>
+            <p className="text-xs text-gray-500">
               {chartData[0]?.cantidad || 0} clientes
             </p>
           </div>
           
-          <div className="text-center p-4 bg-green-50 rounded-lg">
-            <p className="text-sm text-gray-600 mb-1">Total tipos activos</p>
-            <p className="text-xl font-bold text-green-600">
-              {chartData.length}
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
+          {/* Total tipos activos */}
+          <div className="bg-orange-50 rounded-xl p-5 border border-orange-100 relative overflow-hidden">
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <p className="text-sm text-gray-600 mb-2">Total tipos activos</p>
+                <p className="text-2xl font-bold text-orange-600">
+                  {chartData.length}
+                </p>
+              </div>
+              <div className="bg-orange-100 p-3 rounded-lg">
+                <Package className="w-6 h-6 text-orange-500" />
+              </div>
+            </div>
+            <p className="text-xs text-gray-500">
               Métodos de pago distintos
             </p>
           </div>
 
-          <div className="text-center p-4 bg-purple-50 rounded-lg">
-            <p className="text-sm text-gray-600 mb-1">Promedio por cliente</p>
-            <p className="text-xl font-bold text-purple-600">
-              {totalCustomers > 0 
-                ? (chartData.reduce((sum, item) => sum + item.cantidad, 0) / totalCustomers).toFixed(1)
-                : "0"}
-            </p>
-            <p className="text-xs text-gray-500 mt-1">
+          {/* Promedio por cliente */}
+          <div className="bg-pink-50 rounded-xl p-5 border border-pink-100 relative overflow-hidden">
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <p className="text-sm text-gray-600 mb-2">Promedio por cliente</p>
+                <p className="text-2xl font-bold text-pink-600">
+                  {totalCustomers > 0 
+                    ? (chartData.reduce((sum, item) => sum + item.cantidad, 0) / totalCustomers).toFixed(1)
+                    : "0"}
+                </p>
+              </div>
+              <div className="bg-pink-100 p-3 rounded-lg">
+                <Calculator className="w-6 h-6 text-pink-500" />
+              </div>
+            </div>
+            <p className="text-xs text-gray-500">
               Tipos de pago
             </p>
           </div>
         </div>
+      </div>
+
+      {/* Gráfico de barras */}
+      <div className="bg-gray-50 rounded-2xl p-6">
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart
+            data={chartData}
+            margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+            <XAxis 
+              dataKey="name" 
+              tick={{ fill: "#6b7280", fontSize: 11 }}
+              axisLine={false}
+              tickLine={false}
+              angle={0}
+              textAnchor="middle"
+              height={80}
+              interval={0}
+            />
+            <YAxis 
+              tick={{ fill: "#6b7280", fontSize: 11 }}
+              axisLine={false}
+              tickLine={false}
+              label={{ 
+                value: "Cantidad de clientes", 
+                angle: -90, 
+                position: "insideLeft", 
+                fill: "#6b7280",
+                style: { textAnchor: "middle", fontSize: 12 }
+              }}
+            />
+            <Tooltip 
+              contentStyle={{ 
+                backgroundColor: "#ffffff",
+                border: "none",
+                borderRadius: "8px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+              }}
+              formatter={(value: number) => [value, "Clientes"]}
+              cursor={{ fill: 'rgba(239, 68, 68, 0.05)' }}
+            />
+            <Bar 
+              dataKey="cantidad" 
+              radius={[6, 6, 0, 0]}
+              maxBarSize={60}
+            >
+              {chartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );

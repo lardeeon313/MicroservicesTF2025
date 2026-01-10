@@ -1,11 +1,13 @@
 import React from "react";
 import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
   Tooltip,
-  Legend,
+  ResponsiveContainer,
+  Cell,
 } from "recharts";
 import { OrderProcessingTime } from "../Hocks/useAdminAverageTimeOrder";
 
@@ -30,28 +32,37 @@ const AdminGraphAverageTimeOrder: React.FC<Props> = ({ data }) => {
     "#14b8a6", // Teal
   ];
 
-  // Transformamos datos para el gráfico de torta
+  // Transformamos datos para el gráfico de barras
   const chartData = data.map((item, index) => ({
-    name: `Pedido #${item.orderId}`,
-    value: item.durationMinutes,
+    orderId: `#${item.orderId}`,
+    minutes: item.durationMinutes,
     customer: item.customerName,
     operator: item.operatorFullName ?? "Sin asignar",
     color: COLORS[index % COLORS.length],
   }));
 
-  // Calcular total de minutos
-  const totalMinutes = chartData.reduce((sum, item) => sum + item.value, 0);
+  // Ordenar por número de pedido ascendente
+  const sortedData = [...chartData].sort((a, b) => {
+    const numA = parseInt(a.orderId.replace('#', ''));
+    const numB = parseInt(b.orderId.replace('#', ''));
+    return numA - numB;
+  });
+
+  // Calcular estadísticas
+  
+  
+  const maxMinutes = Math.max(...chartData.map(d => d.minutes));
+  const minMinutes = Math.min(...chartData.map(d => d.minutes));
 
   // Tooltip personalizado
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
-      const percentage = ((data.value / totalMinutes) * 100).toFixed(1);
       
       return (
         <div className="bg-white rounded-lg border border-gray-200 shadow-xl p-4 backdrop-blur-sm">
           <p className="text-sm font-bold text-gray-900 mb-2">
-            {data.name}
+            Pedido {data.orderId}
           </p>
           <div className="space-y-1">
             <p className="text-xs text-gray-600">
@@ -62,10 +73,7 @@ const AdminGraphAverageTimeOrder: React.FC<Props> = ({ data }) => {
             </p>
             <div className="pt-2 mt-2 border-t border-gray-100">
               <p className="text-sm font-semibold" style={{ color: data.color }}>
-                {data.value} minutos
-              </p>
-              <p className="text-xs text-gray-500">
-                {percentage}% del total
+                {data.minutes} minutos
               </p>
             </div>
           </div>
@@ -75,128 +83,133 @@ const AdminGraphAverageTimeOrder: React.FC<Props> = ({ data }) => {
     return null;
   };
 
-  // Label personalizado para mostrar porcentajes
-  const renderLabel = (entry: any) => {
-    const percentage = ((entry.value / totalMinutes) * 100).toFixed(0);
-    return `${percentage}%`;
-  };
-
   return (
     <div className="w-full bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-200 shadow-lg p-8 mb-10">
       {/* Header */}
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Distribución del Tiempo de Preparación
+          Tiempo de Preparación por Pedido
         </h2>
         <p className="text-sm text-gray-600">
-          Proporción del tiempo invertido en cada pedido
+          Duración de armado y preparación de cada orden
         </p>
-        <div className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-blue-50 rounded-lg border border-blue-100">
-          <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span className="text-sm font-semibold text-blue-900">
-            Total: {totalMinutes} minutos
-          </span>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="bg-blue-50 rounded-xl border border-blue-100 p-5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-blue-700 font-medium mb-1">Total Pedidos</p>
+              <p className="text-3xl font-bold text-blue-900">{data.length}</p>
+            </div>
+            <div className="bg-blue-100 rounded-full p-3">
+              <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-red-50 rounded-xl border border-red-100 p-5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-red-700 font-medium mb-1">Máximo</p>
+              <p className="text-3xl font-bold text-red-900">{maxMinutes} min</p>
+            </div>
+            <div className="bg-red-100 rounded-full p-3">
+              <svg className="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-purple-50 rounded-xl border border-purple-100 p-5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-purple-700 font-medium mb-1">Mínimo</p>
+              <p className="text-3xl font-bold text-purple-900">{minMinutes} min</p>
+            </div>
+            <div className="bg-purple-100 rounded-full p-3">
+              <svg className="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Gráfico */}
-      <div className="w-full h-[450px]">
+      {/* Gráfico de Barras */}
+      <div className="w-full h-[500px] bg-white rounded-lg border border-gray-200 p-6">
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <defs>
-              {chartData.map((entry, index) => (
-                <linearGradient
-                  key={`gradient-${index}`}
-                  id={`gradient-${index}`}
-                  x1="0"
-                  y1="0"
-                  x2="1"
-                  y2="1"
-                >
-                  <stop offset="0%" stopColor={entry.color} stopOpacity={1} />
-                  <stop offset="100%" stopColor={entry.color} stopOpacity={0.7} />
-                </linearGradient>
-              ))}
-            </defs>
+          <BarChart
+            data={sortedData}
+            layout="vertical"
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             
-            <Pie
-              data={chartData}
-              cx="50%"
-              cy="50%"
-              labelLine={{
-                stroke: '#94a3b8',
-                strokeWidth: 1,
-              }}
-              label={renderLabel}
-              outerRadius={140}
-              innerRadius={70}
-              paddingAngle={3}
-              dataKey="value"
+            <XAxis 
+              type="number" 
+              stroke="#6b7280"
+              style={{ fontSize: '12px' }}
+              label={{ value: 'Minutos', position: 'insideBottom', offset: -5, style: { fontSize: '13px', fill: '#374151', fontWeight: 600 } }}
+            />
+            
+            <YAxis 
+              type="category" 
+              dataKey="orderId"
+              stroke="#6b7280"
+              style={{ fontSize: '12px', fontWeight: 500 }}
+              width={60}
+            />
+            
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(59, 130, 246, 0.1)' }} />
+            
+            <Bar 
+              dataKey="minutes" 
+              radius={[0, 8, 8, 0]}
               animationBegin={0}
               animationDuration={800}
             >
-              {chartData.map((__, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={`url(#gradient-${index})`}
-                  stroke="#fff"
-                  strokeWidth={2}
+              {sortedData.map((entry, index) => (
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={entry.color}
                   style={{
                     filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
-                    transition: 'all 0.3s ease',
                   }}
                 />
               ))}
-            </Pie>
-            
-            <Tooltip content={<CustomTooltip />} />
-            
-            <Legend
-              verticalAlign="bottom"
-              height={36}
-              content={({ payload }) => (
-                <div className="flex flex-wrap justify-center gap-3 mt-6">
-                  {payload?.map((entry: any, index: number) => (
-                    <div
-                      key={`legend-${index}`}
-                      className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
-                    >
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: entry.color }}
-                      />
-                      <span className="text-xs font-medium text-gray-700">
-                        {entry.value}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            />
-          </PieChart>
+            </Bar>
+          </BarChart>
         </ResponsiveContainer>
       </div>
 
-
-      {/* Stats footer */}
+      {/* Leyenda de colores */}
       <div className="mt-6 pt-6 border-t border-gray-200">
-        <div className="flex justify-center gap-16">
-          <div className="text-center">
-            <p className="text-xs text-gray-500 mb-1">Pedidos</p>
-            <p className="text-lg font-bold text-gray-900">{data.length}</p>
-          </div>
-
-          <div className="text-center">
-            <p className="text-xs text-gray-500 mb-1">Máximo</p>
-            <p className="text-lg font-bold text-gray-900">
-              {Math.max(...chartData.map(d => d.value))} min
-            </p>
-          </div>
+        <p className="text-xs text-gray-500 font-medium mb-3 text-center">Pedidos</p>
+        <div className="flex flex-wrap justify-center gap-3">
+          {sortedData.map((item, index) => (
+            <div
+              key={`legend-${index}`}
+              className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: item.color }}
+              />
+              <span className="text-xs font-medium text-gray-700">
+                {item.orderId}
+              </span>
+              <span className="text-xs text-gray-500">
+                ({item.minutes} min)
+              </span>
+            </div>
+          ))}
         </div>
       </div>
-
     </div>
   );
 };

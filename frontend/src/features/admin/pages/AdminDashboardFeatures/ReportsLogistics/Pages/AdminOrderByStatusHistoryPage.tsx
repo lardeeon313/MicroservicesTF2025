@@ -3,8 +3,8 @@ import { RefreshCw, EyeOff, Eye } from "lucide-react";
 import { useOrderStatusHistoryReport } from "../../../../../verification/pages/reports/Verification/VerificationHocks/useOrderByStatusHistory";
 import { OrderStatusHistoryFiltersFilter } from "../Filters/OrderByStatusHistoryFilter";
 import { OrderStatusHistoryTable } from "../../../../../verification/pages/reports/Verification/VerificationComponents/OrderByStatusHistoryFolder/OrderByStatusHistoryReport";
-
 import { AdminGraphOrderByStatusHistory } from "../Graphs/AdminGraphOrderByStatusHistory";
+import { Pagination } from "../../../../../../components/Pagination";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../../../components/BackButton";
 
@@ -20,16 +20,8 @@ export const AdminReportOrderStatusHistoryReportPage = () => {
 
   const [showGraph, setShowGraph] = useState(true);
 
-  const handleNextPage = () => {
-    if (pagination.pageNumber < pagination.totalPages) {
-      fetchData(pagination.pageNumber + 1);
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (pagination.pageNumber > 1) {
-      fetchData(pagination.pageNumber - 1);
-    }
+  const handlePageChange = (page: number) => {
+    fetchData(page);
   };
 
   const handleRefresh = () => {
@@ -90,7 +82,7 @@ export const AdminReportOrderStatusHistoryReportPage = () => {
           <button
             onClick={handleRefresh}
             disabled={loading}
-            className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <RefreshCw className={`w-5 h-5 ${loading ? "animate-spin" : ""}`} />
             <span>Refrescar reporte</span>
@@ -99,34 +91,18 @@ export const AdminReportOrderStatusHistoryReportPage = () => {
 
         {!loading && (
           <div className="space-y-8">
-
             {/* Tabla */}
             <OrderStatusHistoryTable data={data} />
-                        {/* Paginación */}
-            <div className="flex justify-center items-center space-x-4">
-              <button
-                onClick={handlePreviousPage}
-                disabled={pagination.pageNumber === 1}
-                className="bg-gray-200 text-gray-800 px-4 py-2 rounded-xl hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                ← Anterior
-              </button>
+            
+            {/* Paginación mejorada */}
+            {pagination.totalPages > 0 && (
+              <Pagination
+                currentPage={pagination.pageNumber}
+                totalPages={pagination.totalPages}
+                onPageChange={handlePageChange}
+              />
+            )}
 
-              <span className="text-gray-700 font-semibold">
-                Página {pagination.pageNumber} de {pagination.totalPages || 1}
-              </span>
-
-              <button
-                onClick={handleNextPage}
-                disabled={
-                  pagination.pageNumber === pagination.totalPages ||
-                  pagination.totalPages === 0
-                }
-                className="bg-gray-200 text-gray-800 px-4 py-2 rounded-xl hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Siguiente →
-              </button>
-            </div>
             {/* Gráfico */}
             {showGraph && (
               <div className="animate-fadeIn">
@@ -138,4 +114,4 @@ export const AdminReportOrderStatusHistoryReportPage = () => {
       </div>
     </div>
   );
-};
+}

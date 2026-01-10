@@ -8,37 +8,37 @@ const cards = [
     title: "Ventas por Cliente",
     description: "Visualizá todos los pedidos creados por cliente.",
     icon: <FileText className="h-10 w-10 text-red-600" />,
-    link: "/sales/reports/customersReport",
+    link: "/sales/reports/admin/customersReport",
   },
   {
     title: "Estados de los clientes",
     description: "Analiza los clientes que hayan dejado de realizar pedidos en un lapso de tiempo.",
     icon: <PieChart className="h-10 w-10 text-red-600" />,
-    link: "/sales/reports/customerStatusReport",
+    link: "/sales/reports/admin/customerStatusReport",
   },
   {
     title: "Satisfacción del cliente",
     description: "Mide la satisfacción según las opiniones del cliente.",
     icon: <FilePlus2 className="h-10 w-10 text-red-600" />,
-    link: "/sales/reports/customerSatisfactionReport",
+    link: "/sales/reports/admin/customerSatisfactionReport",
   },
   {
     title: "Pedidos cancelados y modificados",
     description: "Consulta los pedidos que han tenido alteraciones.",
     icon: <User className="h-10 w-10 text-red-600" />,
-    link: "/sales/reports/modifiedCanceledReport",
+    link: "/sales/reports/admin/modifiedCanceledReport",
   },
   {
     title: "Desempeño por ventas",
     description: "Revisá cómo ha rendido el equipo de ventas.",
     icon: <BarChart2 className="h-10 w-10 text-red-600" />,
-    link: "/sales/reports/salesPerfomance",
+    link: "/sales/reports/admin/salesPerfomance",
   },
     {
     title: "Tipos de pago por cliente",
     description: "Verifica los diferentes tipos de pago por los diferentes clientes registrados",
     icon: <CircleDollarSignIcon className="h-10 w-10 text-red-600" />,
-    link: "/sales/reports/customerpaymentypereport",
+    link: "/sales/reports/admin/customerpaymentypereport",
   },
 ];
 

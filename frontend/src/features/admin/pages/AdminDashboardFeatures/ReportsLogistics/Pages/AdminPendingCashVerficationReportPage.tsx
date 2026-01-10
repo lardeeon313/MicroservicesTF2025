@@ -7,6 +7,7 @@ import { PendingCashVerificationFilter } from "../../../../../verification/types
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../../../components/BackButton";
 import { Eye, EyeOff, RefreshCcw } from "lucide-react";
+import { Pagination } from "../../../../../../components/Pagination"; 
 
 export const AdminReportPendingCashVerificationPage: React.FC = () => {
   const [filters, setFilters] = useState<PendingCashVerificationFilter>({
@@ -64,18 +65,6 @@ export const AdminReportPendingCashVerificationPage: React.FC = () => {
             : Number(updated.deliveryTeamId)
           : updated.deliveryTeamId,
     }));
-  };
-
-  const handleNextPage = () => {
-    if (data && pageNumber < data.totalPages) {
-      setPageNumber(pageNumber + 1);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (pageNumber > 1) {
-      setPageNumber(pageNumber - 1);
-    }
   };
 
   // 🔄 FUNCIÓN PARA REFRESCAR TODO EL REPORTE
@@ -140,7 +129,7 @@ export const AdminReportPendingCashVerificationPage: React.FC = () => {
 
               <button
                 onClick={handleRefresh}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition flex items-center gap-2 whitespace-nowrap"
+                className="px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition flex items-center gap-2 whitespace-nowrap"
                 title="Refrescar reporte"
               >
                 <RefreshCcw className="w-5 h-5" />
@@ -154,26 +143,12 @@ export const AdminReportPendingCashVerificationPage: React.FC = () => {
             )}
 
             {/* 🔹 PAGINACIÓN */}
-            <div className="flex justify-center items-center gap-4 mt-6">
-              <button
-                onClick={handlePrevPage}
-                disabled={pageNumber === 1}
-                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg shadow hover:bg-gray-300 transition disabled:opacity-50"
-              >
-                ◀ Anterior
-              </button>
-
-              <span className="text-gray-600 font-medium">
-                Página {pageNumber} de {data.totalPages || 1}
-              </span>
-
-              <button
-                onClick={handleNextPage}
-                disabled={pageNumber >= (data.totalPages || 1)}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg shadow hover:bg-red-700 transition disabled:opacity-50"
-              >
-                Siguiente ▶
-              </button>
+            <div className="mt-6">
+              <Pagination
+                currentPage={pageNumber}
+                totalPages={data.totalPages || 1}
+                onPageChange={setPageNumber}
+              />
             </div>
           </div>
         )}

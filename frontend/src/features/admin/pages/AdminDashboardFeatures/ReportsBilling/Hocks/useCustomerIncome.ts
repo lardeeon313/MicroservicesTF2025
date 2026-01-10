@@ -1,9 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
-//import type { Billing } from "../../../../billingmanager/types/BillingType";
+
 import type { Billing } from "../../../../../depot/billingmanager/types/BillingType";
 import API from "../../../../../../api/axios";
 
-export const useCustomerIncome = () => {
+export const AdminuseCustomerIncome = () => {
   const [orders, setOrders] = useState<Billing[]>([]);
   const [filteredByCustomer, setFilteredByCustomer] = useState<Billing[]>([]);
   const [loading, setLoading] = useState(false);

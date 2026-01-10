@@ -13,7 +13,7 @@ using SalesService.Domain.Enums;
 
 namespace SalesService.API.Controllers
 {
-    [Authorize(Roles = "SalesStaff")]
+    [Authorize(Roles = "SalesStaff, Admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class SalesReportController(
@@ -82,7 +82,7 @@ namespace SalesService.API.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [HttpGet("reports-customer-status")]
+        [HttpPost("reports-customer-status")]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -105,10 +105,8 @@ namespace SalesService.API.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpGet("reports-orders-modified-canceled")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetCustomerStatus([FromBody] GetModifiedCanceledOrderRequest request)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetCustomerStatus([FromQuery] GetModifiedCanceledOrderRequest request)
         {
             var query = new GetModifiedCanceledOrdersQuery(
                 request.CustomerName,
@@ -116,11 +114,13 @@ namespace SalesService.API.Controllers
                 request.DateTo,
                 request.Status,
                 request.Page,
-                request.PageSize);
+                request.PageSize
+            );
 
             var result = await _getModifiedCanceledOrdersQueryHandler.HandleAsync(query);
             return Ok(result);
         }
+
 
         /// <summary>
         /// Endpoint para obtener el reporte de desempeño de ventas
@@ -146,7 +146,7 @@ namespace SalesService.API.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [HttpGet("report-customer-paymenttypes")]
+        [HttpPost("report-customer-paymenttypes")]
         [ProducesResponseType(typeof(IEnumerable<SalesPerfomanceDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]

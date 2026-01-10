@@ -4,7 +4,7 @@ import InvoicedOrdersTable from "../../../../../depot/pages/reports/Billing/Bill
 import BackButton from "../../../../../../components/BackButton";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import EmptyState from "../../../../../../components/EmptyState";
-import { AlertCircle, Search } from "lucide-react";
+import { AlertCircle, Search,EyeOff, BarChart3, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import Pagination from "../../../../../depot/depotmanager/components/Pagination";
 import AdminOrderBilledGraph from "../Graphs/GraphOrderBilled";
@@ -147,42 +147,33 @@ export default function AdminInvoiceOrdersBilled() {
           </div>
 
           {/* Botones de control */}
-          <div className="flex justify-end gap-3 mb-6">
-            <button
-              onClick={() => setShowGraph(!showGraph)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-white border-2 border-green-600 text-green-600 rounded-lg font-medium hover:bg-green-50 transition-all duration-200 shadow-sm hover:shadow-md"
-            >
-              <svg 
-                className="w-5 h-5" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor"
-              >
-                {showGraph ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                )}
-              </svg>
-              {showGraph ? 'Ocultar Gráfico' : 'Mostrar Gráfico'}
-            </button>
+<div className="flex justify-end gap-3 mb-6">
+  <button
+    onClick={() => setShowGraph(!showGraph)}
+    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-colors"
+  >
+    {showGraph ? (
+      <>
+        <EyeOff className="w-4 h-4" />
+        Ocultar Gráfico
+      </>
+    ) : (
+      <>
+        <BarChart3 className="w-4 h-4" />
+        Mostrar Gráfico
+      </>
+    )}
+  </button>
 
-            <button
-              onClick={handleRefresh}
-              disabled={loading}
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <svg 
-                className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`}
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              {loading ? 'Actualizando...' : 'Refrescar Reporte'}
-            </button>
-          </div>
+  <button
+    onClick={handleRefresh}
+    disabled={loading}
+    className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+  >
+    <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+    Refrescar Reporte
+  </button>
+</div>
 
           <div className="mt-12">
             {loading && (

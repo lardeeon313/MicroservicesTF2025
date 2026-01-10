@@ -59,7 +59,7 @@ export interface AddressRequest {
   formattedAddress?: string;
 }
 
-//estado del cliente , si este perdido inactivo y perdido: 
+//estado del cliente , si esta activo inactivo y perdido: 
 export enum CustomerStatus {
   Active = "Active",
   Inactive = "Inactive",

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Eye, EyeOff, RefreshCw } from "lucide-react";
 import { useDeliveryIncidentsReport } from "../../../../../verification/pages/reports/Verification/VerificationHocks/useDeliveryIncidentsReport";
 import { DeliveryIncidentsFilter } from "../Filters/DeliveryIncidentsFilter";
@@ -31,7 +31,19 @@ export const AdminReportDeliveryIncidentsPage: React.FC = () => {
     pageNumber,
     totalPages,
     setPageNumber,
-  } = useDeliveryIncidentsReport(appliedFilters);
+  } = useDeliveryIncidentsReport(appliedFilters, refreshKey);
+
+  // ✅ FILTRO REAL DESDE EL FRONT
+  const filteredData = useMemo(() => {
+    if (appliedFilters.resolved === undefined) return data;
+
+    return data.filter((item) => {
+      const isResolved =
+        !!item.resolvedAt && item.resolutionNote?.trim() !== "";
+
+      return appliedFilters.resolved ? isResolved : !isResolved;
+    });
+  }, [data, appliedFilters.resolved]);
 
   const handleSearch = () => {
     setAppliedFilters(tempFilters);
@@ -43,15 +55,21 @@ export const AdminReportDeliveryIncidentsPage: React.FC = () => {
     setTempFilters(empty);
     setAppliedFilters(empty);
     setPageNumber(1);
+    setRefreshKey((prev) => prev + 1);
   };
 
   const handleRefresh = () => {
-    setRefreshKey(prev => prev + 1);
-    handleSearch();
+    setRefreshKey((prev) => prev + 1);
+    setPageNumber(1);
   };
 
   if (isLoading) {
-    return <LoadingSpinner message="Cargando reporte de incidencias..." height="h-screen" />;
+    return (
+      <LoadingSpinner
+        message="Cargando reporte de incidencias..."
+        height="h-screen"
+      />
+    );
   }
 
   return (
@@ -74,73 +92,56 @@ export const AdminReportDeliveryIncidentsPage: React.FC = () => {
           onClear={handleClear}
         />
 
-        {/* Botones de control */}
         <div className="flex justify-end items-center gap-3 mt-6">
           <button
             onClick={() => setShowGraphs(!showGraphs)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
           >
-            {showGraphs ? (
-              <EyeOff className="w-5 h-5" />
-            ) : (
-              <Eye className="w-5 h-5" />
-            )}
+            {showGraphs ? <EyeOff /> : <Eye />}
             {showGraphs ? "Ocultar Gráfico" : "Mostrar Gráfico"}
           </button>
 
           <button
             onClick={handleRefresh}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
-            disabled={isLoading}
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg"
           >
-            <RefreshCw className={`w-5 h-5 ${isLoading ? "animate-spin" : ""}`} />
+            <RefreshCw />
             Refrescar Reporte
           </button>
         </div>
 
-        {error && <p className="text-center text-red-500 mb-6">{error}</p>}
+        {error && <p className="text-center text-red-500">{error}</p>}
 
-        {!isLoading && (
-          <>
-            <div className="space-y-12 mt-8">
+        <div className="space-y-12 mt-8">
+          <DeliveryIncidentsTable data={filteredData} />
 
-              {/* Tabla */}
-              <DeliveryIncidentsTable data={data} />
-              {/* Gráficos (condicional) */}
-              {showGraphs && (
-                <div key={refreshKey}>
-                  <AdminGraphDeliveryIncidents data={data} />
-                </div>
-              )}
-            </div>
+          {showGraphs && (
+            <AdminGraphDeliveryIncidents data={filteredData} />
+          )}
+        </div>
 
-            {/* Paginación */}
-            {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-4 mt-6">
-                <button
-                  onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
-                  disabled={pageNumber === 1}
-                  className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50"
-                >
-                  Anterior
-                </button>
+        {totalPages > 1 && (
+          <div className="flex justify-center gap-4 mt-6">
+            <button
+              onClick={() => setPageNumber((p) => Math.max(p - 1, 1))}
+              disabled={pageNumber === 1}
+            >
+              Anterior
+            </button>
 
-                <span className="text-gray-700">
-                  Página {pageNumber} de {totalPages}
-                </span>
+            <span>
+              Página {pageNumber} de {totalPages}
+            </span>
 
-                <button
-                  onClick={() =>
-                    setPageNumber((prev) => Math.min(prev + 1, totalPages))
-                  }
-                  disabled={pageNumber === totalPages}
-                  className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50"
-                >
-                  Siguiente
-                </button>
-              </div>
-            )}
-          </>
+            <button
+              onClick={() =>
+                setPageNumber((p) => Math.min(p + 1, totalPages))
+              }
+              disabled={pageNumber === totalPages}
+            >
+              Siguiente
+            </button>
+          </div>
         )}
       </div>
     </div>

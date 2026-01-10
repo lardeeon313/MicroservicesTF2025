@@ -20,6 +20,8 @@ export const DeliveryIncidentsPage: React.FC = () => {
     resolved: undefined,
   });
 
+  const [refreshKey, setRefreshKey] = useState(0);
+
   const {
     data,
     isLoading,
@@ -27,7 +29,7 @@ export const DeliveryIncidentsPage: React.FC = () => {
     pageNumber,
     totalPages,
     setPageNumber,
-  } = useDeliveryIncidentsReport(appliedFilters);
+  } = useDeliveryIncidentsReport(appliedFilters,refreshKey);
 
   const handleSearch = () => {
     setAppliedFilters(tempFilters);
@@ -39,6 +41,7 @@ export const DeliveryIncidentsPage: React.FC = () => {
     setTempFilters(empty);
     setAppliedFilters(empty);
     setPageNumber(1);
+    setRefreshKey((prev) => prev + 1);
   };
 
   if (isLoading) {

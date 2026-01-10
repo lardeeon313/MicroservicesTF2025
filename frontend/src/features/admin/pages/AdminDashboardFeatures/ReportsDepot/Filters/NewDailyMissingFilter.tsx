@@ -16,9 +16,7 @@ const DailyMissingSelectFilter: React.FC<DailyMissingSelectFilterProps> = ({
   onClear,
 }) => {
   return (
-    <div className="flex items-center gap-4 mb-6 bg-white shadow-md p-4 rounded-xl">
-
-      
+    <div className="flex items-center gap-4 mb-6 bg-white border border-gray-300 p-4 rounded-xl">
       <div className="flex flex-col">
         <label className="text-sm text-gray-600 mb-1">Seleccione una opcion</label>
 

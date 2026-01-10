@@ -1,0 +1,33 @@
+
+import { useState } from "react";
+import API from "../../../../../../api/axios";
+
+import { CustomerReportFilters } from "../Types/CustomerReportType";
+import { PagedResult } from "../Types/CustomerReportType";
+import { AdminCustomerReportItem } from "../Types/CustomerReportType";
+
+
+export const AdminCustomerReportHock = () => {
+  const [data, setData] = useState<PagedResult<AdminCustomerReportItem> | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const fetchReport = async (filters: CustomerReportFilters) => {
+    setLoading(true);
+    try {
+      const response = await API.post<PagedResult<AdminCustomerReportItem>>(
+        "/sales/SalesReport/reports-customers",
+        filters
+      );
+      console.log(response)
+      setData(response.data);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    data,
+    loading,
+    fetchReport
+  };
+};

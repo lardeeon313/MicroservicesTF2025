@@ -17,10 +17,27 @@ namespace DepotService.Application.Queries.Reports.GetProcessingTimePerOrder
 
         public async Task<PaginatedResult<OrderProcessingTimeDto>> HandleAsync(GetProcessingTimePerOrderQuery query)
         {
+            // 1️⃣ Resolver operador por nombre
+            string? operatorIdFilter = null;
+
+            if (!string.IsNullOrWhiteSpace(query.Operator))
+            {
+                var allOperators = await _identityServiceClient.GetUserWithRoleOperator()
+                    ?? new List<DepotOperatorsDto>();
+
+                var matchedOperator = allOperators.FirstOrDefault(o =>
+                    $"{o.FirstName} {o.LastName}"
+                        .Contains(query.Operator, StringComparison.OrdinalIgnoreCase));
+
+                if (matchedOperator != null)
+                    operatorIdFilter = matchedOperator.Id;
+            }
+
+            // 2️⃣ Llamar repositorio
             var result = await _repository.GetAverageProcessingTimePerOrderAsync(
                 query.From,
                 query.To,
-                query.Operator,
+                operatorIdFilter,
                 query.Customer,
                 query.Page,
                 query.PageSize
@@ -37,28 +54,26 @@ namespace DepotService.Application.Queries.Reports.GetProcessingTimePerOrder
                 };
             }
 
-            // 1) Obtener todos los operatorIds usados
+            // 3️⃣ Diccionario operadores
             var operatorIds = result.Items
-                .Where(x => x.OperatorId != null)
+                .Where(x => x.OperatorId.HasValue)
                 .Select(x => x.OperatorId!.Value.ToString().ToLowerInvariant())
                 .Distinct()
                 .ToList();
 
-            // 2) Obtener operadores desde IdentityService
-            var allOperators = await _identityServiceClient.GetUserWithRoleOperator()
+            var allOps = await _identityServiceClient.GetUserWithRoleOperator()
                 ?? new List<DepotOperatorsDto>();
 
-            // 3) Diccionario rápido
-            var operatorsById = allOperators
+            var operatorsById = allOps
                 .Where(o => operatorIds.Contains(o.Id.ToLowerInvariant()))
                 .ToDictionary(o => o.Id.ToLowerInvariant());
 
-            // 4) Mapear resultado final
+            // 4️⃣ Mapping final
             var mapped = result.Items.Select(x =>
             {
                 string? operatorName = null;
 
-                if (x.OperatorId != null)
+                if (x.OperatorId.HasValue)
                 {
                     var key = x.OperatorId.Value.ToString().ToLowerInvariant();
                     if (operatorsById.TryGetValue(key, out var op))
@@ -85,5 +100,6 @@ namespace DepotService.Application.Queries.Reports.GetProcessingTimePerOrder
                 CurrentPage = result.CurrentPage
             };
         }
+
     }
 }

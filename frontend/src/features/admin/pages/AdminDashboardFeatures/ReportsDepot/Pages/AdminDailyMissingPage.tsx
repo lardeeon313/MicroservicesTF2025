@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from "react";
 import { useDailyMissing } from "../Hocks/useAdminDailyMissing";
-import {  RefreshCw, Eye, EyeOff } from "lucide-react";
+import { RefreshCw, Eye, EyeOff } from "lucide-react";
 
-import DailyMissingTable,{ DailyMissing } from "../../../../../depot/pages/reports/Depot/DepotComponents/DailyMissingTable";
+import { DailyMissing } from "../../../../../depot/pages/reports/Depot/DepotComponents/DailyMissingTable";
+import AdminDailyMissingTable from "../Components/AdminDailyMissingTable";
 
 import { Pagination } from "../../../../../../components/Pagination";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
@@ -14,19 +15,35 @@ import GraphDailyMissingOrder from "../Graphs/GraphDailyMissingOrder";
 const AdminReportDailyMissingPage: React.FC = () => {
   const [page, setPage] = useState(1);
   const [selectedTime, setSelectedTime] = useState<string>("");
-  const [filterType, setFilterType] = useState<"" | "day" | "month" | "quincena">("");
+  const [filterType, setFilterType] = useState<
+    "" | "day" | "month" | "quincena"
+  >("");
   const [showGraph, setShowGraph] = useState(true);
   const [, setRefreshKey] = useState(0);
 
   const pageSize = 10;
   const { data, loading, error, totalPages } = useDailyMissing(page, pageSize);
 
-  // ============================ FILTRO POR FECHA/HORA (EXISTENTE) ============================
+  // =====================================================
+  // HANDLERS UNIFICADOS (LIMPIAN EL OTRO FILTRO)
+  // =====================================================
+  const handleDateChange = (val: string) => {
+    setSelectedTime(val);
+    setFilterType(""); // limpia filtro rápido
+  };
+
+  const handleFilterTypeChange = (
+    val: "" | "day" | "month" | "quincena"
+  ) => {
+    setFilterType(val);
+    setSelectedTime(""); // limpia fecha
+  };
+
+  // ============================ FILTRO POR FECHA ============================
   const filteredByTime: DailyMissing[] = useMemo(() => {
     if (!data) return [];
     if (!selectedTime) return data;
 
-    // selectedTime viene como "2025-11-30"
     const selected = new Date(selectedTime + "T00:00:00");
 
     return data.filter((d) => {
@@ -42,10 +59,9 @@ const AdminReportDailyMissingPage: React.FC = () => {
     });
   }, [data, selectedTime]);
 
-  // ============================ NUEVO FILTRO: DÍA / MES / QUINCENA ============================
+  // ============================ FILTRO DÍA / MES / QUINCENA ============================
   const fullyFiltered: DailyMissing[] = useMemo(() => {
     if (!filteredByTime) return [];
-
     if (!filterType) return filteredByTime;
 
     const today = new Date();
@@ -65,7 +81,10 @@ const AdminReportDailyMissingPage: React.FC = () => {
           );
 
         case "quincena":
-          const diffDays = Math.floor((today.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24));
+          const diffDays = Math.floor(
+            (today.getTime() - itemDate.getTime()) /
+              (1000 * 60 * 60 * 24)
+          );
           return diffDays <= 15;
 
         default:
@@ -75,18 +94,23 @@ const AdminReportDailyMissingPage: React.FC = () => {
   }, [filteredByTime, filterType]);
 
   const handleRefresh = () => {
-    setRefreshKey(prev => prev + 1);
+    setRefreshKey((prev) => prev + 1);
     window.location.reload();
   };
 
   if (loading) {
-    return <LoadingSpinner message="Cargando los datos..." height="h-screen" />;
+    return (
+      <LoadingSpinner
+        message="Cargando los datos..."
+        height="h-screen"
+      />
+    );
   }
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
-        <BackButton to="/admin/reports/depot"></BackButton>
+        <BackButton to="/admin/reports/depot" />
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -94,32 +118,32 @@ const AdminReportDailyMissingPage: React.FC = () => {
           Faltantes diarios:
         </h1>
         <p className="text-center text-lg text-gray-700 mb-12">
-          Aquí podrás visualizar los productos que no se encontraron en stock
-          al momento del armado de pedidos.
+          Aquí podrás visualizar los productos que no se encontraron en
+          stock al momento del armado de pedidos.
         </p>
 
-        {/* Contenedor FLEX que coloca ambos filtros uno al lado del otro */}
-        <div className="flex flex-wrap gap-6 mb-8">
+        {/* ============================ FILTROS ============================ */}
+        <div className="flex flex-wrap gap-6 mb-8 bg-white border border-gray-300 p-4 rounded-xl">
           <DailyMissingFilter
             selectedTime={selectedTime}
-            onHourChange={(val) => setSelectedTime(val)}
-            onSearch={() => console.log("Buscando por fecha/hora:", selectedTime)}
-            onClear={() => {
-              setSelectedTime("");
-            }}
+            onHourChange={handleDateChange}
+            onSearch={() =>
+              console.log("Buscando por fecha:", selectedTime)
+            }
+            onClear={() => setSelectedTime("")}
           />
 
           <DailyMissingSelectFilter
             filterType={filterType}
-            onFilterTypeChange={(val) => setFilterType(val)}
-            onSearch={() => console.log("Buscando filtro rápido:", filterType)}
-            onClear={() => {
-              setFilterType("");
-            }}
+            onFilterTypeChange={handleFilterTypeChange}
+            onSearch={() =>
+              console.log("Buscando filtro rápido:", filterType)
+            }
+            onClear={() => setFilterType("")}
           />
         </div>
 
-        {/* Botones de control */}
+        {/* ============================ BOTONES ============================ */}
         <div className="flex justify-end gap-3 mb-6">
           <button
             onClick={() => setShowGraph(!showGraph)}
@@ -151,8 +175,8 @@ const AdminReportDailyMissingPage: React.FC = () => {
           <p className="text-red-600 text-center">{error}</p>
         ) : (
           <>
-            <DailyMissingTable data={fullyFiltered} />
-            
+            <AdminDailyMissingTable data={fullyFiltered} />
+
             {showGraph && (
               <div className="mt-8">
                 <GraphDailyMissingOrder data={fullyFiltered} />

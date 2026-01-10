@@ -250,19 +250,33 @@ namespace LogisticService.Infraestructure.Persistence
             return grouped;
         }
 
-        public async Task<List<LogisticOrder>> GetFilteredOrdersAsync(DateTime? startDate, DateTime? endDate, int? deliveryZoneId, int? deliveryTeamId, Guid? operatorId, PaymentType? paymentType)
+        public async Task<List<LogisticOrder>> GetFilteredOrdersAsync(DateTime? startDate,DateTime? endDate,int? deliveryZoneId,int? deliveryTeamId,Guid? operatorId,PaymentType? paymentType)
         {
             var query = _context.LogisticOrders
                 .AsNoTracking()
-                .Include(o => o.AssignedDeliveryTeam)     // NUEVO
+                .Include(o => o.AssignedDeliveryTeam)
                 .Include(o => o.AssignedDeliveryZone)
+                .Include(o => o.StatusHistory)
                 .AsQueryable();
 
+            
             if (startDate.HasValue)
-                query = query.Where(o => o.OrderDate >= startDate.Value);
+            {
+                query = query.Where(o =>
+                    o.StatusHistory.Any(h =>
+                        h.NewStatus == OrderStatus.Delivered &&
+                        h.ChangedAt >= startDate.Value
+                    ));
+            }
 
             if (endDate.HasValue)
-                query = query.Where(o => o.OrderDate <= endDate.Value);
+            {
+                query = query.Where(o =>
+                    o.StatusHistory.Any(h =>
+                        h.NewStatus == OrderStatus.Delivered &&
+                        h.ChangedAt <= endDate.Value
+                    ));
+            }
 
             if (deliveryZoneId.HasValue)
                 query = query.Where(o => o.AssignedDeliveryZoneId == deliveryZoneId.Value);
@@ -278,6 +292,7 @@ namespace LogisticService.Infraestructure.Persistence
 
             return await query.ToListAsync();
         }
+
 
         public async Task<PagedResult<OrderStatusHistoryReport>> GetOrderStatusHistoryAsync(DateTime? startDate, DateTime? endDate, OrderStatus? oldStatus, OrderStatus? newStatus, Guid? operatorId, int pageNumber, int pageSize)
         {

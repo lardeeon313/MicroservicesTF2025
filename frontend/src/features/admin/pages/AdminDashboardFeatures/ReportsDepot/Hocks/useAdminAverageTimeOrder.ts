@@ -49,7 +49,7 @@ export const useProcessingTimePerOrder = (filters: Filters) => {
     }
   };
 
-  // 🔥 Ejecutar cuando CAMBIE CUALQUIER FILTRO
+  
   useEffect(() => {
     fetchData();
   }, [filters]);
