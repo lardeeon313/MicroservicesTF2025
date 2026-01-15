@@ -124,23 +124,47 @@ namespace LogisticService.Infraestructure.Messaging.Consumer
                             await context.SaveChangesAsync(stoppingToken);
                         }
 
-                        var fullAddress = $"{evento.DeliveryAddress?.Street} {evento.DeliveryAddress?.Number}, {evento.DeliveryAddress?.City}, {evento.DeliveryAddress?.Province}, {evento.DeliveryAddress?.Country}";
-                        var geoData = await nominatim.GeocodeAddressAsync(fullAddress);
+                        var fullAddress =
+    $"{evento.DeliveryAddress!.Street} {evento.DeliveryAddress.Number}, " +
+    $"{evento.DeliveryAddress.City}, {evento.DeliveryAddress.Province}, {evento.DeliveryAddress.Country}";
+
+                        (double? lat, double? lon, string? formatted) geoData;
+                        bool geoValid = false;
+
+                        try
+                        {
+                            geoData = await nominatim.GeocodeAddressAsync(fullAddress);
+                            geoValid = geoData.lat != 0 && geoData.lon != 0;
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(
+                                ex,
+                                "⚠️ Nominatim error for address {Address}. Saving order without coordinates.",
+                                fullAddress
+                            );
+
+                            geoData = (null, null, null);
+                        }
 
                         var address = new LogisticAddress
                         {
-                            Street = evento.DeliveryAddress!.Street,
+                            Street = evento.DeliveryAddress.Street,
                             Number = evento.DeliveryAddress.Number,
                             Apartment = evento.DeliveryAddress.Apartment,
                             City = evento.DeliveryAddress.City,
                             Province = evento.DeliveryAddress.Province,
                             Country = evento.DeliveryAddress.Country,
                             PostalCode = evento.DeliveryAddress.PostalCode,
-                            FormattedAddress = fullAddress,
-                            Latitude = geoData.lat,
-                            Longitude = geoData.lon,
-                            CreatedAt = DateTime.UtcNow,
+
+                            FormattedAddress = geoData.formatted ?? fullAddress,
+
+                            Latitude = geoValid ? geoData.lat : null,
+                            Longitude = geoValid ? geoData.lon : null,
+
+                            CreatedAt = DateTime.UtcNow
                         };
+
                         await context.Addresses.AddAsync(address, stoppingToken);
                         await context.SaveChangesAsync(stoppingToken);
 
