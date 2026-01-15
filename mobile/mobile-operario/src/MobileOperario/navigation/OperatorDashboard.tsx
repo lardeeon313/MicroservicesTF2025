@@ -6,7 +6,7 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { useMissingOrders } from "../hocks/useMissingOrders";
 import { useAuth } from "../Login/context/useAuth";
-
+import OperatorFAQButton from "../components/question/OperatorFAQButton";
 
 type CardItem = {
   title: string;
@@ -117,6 +117,7 @@ useEffect(() => {
           </View>
         </TouchableOpacity>
       ))}
+      <OperatorFAQButton />
     </View>
   )
 }

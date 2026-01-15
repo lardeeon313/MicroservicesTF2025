@@ -57,7 +57,7 @@ export default function ConfirmAssignedOrderPage() {
 
     useEffect(() => {
         if (success) {
-            setModalMessage(`El pedido #${order?.id} fue confirmado correctamente. Lo podrás ver dentro del mismo listado.`);
+            setModalMessage(`El pedido #${order?.id} fue confirmado correctamente. Lo podrás ver dentro del listado Pedidos Confirmados.`);
             setModalVisible(true);
         } else if (error) {
             setModalMessage(`Error al confirmar el pedido: ${error}`);

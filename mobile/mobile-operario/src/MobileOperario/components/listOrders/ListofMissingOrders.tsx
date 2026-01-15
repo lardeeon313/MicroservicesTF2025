@@ -37,16 +37,28 @@ const ListOfMissingOrders = ({
   return(
     <View style={{backgroundColor: '#fff',padding: 16,borderRadius: 12,shadowColor: '#000',shadowOffset: { width: 0, height: 2 },shadowOpacity: 0.1,elevation: 2,marginBottom: 16}}>
       <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-        Pedido# : {depotOrderId.toString()}
-      </Text>
-      <Text style={{ fontSize: 20, fontWeight: '300', marginTop: 4 }}>
-        Cliente : {customerName}
+        Pedido #{depotOrderId.toString()}
       </Text>
 
+      <View style={{marginTop: 8}}>
+        <View style={{ marginBottom: 12, flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ fontSize: 14, color: '#666', fontWeight: 'bold',marginRight: 16 }}>
+            Cliente: 
+          </Text>
+          <Text style={{ fontSize: 18, fontWeight: '400',color: '#000'}}>
+            {customerName}
+          </Text>
+        </View>
 
-      <Text style={{ fontSize: 20, color: '#6B7280', marginTop: 8 }}>
-        Estado: {OrderStatusLabels[status as DepotOrderStatus]}
-      </Text>
+        <View style={{marginBottom: 12, flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ fontSize: 14, color: '#666', fontWeight: 'bold',marginRight: 16 }}>
+            Estado: 
+          </Text>
+          <Text style={{ fontSize: 18, fontWeight: '400',color: '#000' }}>
+            {OrderStatusLabels[status as DepotOrderStatus]}
+          </Text>
+        </View>
+      </View>
 
         {address && (
         <View
@@ -87,51 +99,79 @@ const ListOfMissingOrders = ({
         </View>
       )}
 
-      <View style={{flexDirection: 'row', gap: 10, marginTop: 16}} >
-        <TouchableOpacity style={{
-          backgroundColor: '#3B82F6',
-          paddingVertical: 10,
-          paddingHorizontal: 14,
-          borderRadius: 10,
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 8 
-        }} 
-          onPress={onVerDetalle}>
-          <ListCollapse size={20} color="#fff" />
-          <Text style={{color: '#fff', fontWeight: 'bold'}}>Ver detalle </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{
-          backgroundColor: '#e42841ff',
-          paddingVertical: 10,
-          paddingHorizontal: 14,
-          borderRadius: 10,
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 8 
-        }}
-        onPress={onEmitirFaltante}>
-          <TriangleAlert size={20} color="#fff" />
-          <Text style={{color: '#fff', fontWeight: 'bold'}}>Emitir Faltante</Text>
-        </TouchableOpacity>
-      </View>
+      <View style={{ marginTop: 16 }}>
+        {/* Acciones principales */}
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+          <TouchableOpacity
+            style={{
+              flex: 1,
+              backgroundColor: '#3B82F6',
+              paddingVertical: 12,
+              borderRadius: 12,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+            }}
+            onPress={onVerDetalle}
+          >
+            <ListCollapse size={20} color="#fff" />
+            <Text style={{ color: '#fff', fontWeight: 'bold' }}>
+              Ver detalle
+            </Text>
+          </TouchableOpacity>
 
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 10 }}>
+          <TouchableOpacity
+            style={{
+              flex: 1,
+              backgroundColor: '#E42841',
+              paddingVertical: 12,
+              borderRadius: 12,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+            }}
+            onPress={onEmitirFaltante}
+          >
+            <TriangleAlert size={20} color="#fff" />
+            <Text style={{ color: '#fff', fontWeight: 'bold' }}>
+              Emitir faltante
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Botón de atención */}
         {onSeccionNotificaciones && (
-          <TouchableOpacity style={{
-            backgroundColor: '#ff8000',
-            paddingVertical: 10,
-            paddingHorizontal: 14,
-            borderRadius: 10,
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 8 
-          }}onPress={onSeccionNotificaciones}>
+          <TouchableOpacity
+            style={{
+              marginTop: 10,
+              backgroundColor: '#FF8000',
+              paddingVertical: 12,
+              paddingHorizontal: 14,
+              borderRadius: 12,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+            }}
+            onPress={onSeccionNotificaciones}
+          >
             <ListTodo size={20} color="#fff" />
-            <Text style={{ color: '#fff', textAlign: 'center',fontWeight:'bold' }}>ATENCION: Revisar faltantes del Pedido</Text>
+            <Text
+              style={{
+                color: '#fff',
+                fontWeight: 'bold',
+                textAlign: 'center',
+                flexShrink: 1,
+              }}
+            >
+              ATENCIÓN: Revisar faltantes del pedido
+            </Text>
           </TouchableOpacity>
         )}
       </View>
+
 
 
       <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 16, marginBottom: 8 }}>

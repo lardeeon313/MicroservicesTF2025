@@ -83,9 +83,48 @@ const ListofOrdersArmPage = () => {
 
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         {ArmOrders.length === 0 ? (
-          <Text style={{ fontSize: 18, textAlign: "center" }}>
-            Aun no hay pedidos en Preparación.
-          </Text>
+            <View style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 24,
+            paddingVertical: 60,
+          }}>
+            {/* Ícono con círculo de fondo */}
+            <View style={{
+              width: 80,
+              height: 80,
+              borderRadius: 40,
+              backgroundColor: '#fee2e2',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginBottom: 20,
+            }}>
+              <Text style={{ fontSize: 48 }}>🚫</Text>
+            </View>
+    
+            {/* Título */}
+            <Text style={{
+              fontSize: 18,
+              fontWeight: '700',
+              color: '#111827',
+              textAlign: 'center',
+              marginBottom: 8,
+            }}>
+              No hay pedidos en preparación.
+            </Text>
+    
+            {/* Descripción */}
+            <Text style={{
+              fontSize: 14,
+              color: '#6b7280',
+              textAlign: 'center',
+              lineHeight: 20,
+            }}>
+              Aún no se encontraron pedidos en preparación,{'\n'}
+              vuelve a intentarlo más tarde.
+            </Text>
+          </View>
         ) : (
           ArmOrders.map((order) => (
             <ListofArmOrders

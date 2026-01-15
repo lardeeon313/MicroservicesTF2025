@@ -28,14 +28,28 @@ const ListOfPreparedOrders = ({ order, id, customer, onSeeDetail, onSendToBill }
   return (
     <View style={{ backgroundColor: "#ffffff", padding: 20, borderRadius: 12, marginBottom: 16, shadowColor: "#000", elevation: 4 }}>
       <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-        Pedido# : {order.depotOrderId.toString()}
+        Pedido #{order.depotOrderId.toString()}
       </Text>
-      <Text style={{ fontSize: 20, fontWeight: '300', marginTop: 4 }}>
-        Cliente: {customer}
-      </Text>
-      <Text style={{ marginTop: 4, fontSize: 20 }}>
-        Estado: {OrderStatusLabels[order.status as DepotOrderStatus]}
-      </Text>
+
+      <View style={{marginTop: 8}}>
+        <View style={{ marginBottom: 12, flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ fontSize: 14, color: '#666', fontWeight: 'bold',marginRight: 16 }}>
+            Cliente:
+          </Text>
+          <Text style={{ fontSize: 18, fontWeight: '400',color: '#000'}}>
+            {customer}
+          </Text>
+        </View>
+
+        <View style={{ marginBottom: 12, flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ fontSize: 14, color: '#666', fontWeight: 'bold',marginRight: 16 }}>
+            Estado: 
+          </Text>
+          <Text style={{ fontSize: 18, fontWeight: '400',color: '#000'}}>
+            {OrderStatusLabels[order.status as DepotOrderStatus]}
+          </Text>
+        </View>
+      </View>
 
 
       {address && (

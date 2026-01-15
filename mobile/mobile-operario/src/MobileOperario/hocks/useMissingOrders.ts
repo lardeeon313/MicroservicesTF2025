@@ -14,7 +14,7 @@ export const useMissingOrders = (operatorUserId:string) => {
             try
             {
                 const data = await GetMissingOrdersService(operatorUserId);
-                console.log('Pedidos con faltantes recibidos:', data);
+                
                 setMissingOrders(data);
             }
             catch(error:any)

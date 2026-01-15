@@ -9,14 +9,51 @@ interface Props {
 
 const NotificacionSection: React.FC<Props> = ({ missingItems }) => {
   if (!missingItems || missingItems.length === 0) {
-    return (
-      <View style={{ padding: 16 }}>
-        <Text style={{ fontSize: 16, color: "#6b7280", flexDirection: "row", alignItems: "center" }}>
-          <AlertTriangle size={18} color="#6b7280" /> Por el momento, no hay notificaciones de faltantes.
-        </Text>
+  return (
+    <View style={{
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 24,
+      paddingVertical: 60,
+    }}>
+      {/* Ícono con círculo de fondo */}
+      <View style={{
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: '#fee2e2',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 20,
+      }}>
+        <AlertTriangle size={48} color="#ef4444" strokeWidth={2} />
       </View>
-    );
-  }
+      
+      {/* Título */}
+      <Text style={{
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#111827',
+        textAlign: 'center',
+        marginBottom: 8,
+      }}>
+        No hay notificaciones de faltantes.
+      </Text>
+      
+      {/* Descripción */}
+      <Text style={{
+        fontSize: 14,
+        color: '#6b7280',
+        textAlign: 'center',
+        lineHeight: 20,
+      }}>
+        Por el momento no hay productos faltantes{'\n'}
+        que requieran tu atención.
+      </Text>
+    </View>
+  );
+}
 
   return (
     <ScrollView contentContainerStyle={{ padding: 16 }} showsVerticalScrollIndicator={false}>

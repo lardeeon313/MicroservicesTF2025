@@ -67,7 +67,7 @@ export default function ConfirmOrderComponent({ order, loading, onConfirm }: Con
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f9f9f9", padding: 16 },
+  container: { flex: 1, padding: 16 },
   title: { fontSize: 20, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
   card: { backgroundColor: "#fff", borderRadius: 10, padding: 16, marginBottom: 16, elevation: 3 },
   label: { fontWeight: "bold", fontSize: 16, color: "#333" },
