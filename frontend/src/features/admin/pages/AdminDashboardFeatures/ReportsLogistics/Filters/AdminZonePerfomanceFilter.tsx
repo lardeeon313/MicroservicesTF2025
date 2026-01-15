@@ -37,7 +37,7 @@ export const AdminFilterZonePerformance: React.FC<Props> = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-4 bg-white shadow-md rounded-xl mb-6 flex flex-wrap items-end justify-around gap-6"
+      className="p-4 mb-6 flex flex-wrap items-end justify-around gap-6"
     >
       <div className="flex flex-col">
         <label className="text-sm font-medium text-gray-600 mb-1">

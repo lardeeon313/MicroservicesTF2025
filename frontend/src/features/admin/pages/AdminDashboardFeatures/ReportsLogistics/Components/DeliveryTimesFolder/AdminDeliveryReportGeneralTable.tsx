@@ -1,13 +1,13 @@
 // DeliveryReportGeneralTable.tsx
 import React from "react";
-import { GeneralGridRow } from "../../../../../../verification/pages/reports/Verification/VerificationHocks/useDeliveryTimesReport";
+import { GeneralGridRow } from "../../../../../../verification/types/Report";
 import { Package } from "lucide-react";
 
 interface Props {
   data: GeneralGridRow[];
 }
 
-export const DeliveryReportGeneralTable: React.FC<Props> = ({ data }) => {
+export const AdminDeliveryReportGeneralTable: React.FC<Props> = ({ data }) => {
 
 
   return (

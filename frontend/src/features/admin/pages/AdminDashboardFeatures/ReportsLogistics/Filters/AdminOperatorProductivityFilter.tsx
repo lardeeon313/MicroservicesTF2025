@@ -8,7 +8,7 @@ interface FilterProps {
   onChange: (filters: OperatorProductivityFilterEntity) => void;
 }
 
-export const FilterOperatorProductivity: React.FC<FilterProps> = ({ filters, onChange }) => {
+export const AdminFilterOperatorProductivity: React.FC<FilterProps> = ({ filters, onChange }) => {
   const [localFilters, setLocalFilters] = useState<OperatorProductivityFilterEntity>(filters);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {

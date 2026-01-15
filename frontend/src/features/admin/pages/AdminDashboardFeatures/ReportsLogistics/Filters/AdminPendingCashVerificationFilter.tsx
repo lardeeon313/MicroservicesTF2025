@@ -7,7 +7,7 @@ interface Props {
   onClear: () => void;
 }
 
-export const FilterPendingCashVerification: React.FC<Props> = ({
+export const AdminFilterPendingCashVerification: React.FC<Props> = ({
   filters,
   setFilters,
   onSearch,
@@ -35,7 +35,7 @@ export const FilterPendingCashVerification: React.FC<Props> = ({
   };
 
   return (
-    <div className="flex flex-wrap items-end gap-4 bg-white p-4 rounded-xl shadow-sm">
+    <div className="flex flex-wrap items-end gap-4 p-4">
       {/* Fecha inicio */}
       <div className="flex flex-col">
         <label className="text-sm font-medium text-gray-700 mb-1">

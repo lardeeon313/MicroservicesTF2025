@@ -1,4 +1,3 @@
-// components/AdminCustomerStatusReportFilter.tsx
 
 import { useState } from "react";
 import { CustomerStatus } from "../../../../../sales/types/CustomerTypes";

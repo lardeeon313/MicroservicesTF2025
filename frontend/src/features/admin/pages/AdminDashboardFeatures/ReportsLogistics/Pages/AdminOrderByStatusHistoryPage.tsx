@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { RefreshCw, EyeOff, Eye } from "lucide-react";
-import { useOrderStatusHistoryReport } from "../../../../../verification/pages/reports/Verification/VerificationHocks/useOrderByStatusHistory";
-import { OrderStatusHistoryFiltersFilter } from "../Filters/OrderByStatusHistoryFilter";
-import { OrderStatusHistoryTable } from "../../../../../verification/pages/reports/Verification/VerificationComponents/OrderByStatusHistoryFolder/OrderByStatusHistoryReport";
+import { AdminUseOrderStatusHistoryReport } from "../Hocks/AdminUseOrderByStatusHistory";
+import { AdminOrderStatusHistoryFiltersFilter } from "../Filters/AdminOrderByStatusHistoryFilter";
+import { AdminOrderStatusHistoryTable } from "../Components/OrderByStatusHistoryFolder/AdminOrderByStatusHistoryReport";
 import { AdminGraphOrderByStatusHistory } from "../Graphs/AdminGraphOrderByStatusHistory";
 import { Pagination } from "../../../../../../components/Pagination";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
@@ -16,7 +16,7 @@ export const AdminReportOrderStatusHistoryReportPage = () => {
     loading,
     fetchData,
     pagination,
-  } = useOrderStatusHistoryReport();
+  } = AdminUseOrderStatusHistoryReport();
 
   const [showGraph, setShowGraph] = useState(true);
 
@@ -54,7 +54,7 @@ export const AdminReportOrderStatusHistoryReportPage = () => {
       </div>
 
       <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
-        <OrderStatusHistoryFiltersFilter
+        <AdminOrderStatusHistoryFiltersFilter
           filters={filters}
           setFilters={setFilters}
           fetchData={fetchData}
@@ -92,7 +92,7 @@ export const AdminReportOrderStatusHistoryReportPage = () => {
         {!loading && (
           <div className="space-y-8">
             {/* Tabla */}
-            <OrderStatusHistoryTable data={data} />
+            <AdminOrderStatusHistoryTable data={data} />
             
             {/* Paginación mejorada */}
             {pagination.totalPages > 0 && (

@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from "react";
 import { Eye, EyeOff, RefreshCw } from "lucide-react";
 import { useDeliveryIncidentsReport } from "../../../../../verification/pages/reports/Verification/VerificationHocks/useDeliveryIncidentsReport";
-import { DeliveryIncidentsFilter } from "../Filters/DeliveryIncidentsFilter";
+import { AdminDeliveryIncidentsFilter } from "../Filters/AdminDeliveryIncidentsFilter";
 import { DeliveryIncidentFilters } from "../../../../../verification/types/FilterReports/FilterReportsEntity";
-import { DeliveryIncidentsTable } from "../Components/DeliveryIncidents/DeliveryIncidentsReport";
+import { AdminDeliveryIncidentsTable } from "../Components/DeliveryIncidents/AdminDeliveryIncidentsReport";
 import { AdminGraphDeliveryIncidents } from "../Graphs/AdminGraphDeliveryIncidents";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../../../components/BackButton";
@@ -33,7 +33,7 @@ export const AdminReportDeliveryIncidentsPage: React.FC = () => {
     setPageNumber,
   } = useDeliveryIncidentsReport(appliedFilters, refreshKey);
 
-  // ✅ FILTRO REAL DESDE EL FRONT
+  
   const filteredData = useMemo(() => {
     if (appliedFilters.resolved === undefined) return data;
 
@@ -85,7 +85,7 @@ export const AdminReportDeliveryIncidentsPage: React.FC = () => {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <DeliveryIncidentsFilter
+        <AdminDeliveryIncidentsFilter
           filters={tempFilters}
           onChange={setTempFilters}
           onSearch={handleSearch}
@@ -113,7 +113,7 @@ export const AdminReportDeliveryIncidentsPage: React.FC = () => {
         {error && <p className="text-center text-red-500">{error}</p>}
 
         <div className="space-y-12 mt-8">
-          <DeliveryIncidentsTable data={filteredData} />
+          <AdminDeliveryIncidentsTable data={filteredData} />
 
           {showGraphs && (
             <AdminGraphDeliveryIncidents data={filteredData} />

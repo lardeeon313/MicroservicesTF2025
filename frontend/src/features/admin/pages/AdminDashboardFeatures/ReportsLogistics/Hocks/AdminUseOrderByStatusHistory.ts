@@ -53,7 +53,7 @@ import API from "../../../../../../api/axios";
 import { OrderStatusHistoryFilter } from "../../../../../verification/types/FilterReports/FilterReportsEntity";
 import { OrderStatusHistoryReport,PagedResponse } from "../../../../../verification/types/Report";
 
-export const useOrderStatusHistoryReport = () => {
+export const AdminUseOrderStatusHistoryReport = () => {
   const [filters, setFilters] = useState<OrderStatusHistoryFilter>({});
   const [data, setData] = useState<OrderStatusHistoryReport[]>([]);
   const [pagination, setPagination] = useState({

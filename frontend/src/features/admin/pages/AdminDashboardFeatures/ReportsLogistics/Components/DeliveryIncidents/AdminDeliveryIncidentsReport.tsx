@@ -12,7 +12,7 @@ interface Props {
   Delivered: "Entregado",
 };*/
 
-export const DeliveryIncidentsTable: React.FC<Props> = ({ data }) => {
+export const AdminDeliveryIncidentsTable: React.FC<Props> = ({ data }) => {
   if (!data || data.length === 0) {
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">

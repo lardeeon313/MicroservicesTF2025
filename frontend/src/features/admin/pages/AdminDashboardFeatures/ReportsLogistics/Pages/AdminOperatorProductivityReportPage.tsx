@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { RefreshCw, EyeOff, Eye } from "lucide-react";
-
-import { useOperatorProductivityReport } from "../../../../../verification/pages/reports/Verification/VerificationHocks/useOperatorProdictivityReport";
-import { FilterOperatorProductivity } from "../Filters/OperatorProductivityFilter";
+//import { useOperatorProductivityReport } from "../../../../../verification/pages/reports/Verification/VerificationHocks/useOperatorProdictivityReport";
+import { AdminUseOperatorProductivityReport } from "../Hocks/AdminUseOperatorProductivity";
+import { AdminFilterOperatorProductivity } from "../Filters/AdminOperatorProductivityFilter";
 import { AdminOperatorProductivityTable } from "../Components/OperatorProductivityFolder/AdminOperatorProductivityReport";
 import { AdminGraphOperatorProductivity } from "../Graphs/AdminGraphOperatorProductivity";
 import { OperatorProductivityFilterEntity } from "../../../../../verification/types/FilterReports/FilterReportsEntity";
@@ -22,7 +22,7 @@ export const AdminReportOperatorProductivityPage: React.FC = () => {
   const [, setRefreshKey] = useState(0);
 
   // Usamos refreshKey como dependencia directa del hook
-  const { data, isLoading } = useOperatorProductivityReport(filters);
+  const { data, isLoading } = AdminUseOperatorProductivityReport(filters);
 
   const handleRefresh = () => {
     // Forzamos un refetch cambiando ligeramente los filtros
@@ -70,7 +70,7 @@ export const AdminReportOperatorProductivityPage: React.FC = () => {
 
         {/* Filtros */}
         <div className="bg-white shadow-md rounded-2xl p-6 mb-10 border border-gray-200">
-          <FilterOperatorProductivity filters={filters} onChange={setFilters} />
+          <AdminFilterOperatorProductivity filters={filters} onChange={setFilters} />
         </div>
 
         {/* Botones de control */}

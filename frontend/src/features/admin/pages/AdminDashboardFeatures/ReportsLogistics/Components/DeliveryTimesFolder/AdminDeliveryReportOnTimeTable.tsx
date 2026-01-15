@@ -1,13 +1,14 @@
 // DeliveryReportOnTimeTable.tsx
 import React from "react";
-import { DeliveryTimeReportDto } from "../../../../../../verification/pages/reports/Verification/VerificationHocks/useDeliveryTimesReport";
+//import { DeliveryTimeReportDto } from "../../../../../../verification/pages/reports/Verification/VerificationHocks/useDeliveryTimesReport";
+import { DeliveryTimeReportDto } from "../../../../../../verification/types/Report";
 import { AlertCircle, CheckCircle,User,MapPin,Calendar } from "lucide-react";
 
 interface Props {
   data: DeliveryTimeReportDto[];
 }
 
-export const DeliveryReportOnTimeTable: React.FC<Props> = ({ data }) => {
+export const AdminDeliveryReportOnTimeTable: React.FC<Props> = ({ data }) => {
   const formatDate = (dateString?: string) => {
     if (!dateString) return "-";
     const date = new Date(dateString);

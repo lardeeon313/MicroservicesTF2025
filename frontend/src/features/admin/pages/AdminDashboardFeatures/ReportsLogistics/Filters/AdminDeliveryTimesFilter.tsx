@@ -1,6 +1,7 @@
 import React from "react";
 //import { DeliveryTimesFilters } from "../VerificationHocks/useDeliveryTimesReport";
-import { DeliveryTimesFilters } from "../../../../../verification/pages/reports/Verification/VerificationHocks/useDeliveryTimesReport";
+//import { DeliveryTimesFilters } from "../../../../../verification/pages/reports/Verification/VerificationHocks/useDeliveryTimesReport";
+import { DeliveryTimesFilters } from "../../../../../verification/types/FilterReports/FilterReportsEntity";
 
 interface Props {
   filters: DeliveryTimesFilters;
@@ -9,7 +10,7 @@ interface Props {
   onClear: () => void;
 }
 
-export const DeliveryTimesFilter: React.FC<Props> = ({ filters, setFilters, onSearch, onClear }) => {
+export const AdminDeliveryTimesFilter: React.FC<Props> = ({ filters, setFilters, onSearch, onClear }) => {
   const update = (field: keyof DeliveryTimesFilters, value: any) => {
     setFilters({ ...filters, [field]: value });
   };

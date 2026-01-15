@@ -3,7 +3,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recha
 import { TrendingUp } from "lucide-react";
 
 import { OrderStatusHistoryReport } from "../../../../../verification/types/Report";
-import { OrderStatusLabels } from "../Hocks/useOrderByStatusHistory";
+import { OrderStatusLabels } from "../Hocks/AdminUseOrderByStatusHistory";
 
 interface Props {
   data: OrderStatusHistoryReport[];
