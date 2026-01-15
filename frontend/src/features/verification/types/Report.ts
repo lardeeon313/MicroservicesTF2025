@@ -262,3 +262,27 @@ export interface PagedResponse<T> {
   pageSize: number;
   totalPages: number;
 }
+
+///
+export interface DeliveryTimeReportDto {
+  deliveryZoneId: number | null;
+  deliveryZoneName: string | null;
+  teamId: number | null;
+  teamName: string | null;
+  operatorId: string;
+  fullNameDeliveringOperator: string;
+  totalDeliveredOrders: number;
+  estimatedDeliveryDate?: string;
+  actualDeliveryDate?: string;
+  deliveredOnTime: boolean;
+  delayInHours?: number;
+  orderId?: number;
+}
+
+export interface GeneralGridRow {
+  teamName: string | null;
+  zoneName: string | null;
+  total: number;
+  onTime: number;
+  late: number;
+}

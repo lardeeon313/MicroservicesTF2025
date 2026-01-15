@@ -6,6 +6,7 @@ import { GraphPendingCashVerification } from "../VerificationGraphs/GraphPending
 import { PendingCashVerificationFilter } from "../../../../types/FilterReports/FilterReportsEntity";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../components/BackButton";
+import { Pagination } from "../../../../../../components/Pagination";
 
 export const PendingCashVerificationPage: React.FC = () => {
   const [filters, setFilters] = useState<PendingCashVerificationFilter>({
@@ -65,18 +66,6 @@ export const PendingCashVerificationPage: React.FC = () => {
     }));
   };
 
-  const handleNextPage = () => {
-    if (data && pageNumber < data.totalPages) {
-      setPageNumber(pageNumber + 1);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (pageNumber > 1) {
-      setPageNumber(pageNumber - 1);
-    }
-  };
-
   if (isLoading) {
     return (
       <LoadingSpinner
@@ -87,7 +76,7 @@ export const PendingCashVerificationPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10">
+    <div className="min-h-screen py-10">
       <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-10">
         <BackButton to="/verification/reports" />
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
@@ -127,26 +116,12 @@ export const PendingCashVerificationPage: React.FC = () => {
             )}
 
             {/* 🔹 PAGINACIÓN */}
-            <div className="flex justify-center items-center gap-4 mt-6">
-              <button
-                onClick={handlePrevPage}
-                disabled={pageNumber === 1}
-                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg shadow hover:bg-gray-300 transition disabled:opacity-50"
-              >
-                ◀ Anterior
-              </button>
-
-              <span className="text-gray-600 font-medium">
-                Página {pageNumber} de {data.totalPages || 1}
-              </span>
-
-              <button
-                onClick={handleNextPage}
-                disabled={pageNumber >= (data.totalPages || 1)}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg shadow hover:bg-red-700 transition disabled:opacity-50"
-              >
-                Siguiente ▶
-              </button>
+            <div className="mt-6">
+              <Pagination
+                currentPage={pageNumber}
+                totalPages={data.totalPages || 1}
+                onPageChange={setPageNumber}
+              />
             </div>
           </div>
         )}

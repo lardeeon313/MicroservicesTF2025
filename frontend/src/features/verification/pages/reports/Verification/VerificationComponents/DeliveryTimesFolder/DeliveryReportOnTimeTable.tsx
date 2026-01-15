@@ -1,6 +1,6 @@
 import React from "react";
 import { AlertCircle, XCircle, User, MapPin, Calendar } from "lucide-react";
-import { DeliveryTimeReportDto } from "../../VerificationHocks/useDeliveryTimesReport";
+import { DeliveryTimeReportDto } from "../../../../../types/Report";
 
 interface Props {
   data: DeliveryTimeReportDto[];

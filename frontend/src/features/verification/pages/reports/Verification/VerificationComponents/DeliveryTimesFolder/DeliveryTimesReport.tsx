@@ -1,6 +1,6 @@
 // DeliveryReportGeneralTable.tsx
 import React from "react";
-import { GeneralGridRow } from "../../VerificationHocks/useDeliveryTimesReport";
+import { GeneralGridRow } from "../../../../../types/Report";
 import { Package } from "lucide-react";
 
 interface Props {

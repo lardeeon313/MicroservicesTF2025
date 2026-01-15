@@ -1,6 +1,6 @@
 // DeliveryReportOnTimeTable.tsx
 import React from "react";
-import { DeliveryTimeReportDto } from "../../VerificationHocks/useDeliveryTimesReport";
+import { DeliveryTimeReportDto } from "../../../../../types/Report";
 import { AlertCircle, CheckCircle,User,MapPin,Calendar } from "lucide-react";
 
 interface Props {

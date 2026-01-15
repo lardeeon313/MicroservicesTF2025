@@ -34,7 +34,7 @@ export const FilterOperatorProductivity: React.FC<FilterProps> = ({ filters, onC
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-4 bg-white shadow-md rounded-xl mb-6 flex flex-wrap items-end justify-around gap-6"
+      className="p-4 mb-6 flex flex-wrap items-end justify-around gap-6"
     >
 
       {/* Nombre del repartidor */}

@@ -1,5 +1,5 @@
 import React from "react";
-import { DeliveryTimesFilters } from "../VerificationHocks/useDeliveryTimesReport";
+import { DeliveryTimesFilters } from "../../../../types/FilterReports/FilterReportsEntity";
 
 interface Props {
   filters: DeliveryTimesFilters;

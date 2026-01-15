@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useOperatorProductivityReport } from "../VerificationHocks/useOperatorProdictivityReport";
 import { FilterOperatorProductivity } from "../VerificationFilters/FilterOperatorProdictivity";
 import { OperatorProductivityTable } from "../VerificationComponents/OperatorProdictivityFolder/OperatorProdictivityReport";
-
 import { OperatorProductivityFilterEntity } from "../../../../types/FilterReports/FilterReportsEntity";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../components/BackButton";
@@ -29,7 +28,7 @@ export const OperatorProductivityPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10">
+    <div className="min-h-screen py-10">
       {/* Contenedor central con ancho máximo */}
       <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-10">
         {/* Encabezado */}
