@@ -1,5 +1,3 @@
-// src/features/sales/components/GraphCustomerReport.tsx
-import React from "react";
 import {
   BarChart,
   Bar,
@@ -10,13 +8,27 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Users } from "lucide-react";
-import { CustomerWithCount } from "../../../types/CustomerTypes";
 
-type Props = {
-  data: CustomerWithCount[];
-};
+interface AdminCustomerReportItem {
+  fullName: string;
+  orderCount: number;
+}
 
-const GraphCustomerReport: React.FC<Props> = ({ data }) => {
+interface Props {
+  data: AdminCustomerReportItem[];
+}
+
+export default function GraphCustomerReport({ data }: Props) {
+  if (!data || data.length === 0) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+        <p className="text-gray-500">
+          No hay datos suficientes para mostrar el gráfico
+        </p>
+      </div>
+    );
+  }
+
   const totalCustomers = data.length;
 
   return (
@@ -95,13 +107,14 @@ const GraphCustomerReport: React.FC<Props> = ({ data }) => {
             />
 
             <XAxis
-              dataKey="fullName"
-              tick={{ fontSize: 12, fill: "#64748b" }}
-              height={60}
-              interval={0}
+                dataKey="fullName"
+                tick={{ fontSize: 12, fill: "#64748b" }}
+                height={60}
+                interval={0}
             />
 
             <YAxis
+              allowDecimals={false}
               tick={{ fontSize: 12, fill: "#64748b" }}
               axisLine={{ stroke: "#e2e8f0" }}
               tickLine={{ stroke: "#e2e8f0" }}
@@ -135,6 +148,4 @@ const GraphCustomerReport: React.FC<Props> = ({ data }) => {
       </div>
     </div>
   );
-};
-
-export default GraphCustomerReport;
+}

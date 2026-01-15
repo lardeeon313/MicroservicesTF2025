@@ -1,25 +1,13 @@
 import React from "react";
-import formatDate from "../../../../../utils/formateDate";
-import { Order, OrderStatus } from "../../../types/OrderTypes";
-import { OrderStatusBadge } from "../../../../../components/OrderStatusBadge";
+import { ModifiedCanceledOrder } from "../../../../admin/pages/AdminDashboardFeatures/ReportsSales/Types/ModifiedCanceledReportType";
+import { ModifiedCanceledOrderStatusBadge } from "../../../../admin/pages/AdminDashboardFeatures/ReportsSales/Types/ModifiedCanceledOrdersBadge";
 
 type Props = {
-  orders: Order[];
+  orders: ModifiedCanceledOrder[];
 };
 
-
-const ModifiedCanceledOrdersTable: React.FC<Props> = ({ orders }) => {
-  const filteredOrders = orders.filter(
-    (order) =>
-      order.status === OrderStatus.Canceled ||
-      order.status === OrderStatus.PendingReissued || 
-      order.status === OrderStatus.Pending || 
-      order.status === OrderStatus.PendingResolution || 
-      order.status === OrderStatus.ReIssued  
-  );
-
-  // Estado vacío cuando no hay pedidos filtrados
-  if (filteredOrders.length === 0) {
+export const ModifiedCanceledOrdersTable: React.FC<Props> = ({ orders }) => {
+  if (!orders || orders.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
         <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
@@ -39,19 +27,24 @@ const ModifiedCanceledOrdersTable: React.FC<Props> = ({ orders }) => {
         <table className="w-full table-fixed">
           <thead>
             <tr className="text-xs font-medium text-gray-600 uppercase tracking-wider border-b border-gray-200">
-              <th className="px-6 py-3 text-left bg-gray-50">N.PEDIDO</th>
-              <th className="px-6 py-3 text-left bg-white">CLIENTE</th>
-              <th className="px-6 py-3 text-left bg-white">FECHA MODIFICACIÓN</th>
-              <th className="px-6 py-3 text-left bg-white">ESTADO</th>
+              <th className="px-6 py-3 text-left bg-gray-50">
+                N.PEDIDO
+              </th>
+              <th className="px-6 py-3 text-left bg-white">
+                CLIENTE
+              </th>
+              <th className="px-6 py-3 text-left bg-white">
+                FECHA MODIFICACION
+              </th>
+              <th className="px-6 py-3 text-left bg-white">
+                ESTADO
+              </th>
             </tr>
           </thead>
 
           <tbody>
-            {filteredOrders.map(order => (
-              <tr
-                key={order.id}
-                className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
-              >
+            {orders.map((order) => (
+              <tr key={order.orderId} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                 {/* N° Pedido */}
                 <td className="px-6 py-4">
                   <div className="flex items-center min-w-max">
@@ -60,22 +53,22 @@ const ModifiedCanceledOrdersTable: React.FC<Props> = ({ orders }) => {
                     </div>
                     <div>
                       <div className="text-sm font-medium text-gray-900">
-                        #{order.id}
+                        #{order.orderId}
                       </div>
                       <div className="text-xs text-gray-500">Pedido</div>
                     </div>
                   </div>
                 </td>
 
-            {/* Cliente */}
+                {/* Cliente */}
                 <td className="px-6 py-4">
                   <div className="flex items-center min-w-max">
                     <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
-                      {order.customerFirstName?.charAt(0).toUpperCase() || "C"}
+                      {order.customerFullName?.charAt(0).toUpperCase() || "C"}
                     </div>
                     <div>
                       <div className="text-sm font-medium text-gray-900">
-                        {order.customerFirstName} {order.customerLastName}
+                        {order.customerFullName}
                       </div>
                       <div className="text-xs text-gray-500">Cliente</div>
                     </div>
@@ -83,33 +76,15 @@ const ModifiedCanceledOrdersTable: React.FC<Props> = ({ orders }) => {
                 </td>
 
                 {/* Fecha */}
-                <td className="px-6 py-4">
-                  <div className="flex items-center text-gray-600">
-                    <svg
-                      className="w-4 h-4 mr-2"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <div>
-                      <div className="text-sm text-gray-900">
-                        {order.modifiedStatusDate || order.orderDate
-                          ? formatDate(order.modifiedStatusDate ?? order.orderDate)
-                          : "Desconocido"}
-                      </div>
-                      <div className="text-xs text-gray-500">Última modificación</div>
-                    </div>
-                  </div>
+                <td className="px-6 py-4 text-sm text-gray-600">
+                  {new Date(
+                    order.modifiedDate ?? order.orderDate
+                  ).toLocaleDateString()}
                 </td>
 
                 {/* Estado */}
-                <td className="px-6 py-4 min-w-max">
-                  <OrderStatusBadge status={order.status} />
+                <td className="px-6 py-4">
+                  <ModifiedCanceledOrderStatusBadge status={order.status} />
                 </td>
               </tr>
             ))}
@@ -119,9 +94,9 @@ const ModifiedCanceledOrdersTable: React.FC<Props> = ({ orders }) => {
             <tr className="bg-gray-50 border-t border-gray-200">
               <td colSpan={4} className="px-6 py-4">
                 <div className="text-sm text-gray-600">
-                  Mostrando {filteredOrders.length}{" "}
-                  {filteredOrders.length === 1 ? "pedido" : "pedidos"}
-                  {filteredOrders.length > 1 && (
+                  Mostrando {orders.length}{" "}
+                  {orders.length === 1 ? "pedido" : "pedidos"}
+                  {orders.length > 1 && (
                     <span className="ml-2 text-xs">
                       • Cancelados, emitidos o pendientes
                     </span>
@@ -130,11 +105,8 @@ const ModifiedCanceledOrdersTable: React.FC<Props> = ({ orders }) => {
               </td>
             </tr>
           </tfoot>
-        </table>
+      </table>
       </div>
     </div>
-
   );
 };
-
-export default ModifiedCanceledOrdersTable;

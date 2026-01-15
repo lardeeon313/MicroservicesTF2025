@@ -1,4 +1,6 @@
-import { Order, OrderStatus } from "../../../types/OrderTypes";
+import { ModifiedCanceledOrder } from "../../../../admin/pages/AdminDashboardFeatures/ReportsSales/Types/ModifiedCanceledReportType";
+import { ModifiedCanceledOrderStatus } from "../../../../admin/pages/AdminDashboardFeatures/ReportsSales/Types/ModifiedCanceledReportType";
+
 import {
     Bar,
     BarChart,
@@ -12,30 +14,32 @@ import {
 } from "recharts";
 
 type Props = {
-    orders: Order[];
+    orders: ModifiedCanceledOrder[];
 };
 
-const GraphModifiedCanceledOrders: React.FC<Props> = ({ orders }) => {
+const AdminGraphModifiedCanceledOrders: React.FC<Props> = ({ orders }) => {
 
     // Estados considerados en la tabla
     const filteredOrders = orders.filter((order) =>
         [
-            OrderStatus.Canceled,
-            OrderStatus.PendingReissued,
-            OrderStatus.Pending,
-            OrderStatus.PendingResolution,
-            OrderStatus.ReIssued,
+            ModifiedCanceledOrderStatus.Canceled,
+            ModifiedCanceledOrderStatus.PendingReissued,
+            ModifiedCanceledOrderStatus.Pending,
+            ModifiedCanceledOrderStatus.PendingResolution,
+            ModifiedCanceledOrderStatus.ReIssued,
         ].includes(order.status)
     );
 
     // Contadores
     const counts = {
-        canceled: filteredOrders.filter(o => o.status === OrderStatus.Canceled).length,
-        pendingReissued: filteredOrders.filter(o => o.status === OrderStatus.PendingReissued).length,
-        pending: filteredOrders.filter(o => o.status === OrderStatus.Pending).length,
-        pendingResolution: filteredOrders.filter(o => o.status === OrderStatus.PendingResolution).length,
-        reissued: filteredOrders.filter(o => o.status === OrderStatus.ReIssued).length,
+        canceled: filteredOrders.filter(o => o.status === ModifiedCanceledOrderStatus.Canceled).length,
+        pendingReissued: filteredOrders.filter(o => o.status === ModifiedCanceledOrderStatus.PendingReissued).length,
+        pending: filteredOrders.filter(o => o.status === ModifiedCanceledOrderStatus.Pending).length,
+        pendingResolution: filteredOrders.filter(o => o.status === ModifiedCanceledOrderStatus.PendingResolution).length,
+        reissued: filteredOrders.filter(o => o.status === ModifiedCanceledOrderStatus.ReIssued).length,
     };
+
+    const total = filteredOrders.length;
 
     // Mapeo datos del gráfico
     const chartData = [
@@ -84,75 +88,90 @@ const GraphModifiedCanceledOrders: React.FC<Props> = ({ orders }) => {
             {/* Chart */}
             <div className="bg-gradient-to-br from-gray-50 to-white rounded-2xl shadow-xl border border-gray-200/50 p-6">
                 <ResponsiveContainer width="100%" height={350}>
-                    <BarChart
-                        data={chartData}
-                        margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-                        barCategoryGap="25%"
-                    >
-                        <CartesianGrid
-                            strokeDasharray="3 3"
-                            stroke="#e5e7eb"
-                            strokeOpacity={0.6}
-                            vertical={false}
-                        />
+                    {total === 0 ? (
+                        <div className="w-full h-full flex flex-col items-center justify-center">
+                            <div className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-dashed border-gray-300 rounded-2xl p-12 text-center max-w-md">
+                                <div className="text-6xl mb-4 opacity-40">📊</div>
+                                <h4 className="text-xl font-semibold text-gray-700 mb-2">
+                                    Sin datos disponibles
+                                </h4>
+                                <p className="text-gray-500 text-sm leading-relaxed">
+                                    No hay pedidos irregulares para mostrar en este momento.<br/>
+                                </p>
+                            </div>
+                        </div>
+                    ) : (
+                        <BarChart
+                            data={chartData}
+                            margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+                            barCategoryGap="25%"
+                        >
+                            <CartesianGrid
+                                strokeDasharray="3 3"
+                                stroke="#e5e7eb"
+                                strokeOpacity={0.6}
+                                vertical={false}
+                            />
 
-                        <XAxis
-                            dataKey="name"
-                            stroke="#6b7280"
-                            fontSize={14}
-                            tickLine={false}
-                            axisLine={{ stroke: "#d1d5db" }}
-                        />
+                            <XAxis
+                                dataKey="name"
+                                stroke="#6b7280"
+                                fontSize={14}
+                                tickLine={false}
+                                axisLine={{ stroke: "#d1d5db" }}
+                            />
 
-                        <YAxis
-                            allowDecimals={false}
-                            stroke="#6b7280"
-                            fontSize={12}
-                            tickLine={false}
-                            axisLine={{ stroke: "#d1d5db" }}
-                            tickMargin={10}
-                        />
+                            <YAxis
+                                allowDecimals={false}
+                                stroke="#6b7280"
+                                fontSize={12}
+                                tickLine={false}
+                                axisLine={{ stroke: "#d1d5db" }}
+                                tickMargin={10}
+                            />
 
-                        <Tooltip content={<CustomTooltip />} />
+                            <Tooltip content={<CustomTooltip />} />
 
-                        <Legend
-                            wrapperStyle={{ color: "#374151", fontWeight: 500, paddingTop: 20 }}
-                            iconType="circle"
-                        />
+                            <Legend
+                                wrapperStyle={{ color: "#374151", fontWeight: 500, paddingTop: 20 }}
+                                iconType="circle"
+                            />
 
-                        <Bar dataKey="cantidad" radius={[6, 6, 0, 0]}>
-                            {chartData.map((entry, index) => (
-                                <Cell
-                                    key={index}
-                                    fill={entry.color}
-                                    className="hover:opacity-80 transition-all duration-300 drop-shadow-sm"
-                                />
-                            ))}
-                        </Bar>
-                    </BarChart>
+                            <Bar dataKey="cantidad" radius={[6, 6, 0, 0]}>
+                                {chartData.map((entry, index) => (
+                                    <Cell
+                                        key={index}
+                                        fill={entry.color}
+                                        className="hover:opacity-80 transition-all duration-300 drop-shadow-sm"
+                                    />
+                                ))}
+                            </Bar>
+                        </BarChart>
+                    )}
                 </ResponsiveContainer>
 
-                {/* Stats */}
-                <div className="flex justify-center gap-10 mt-6 pt-4 border-t border-gray-200">
+                {/* Stats - Solo mostrar si hay datos */}
+                {total > 0 && (
+                    <div className="flex justify-center gap-10 mt-6 pt-4 border-t border-gray-200">
+                        {/* Cancelado */}
+                        <Stat label="Cancelados" value={counts.canceled} color="bg-red-500" />
 
-                    {/* Cancelado */}
-                    <Stat label="Cancelados" value={counts.canceled} color="bg-red-500" />
+                        {/* Pend Reemisión */}
+                        <Stat label="Pend. Reemisión" value={counts.pendingReissued} color="bg-sky-500" />
 
-                    {/* Pend Reemisión */}
-                    <Stat label="Pend. Reemisión" value={counts.pendingReissued} color="bg-sky-500" />
+                        {/* Pendiente */}
+                        <Stat label="Pendientes" value={counts.pending} color="bg-yellow-500" />
 
-                    {/* Pendiente */}
-                    <Stat label="Pendientes" value={counts.pending} color="bg-yellow-500" />
+                        {/* Pend Resolución */}
+                        <Stat label="Pend. Resolución" value={counts.pendingResolution} color="bg-violet-500" />
 
-                    {/* Pend Resolución */}
-                    <Stat label="Pend. Resolución" value={counts.pendingResolution} color="bg-violet-500" />
+                        {/* Reemitidos */}
+                        <Stat label="Reemitidos" value={counts.reissued} color="bg-green-500" />
 
-                    {/* Reemitidos */}
-                    <Stat label="Reemitidos" value={counts.reissued} color="bg-green-500" />
-
-                    {/* Total */}
-                    <Stat label="Total" value={filteredOrders.length} color="bg-gray-500" />
-                </div>
+                        {/* Total */}
+                        <Stat label="Total" value={total} color="bg-gray-500" />
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -168,4 +187,4 @@ const Stat = ({ label, value, color }: any) => (
     </div>
 );
 
-export default GraphModifiedCanceledOrders;
+export default AdminGraphModifiedCanceledOrders;
