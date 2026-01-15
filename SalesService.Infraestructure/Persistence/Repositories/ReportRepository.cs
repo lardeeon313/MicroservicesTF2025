@@ -38,11 +38,11 @@ namespace SalesService.Infraestructure.Persistence.Repositories
             })
             .AsQueryable();
 
-            // 🔍 Filtro por nombre
+            
             if (!string.IsNullOrWhiteSpace(name))
                 query = query.Where(x => x.FullName.Contains(name));
 
-            // 🔍 Filtro por tipos de pago
+            
             if (paymentTypes is { Count: > 0 })
                 query = query.Where(x =>
                     x.PaymentTypes.Any(pt => paymentTypes.Contains(pt)));
@@ -126,7 +126,8 @@ namespace SalesService.Infraestructure.Persistence.Repositories
             };
         }
 
-        public async Task<PagedResult<CustomerSatisfactionReport>> GetCustomerSatisfactionReportAsync(string? name, string? email, SatisfactionLevel? level, int page, int pageSize)
+        public async Task<PagedResult<CustomerSatisfactionReport>> GetCustomerSatisfactionReportAsync(
+    string? name, string? email, SatisfactionLevel? level, int page, int pageSize)
         {
             var query =
                 from s in _context.OrderSatisfactions
@@ -150,7 +151,23 @@ namespace SalesService.Infraestructure.Persistence.Repositories
                 query = query.Where(x => x.Email.Contains(email));
 
             if (level.HasValue)
-                query = query.Where(x => x.Level == level);
+            {
+                // Convertir el enum `level` a un rango de `Score`
+                int[] scores = level.Value switch
+                {
+                    SatisfactionLevel.Mala => new[] { 1, 2 },
+                    SatisfactionLevel.Regular => new[] { 3 },
+                    SatisfactionLevel.Media => new[] { 4 },
+                    SatisfactionLevel.Alta => new[] { 5 },
+                    _ => Array.Empty<int>()
+                };
+
+                if (scores.Length > 0)
+                {
+                    Console.WriteLine($"🔍 Filtrando por scores: {string.Join(", ", scores)}");
+                    query = query.Where(x => scores.Contains(x.Score));
+                }
+            }
 
             var total = await query.CountAsync();
 
@@ -168,6 +185,7 @@ namespace SalesService.Infraestructure.Persistence.Repositories
                 PageSize = pageSize
             };
         }
+
 
         public async Task<PagedResult<CustomerStatusReport>> GetCustomerStatusReportAsync(string? name, string? email, CustomerStatus? status, int page, int pageSize)
         {

@@ -29,5 +29,9 @@ namespace SalesService.Domain.IRepositories
         Task<IEnumerable<OrderMissing>> GetMissingOrdersAsync();
         Task<OrderSatisfactionToken?> GetOrderSatisfactionByTokenAsync(string token);
         Task AddSatisfactionTokenAsync(OrderSatisfactionToken token);
+
+        //
+        Task AddOrderSatisfactionAsync(OrderSatisfaction satisfaction);
+        Task SaveChangesAsync();
     }
 }

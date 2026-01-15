@@ -47,11 +47,15 @@ namespace SalesService.Application.Commands.Orders.CreateOrderSatisfaction
                 command.Comment
             );
 
+            await _repository.AddOrderSatisfactionAsync(satisfaction);
+
             order.SetSatisfaction(satisfaction);
             
             orderSatisfactionToken.MarkAsUsed();
 
             await _repository.UpdateAsync(order);
+
+            await _repository.SaveChangesAsync();
 
             return true;
         }
