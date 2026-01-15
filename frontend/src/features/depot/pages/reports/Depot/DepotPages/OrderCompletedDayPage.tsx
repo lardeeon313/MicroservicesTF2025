@@ -41,10 +41,10 @@ export const CompletedOrdersReportPage = () => {
         {/* Header Section */}
         <div className="mx-auto max-w-4xl text-center mb-10">
           <h1 className="text-4xl font-bold text-red-600 mb-3">
-            Reporte de Pedidos Completados
+            Reporte de pedidos armados por dia
           </h1>
           <p className="text-lg text-gray-600">
-            Visualiza la cantidad de pedidos completados por cada operario en un rango de fechas.
+            Visualiza la cantidad de pedidos armados por cada operario en un rango de fechas.
           </p>
         </div>
 
@@ -72,6 +72,11 @@ export const CompletedOrdersReportPage = () => {
 
         {/* Table Section */}
         <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
+          <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <h2 className="text-xl font-bold text-gray-800">
+              Detalle por Operario
+            </h2>
+          </div>
           {loading ? (
             <div className="p-16 text-center text-gray-500 flex flex-col items-center">
               <svg 

@@ -26,7 +26,7 @@ export const DepotTeamPerformancePage: React.FC = () => {
         {/* HEADER */}
         <div className="mx-auto max-w-4xl text-center mb-10">
           <h1 className="text-4xl font-bold text-red-700 mb-3">
-            Reporte de Productividad
+            Reporte de Productividad de equipo
           </h1>
           <p className="text-lg text-gray-600">
             Analiza el rendimiento de equipos y operarios dentro de un rango o período seleccionado.

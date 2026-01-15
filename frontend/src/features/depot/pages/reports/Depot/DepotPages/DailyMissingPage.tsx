@@ -1,27 +1,75 @@
 import React, { useState, useMemo } from "react";
 import { useDailyMissing } from "../DepotHocks/useDailiyMissing";
-import DailyMissingTable, { DailyMissing } from "../DepotComponents/DailyMissingTable";
-
+import type { DailyMissing } from "../../../../../depot/pages/reports/Depot/DepotComponents/DailyMissingTable";
+import DailyMissingUnifiedFilter from "../DepotFilters/NewDailyMissingFilter";
+import DailyMissingTable from "../../../../../depot/pages/reports/Depot/DepotComponents/DailyMissingTable";
 import { Pagination } from "../../../../../../components/Pagination";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
-import DailyMissingFilter from "../DepotFilters/DailyMissingFilter"; // EXISTENTE
-import DailyMissingSelectFilter from "../DepotFilters/NewDailyMissingFilter";
 import BackButton from "../../../../../../components/BackButton";
 
-const DailyMissingPage: React.FC = () => {
+const ReportDailyMissingPage: React.FC = () => {
   const [page, setPage] = useState(1);
+
+  // ============================
+  // ESTADOS DEL FORMULARIO (DRAFT)
+  // ============================
+  const [draftSelectedTime, setDraftSelectedTime] = useState<string>("");
+  const [draftFilterType, setDraftFilterType] = useState<
+    "" | "day" | "month" | "quincena"
+  >("");
+
+  // ============================
+  // ESTADOS APLICADOS (FILTRAN)
+  // ============================
   const [selectedTime, setSelectedTime] = useState<string>("");
-  const [filterType, setFilterType] = useState<"" | "day" | "month" | "quincena">("");
+  const [filterType, setFilterType] = useState<
+    "" | "day" | "month" | "quincena"
+  >("");
 
   const pageSize = 10;
   const { data, loading, error, totalPages } = useDailyMissing(page, pageSize);
 
-  // ============================ FILTRO POR FECHA/HORA (EXISTENTE) ============================
+  // =====================================================
+  // HANDLERS DEL FORM (NO FILTRAN TODAVÍA)
+  // =====================================================
+  const handleDateChange = (val: string) => {
+    setDraftSelectedTime(val);
+    setDraftFilterType(""); // excluyente
+  };
+
+  const handleFilterTypeChange = (
+    val: "" | "day" | "month" | "quincena"
+  ) => {
+    setDraftFilterType(val);
+    setDraftSelectedTime(""); // excluyente
+  };
+
+  // =====================================================
+  // ACCIONES
+  // =====================================================
+  const handleSearch = () => {
+    setSelectedTime(draftSelectedTime);
+    setFilterType(draftFilterType);
+    setPage(1);
+  };
+
+  const handleClearFilters = () => {
+    // limpia inputs
+    setDraftSelectedTime("");
+    setDraftFilterType("");
+
+    // limpia filtros aplicados
+    setSelectedTime("");
+    setFilterType("");
+
+    setPage(1);
+  };
+
+  // ============================ FILTRO POR FECHA ============================
   const filteredByTime: DailyMissing[] = useMemo(() => {
     if (!data) return [];
     if (!selectedTime) return data;
 
-    // selectedTime viene como "2025-11-30"
     const selected = new Date(selectedTime + "T00:00:00");
 
     return data.filter((d) => {
@@ -37,12 +85,9 @@ const DailyMissingPage: React.FC = () => {
     });
   }, [data, selectedTime]);
 
-
-
-  // ============================ NUEVO FILTRO: DÍA / MES / QUINCENA ============================
+  // ============================ FILTRO RÁPIDO ============================
   const fullyFiltered: DailyMissing[] = useMemo(() => {
     if (!filteredByTime) return [];
-
     if (!filterType) return filteredByTime;
 
     const today = new Date();
@@ -61,9 +106,13 @@ const DailyMissingPage: React.FC = () => {
             itemDate.getFullYear() === today.getFullYear()
           );
 
-        case "quincena":
-          const diffDays = Math.floor((today.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24));
+        case "quincena": {
+          const diffDays = Math.floor(
+            (today.getTime() - itemDate.getTime()) /
+              (1000 * 60 * 60 * 24)
+          );
           return diffDays <= 15;
+        }
 
         default:
           return true;
@@ -72,55 +121,45 @@ const DailyMissingPage: React.FC = () => {
   }, [filteredByTime, filterType]);
 
   if (loading) {
-    return <LoadingSpinner message="Cargando los datos..." height="h-screen" />;
+    return (
+      <LoadingSpinner
+        message="Cargando los datos..."
+        height="h-screen"
+      />
+    );
   }
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
-
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
-        <BackButton to="/depot/reports"></BackButton>
+        <BackButton to="/depot/reports" />
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-          Faltantes diarios:
+          Faltantes diarios
         </h1>
         <p className="text-center text-lg text-gray-700 mb-12">
-          Aquí podrás visualizar los productos que no se encontraron en stock
-          al momento del armado de pedidos.
+          Aquí podrás visualizar los productos que no se encontraron en
+          stock al momento del armado de pedidos.
         </p>
 
-        {/* Contenedor FLEX que coloca ambos filtros uno al lado del otro */}
-        <div className="flex flex-wrap gap-6 mb-8">
-          <DailyMissingFilter
-            selectedTime={selectedTime}
-            onHourChange={(val) => setSelectedTime(val)}
-            onSearch={() => console.log("Buscando por fecha/hora:", selectedTime)}
-            onClear={() => {
-              setSelectedTime("");
-              
-            }}
-          />
-
-          <DailyMissingSelectFilter
-            filterType={filterType}
-            onFilterTypeChange={(val) => setFilterType(val)}
-            onSearch={() => console.log("Buscando filtro rápido:", filterType)}
-            onClear={() => {
-              setFilterType("");
-              
-            }}
-          />
-        </div>
-
+        {/* ============================ FILTRO UNIFICADO ============================ */}
+        <DailyMissingUnifiedFilter
+          selectedTime={draftSelectedTime}
+          filterType={draftFilterType}
+          onDateChange={handleDateChange}
+          onFilterTypeChange={handleFilterTypeChange}
+          onSearch={handleSearch}
+          onClear={handleClearFilters}
+        />
 
         {error ? (
           <p className="text-red-600 text-center">{error}</p>
         ) : (
           <>
             <DailyMissingTable data={fullyFiltered} />
+
             {totalPages > 1 && (
               <Pagination
                 currentPage={page}
@@ -135,4 +174,4 @@ const DailyMissingPage: React.FC = () => {
   );
 };
 
-export default DailyMissingPage;
+export default ReportDailyMissingPage;

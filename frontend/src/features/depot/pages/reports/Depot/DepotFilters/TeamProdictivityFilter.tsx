@@ -56,7 +56,7 @@ export const DepotTeamPerformanceFilter: React.FC<Props> = ({ onSearch }) => {
 
 
   return (
-    <div className="bg-gray-50 rounded-lg border border-gray-200 p-6 mb-6">
+    <div className="p-6 mb-6">
       {/* Header */}
       <div className="flex items-center gap-2 mb-5">
         <Search className="w-4 h-4 text-red-600" />
