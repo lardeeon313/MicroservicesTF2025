@@ -21,10 +21,12 @@ namespace SalesService.Domain.Helper
             return score switch
             {
                 <= 2 => SatisfactionLevel.Mala,
-                <= 5 => SatisfactionLevel.Regular,
-                <= 8 => SatisfactionLevel.Media,
-                _ => SatisfactionLevel.Alta
+                3 => SatisfactionLevel.Regular,
+                4 => SatisfactionLevel.Media,
+                5 => SatisfactionLevel.Alta,
+                _ => throw new ArgumentOutOfRangeException(nameof(score))
             };
         }
+
     }
 }

@@ -11,7 +11,7 @@ namespace SalesService.Application.Queries.Reports.CustomerSatisfactionReport
     {
         public string? Name { get; init; }
         public string? Email { get; init; }
-        public SatisfactionLevel? Level { get; init; }
+        public string? Level { get; init; }
 
         public int Page { get; init; } = 1;
         public int PageSize { get; init; } = 10;
@@ -19,7 +19,7 @@ namespace SalesService.Application.Queries.Reports.CustomerSatisfactionReport
         public GetCustomerSatisfactionQuery(
             string? name,
             string? email,
-            SatisfactionLevel? level,
+            string? level,
             int page,
             int pageSize)
         {

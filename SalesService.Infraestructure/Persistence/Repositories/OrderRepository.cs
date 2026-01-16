@@ -150,5 +150,17 @@ namespace SalesService.Infraestructure.Persistence.Repositories
         {
             await _context.OrderSatisfactionTokens.AddAsync(token);
         }
+
+        //
+        public async Task AddOrderSatisfactionAsync(OrderSatisfaction satisfaction)
+        {
+            await _context.OrderSatisfactions.AddAsync(satisfaction);
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

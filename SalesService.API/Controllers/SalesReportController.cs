@@ -10,6 +10,7 @@ using SalesService.Application.Queries.Reports.CustomerSatisfactionReport;
 using SalesService.Application.Queries.Reports.GetSalesPerfomanceReport;
 using SalesService.Application.Queries.Reports.ModifiedCanceledOrders;
 using SalesService.Domain.Enums;
+using SalesService.Domain.Helper;
 
 namespace SalesService.API.Controllers
 {
@@ -61,21 +62,33 @@ namespace SalesService.API.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("reports-satisfaction-customer")]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetReportSatisfactionCustomer([FromBody] GetCustomerSatisfactionReportRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.Level) && !Enum.TryParse<SatisfactionLevel>(request.Level, ignoreCase: true, out _))
+            {
+                return BadRequest($"El valor '{request.Level}' no es un nivel de satisfacción válido.");
+            }
+
             var query = new GetCustomerSatisfactionQuery(
                 request.Name,
                 request.Email,
-                request.Level,
+                request.Level,   
                 request.Page,
-                request.PageSize);
+                request.PageSize
+            );
 
             var result = await _getCustomerSatisfactionQueryHandler.HandleAsync(query);
             return Ok(result);
         }
+
+
 
         /// <summary>
         /// Endpoint para obtener el reporte de clientes inactivos con filtros y paginacion

@@ -2,31 +2,45 @@
 using SalesService.Domain.Helper;
 using SalesService.Domain.IRepositories;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SalesService.Application.Queries.Reports.CustomerSatisfactionReport
 {
-    public class GetCustomerSatisfactionQueryHandler(IReportRepository repository) : IGetCustomerSatisfactionQueryHandler
+    public class GetCustomerSatisfactionQueryHandler : IGetCustomerSatisfactionQueryHandler
     {
-        private readonly IReportRepository _repository = repository;
+        private readonly IReportRepository _repository;
 
-        /// <summary>
-        /// Handler para obtener el reporte de satisfaccion del cliente
-        /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        public GetCustomerSatisfactionQueryHandler(IReportRepository repository)
+        {
+            _repository = repository;
+        }
+
         public async Task<PagedResult<CustomerSatisfactionReportDto>> HandleAsync(GetCustomerSatisfactionQuery query)
         {
+            // 🔹 Parseo seguro string → enum
+            SatisfactionLevel? parsedLevel = null;
+
+            if (!string.IsNullOrWhiteSpace(query.Level))
+            {
+                if (Enum.TryParse<SatisfactionLevel>(query.Level, ignoreCase: true, out var level))
+                {
+                    parsedLevel = level;
+                }
+                else
+                {
+                    throw new ArgumentException($"El valor '{query.Level}' no es un nivel de satisfacción válido. Valores permitidos: Mala, Regular, Media, Alta.");
+                }
+            }
+
+
             var result = await _repository.GetCustomerSatisfactionReportAsync(
                 query.Name,
                 query.Email,
-                query.Level,
+                parsedLevel,   // ✅ ACÁ ESTÁ LA CLAVE
                 query.Page,
-                query.PageSize);
+                query.PageSize
+            );
 
             return new PagedResult<CustomerSatisfactionReportDto>
             {
@@ -44,7 +58,6 @@ namespace SalesService.Application.Queries.Reports.CustomerSatisfactionReport
                 PageNumber = result.PageNumber,
                 PageSize = result.PageSize
             };
-
         }
     }
 }
