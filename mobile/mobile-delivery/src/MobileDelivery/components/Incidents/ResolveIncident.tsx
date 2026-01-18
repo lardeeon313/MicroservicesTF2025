@@ -21,6 +21,14 @@ export const ResolveDeliveryIncidentComponent: React.FC<Props> = ({
   onSubmit,
   isLoading,
 }) => {
+  // Mapeo de estados: valor en inglés -> texto en español
+  const statusMapping = {
+    "Resolved": "Resuelto",
+    "Delivered": "Entregado",
+    "Pending": "Pendiente"
+  };
+
+  // Los valores que se envían al backend (en inglés)
   const statuses = ["Resolved", "Delivered", "Pending"];
 
   return (
@@ -49,7 +57,7 @@ export const ResolveDeliveryIncidentComponent: React.FC<Props> = ({
                 styles.statusButton,
                 selectedStatus === status && styles.selectedButton,
               ]}
-              onPress={() => onSelectStatus(status)}
+              onPress={() => onSelectStatus(status)} // Se envía el valor en inglés
               activeOpacity={0.7}
             >
               <Text
@@ -59,7 +67,7 @@ export const ResolveDeliveryIncidentComponent: React.FC<Props> = ({
                 ]}
                 numberOfLines={2}
               >
-                {status}
+                {statusMapping[status as keyof typeof statusMapping]} {/* Se muestra en español */}
               </Text>
             </TouchableOpacity>
           ))}
@@ -84,16 +92,16 @@ export const ResolveDeliveryIncidentComponent: React.FC<Props> = ({
 
 const styles = StyleSheet.create({
   container: { 
-    flex: 1, 
-    backgroundColor: "#F9FAFB", 
+    flex: 1,  
     padding: 20 
   },
   title: { 
     fontSize: 24, 
     fontWeight: "700", 
     marginBottom: 24, 
-    color: "#111827",
+    color: "#1b263d",
     letterSpacing: -0.5,
+    textAlign: "center",
   },
   section: { 
     marginBottom: 24 
