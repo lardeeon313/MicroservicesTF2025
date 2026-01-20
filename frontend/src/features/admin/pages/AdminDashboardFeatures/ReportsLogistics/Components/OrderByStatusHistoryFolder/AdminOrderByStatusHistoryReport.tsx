@@ -1,13 +1,13 @@
 import React from "react";
 import { AlertTriangle,FolderClock } from "lucide-react";
 import { OrderStatusHistoryReport } from "../../../../../../verification/types/Report";
-import { OrderStatusLabels } from "../../Hocks/useOrderByStatusHistory";
+import { OrderStatusLabels } from "../../Hocks/AdminUseOrderByStatusHistory";
 
 interface Props {
   data: OrderStatusHistoryReport[];
 }
 
-export const OrderStatusHistoryTable: React.FC<Props> = ({ data }) => {
+export const AdminOrderStatusHistoryTable: React.FC<Props> = ({ data }) => {
   if (!data || data.length === 0) {
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">

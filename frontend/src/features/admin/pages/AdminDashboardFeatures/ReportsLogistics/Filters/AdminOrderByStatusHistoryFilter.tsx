@@ -1,7 +1,5 @@
 import React from "react";
-import { OrderStatusLabels } from "../Hocks/useOrderByStatusHistory";
-//import { OrderStatusLabels } from "../VerificationHocks/useOrderByStatusHistory";
-//import { OrderStatusHistoryFilter } from "../../../../types/FilterReports/FilterReportsEntity";
+import { OrderStatusLabels } from "../Hocks/AdminUseOrderByStatusHistory";
 import { OrderStatusHistoryFilter } from "../../../../../verification/types/FilterReports/FilterReportsEntity";
 
 interface FilterProps {
@@ -10,7 +8,7 @@ interface FilterProps {
   fetchData: (pageNumber?: number) => void;
 }
 
-export const OrderStatusHistoryFiltersFilter: React.FC<FilterProps> = ({
+export const AdminOrderStatusHistoryFiltersFilter: React.FC<FilterProps> = ({
   filters,
   setFilters,
   fetchData,

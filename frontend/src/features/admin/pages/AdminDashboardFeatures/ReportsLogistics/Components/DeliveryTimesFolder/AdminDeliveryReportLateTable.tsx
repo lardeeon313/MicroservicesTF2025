@@ -1,12 +1,12 @@
 import React from "react";
 import { AlertCircle, XCircle, User, MapPin, Calendar } from "lucide-react";
-import { DeliveryTimeReportDto } from "../../../../../../verification/pages/reports/Verification/VerificationHocks/useDeliveryTimesReport";
+import { DeliveryTimeReportDto } from "../../../../../../verification/types/Report";
 
 interface Props {
   data: DeliveryTimeReportDto[];
 }
 
-export const DeliveryReportLateTable: React.FC<Props> = ({ data }) => {
+export const AdminDeliveryReportLateTable: React.FC<Props> = ({ data }) => {
   const formatDate = (dateString?: string) => {
     if (!dateString) return "-";
     const date = new Date(dateString);

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { usePendingCashVerificationReport } from "../../../../../verification/pages/reports/Verification/VerificationHocks/usePendingCashVerification";
-import { FilterPendingCashVerification } from "../../../../../verification/pages/reports/Verification/VerificationFilters/FilterPendingCashVerification";
-import { PendingCashVerificationTable } from "../../../../../verification/pages/reports/Verification/VerificationComponents/PendingCashVerificationFolder/PendingCashVerificationReport";
-import { GraphPendingCashVerification } from "../../../../../verification/pages/reports/Verification/VerificationGraphs/GraphPendingCashVerification";
+import { AdminUsePendingCashVerificationReport } from "../Hocks/AdminUsePendingCashVerification";
+import { AdminFilterPendingCashVerification } from "../Filters/AdminPendingCashVerificationFilter";
+import { AdminPendingCashVerificationTable } from "../Components/PendingCashVerificationFolder/AdminPendingCashVerificationTable";
+import { AdminGraphPendingCashVerification } from "../Graphs/AdminGraphPendingCashVerification";
 import { PendingCashVerificationFilter } from "../../../../../verification/types/FilterReports/FilterReportsEntity";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../../../components/BackButton";
@@ -26,7 +26,7 @@ export const AdminReportPendingCashVerificationPage: React.FC = () => {
   // 🔹 NUEVO: mostrar/ocultar gráfico
   const [showGraph, setShowGraph] = useState(true);
 
-  const { data, isLoading, error } = usePendingCashVerificationReport(
+  const { data, isLoading, error } = AdminUsePendingCashVerificationReport(
     searchParams,
     pageNumber,
     pageSize
@@ -106,7 +106,7 @@ export const AdminReportPendingCashVerificationPage: React.FC = () => {
 
         {/* Filtros */}
         <div className="bg-white shadow-md rounded-2xl p-6 mb-10 border border-gray-200 mt-6">
-          <FilterPendingCashVerification
+          <AdminFilterPendingCashVerification
             filters={filters}
             setFilters={handleSetFilters}
             onSearch={handleSearch}
@@ -116,10 +116,8 @@ export const AdminReportPendingCashVerificationPage: React.FC = () => {
 
         {!isLoading && data && (
           <div className="space-y-8 mt-8">
-            <PendingCashVerificationTable data={data.items} />
-
-            {/* 🔹 BOTONES JUNTOS ABAJO DE LA TABLA */}
-            {/* 🔹 BOTONES JUNTOS ABAJO DE LA TABLA */}
+            <AdminPendingCashVerificationTable data={data.items} />
+            
             <div className="flex justify-end items-center gap-3">
               <button
                 onClick={() => setShowGraph((prev) => !prev)}
@@ -150,7 +148,7 @@ export const AdminReportPendingCashVerificationPage: React.FC = () => {
 
             {/* 📊 GRÁFICO CONDICIONAL */}
             {showGraph && (
-              <GraphPendingCashVerification data={data.items} />
+              <AdminGraphPendingCashVerification data={data.items} />
             )}
 
             {/* 🔹 PAGINACIÓN */}

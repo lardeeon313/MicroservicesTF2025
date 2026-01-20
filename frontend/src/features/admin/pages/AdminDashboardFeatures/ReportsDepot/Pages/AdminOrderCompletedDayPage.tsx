@@ -50,10 +50,10 @@ export const AdminReportCompletedOrdersReportPage = () => {
         {/* Header Section */}
         <div className="mx-auto max-w-4xl text-center mb-10">
           <h1 className="text-4xl font-bold text-red-600 mb-3">
-            Reporte de Pedidos Completados
+            Reporte de pedidos armados por dia
           </h1>
           <p className="text-lg text-gray-600">
-            Visualiza la cantidad de pedidos completados por cada operario en un rango de fechas.
+            Visualiza la cantidad de pedidos armados por cada operario en un rango de fechas.
           </p>
         </div>
 

@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import {  Eye, EyeOff, RefreshCw } from "lucide-react";
-
-import DeliveryTeamActivityFilter from "../Filters/DeliveryTeamActivityFilter";
+import AdminDeliveryTeamActivityFilter from "../Filters/AdminDeliveryTeamActivityFilter";
 import AdminDeliveryTeamActivityTable from "../Components/DeliveryTeamFolder/AdminDeliveryTeamActivityReport";
 import AdminGraphDeliveryTeamActivity from "../Graphs/AdminGraphDeliveryTeamActivity";
-import { useDeliveryTeamActivity } from "../../../../../verification/pages/reports/Verification/VerificationHocks/useDeliveryTeamActivityReport";
+import { AdminUseDeliveryTeamActivity } from "../Hocks/AdminUseDeliveryTeamActivity";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../../../components/BackButton";
 
 const AdminDeliveryTeamActivityPage = () => {
-  const { data, loading, fetchReport } = useDeliveryTeamActivity();
+  const { data, loading, fetchReport } = AdminUseDeliveryTeamActivity();
   const [showGraphs, setShowGraphs] = useState(true);
   const [currentFilters, setCurrentFilters] = useState({});
 
@@ -49,7 +48,7 @@ const AdminDeliveryTeamActivityPage = () => {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <DeliveryTeamActivityFilter
+        <AdminDeliveryTeamActivityFilter
           onFilter={handleFilter}
           onClear={handleClear}
         />

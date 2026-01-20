@@ -9,7 +9,7 @@ interface Props {
   onClear: () => void;
 }
 
-export const DeliveryIncidentsFilter: React.FC<Props> = ({
+export const AdminDeliveryIncidentsFilter: React.FC<Props> = ({
   filters,
   onChange,
   onSearch,

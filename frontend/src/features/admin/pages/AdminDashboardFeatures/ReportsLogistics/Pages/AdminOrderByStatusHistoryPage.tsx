@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { RefreshCw, EyeOff, Eye } from "lucide-react";
-import { useOrderStatusHistoryReport } from "../../../../../verification/pages/reports/Verification/VerificationHocks/useOrderByStatusHistory";
-import { OrderStatusHistoryFiltersFilter } from "../Filters/OrderByStatusHistoryFilter";
-import { OrderStatusHistoryTable } from "../../../../../verification/pages/reports/Verification/VerificationComponents/OrderByStatusHistoryFolder/OrderByStatusHistoryReport";
-
+import { AdminUseOrderStatusHistoryReport } from "../Hocks/AdminUseOrderByStatusHistory";
+import { AdminOrderStatusHistoryFiltersFilter } from "../Filters/AdminOrderByStatusHistoryFilter";
+import { AdminOrderStatusHistoryTable } from "../Components/OrderByStatusHistoryFolder/AdminOrderByStatusHistoryReport";
 import { AdminGraphOrderByStatusHistory } from "../Graphs/AdminGraphOrderByStatusHistory";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../../../components/BackButton";
@@ -16,7 +15,7 @@ export const AdminReportOrderStatusHistoryReportPage = () => {
     loading,
     fetchData,
     pagination,
-  } = useOrderStatusHistoryReport();
+  } = AdminUseOrderStatusHistoryReport();
 
   const [showGraph, setShowGraph] = useState(true);
 
@@ -62,7 +61,7 @@ export const AdminReportOrderStatusHistoryReportPage = () => {
       </div>
 
       <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
-        <OrderStatusHistoryFiltersFilter
+        <AdminOrderStatusHistoryFiltersFilter
           filters={filters}
           setFilters={setFilters}
           fetchData={fetchData}
@@ -101,20 +100,16 @@ export const AdminReportOrderStatusHistoryReportPage = () => {
           <div className="space-y-8">
 
             {/* Tabla */}
-            <OrderStatusHistoryTable data={data} />
-                        {/* Paginación */}
-            <div className="flex justify-center items-center space-x-4">
-              <button
-                onClick={handlePreviousPage}
-                disabled={pagination.pageNumber === 1}
-                className="bg-gray-200 text-gray-800 px-4 py-2 rounded-xl hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                ← Anterior
-              </button>
-
-              <span className="text-gray-700 font-semibold">
-                Página {pagination.pageNumber} de {pagination.totalPages || 1}
-              </span>
+            <AdminOrderStatusHistoryTable data={data} />
+            
+            {/* Paginación mejorada */}
+            {pagination.totalPages > 0 && (
+              <Pagination
+                currentPage={pagination.pageNumber}
+                totalPages={pagination.totalPages}
+                onPageChange={handlePageChange}
+              />
+            )}
 
               <button
                 onClick={handleNextPage}

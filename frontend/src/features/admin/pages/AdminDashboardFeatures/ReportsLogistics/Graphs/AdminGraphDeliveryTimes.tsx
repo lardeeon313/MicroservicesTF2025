@@ -1,8 +1,24 @@
 import React from 'react';
-import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import {  Package, AlertCircle, CheckCircle } from 'lucide-react';
-import { GeneralGridRow } from '../../../../../verification/pages/reports/Verification/VerificationHocks/useDeliveryTimesReport';
-import { DeliveryTimeReportDto } from '../../../../../verification/pages/reports/Verification/VerificationHocks/useDeliveryTimesReport';
+import {
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer
+} from 'recharts';
+import { Package, AlertCircle, CheckCircle } from 'lucide-react';
+import { GeneralGridRow , DeliveryTimeReportDto} from '../../../../../verification/types/Report';
+  GeneralGridRow,
+  DeliveryTimeReportDto
+} from '../../../../../verification/pages/reports/Verification/VerificationHocks/useDeliveryTimesReport';
+  GeneralGridRow,
+  DeliveryTimeReportDto
+} from '../../../../../verification/pages/reports/Verification/VerificationHocks/useDeliveryTimesReport';
 
 interface Props {
   generalGrid: GeneralGridRow[];

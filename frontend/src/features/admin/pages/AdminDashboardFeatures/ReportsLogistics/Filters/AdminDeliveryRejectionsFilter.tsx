@@ -1,32 +1,43 @@
 import React, { useState } from "react";
 
-type Props = {
-  onFilter: (filters: {
+interface FilterProps {
+  onFilterChange: (filters: {
     startDate?: string;
     endDate?: string;
+    deliveryZoneId?: number;
     deliveryTeamId?: number;
+    operatorId?: string;
   }) => void;
   onClear: () => void;
-};
+}
 
-const DeliveryTeamActivityFilter: React.FC<Props> = ({ onFilter, onClear }) => {
+const AdminDeliveryRejectionsFilter: React.FC<FilterProps> = ({
+  onFilterChange,
+  onClear,
+}) => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [teamId, setTeamId] = useState<number | undefined>();
+  const [deliveryZoneId, setDeliveryZoneId] = useState<number | undefined>();
+  const [deliveryTeamId, setDeliveryTeamId] = useState<number | undefined>();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onFilter({
+
+    onFilterChange({
       startDate: startDate ? new Date(startDate).toISOString() : undefined,
       endDate: endDate ? new Date(endDate).toISOString() : undefined,
-      deliveryTeamId: teamId,
+      deliveryZoneId,
+      deliveryTeamId,
     });
   };
 
   const handleClear = () => {
     setStartDate("");
     setEndDate("");
-    setTeamId(undefined);
+    setDeliveryZoneId(undefined);
+    setDeliveryTeamId(undefined);
+
+    onFilterChange({});
     onClear();
   };
 
@@ -37,9 +48,7 @@ const DeliveryTeamActivityFilter: React.FC<Props> = ({ onFilter, onClear }) => {
     >
       {/* Fecha inicio */}
       <div className="flex flex-col">
-        <label className="text-sm font-medium text-gray-600 mb-1">
-          Fecha inicio
-        </label>
+        <label className="text-sm font-medium text-gray-600 mb-1">Fecha inicio</label>
         <input
           type="date"
           value={startDate}
@@ -50,9 +59,7 @@ const DeliveryTeamActivityFilter: React.FC<Props> = ({ onFilter, onClear }) => {
 
       {/* Fecha fin */}
       <div className="flex flex-col">
-        <label className="text-sm font-medium text-gray-600 mb-1">
-          Fecha fin
-        </label>
+        <label className="text-sm font-medium text-gray-600 mb-1">Fecha fin</label>
         <input
           type="date"
           value={endDate}
@@ -60,17 +67,19 @@ const DeliveryTeamActivityFilter: React.FC<Props> = ({ onFilter, onClear }) => {
           className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
         />
       </div>
+ 
 
-      {/* ID de Equipo */}
+      {/* Equipo */}
       <div className="flex flex-col">
-        <label className="text-sm font-medium text-gray-600 mb-1">
-          Buscar por numero de equipo
-        </label>
+        <label className="text-sm font-medium text-gray-600 mb-1">Equipo</label>
         <input
           type="number"
-          placeholder="Ej: 3"
-          value={teamId ?? ""}
-          onChange={(e) => setTeamId(Number(e.target.value) || undefined)}
+          placeholder="Ej: 5"
+          value={deliveryTeamId ?? ""}
+          onChange={(e) => {
+            const value = e.target.value;
+            setDeliveryTeamId(value ? Number(value) : undefined);
+          }}
           className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
         />
       </div>
@@ -95,4 +104,4 @@ const DeliveryTeamActivityFilter: React.FC<Props> = ({ onFilter, onClear }) => {
   );
 };
 
-export default DeliveryTeamActivityFilter;
+export default AdminDeliveryRejectionsFilter;

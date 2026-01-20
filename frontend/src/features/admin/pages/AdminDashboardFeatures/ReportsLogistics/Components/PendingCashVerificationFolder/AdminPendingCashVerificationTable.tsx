@@ -6,7 +6,7 @@ interface Props {
   data: PendingCashVerificationReport[];
 }
 
-export const PendingCashVerificationTable: React.FC<Props> = ({ data }) => {
+export const AdminPendingCashVerificationTable: React.FC<Props> = ({ data }) => {
 
   if (!data || data.length === 0) {
     return (

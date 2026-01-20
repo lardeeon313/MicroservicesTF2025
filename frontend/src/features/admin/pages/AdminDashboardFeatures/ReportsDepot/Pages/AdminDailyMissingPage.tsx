@@ -1,32 +1,83 @@
 import React, { useState, useMemo } from "react";
+import { RefreshCw, Eye, EyeOff } from "lucide-react";
 import { useDailyMissing } from "../Hocks/useAdminDailyMissing";
-import {  RefreshCw, Eye, EyeOff } from "lucide-react";
-
-import DailyMissingTable,{ DailyMissing } from "../../../../../depot/pages/reports/Depot/DepotComponents/DailyMissingTable";
-
+import type { DailyMissing } from "../../../../../depot/pages/reports/Depot/DepotComponents/DailyMissingTable";
+import AdminDailyMissingUnifiedFilter from "../Filters/AdminDailyMissingUnifiedFilter";
+import AdminDailyMissingTable from "../Components/AdminDailyMissingTable";
+import GraphDailyMissingOrder from "../Graphs/GraphDailyMissingOrder";
 import { Pagination } from "../../../../../../components/Pagination";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
-import DailyMissingFilter from "../Filters/DailyMissingFilter";
-import DailyMissingSelectFilter from "../Filters/NewDailyMissingFilter";
 import BackButton from "../../../../../../components/BackButton";
-import GraphDailyMissingOrder from "../Graphs/GraphDailyMissingOrder";
 
 const AdminReportDailyMissingPage: React.FC = () => {
   const [page, setPage] = useState(1);
+
+  // ============================
+  // ESTADOS DEL FORMULARIO (DRAFT)
+  // ============================
+  const [draftSelectedTime, setDraftSelectedTime] = useState<string>("");
+  const [draftFilterType, setDraftFilterType] = useState<
+    "" | "day" | "month" | "quincena"
+  >("");
+
+  // ============================
+  // ESTADOS APLICADOS (FILTRAN)
+  // ============================
   const [selectedTime, setSelectedTime] = useState<string>("");
-  const [filterType, setFilterType] = useState<"" | "day" | "month" | "quincena">("");
+  const [filterType, setFilterType] = useState<
+    "" | "day" | "month" | "quincena"
+  >("");
+
   const [showGraph, setShowGraph] = useState(true);
-  const [, setRefreshKey] = useState(0);
 
   const pageSize = 10;
   const { data, loading, error, totalPages } = useDailyMissing(page, pageSize);
 
-  // ============================ FILTRO POR FECHA/HORA (EXISTENTE) ============================
+  // =====================================================
+  // HANDLERS DEL FORM (NO FILTRAN TODAVÍA)
+  // =====================================================
+  const handleDateChange = (val: string) => {
+    setDraftSelectedTime(val);
+    setDraftFilterType(""); // excluyente
+  };
+
+  const handleFilterTypeChange = (
+    val: "" | "day" | "month" | "quincena"
+  ) => {
+    setDraftFilterType(val);
+    setDraftSelectedTime(""); // excluyente
+  };
+
+  // =====================================================
+  // ACCIONES
+  // =====================================================
+  const handleSearch = () => {
+    setSelectedTime(draftSelectedTime);
+    setFilterType(draftFilterType);
+    setPage(1);
+  };
+
+  const handleClearFilters = () => {
+    // limpia inputs
+    setDraftSelectedTime("");
+    setDraftFilterType("");
+
+    // limpia filtros aplicados
+    setSelectedTime("");
+    setFilterType("");
+
+    setPage(1);
+  };
+
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+
+  // ============================ FILTRO POR FECHA ============================
   const filteredByTime: DailyMissing[] = useMemo(() => {
     if (!data) return [];
     if (!selectedTime) return data;
 
-    // selectedTime viene como "2025-11-30"
     const selected = new Date(selectedTime + "T00:00:00");
 
     return data.filter((d) => {
@@ -42,10 +93,9 @@ const AdminReportDailyMissingPage: React.FC = () => {
     });
   }, [data, selectedTime]);
 
-  // ============================ NUEVO FILTRO: DÍA / MES / QUINCENA ============================
+  // ============================ FILTRO RÁPIDO ============================
   const fullyFiltered: DailyMissing[] = useMemo(() => {
     if (!filteredByTime) return [];
-
     if (!filterType) return filteredByTime;
 
     const today = new Date();
@@ -64,9 +114,13 @@ const AdminReportDailyMissingPage: React.FC = () => {
             itemDate.getFullYear() === today.getFullYear()
           );
 
-        case "quincena":
-          const diffDays = Math.floor((today.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24));
+        case "quincena": {
+          const diffDays = Math.floor(
+            (today.getTime() - itemDate.getTime()) /
+              (1000 * 60 * 60 * 24)
+          );
           return diffDays <= 15;
+        }
 
         default:
           return true;
@@ -74,56 +128,45 @@ const AdminReportDailyMissingPage: React.FC = () => {
     });
   }, [filteredByTime, filterType]);
 
-  const handleRefresh = () => {
-    setRefreshKey(prev => prev + 1);
-    window.location.reload();
-  };
-
   if (loading) {
-    return <LoadingSpinner message="Cargando los datos..." height="h-screen" />;
+    return (
+      <LoadingSpinner
+        message="Cargando los datos..."
+        height="h-screen"
+      />
+    );
   }
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
-        <BackButton to="/admin/reports/depot"></BackButton>
+        <BackButton to="/admin/reports/depot" />
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-          Faltantes diarios:
+          Faltantes diarios
         </h1>
         <p className="text-center text-lg text-gray-700 mb-12">
-          Aquí podrás visualizar los productos que no se encontraron en stock
-          al momento del armado de pedidos.
+          Aquí podrás visualizar los productos que no se encontraron en
+          stock al momento del armado de pedidos.
         </p>
 
-        {/* Contenedor FLEX que coloca ambos filtros uno al lado del otro */}
-        <div className="flex flex-wrap gap-6 mb-8">
-          <DailyMissingFilter
-            selectedTime={selectedTime}
-            onHourChange={(val) => setSelectedTime(val)}
-            onSearch={() => console.log("Buscando por fecha/hora:", selectedTime)}
-            onClear={() => {
-              setSelectedTime("");
-            }}
-          />
+        {/* ============================ FILTRO UNIFICADO ============================ */}
+        <AdminDailyMissingUnifiedFilter
+          selectedTime={draftSelectedTime}
+          filterType={draftFilterType}
+          onDateChange={handleDateChange}
+          onFilterTypeChange={handleFilterTypeChange}
+          onSearch={handleSearch}
+          onClear={handleClearFilters}
+        />
 
-          <DailyMissingSelectFilter
-            filterType={filterType}
-            onFilterTypeChange={(val) => setFilterType(val)}
-            onSearch={() => console.log("Buscando filtro rápido:", filterType)}
-            onClear={() => {
-              setFilterType("");
-            }}
-          />
-        </div>
-
-        {/* Botones de control */}
+        {/* ============================ BOTONES ============================ */}
         <div className="flex justify-end gap-3 mb-6">
           <button
             onClick={() => setShowGraph(!showGraph)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-sm"
           >
             {showGraph ? (
               <>
@@ -140,7 +183,7 @@ const AdminReportDailyMissingPage: React.FC = () => {
 
           <button
             onClick={handleRefresh}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition shadow-sm"
           >
             <RefreshCw className="w-4 h-4" />
             Refrescar Reporte
@@ -151,8 +194,8 @@ const AdminReportDailyMissingPage: React.FC = () => {
           <p className="text-red-600 text-center">{error}</p>
         ) : (
           <>
-            <DailyMissingTable data={fullyFiltered} />
-            
+            <AdminDailyMissingTable data={fullyFiltered} />
+
             {showGraph && (
               <div className="mt-8">
                 <GraphDailyMissingOrder data={fullyFiltered} />

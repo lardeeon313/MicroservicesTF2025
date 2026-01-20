@@ -1,7 +1,7 @@
 //Pedidos rechazados: 
 import React, { useState } from "react";
-import { useDeliveryRejections } from "../../../../../verification/pages/reports/Verification/VerificationHocks/useDeliveryRejectionsReport";
-import DeliveryRejectionsFilter from "../Filters/DeliveryRejectionsFilter";
+import { AdminUseDeliveryRejections } from "../Hocks/AdminUseDeliveryRejections";
+import AdminDeliveryRejectionsFilter from "../Filters/AdminDeliveryRejectionsFilter";
 import AdminDeliveryRejectionsTable from "../Components/DeliveryRejections/AdminDeliveryRejectionsReport";
 import AdminGraphDeliveryRejections from "../Graphs/AdminGraphDeliveryRejections";
 
@@ -18,7 +18,7 @@ export const AdminReportDeliveryRejectionsPage: React.FC = () => {
   const [showCharts, setShowCharts] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const { data, pagination, loading, error, fetchData } = useDeliveryRejections({
+  const { data, pagination, loading, error, fetchData } = AdminUseDeliveryRejections({
     ...appliedFilters,
     pageNumber,
     pageSize,
@@ -66,7 +66,7 @@ export const AdminReportDeliveryRejectionsPage: React.FC = () => {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <DeliveryRejectionsFilter onFilterChange={handleFilterChange} onClear={handleClear} />
+        <AdminDeliveryRejectionsFilter onFilterChange={handleFilterChange} onClear={handleClear} />
 
         {/* Botones de control */}
         <div className="flex justify-end items-center gap-3 mt-6">

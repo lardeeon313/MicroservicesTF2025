@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { DeliveryTimesFilter } from "../Filters/DeliveryTimesFilter";
-import { DeliveryReportGeneralTable } from "../Components/DeliveryTimesFolder/DeliveryReportGeneralTable";
-import { DeliveryReportOnTimeTable } from "../Components/DeliveryTimesFolder/DeliveryReportOnTimeTable";
-import { useDeliveryTimesReport } from "../../../../../verification/pages/reports/Verification/VerificationHocks/useDeliveryTimesReport";
-import { DeliveryReportLateTable } from "../Components/DeliveryTimesFolder/DeliveryReportLateTable";
+import { AdminDeliveryTimesFilter } from "../Filters/AdminDeliveryTimesFilter";
+import { AdminDeliveryReportGeneralTable } from "../Components/DeliveryTimesFolder/AdminDeliveryReportGeneralTable";
+import { AdminDeliveryReportOnTimeTable } from "../Components/DeliveryTimesFolder/AdminDeliveryReportOnTimeTable";
+import { AdminUseDeliveryTimesReport } from "../Hocks/AdminUseDeliveryTimes";
+import { AdminDeliveryReportLateTable } from "../Components/DeliveryTimesFolder/AdminDeliveryReportLateTable";
 import { AdminGraphDeliveryTimes } from "../Graphs/AdminGraphDeliveryTimes";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../../../components/BackButton";
@@ -19,7 +19,7 @@ export const AdminDeliveryTimesReportPage = () => {
     fetchReport,
     resetFilters,
     loading,
-  } = useDeliveryTimesReport();
+  } = AdminUseDeliveryTimesReport();
 
   const [showCharts, setShowCharts] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -49,7 +49,7 @@ export const AdminDeliveryTimesReportPage = () => {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-10">
-        <DeliveryTimesFilter
+        <AdminDeliveryTimesFilter
           filters={filters}
           setFilters={setFilters}
           onSearch={fetchReport}
@@ -109,10 +109,10 @@ export const AdminDeliveryTimesReportPage = () => {
         {!loading && generalGrid.length > 0 && (
           <div className="flex flex-col gap-8 mt-8">
             {/* Tablas primero */}
-            <DeliveryReportGeneralTable data={generalGrid} />
+            <AdminDeliveryReportGeneralTable data={generalGrid} />
 
-            {!filters.onlyLate && <DeliveryReportOnTimeTable data={onTimeList} />}
-            {!filters.onlyOnTime && <DeliveryReportLateTable data={lateList} />}
+            {!filters.onlyLate && <AdminDeliveryReportOnTimeTable data={onTimeList} />}
+            {!filters.onlyOnTime && <AdminDeliveryReportLateTable data={lateList} />}
 
             {/* Gráficos después (colapsables) */}
             {showCharts && (
