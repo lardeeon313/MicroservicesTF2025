@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useDeliveryRejections } from "../VerificationHocks/useDeliveryRejectionsReport";
 import DeliveryRejectionsFilter from "../VerificationFilters/FilterDeliveryRejections";
 import DeliveryRejectionsTable from "../VerificationComponents/DeliveryRejections/DeliveryRejectionsReport";
-
+import { Pagination } from "../../../../../../components/Pagination";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../../../components/BackButton";
 import { RejectionReportFilters } from "../../../../types/FilterReports/FilterReportsEntity";
@@ -58,29 +58,14 @@ export const DeliveryRejectionsPage: React.FC = () => {
         ) : (
           <div className="space-y-12 mt-8">
             <DeliveryRejectionsTable data={data} />
-            <div className="flex justify-center items-center mt-4 gap-4">
-              <button
-                disabled={pagination.pageNumber <= 1}
-                onClick={() => handlePageChange(pagination.pageNumber - 1)}
-                className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-              >
-                ◀ Anterior
-              </button>
 
-              <span>
-                Página {pagination.pageNumber} de {pagination.totalPages || 1}
-              </span>
-
-              <button
-                disabled={pagination.pageNumber >= pagination.totalPages}
-                onClick={() => handlePageChange(pagination.pageNumber + 1)}
-                className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-              >
-                Siguiente ▶
-              </button>
+            <div className="mt-8">
+              <Pagination
+                currentPage={pagination.pageNumber}
+                totalPages={pagination.totalPages || 1}
+                onPageChange={handlePageChange}
+              />
             </div>
-
-
            
           </div>
         )}

@@ -1,38 +1,9 @@
 // hooks/useDeliveryTimesReport.ts
 import { useState } from "react";
 import API from "../../../../../../api/axios";
-
-export interface DeliveryTimesFilters {
-  startDate?: string;
-  endDate?: string;
-  deliveryZoneId?: number;
-  deliveryTeamId?: number;
-  onlyOnTime?: boolean;
-  onlyLate?: boolean;
-}
-
-export interface DeliveryTimeReportDto {
-  deliveryZoneId: number | null;
-  deliveryZoneName: string | null;
-  teamId: number | null;
-  teamName: string | null;
-  operatorId: string;
-  fullNameDeliveringOperator: string;
-  totalDeliveredOrders: number;
-  estimatedDeliveryDate?: string;
-  actualDeliveryDate?: string;
-  deliveredOnTime: boolean;
-  delayInHours?: number;
-  orderId?: number;
-}
-
-export interface GeneralGridRow {
-  teamName: string | null;
-  zoneName: string | null;
-  total: number;
-  onTime: number;
-  late: number;
-}
+import { DeliveryTimesFilters } from "../../../../types/FilterReports/FilterReportsEntity";
+import { GeneralGridRow } from "../../../../types/Report";
+import { DeliveryTimeReportDto } from "../../../../types/Report";
 
 export const useDeliveryTimesReport = () => {
   const [filters, setFilters] = useState<DeliveryTimesFilters>({});
