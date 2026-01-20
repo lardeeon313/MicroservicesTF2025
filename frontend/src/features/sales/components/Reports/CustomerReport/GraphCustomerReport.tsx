@@ -1,5 +1,3 @@
-// src/features/sales/components/GraphCustomerReport.tsx
-import React from "react";
 import {
   BarChart,
   Bar,
@@ -9,22 +7,41 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { Users } from "lucide-react";
 import { CustomerWithCount } from "../../../types/CustomerTypes";
 
-type Props = {
-  data: CustomerWithCount[];
-};
+interface AdminCustomerReportItem {
+  fullName: string;
+  orderCount: number;
+}
 
-const GraphCustomerReport: React.FC<Props> = ({ data }) => (
-  <div className="max-w-full mt-20 mb-20">
-    {/* Header con gradiente y línea decorativa */}
-    <div className="text-center mb-10">
-      <h1 className="text-3xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-rose-400 bg-clip-text text-transparent mb-3">
-        Cantidad de Pedidos por Cliente
-      </h1>
-      <div className="w-24 h-1 bg-gradient-to-r from-red-500 to-rose-400 mx-auto rounded-full mb-2"></div>
-      <p className="text-gray-600 text-sm">Análisis de actividad por cliente</p>
-    </div>
+interface Props {
+  data: AdminCustomerReportItem[];
+}
+
+export default function GraphCustomerReport({ data }: Props) {
+  if (!data || data.length === 0) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+        <p className="text-gray-500">
+          No hay datos suficientes para mostrar el gráfico
+        </p>
+      </div>
+    );
+  }
+  const totalCustomers = data.length;
+
+  return (
+    <div className="max-w-full mt-20 mb-20">
+      {/* Header con gradiente y línea decorativa */}
+      <div className="text-center mb-10">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-red-600 via-red-500 to-rose-400 bg-clip-text text-transparent mb-3">
+          Cantidad de Pedidos por Cliente
+        </h1>
+        <div className="w-24 h-1 bg-gradient-to-r from-red-500 to-rose-400 mx-auto rounded-full mb-2"></div>
+        <p className="text-gray-600 text-sm">Análisis de actividad por cliente</p>
+      </div>
+      </div>
 
     {/* Container del gráfico con diseño premium */}
     <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-8 hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-1">
@@ -69,19 +86,20 @@ const GraphCustomerReport: React.FC<Props> = ({ data }) => (
             stroke="#f1f5f9"
             opacity={0.8}
           />
-
-          <XAxis
-            dataKey="fullName"
-            tick={{ fontSize: 12, fill: "#64748b" }}
-            height={60}
-            interval={0}
-          />
-
-          <YAxis
-            tick={{ fontSize: 12, fill: "#64748b" }}
-            axisLine={{ stroke: "#e2e8f0" }}
-            tickLine={{ stroke: "#e2e8f0" }}
-          />
+            <XAxis
+                dataKey="fullName"
+                tick={{ fontSize: 12, fill: "#64748b" }}
+                height={60}
+                interval={0}
+            />
+            />
+            <YAxis
+              allowDecimals={false}
+              tick={{ fontSize: 12, fill: "#64748b" }}
+              axisLine={{ stroke: "#e2e8f0" }}
+              tickLine={{ stroke: "#e2e8f0" }}
+            />
+            />
 
           {/* Tooltip modificado para mostrar “Cantidad de pedidos” */}
           <Tooltip
@@ -96,21 +114,18 @@ const GraphCustomerReport: React.FC<Props> = ({ data }) => (
             labelStyle={{ color: "#1f2937", fontWeight: "bold" }}
             cursor={{ fill: "rgba(239, 68, 68, 0.1)" }}
           />
-
-
-          <Bar
-            dataKey="orderCount"
-            fill="url(#barGradient)"
-            radius={[4, 4, 0, 0]}
-            filter="url(#shadow)"
-            className="hover:opacity-80 transition-opacity duration-200"
-            barSize={80}
-            maxBarSize={100}
-          />
-        </BarChart>
-      </ResponsiveContainer>
+            <Bar
+              dataKey="orderCount"
+              fill="url(#barGradient)"
+              radius={[4, 4, 0, 0]}
+              filter="url(#shadow)"
+              className="hover:opacity-80 transition-opacity duration-200"
+              barSize={80}
+              maxBarSize={100}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
-  </div>
-);
-
-export default GraphCustomerReport;
+  );
+}export default GraphCustomerReport;
