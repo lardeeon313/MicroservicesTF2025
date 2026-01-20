@@ -43,6 +43,7 @@ import { ResolveDeliveryIncidentPage } from "../pages/Incidents/ResolveIncidentP
 import ListPendingDeliveryPage from "../pages/listOrdersPages/ListOrdersToConfirmPage";
 import OrderMapPage from "../pages/MapPage/OrderMapPage";
 import OrdersMapPage from "../pages/MapPage/OrdersMapPage";
+import DeliveryFAQScreen from "../components/question/DeliveryFAQScreen";
 
 const Stack = createNativeStackNavigator<DeliveryStackParamList>();
 
@@ -76,6 +77,11 @@ export default function LogisticNavigation() {
       <Stack.Screen name='OrdersToConfirm' component={ListPendingDeliveryPage} />
       <Stack.Screen name='OrderMap' component={OrderMapPage} />
       <Stack.Screen name='OrdersMapPage' component={OrdersMapPage} />
+      <Stack.Screen 
+        name="DeliveryFAQ"
+        component={DeliveryFAQScreen}
+        options={{ title: "Ayuda" }}
+      />
     </Stack.Navigator>
   );
 }

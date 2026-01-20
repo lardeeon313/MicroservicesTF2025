@@ -14,6 +14,7 @@ import OperatorDashboardPage from "../pages/navigationPages/OperatorDashboardPag
 
 import LoginPage from "../Login/pages/LoginPage";
 import RegisterPage from "../Login/pages/RegisterPage";
+import OperatorFAQScreen from "../components/question/OperatorFAQScreen";
 
 const Stack = createNativeStackNavigator<DepotStackParamList>();
 
@@ -73,6 +74,11 @@ export default function DepotNavigator() {
             <Stack.Screen
                 name="RegisterPage"
                 component={RegisterPage}
+            />
+            <Stack.Screen
+                name="OperatorFAQ"
+                component={OperatorFAQScreen}
+                options={{ title: "Ayuda" }}
             />
         </Stack.Navigator>
     )

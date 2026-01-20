@@ -12,7 +12,7 @@ type Props = {
 };
 
 const ListofConfirmedOrders = ({ order, customer, status, onSeeDetail, onAceeptOrder }: Props) => {
-  const address = order.address; // ✅ tomamos la dirección
+  const address = order.address; 
 
   return (
     <View
@@ -29,16 +29,28 @@ const ListofConfirmedOrders = ({ order, customer, status, onSeeDetail, onAceeptO
       }}
     >
       <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-        Pedido# : {order.depotOrderId}
+        Pedido #{order.depotOrderId}
       </Text>
 
-      <Text style={{ fontSize: 20, fontWeight: '300', marginTop: 4 }}>
-        Cliente: {customer}
-      </Text>
+      <View style={{ marginTop: 8 }}>
+        <View style={{ marginBottom: 12, flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ fontSize: 14, color: '#666', fontWeight: 'bold',marginRight: 16 }}>
+            Cliente: 
+          </Text>
+          <Text style={{ fontSize: 18, fontWeight: '400',color: '#000'}}>
+            {customer}
+          </Text>
+        </View>
 
-      <Text style={{ marginTop: 4, fontSize: 20 }}>
-        Estado: {OrderStatusLabels[status as DepotOrderStatus]}
-      </Text>
+        <View style={{ marginBottom: 12, flexDirection: 'row', alignItems: 'center' }}> 
+          <Text style={{ fontSize: 14, color: '#666', fontWeight: 'bold',marginRight: 16 }}>
+            Estado: 
+          </Text>
+          <Text style={{ fontSize: 18, fontWeight: '400',color: '#000'}}>
+            {OrderStatusLabels[status as DepotOrderStatus]}
+          </Text>
+        </View>
+      </View>
       
       {address && (
         <View

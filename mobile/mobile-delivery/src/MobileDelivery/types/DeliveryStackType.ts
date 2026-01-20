@@ -49,4 +49,5 @@ export type DeliveryStackParamList = {
   };
   OrderMap: { orderId: number };
   OrdersMapPage: undefined;
+  DeliveryFAQ : undefined; 
 };

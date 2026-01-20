@@ -8,7 +8,9 @@ import type { DepotOrderDTO } from '../../types/OrderDTO';
 import { ValidationMissingReport } from '../../validations/ValidationMissingReport';
 import NavbarOperator from '../../components/Navbar/NavbarOperator';
 import { useAuth } from '../../Login/context/useAuth';
-
+import { Modal, Text, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Footer from '../../../components/Footer';
 import GetBack from '../../../components/GetBack';
 
@@ -17,6 +19,13 @@ type MissingRouteProp = RouteProp<DepotStackParamList, 'MissingReport'>;
 const MissingPage = () => {
     const { params } = useRoute<MissingRouteProp>();
     const order: DepotOrderDTO = params.order;
+    type NavigationProp = NativeStackNavigationProp<DepotStackParamList>;
+
+    const navigation = useNavigation<NavigationProp>();
+
+    const [successModalVisible, setSuccessModalVisible] = useState(false);
+    const [submittedDescription, setSubmittedDescription] = useState<string | null>(null);
+
 
     const { userId, name, role, isAuthenticated, logout, team } = useAuth();
       
@@ -129,10 +138,12 @@ const MissingPage = () => {
             missingItems: selectedItems,
         };
 
-        console.log("missingRequest a enviar:", JSON.stringify(missingRequest, null, 2));
+        
 
         ValidationMissingReport(description, missingRequest, () => {
-            Alert.alert('Notificación Enviada', `Descripción: ${description || 'Sin descripción'}`);
+            setSubmittedDescription(description.trim() || null);
+            setSuccessModalVisible(true);
+
             setDescription('');
             setMissingItemsState(order.items.map(item => ({
                 ...item,
@@ -152,6 +163,59 @@ const MissingPage = () => {
             <View style={{ marginTop: 10, marginLeft: 10}}>
                 <GetBack/>
             </View>
+            <Modal
+                    transparent
+                    animationType="fade"
+                    visible={successModalVisible}
+                    onRequestClose={() => setSuccessModalVisible(false)}
+                >
+                    <View style={{
+                        flex: 1,
+                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                    }}>
+                        <View style={{
+                            width: '85%',
+                            backgroundColor: '#fff',
+                            borderRadius: 12,
+                            padding: 20,
+                            alignItems: 'center',
+                        }}>
+                            <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>
+                                Notificación enviada
+                            </Text>
+
+                            <Text style={{ fontSize: 16, textAlign: 'center', marginBottom: 10 }}>
+                                {submittedDescription || 'Sin descripción'}
+                            </Text>
+
+                            <Text style={{ fontSize: 14, color: '#555', textAlign: 'center', marginBottom: 20 }}>
+                                El pedido ahora se encuentra en la sección de
+                                {"\n"}
+                                <Text style={{ fontWeight: 'bold' }}>Pedidos con faltantes</Text>.
+                            </Text>
+
+                            <TouchableOpacity
+                                style={{
+                                    backgroundColor: '#2563eb',
+                                    paddingVertical: 10,
+                                    paddingHorizontal: 30,
+                                    borderRadius: 8,
+                                }}
+                                onPress={() => {
+                                    setSuccessModalVisible(false);
+                                    navigation.navigate('OperatorDashboard');
+                                }}
+                            >
+                                <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>
+                                    Aceptar
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </Modal>
+
             <MissingReport
                 description={description}
                 onNotifyMissing={setDescription}

@@ -51,4 +51,5 @@ export type DepotStackParamList = {
   };
   LoginPage : undefined;
   RegisterPage: undefined;
+  OperatorFAQ: undefined;
 };

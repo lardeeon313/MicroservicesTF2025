@@ -19,7 +19,7 @@ export const GetArmOrdersService = async(operatorUserId:string) : Promise<DepotO
        return AllOrders;
 
     }catch(error){
-        console.error("Momentanamente, no se pudo obtener los pedidos ",error)
+        
         return [];
     }
 }
