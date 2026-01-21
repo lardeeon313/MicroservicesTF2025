@@ -107,7 +107,7 @@ function MissingOrdersSalesPage() {
                 type="text"
                 value={searchId}
                 onChange={(e) => setSearchId(e.target.value)}
-                placeholder="Buscar por ID de faltante..."
+                placeholder="Buscar por el numero del faltante..."
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
                 disabled={searchLoading}
                 />

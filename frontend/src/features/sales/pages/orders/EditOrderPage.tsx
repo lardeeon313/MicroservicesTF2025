@@ -92,6 +92,8 @@ const EditOrderPage = () => {
   };
 
   const handleSubmit = async (values: UpdateOrderRequest) => {
+    console.log("🚀 Enviando updateOrder con:", values);
+    console.log("🚀 Items enviados:", values.items);
     setIsSubmitting(true);
     try {
       await updateOrder(values.orderId, values);

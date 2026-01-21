@@ -7,8 +7,9 @@ import {
   OrderReissuedRequest,
   CancelOrderRequest,
 } from '../types/OrderTypes';
-import { cancelOrder, getAllMissingOrders, getMissingOrderById, reissueOrder, updateMissingOrder } from '../services/OrderService';
+import { cancelOrder, getAllMissingOrders, reissueOrder, updateMissingOrder } from '../services/OrderService';
 import { handleFormikError } from '../../../components/ErrorHandler';
+//getMissingOrderById,
 
 export const useMissingOrders = () => {
   const [orders, setOrders] = useState<OrderMissingDto[]>([]);
@@ -91,16 +92,15 @@ export const useMissingOrders = () => {
   };
 
   const handleSearch = async (id: number): Promise<OrderMissingDto | null> => {
-    try {
-      const order = await getMissingOrderById(id);
+      const found = orders.find(order => order.missingId === id);
+
+      if (!found) {
+        toast.error(`No se encontró el faltante #${id}`);
+        return null;
+      }
+
       toast.success('Faltante encontrado.');
-      return order;
-    } catch (err) {
-      handleFormikError({ error: err, customMessages: {
-        404: 'No se encontró el faltante con ese ID.'
-      }});
-      return null;
-    }
+      return found;
   };
 
   return {
