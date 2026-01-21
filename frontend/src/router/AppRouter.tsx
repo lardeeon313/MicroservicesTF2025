@@ -89,7 +89,7 @@ import { AdminDashboardLogisticReportPage } from "../features/admin/pages/AdminD
 import EmployeesDetailPage from "../features/admin/pages/EmployeesDetailPage";
 
 //REPORTES DE SALES PARA ADMIN
-//AdminCustomerReportPaymentTypePage
+
 import AdminCustomerReportPaymentTypePage from "../features/admin/pages/AdminDashboardFeatures/ReportsSales/Pages/AdminCustomerPaymentReportPage";
 import AdminCustomerReportPage from "../features/admin/pages/AdminDashboardFeatures/ReportsSales/Pages/AdminCustomerReportPage";
 import { AdminCustomerStatusReportPage } from "../features/admin/pages/AdminDashboardFeatures/ReportsSales/Pages/AdminCustomerStatusPage";

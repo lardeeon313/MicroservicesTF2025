@@ -65,7 +65,7 @@ export default function RejectAssignedOrderPage() {
 
   const handleCloseModal = () => {
     setModalVisible(false);
-    if (success) navigation.navigate("OrdersToDistribute" as never);
+    if (success) navigation.navigate('Dashboard' as never);
   };
 
   return (
