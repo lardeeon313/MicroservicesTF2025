@@ -8,7 +8,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Users } from "lucide-react";
-import { CustomerWithCount } from "../../../types/CustomerTypes";
 
 interface AdminCustomerReportItem {
   fullName: string;
@@ -29,6 +28,7 @@ export default function GraphCustomerReport({ data }: Props) {
       </div>
     );
   }
+
   const totalCustomers = data.length;
 
   return (
@@ -128,4 +128,4 @@ export default function GraphCustomerReport({ data }: Props) {
       </div>
     </div>
   );
-}export default GraphCustomerReport;
+}
