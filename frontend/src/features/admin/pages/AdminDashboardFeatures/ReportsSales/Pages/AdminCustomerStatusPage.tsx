@@ -42,7 +42,7 @@ export const AdminCustomerStatusReportPage = () => {
   const handleSearch = (newFilters: typeof filters) => {
     setFilters(newFilters);
     setPage(1);
-    refetch(); 
+    //refetch(); 
   };
 
   const handleRefresh = () => {

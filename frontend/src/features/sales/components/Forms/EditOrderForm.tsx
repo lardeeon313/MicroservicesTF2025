@@ -132,7 +132,7 @@ export default function EditOrderForm({
               {[
                 { name: "street", placeholder: "Calle" },
                 { name: "number", placeholder: "Número" },
-                { name: "apartment", placeholder: "Depto (opcional)", col: 2 },
+                { name: "apartment", placeholder: "Departamento (opcional)", col: 2 },
                 { name: "city", placeholder: "Ciudad" },
                 { name: "province", placeholder: "Provincia" },
                 { name: "country", placeholder: "País" },

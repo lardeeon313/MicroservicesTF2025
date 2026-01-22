@@ -47,9 +47,34 @@ const RegisterOrderForm: React.FC<Props> = ({
 
 
   const handleSubmit = (values: RegisterOrderRequest) => {
-    console.log("Valores del formulario al enviar:", values);
-    onSubmit(values);
+
+  const isManualAddress = !values.deliveryAddressId;
+
+  const payload: RegisterOrderRequest = {
+    ...values,
+
+    // Si es manual → NO mandamos ID
+    deliveryAddressId: isManualAddress ? null : values.deliveryAddressId,
+
+    // Si es por ID → NO mandamos objeto dirección
+    deliveryAddress: isManualAddress
+  ? {
+      street: values.deliveryAddress?.street ?? "",
+      number: values.deliveryAddress?.number ?? "",
+      apartment: values.deliveryAddress?.apartment,
+      city: values.deliveryAddress?.city ?? "",
+      province: values.deliveryAddress?.province ?? "",
+      country: values.deliveryAddress?.country ?? "",
+      postalCode: values.deliveryAddress?.postalCode,
+      formattedAddress: values.deliveryAddress?.formattedAddress,
+    }
+  : undefined
   };
+
+  console.log("🚀 Payload final enviado al backend:", payload);
+  onSubmit(payload);
+};
+
 
   return (
     <Formik
@@ -67,7 +92,7 @@ const RegisterOrderForm: React.FC<Props> = ({
               try {
                 const data = await getCustomerAddresses(values.customerId);
                 setAddresses(data);
-                setFieldValue("deliveryAddressId", "");
+                setFieldValue("deliveryAddressId", null);
               } catch (error) {
                 console.error("Error al traer direcciones:", error);
                 setAddresses([]);
@@ -107,13 +132,17 @@ const RegisterOrderForm: React.FC<Props> = ({
           fetchPaymentTypes();
         }, [values.customerId, setFieldValue]);
 
-
         const handleAddressChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
           const selectedAddressId = e.target.value;
-          setFieldValue("deliveryAddressId", selectedAddressId);
 
           if (selectedAddressId) {
-            const selectedAddress = addresses.find(addr => addr.id === Number(selectedAddressId));
+            // Dirección existente
+            setFieldValue("deliveryAddressId", Number(selectedAddressId));
+
+            const selectedAddress = addresses.find(
+              addr => addr.id === Number(selectedAddressId)
+            );
+
             if (selectedAddress) {
               setFieldValue("deliveryAddress", {
                 street: selectedAddress.street,
@@ -125,8 +154,13 @@ const RegisterOrderForm: React.FC<Props> = ({
                 postalCode: selectedAddress.postalCode,
               });
             }
+
           } else {
+            // 🔴 MODO DIRECCIÓN MANUAL
+            setFieldValue("deliveryAddressId", null);   // CLAVE
+
             setFieldValue("deliveryAddress", {
+              id: null,               // 🔴 CLAVE ABSOLUTA
               street: "",
               number: "",
               apartment: "",
@@ -134,9 +168,15 @@ const RegisterOrderForm: React.FC<Props> = ({
               province: "",
               country: "",
               postalCode: "",
+              latitude: null,
+              longitude: null,
+              formattedAddress: null,
             });
           }
         };
+
+
+
 
         return (
           <Form className="space-y-6 container mx-auto py-10 px-16 sm:max-w-6xl">
@@ -219,7 +259,7 @@ const RegisterOrderForm: React.FC<Props> = ({
                     />
                     <Field
                       name="deliveryAddress.apartment"
-                      placeholder="Depto (opcional)"
+                      placeholder="Departamento (opcional)"
                       className="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200 col-span-2"
                     />
                     <Field

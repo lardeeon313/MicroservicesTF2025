@@ -52,12 +52,12 @@ export const updateCustomerSchema = Yup.object({
   id: Yup.string().required('El ID del cliente es obligatorio'),
 
   firstName: Yup.string()
-    .max(50, 'Máximo 50 caracteres')
-    .nullable(),
+    .required('El nombre es obligatorio')
+    .max(50, 'Máximo 50 caracteres'),
 
   lastName: Yup.string()
-    .max(50, 'Máximo 50 caracteres')
-    .nullable(),
+    .required('El apellido es obligatorio')
+    .max(50, 'Máximo 50 caracteres'),
 
   email: Yup.string()
     .matches(emailRegex, 'Formato de correo inválido')
@@ -65,8 +65,8 @@ export const updateCustomerSchema = Yup.object({
     .nullable(),
 
   phoneNumber: Yup.string()
-    .max(50, 'Máximo 50 caracteres')
-    .nullable(),
+    .required('El número de teléfono es obligatorio')
+    .max(50, 'Máximo 50 caracteres'),
 
   addresses: Yup.array().of(
     Yup.object({
