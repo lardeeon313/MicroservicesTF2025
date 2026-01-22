@@ -23,7 +23,6 @@ import { DashboardPage } from "../features/sales/pages/DashboardPage";
 import { DashboardReportsPage } from "../features/sales/pages/DashboardReportsPage";
 import CustomerReportPage from "../features/sales/pages/reports/CustomerReportPage";
 import CustomerSatisfactionPage from "../features/sales/pages/reports/CustomerSatisfactionReportPage";
-import CustomerInactiveReportPage from "../features/sales/pages/reports/CustomerInactiveReportPage";
 import ModifiedCanceledOrdersPage from "../features/sales/pages/reports/ModifiedCanceledOrdersPage";
 //SalesStaffPerfomancePage
 import { SalesStaffPerfomancePage } from "../features/sales/pages/reports/SalesPerfomanceReportPage";
@@ -86,7 +85,7 @@ import { AdminDashboardLogisticReportPage } from "../features/admin/pages/AdminD
 import EmployeesDetailPage from "../features/admin/pages/EmployeesDetailPage";
 
 //REPORTES DE SALES PARA ADMIN
-
+//AdminCustomerReportPaymentTypePage
 import AdminCustomerReportPaymentTypePage from "../features/admin/pages/AdminDashboardFeatures/ReportsSales/Pages/AdminCustomerPaymentReportPage";
 import AdminCustomerReportPage from "../features/admin/pages/AdminDashboardFeatures/ReportsSales/Pages/AdminCustomerReportPage";
 import { AdminCustomerStatusReportPage } from "../features/admin/pages/AdminDashboardFeatures/ReportsSales/Pages/AdminCustomerStatusPage";
@@ -122,6 +121,7 @@ import BillingDispatcherReportsIndex from "../features/admin/dispatcher/BillingD
 import DepotDispatcherReportsIndex from "../features/admin/dispatcher/DepotDispatcherConst";
 import LogisticDispatcherReportsIndex from "../features/admin/dispatcher/LogisticDispatcherConst";
 import SalesDispatcherReportsIndex from "../features/admin/dispatcher/SalesDispatcherConst";
+import { CustomerStatusReportPage } from "../features/sales/pages/reports/CustomerInactiveReportPage";
 
 const AppRouter = () => {
   return (
@@ -156,7 +156,7 @@ const AppRouter = () => {
         <Route path="reports/dashboard" element={<DashboardReportsPage />} />
         <Route path="reports/customersReport" element={<CustomerReportPage />} />
         <Route path="reports/customerSatisfactionReport" element={<CustomerSatisfactionPage />} />
-        <Route path="reports/customerStatusReport" element={<CustomerInactiveReportPage />} />
+        <Route path="reports/customerStatusReport" element={<CustomerStatusReportPage/>} />
         <Route path="reports/modifiedCanceledReport" element={<ModifiedCanceledOrdersPage />} />
         <Route path="reports/salesPerfomance" element={<SalesStaffPerfomancePage />} />
         <Route path="reports/customerpaymentypereport" element={<CustomerReportPaymentTypePage />} />
@@ -176,7 +176,7 @@ const AppRouter = () => {
         {/* SalesStaff / Dispatcher (equivalente a DepotManager) */}
         <Route path="customersReport" element={<CustomerReportPage />} />
         <Route path="customerSatisfactionReport" element={<CustomerSatisfactionPage />} />
-        <Route path="customerStatusReport" element={<CustomerInactiveReportPage />} />
+        <Route path="customerStatusReport" element={<CustomerStatusReportPage />} />
         <Route path="modifiedCanceledReport" element={<ModifiedCanceledOrdersPage />} />
         <Route path="salesPerfomance" element={<SalesStaffPerfomancePage/>} />
         <Route path="customerpaymentypereport" element={<CustomerReportPaymentTypePage />} />

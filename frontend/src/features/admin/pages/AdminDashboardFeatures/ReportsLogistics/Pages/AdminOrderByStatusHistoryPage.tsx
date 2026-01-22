@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { RefreshCw, EyeOff, Eye } from "lucide-react";
 import { useOrderStatusHistoryReport } from "../../../../../verification/pages/reports/Verification/VerificationHocks/useOrderByStatusHistory";
-import { OrderStatusHistoryFiltersFilter } from "../Filters/OrderByStatusHistoryFilter";
 import { OrderStatusHistoryTable } from "../../../../../verification/pages/reports/Verification/VerificationComponents/OrderByStatusHistoryFolder/OrderByStatusHistoryReport";
 import { AdminGraphOrderByStatusHistory } from "../Graphs/AdminGraphOrderByStatusHistory";
 import { Pagination } from "../../../../../../components/Pagination";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../../../components/BackButton";
+import { AdminOrderStatusHistoryFiltersFilter } from "../Filters/AdminOrderByStatusHistoryFilter";
 
 export const AdminReportOrderStatusHistoryReportPage = () => {
   const {
@@ -54,7 +54,7 @@ export const AdminReportOrderStatusHistoryReportPage = () => {
       </div>
 
       <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
-        <OrderStatusHistoryFiltersFilter
+        <AdminOrderStatusHistoryFiltersFilter
           filters={filters}
           setFilters={setFilters}
           fetchData={fetchData}

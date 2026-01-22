@@ -5,8 +5,8 @@ import { PendingCashVerificationTable } from "../VerificationComponents/PendingC
 import { GraphPendingCashVerification } from "../VerificationGraphs/GraphPendingCashVerification";
 import { PendingCashVerificationFilter } from "../../../../types/FilterReports/FilterReportsEntity";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
-import BackButton from "../../../../components/BackButton";
 import { Pagination } from "../../../../../../components/Pagination";
+import BackButton from "../../../../../../components/BackButton";
 
 export const PendingCashVerificationPage: React.FC = () => {
   const [filters, setFilters] = useState<PendingCashVerificationFilter>({

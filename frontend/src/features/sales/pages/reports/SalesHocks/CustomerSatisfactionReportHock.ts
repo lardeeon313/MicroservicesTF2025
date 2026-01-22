@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../../../../../api/axios";
-import { AdminCustomerSatisfactionReportItem, AdminCustomerSatisfactionPagedResult,CustomerSatisfactionLevel} from "../../../../admin/pages/AdminDashboardFeatures/ReportsSales/Types/CustomerSatisfactionType";
-import { mapScoreToBackendLevel } from "../../../../admin/pages/AdminDashboardFeatures/ReportsSales/Types/CustomerSatisfactionType";
+import { AdminCustomerSatisfactionReportItem, AdminCustomerSatisfactionPagedResult, CustomerSatisfactionLevel, mapScoreToBackendLevel} from "../../../../admin/pages/AdminDashboardFeatures/ReportsSales/Types/CustomerSatisfactionType";
 
 interface Filters {
   name?: string;

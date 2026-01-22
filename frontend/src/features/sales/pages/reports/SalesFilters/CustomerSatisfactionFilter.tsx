@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { SatisfactionLabels,CustomerSatisfactionLevel  } from "../../../../admin/pages/AdminDashboardFeatures/ReportsSales/Types/CustomerSatisfactionType";
+import { CustomerSatisfactionLabel } from "../../../constants/CustomerSatisfactionLabel";
+import { CustomerSatisfactionLevel } from "../../../../admin/pages/AdminDashboardFeatures/ReportsSales/Types/CustomerSatisfactionType";
 
 interface Filters {
   name: string;
@@ -81,14 +82,15 @@ const CustomerSatisfactionFilter: React.FC<Props> = ({
               setSatisfaction(
                 e.target.value === "Todas"
                   ? "Todas"
-                  : (Number(e.target.value) as CustomerSatisfactionLevel)
+                  : Number(e.target.value) as unknown as CustomerSatisfactionLevel
+
               )
             }
             className="border border-gray-300 rounded-lg px-3 py-2
                        focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
           >
             <option value="Todas">Todas</option>
-            {Object.entries(SatisfactionLabels).map(([value, label]) => (
+            {Object.entries(CustomerSatisfactionLabel).map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
               </option>
