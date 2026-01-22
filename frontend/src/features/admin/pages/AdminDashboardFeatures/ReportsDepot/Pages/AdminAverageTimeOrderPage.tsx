@@ -47,7 +47,7 @@ const AdminAverageProcessingTimePage = () => {
             Tiempo de Armado por Orden
           </h1>
           <p className="text-center text-lg text-gray-700 mb-12">
-            Reporte con los tiempos promedio de armado y preparación por cada orden.
+            Reporte con los tiempos promedio de armado por cada orden.
           </p>
         </div>
 

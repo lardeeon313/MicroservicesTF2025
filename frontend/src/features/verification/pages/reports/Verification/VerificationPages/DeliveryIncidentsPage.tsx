@@ -1,12 +1,13 @@
-import React, { useMemo, useState } from "react";
-import { useDeliveryIncidentsReport } from "../../../../../verification/pages/reports/Verification/VerificationHocks/useDeliveryIncidentsReport";
+import React, { useState } from "react";
+import { useDeliveryIncidentsReport } from "../VerificationHocks/useDeliveryIncidentsReport";
 import { DeliveryIncidentsFilter } from "../VerificationFilters/FilterDeliveryIncidents";
-import { DeliveryIncidentFilters } from "../../../../../verification/types/FilterReports/FilterReportsEntity";
+import { DeliveryIncidentFilters } from "../../../../types/FilterReports/FilterReportsEntity";
 import { DeliveryIncidentsTable } from "../VerificationComponents/DeliveryIncidents/DeliveryIncidentsReport";
+
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../../../components/BackButton";
 
-export const ReportDeliveryIncidentsPage: React.FC = () => {
+export const DeliveryIncidentsPage: React.FC = () => {
   const [tempFilters, setTempFilters] = useState<DeliveryIncidentFilters>({
     startDate: "",
     endDate: "",
@@ -19,7 +20,6 @@ export const ReportDeliveryIncidentsPage: React.FC = () => {
     resolved: undefined,
   });
 
-  
   const [refreshKey, setRefreshKey] = useState(0);
 
   const {
@@ -29,19 +29,7 @@ export const ReportDeliveryIncidentsPage: React.FC = () => {
     pageNumber,
     totalPages,
     setPageNumber,
-  } = useDeliveryIncidentsReport(appliedFilters, refreshKey);
-
-  
-  const filteredData = useMemo(() => {
-    if (appliedFilters.resolved === undefined) return data;
-
-    return data.filter((item) => {
-      const isResolved =
-        !!item.resolvedAt && item.resolutionNote?.trim() !== "";
-
-      return appliedFilters.resolved ? isResolved : !isResolved;
-    });
-  }, [data, appliedFilters.resolved]);
+  } = useDeliveryIncidentsReport(appliedFilters,refreshKey);
 
   const handleSearch = () => {
     setAppliedFilters(tempFilters);
@@ -53,15 +41,11 @@ export const ReportDeliveryIncidentsPage: React.FC = () => {
     setTempFilters(empty);
     setAppliedFilters(empty);
     setPageNumber(1);
+    setRefreshKey((prev) => prev + 1);
   };
 
   if (isLoading) {
-    return (
-      <LoadingSpinner
-        message="Cargando reporte de incidencias..."
-        height="h-screen"
-      />
-    );
+    return <LoadingSpinner message="Cargando reporte de incidencias..." height="h-screen" />;
   }
 
   return (
@@ -84,34 +68,41 @@ export const ReportDeliveryIncidentsPage: React.FC = () => {
           onClear={handleClear}
         />
 
-        {error && <p className="text-center text-red-500">{error}</p>}
+        {error && <p className="text-center text-red-500 mb-6">{error}</p>}
 
-        <div className="space-y-12 mt-8">
-          <DeliveryIncidentsTable data={filteredData} />
-        </div>
+        {!isLoading && (
+          <>
+            <div className="space-y-12 mt-8">
+              <DeliveryIncidentsTable data={data} />
+            </div>
 
-        {totalPages > 1 && (
-          <div className="flex justify-center gap-4 mt-6">
-            <button
-              onClick={() => setPageNumber((p) => Math.max(p - 1, 1))}
-              disabled={pageNumber === 1}
-            >
-              Anterior
-            </button>
+            {/* Paginación */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-4 mt-6">
+                <button
+                  onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+                  disabled={pageNumber === 1}
+                  className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50"
+                >
+                  Anterior
+                </button>
 
-            <span>
-              Página {pageNumber} de {totalPages}
-            </span>
+                <span className="text-gray-700">
+                  Página {pageNumber} de {totalPages}
+                </span>
 
-            <button
-              onClick={() =>
-                setPageNumber((p) => Math.min(p + 1, totalPages))
-              }
-              disabled={pageNumber === totalPages}
-            >
-              Siguiente
-            </button>
-          </div>
+                <button
+                  onClick={() =>
+                    setPageNumber((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={pageNumber === totalPages}
+                  className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50"
+                >
+                  Siguiente
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

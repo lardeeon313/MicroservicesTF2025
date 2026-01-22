@@ -8,7 +8,7 @@ import { AdminModifiedCanceledOrdersTable } from "../Components/AdminModifiedCan
 import AdminGraphModifiedCanceledOrders from "../Graphs/AdminGraphModifiedCanceledOrders";
 import AdminModifiedCanceledOrdersFilter from "../Filters/AdminModifiedCanceledOrdesFilter";
 import { Eye, EyeOff, RefreshCw } from "lucide-react";
-import { ADMINuseModifiedCanceledOrders } from "../Hocks/AdminModifiedCanceledOrdersHock";
+import { useModifiedCanceledOrders } from "../Hocks/AdminModifiedCanceledOrdersHock";
 
 import {
   ModifiedCanceledOrder,
@@ -54,7 +54,7 @@ export default function AdminModifiedCanceledOrdersPage() {
     loading,
     totalPages,
     refetch,
-  } = ADMINuseModifiedCanceledOrders(page, pageSize, filters);
+  } = useModifiedCanceledOrders(page, pageSize, filters);
 
   /* -------- UTILS -------- */
   const normalize = (s: string) =>

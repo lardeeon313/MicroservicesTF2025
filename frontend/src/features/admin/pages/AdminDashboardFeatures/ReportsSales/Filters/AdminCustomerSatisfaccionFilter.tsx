@@ -1,20 +1,16 @@
 import React, { useState } from "react";
-import {
-  SatisfactionLabels,
-  CustomerSatisfactionLevel,
-} from "../Types/CustomerSatisfactionType";
 
-interface Filters {
+interface AdminCustomerSatisfactionFilter {
   name: string;
   email: string;
-  satisfaction: "Todas" | CustomerSatisfactionLevel;
+  satisfaction: "Todas" | "Positiva" | "Negativa" | "Neutra";
 }
 
 interface Props {
   selectedName: string;
   selectedEmail: string;
-  selectedSatisfaction: Filters["satisfaction"];
-  onSearch: (filters: Filters) => void;
+  selectedSatisfaction: AdminCustomerSatisfactionFilter["satisfaction"];
+  onSearch: (filters: AdminCustomerSatisfactionFilter) => void;
   onClear: () => void;
 }
 
@@ -29,94 +25,55 @@ const AdminCustomerSatisfactionFilter: React.FC<Props> = ({
   const [email, setEmail] = useState(selectedEmail);
   const [satisfaction, setSatisfaction] = useState(selectedSatisfaction);
 
-  const handleClear = () => {
-    setName("");
-    setEmail("");
-    setSatisfaction("Todas");
-    onClear();
-  };
-
   return (
-    <div className="bg-gray-50 border border-gray-200 shadow-sm rounded-xl p-6 w-full">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">
-        Filtros de satisfacción del cliente
-      </h2>
+    <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
+      <h3 className="text-lg font-semibold mb-4">Filtros de satisfacción del cliente</h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Nombre */}
-        <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-600 mb-1">
-            Nombre
-          </label>
-          <input
-            type="text"
-            placeholder="Ej: Juan Pérez"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2
-                       focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
-          />
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input
+          className="input"
+          placeholder="Ej: Juan Pérez"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
 
-        {/* Email */}
-        <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-600 mb-1">
-            Email
-          </label>
-          <input
-            type="text"
-            placeholder="Ej: cliente@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2
-                       focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
-          />
-        </div>
+        <input
+          className="input"
+          placeholder="Ej: cliente@email.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-        {/* Satisfacción */}
-        <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-600 mb-1">
-            Satisfacción
-          </label>
-          <select
-            value={satisfaction}
-            onChange={(e) =>
-              setSatisfaction(
-                e.target.value === "Todas"
-                  ? "Todas"
-                  : (Number(e.target.value) as CustomerSatisfactionLevel)
-              )
-            }
-            className="border border-gray-300 rounded-lg px-3 py-2
-                       focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
-          >
-            <option value="Todas">Todas</option>
-            {Object.entries(SatisfactionLabels).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </div>
+        <select
+          className="input"
+          value={satisfaction}
+          onChange={(e) => setSatisfaction(e.target.value as any)}
+        >
+          <option>Todas</option>
+          <option>Positiva</option>
+          <option>Negativa</option>
+          <option>Neutra</option>
+        </select>
       </div>
 
-      {/* Botones */}
-      <div className="flex justify-end gap-3 mt-6">
+      <div className="flex justify-end gap-2 mt-4">
         <button
-          onClick={handleClear}
-          className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg
-                     hover:bg-gray-300 transition"
+          onClick={() => {
+            setName("");
+            setEmail("");
+            setSatisfaction("Todas");
+            onClear();
+          }}
+          className="px-4 py-2 rounded bg-gray-200"
         >
           Limpiar
         </button>
 
         <button
-            onClick={() => {
-              
-              onSearch({ name, email, satisfaction });
-            }}
-          className="bg-red-600 text-white px-4 py-2 rounded-lg
-                     hover:bg-red-700 transition"
+          onClick={() =>
+            onSearch({ name, email, satisfaction })
+          }
+          className="px-4 py-2 rounded bg-red-600 text-white"
         >
           Buscar
         </button>

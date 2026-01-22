@@ -1,5 +1,6 @@
 import React from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import { Users } from "lucide-react";
 
 interface OperatorCompletedCount {
   operatorName: string;
@@ -13,14 +14,15 @@ interface Props {
 export const AdminGraphOrderCompletedDay: React.FC<Props> = ({ data }) => {
   // Ordenar datos de mayor a menor para mejor visualización
   const sortedData = [...data].sort((a, b) => b.count - a.count);
+  const totalOperators = data.length;
 
-  // Colores profesionales en gradiente azul
+  // Colores profesionales en gradiente rojo y verde
   const colors = [
-    "#2563eb", // blue-600
-    "#3b82f6", // blue-500
-    "#60a5fa", // blue-400
-    "#93c5fd", // blue-300
-    "#bfdbfe", // blue-200
+    "#151e99ff", // red-600
+    "#2e63d6ff", // red-500
+    "#1091b9ff", // green-500
+    "#195fa0ff", // red-400
+    "#31a178ff", // green-400
   ];
 
   const CustomTooltip = ({ active, payload }: any) => {
@@ -31,7 +33,7 @@ export const AdminGraphOrderCompletedDay: React.FC<Props> = ({ data }) => {
             {payload[0].payload.operatorName}
           </p>
           <p className="text-sm text-gray-600">
-            <span className="font-medium text-blue-600">{payload[0].value}</span>
+            <span className="font-medium text-red-600">{payload[0].value}</span>
             {" "}{payload[0].value === 1 ? "pedido" : "pedidos"}
           </p>
         </div>
@@ -64,48 +66,68 @@ export const AdminGraphOrderCompletedDay: React.FC<Props> = ({ data }) => {
   }
 
   return (
-    <div className="w-full h-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={sortedData}
-          layout="vertical"
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-        >
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke="#e5e7eb" 
-            horizontal={true}
-            vertical={false}
-          />
-          <XAxis 
-            type="number" 
-            stroke="#6b7280"
-            style={{ fontSize: '12px' }}
-            tickLine={false}
-          />
-          <YAxis 
-            type="category" 
-            dataKey="operatorName" 
-            stroke="#6b7280"
-            style={{ fontSize: '13px', fontWeight: '500' }}
-            width={120}
-            tickLine={false}
-          />
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(59, 130, 246, 0.1)' }} />
-          <Bar 
-            dataKey="count" 
-            radius={[0, 8, 8, 0]}
-            maxBarSize={50}
+    <div className="w-full h-full flex flex-col">
+      {/* Card de Total de Operarios */}
+      <div className="flex justify-center mb-6">
+        <div className="bg-blue-50 rounded-xl p-6 border border-blue-100 relative overflow-hidden w-80 transition-all duration-300 hover:shadow-lg cursor-pointer">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-sm text-gray-600 mb-2">Total de Operarios</p>
+              <p className="text-3xl font-bold text-black-600">
+                {totalOperators}
+              </p>
+            </div>
+            <div className="bg-blue-100 p-3 rounded-full">
+              <Users className="w-7 h-7 text-white-500" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Gráfico */}
+      <div className="flex-1 min-h-0">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={sortedData}
+            layout="vertical"
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
           >
-            {sortedData.map((__, index) => (
-              <Cell 
-                key={`cell-${index}`} 
-                fill={colors[index % colors.length]} 
-              />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+            <CartesianGrid 
+              strokeDasharray="3 3" 
+              stroke="#e5e7eb" 
+              horizontal={true}
+              vertical={false}
+            />
+            <XAxis 
+              type="number" 
+              stroke="#6b7280"
+              style={{ fontSize: '12px' }}
+              tickLine={false}
+            />
+            <YAxis 
+              type="category" 
+              dataKey="operatorName" 
+              stroke="#6b7280"
+              style={{ fontSize: '13px', fontWeight: '500' }}
+              width={120}
+              tickLine={false}
+            />
+            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(59, 130, 246, 0.1)' }} />
+            <Bar 
+              dataKey="count" 
+              radius={[0, 8, 8, 0]}
+              maxBarSize={50}
+            >
+              {sortedData.map((__, index) => (
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={colors[index % colors.length]} 
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };

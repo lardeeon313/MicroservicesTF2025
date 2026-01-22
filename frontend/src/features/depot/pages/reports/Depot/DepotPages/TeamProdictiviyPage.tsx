@@ -63,9 +63,11 @@ export const DepotTeamPerformancePage: React.FC = () => {
               )}
 
               {/* TABLA OPERARIOS */}
-              <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200">
-                <OperatorPerformanceTable data={data} />
-              </div>
+              {!agrupar && (
+                <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200">
+                  <OperatorPerformanceTable data={data} />
+                </div>
+              )}
             </>
           )}
         </div>

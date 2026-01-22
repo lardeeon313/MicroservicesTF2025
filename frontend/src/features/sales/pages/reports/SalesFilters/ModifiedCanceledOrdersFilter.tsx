@@ -79,7 +79,7 @@ const ModifiedCanceledOrdersFilter: React.FC<Props> = ({
             <option value="Todos">Todos</option>
             <option value="Pending">Pendiente</option>
             <option value="PendingResolution">Pendiente de resolución</option>
-            <option value="reIssued">Reemitido</option>
+            <option value="ReIssued">Reemitido</option>
             <option value="PendingReissued">Pendiente de reemisión</option>
             <option value="Canceled">Cancelado</option>
           </select>

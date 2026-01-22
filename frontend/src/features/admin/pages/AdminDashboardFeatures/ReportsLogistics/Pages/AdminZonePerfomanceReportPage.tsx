@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { AdminUseZonePerformanceReport } from "../Hocks/AdminUseZonePerfomance";
+import { useZonePerformanceReport } from "../../../../../verification/pages/reports/Verification/VerificationHocks/useZonePerfomance";
 import { AdminFilterZonePerformance } from "../Filters/AdminZonePerfomanceFilter";
 import { AdminZonePerformanceTable } from "../Components/ZonePerfomanceFolder/AdminZonePerfomanceTable";
 import AdminGraphZonePerformance from "../Graphs/AdminGraphZonePerfomance";
@@ -8,7 +8,7 @@ import BackButton from "../../../../../../components/BackButton";
 import { BarChart3, Eye, EyeOff, RefreshCw } from "lucide-react";
 
 export const AdminReportZonePerformanceReportPage: React.FC = () => {
-  const { data, loading, error, fetchReport } = AdminUseZonePerformanceReport();
+  const { data, loading, error, fetchReport } = useZonePerformanceReport();
   const [showChart, setShowChart] = useState(true);
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export const AdminReportZonePerformanceReportPage: React.FC = () => {
           </p>
         </div>
 
-        <FilterZonePerformance onFilter={handleFilter} onClear={handleClear} />
+        <AdminFilterZonePerformance onFilter={handleFilter} onClear={handleClear} />
 
         {error && (
           <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -83,7 +83,7 @@ export const AdminReportZonePerformanceReportPage: React.FC = () => {
 
             <button
               onClick={handleRefresh}
-              className="flex items-center gap-2 bg-green-600 text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-green-700 transition-all transform hover:scale-105 font-medium"
+              className="flex items-center gap-2 bg-red-600 text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-red-700 transition-all transform hover:scale-105 font-medium"
             >
               <RefreshCw className="w-5 h-5" />
               Refrescar Reporte

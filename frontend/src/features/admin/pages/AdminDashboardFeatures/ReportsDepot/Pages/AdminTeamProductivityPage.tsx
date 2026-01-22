@@ -5,6 +5,7 @@ import { useDepotTeamPerformance } from "../Hocks/TeamProducitity/useAdminTeamPr
 import { TeamPerformanceTable } from "../Components/TeamProductivity/TeamProductivityTable";
 import { OperatorPerformanceTable } from "../Components/TeamProductivity/OperatorPerfomance";
 import { AdminGraphTeamProductivity } from "../Graphs/TeamProductivity/GraphTeamProductivity";
+
 import { Eye, EyeOff, RefreshCw } from "lucide-react";
 
 export const AdminReportDepotTeamPerformancePage: React.FC = () => {
@@ -105,9 +106,11 @@ export const AdminReportDepotTeamPerformancePage: React.FC = () => {
               )}
 
               {/* TABLA OPERARIOS */}
-              <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200">
-                <OperatorPerformanceTable data={data} />
-              </div>
+              {!agrupar && (
+                <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200">
+                  <OperatorPerformanceTable data={data} />
+                </div>
+              )}
 
               {/* GRÁFICO */}
               {showGraph && (

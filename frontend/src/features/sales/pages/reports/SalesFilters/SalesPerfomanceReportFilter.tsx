@@ -1,88 +1,120 @@
-import React from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
 
-type RangeType = "all" | "quincena" | "mensual" | "trimestral" | "semestral" | "anual";
 
-type Props = {
-  salesRange: RangeType;
-  setSalesRange: (value: RangeType) => void;
-  dateFrom: string;
-  setDateFrom: (value: string) => void;
-  dateTo: string;
-  setDateTo: (value: string) => void;
-};
+import { SalesPerfomanceReportType } from "../../../../admin/pages/AdminDashboardFeatures/ReportsSales/Types/SalesPerfomanceReportType";
 
-const SalesPerfomanceReportFilter: React.FC<Props> = ({
-  salesRange,
-  setSalesRange,
-  dateFrom,
-  setDateFrom,
-  dateTo,
-  setDateTo,
-}) => {
+interface Props {
+  data: SalesPerfomanceReportType[];
+}
+
+export const GraphSalesStaffPerfomance = ({ data }: Props) => {
+  const hasData = data.some((d) => d.totalOrders > 0 || d.totalUnitsSold > 0);
+
+  const chartData = data.map((item) => ({
+    name: item.salespersonName,
+    pedidos: item.totalOrders,
+    unidades: item.totalUnitsSold,
+  }));
+
   return (
-    <div className="bg-gray-50 border border-gray-200 shadow-sm rounded-xl p-6 w-full mb-6">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">
-        Filtros de Reporte
-      </h2>
+    <div className="max-w-full mt-20 h-96 mb-14">
+      <h1 className="text-center text-3xl font-bold bg-gradient-to-r from-red-600 to-red-500 bg-clip-text text-transparent mb-8">
+        Rendimiento de Ventas
+      </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Fecha desde */}
-        <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-700 mb-1">Fecha desde</label>
-          <input
-            type="date"
-            value={dateFrom}
-            onChange={(e) => {
-  console.log("🟩 Cambiaste Fecha Desde → limpiando rango");
-  setDateFrom(e.target.value);
-  setSalesRange("all"); // limpiamos antigüedad
-}}
-            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400 focus:outline-none transition"
-          />
-        </div>
-
-        {/* Fecha hasta */}
-        <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-600 mb-1">Fecha hasta</label>
-          <input
-            type="date"
-            value={dateTo}
-            onChange={(e) => {
-  console.log("🟩 Cambiaste Fecha Hasta → limpiando rango");
-  setDateTo(e.target.value);
-  setSalesRange("all");
-}}
-            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400 focus:outline-none transition"
-          />
-        </div>
-
-        {/* Antigüedad */}
-        <div className="flex flex-col">
-          <label className="text-sm font-semibold text-red-700 mb-1">Antigüedad de pedidos</label>
-          <select
-            value={salesRange}
-  onChange={(e) => {
-    const newRange = e.target.value as RangeType;
-
-    console.log("🟥 Seleccionaste rango:", newRange, " → limpiando fechas...");
-
-    setSalesRange(newRange);
-    setDateFrom(""); // limpiamos fecha inicial
-    setDateTo("");   // limpiamos fecha final
-  }}
-            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-400 focus:outline-none transition"
-          >
-            <option value="all">Todo</option>
-            <option value="quincena">Última quincena</option>
-            <option value="mensual">Último mes</option>
-            <option value="trimestral">Último trimestre</option>
-            <option value="semestral">Último semestre</option>
-            <option value="anual">Último año</option>
-          </select>
-        </div>
+      <div className="bg-gradient-to-br from-gray-50 to-white rounded-2xl shadow-xl border border-gray-200/50 p-6">
+        <ResponsiveContainer width="100%" height={350}>
+          {hasData ? (
+            <BarChart
+              data={chartData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            >
+              <defs>
+                <linearGradient id="colorPedidos" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#ef4444" stopOpacity={0.9} />
+                  <stop offset="95%" stopColor="#dc2626" stopOpacity={0.7} />
+                </linearGradient>
+                <linearGradient id="colorUnidades" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.9} />
+                  <stop offset="95%" stopColor="#1d4ed8" stopOpacity={0.7} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="#e2e8f0"
+                opacity={0.6}
+                vertical={false}
+              />
+              <XAxis
+                dataKey="name"
+                tick={{ fontSize: 12, fill: "#64748b" }}
+                axisLine={{ stroke: "#cbd5e1" }}
+                tickLine={{ stroke: "#cbd5e1" }}
+              />
+              <YAxis
+                tick={{ fontSize: 12, fill: "#64748b" }}
+                axisLine={{ stroke: "#cbd5e1" }}
+                tickLine={{ stroke: "#cbd5e1" }}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "white",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "12px",
+                  boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)",
+                  fontSize: "14px",
+                }}
+                cursor={{ fill: "rgba(59, 130, 246, 0.05)" }}
+              />
+              <Legend wrapperStyle={{ paddingTop: "20px" }} />
+              <Bar
+                dataKey="pedidos"
+                fill="url(#colorPedidos)"
+                name="Pedidos"
+                radius={[4, 4, 0, 0]}
+                maxBarSize={80}
+              />
+              <Bar
+                dataKey="unidades"
+                fill="url(#colorUnidades)"
+                name="Unidades"
+                radius={[4, 4, 0, 0]}
+                maxBarSize={80}
+              />
+            </BarChart>
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
+              <div className="w-12 h-12 mb-3 bg-gray-200 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-6 h-6 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
+                </svg>
+              </div>
+              <p className="text-gray-500 text-sm font-medium">
+                No hay datos disponibles para mostrar.
+              </p>
+            </div>
+          )}
+        </ResponsiveContainer>
       </div>
     </div>
   );
 };
-
-export default SalesPerfomanceReportFilter;

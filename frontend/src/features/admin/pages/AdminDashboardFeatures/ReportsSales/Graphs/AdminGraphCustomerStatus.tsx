@@ -86,7 +86,7 @@ const renderCustomizedLabel = ({
   );
 };
 
-const AdminGraphCustomerStatusReport: React.FC<Props> = ({ customers }) => {
+const GraphCustomerStatusReport: React.FC<Props> = ({ customers }) => {
   /* =======================
      CONTEO CORRECTO
      (DTO DEL BACK)
@@ -182,4 +182,4 @@ const AdminGraphCustomerStatusReport: React.FC<Props> = ({ customers }) => {
   );
 };
 
-export default AdminGraphCustomerStatusReport;
+export default GraphCustomerStatusReport;

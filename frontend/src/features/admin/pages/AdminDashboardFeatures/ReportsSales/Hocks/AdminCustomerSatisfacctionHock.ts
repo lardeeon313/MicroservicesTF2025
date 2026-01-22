@@ -3,14 +3,13 @@ import API from "../../../../../../api/axios";
 import {
   AdminCustomerSatisfactionReportItem,
   AdminCustomerSatisfactionPagedResult,
-  CustomerSatisfactionLevel,
+  AdminMapCustomerSatisfaction,
 } from "../Types/CustomerSatisfactionType";
-import { mapScoreToBackendLevel } from "../Types/CustomerSatisfactionType";
 
 interface Filters {
   name?: string;
   email?: string;
-  satisfaction?: CustomerSatisfactionLevel | "Todas";
+  level?: "Positiva" | "Negativa" | "Neutra" | "Todas";
 }
 
 export const AdminUseCustomerSatisfactionReport = (
@@ -19,39 +18,27 @@ export const AdminUseCustomerSatisfactionReport = (
   filters: Filters
 ) => {
   const [data, setData] =
-    useState<
-      AdminCustomerSatisfactionPagedResult<AdminCustomerSatisfactionReportItem> | null
-    >(null);
+    useState<AdminCustomerSatisfactionPagedResult<AdminCustomerSatisfactionReportItem> | null>(null);
 
   const [loading, setLoading] = useState(false);
 
   const fetchReport = async () => {
     setLoading(true);
-
-    /** 🔑 NORMALIZACIÓN CLAVE DEL FILTRO */
-    const backendLevel =
-      typeof filters.satisfaction === "number"
-        ? mapScoreToBackendLevel(filters.satisfaction)
-        : null;
-
-    const payload = {
-      name: filters.name?.trim() || null,
-      email: filters.email?.trim() || null,
-      level: backendLevel,
-      page,
-      pageSize,
-    };
-
-
     try {
-      const response = await API.post(
-        "/sales/SalesReport/reports-satisfaction-customer",
-        payload
-      );
+      const response = await API.post<
+        AdminCustomerSatisfactionPagedResult<AdminCustomerSatisfactionReportItem>
+      >("/sales/SalesReport/reports-satisfaction-customer", {
+        name: filters.name || null,
+        email: filters.email || null,
+        level:
+          filters.level && filters.level !== "Todas"
+            ? AdminMapCustomerSatisfaction(filters.level)
+            : null,
+        page,
+        pageSize,
+      });
 
       setData(response.data);
-    } catch (error) {
-      console.error("❌ ERROR BACKEND:", error);
     } finally {
       setLoading(false);
     }
@@ -59,8 +46,7 @@ export const AdminUseCustomerSatisfactionReport = (
 
   useEffect(() => {
     fetchReport();
-
-  }, [page, pageSize, filters.name, filters.email, filters.satisfaction]);
+  }, [page, pageSize, filters]);
 
   return {
     data,

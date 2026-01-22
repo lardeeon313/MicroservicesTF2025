@@ -4,13 +4,16 @@ import { DeliveryIncidentReport } from "../../../../types/Report";
 import { DeliveryIncidentFilters } from "../../../../types/FilterReports/FilterReportsEntity";
 import { PagedResponse } from "../../../../types/Report";
 
-export const useDeliveryIncidentsReport = (filters: DeliveryIncidentFilters) => {
+export const useDeliveryIncidentsReport = (
+  filters: DeliveryIncidentFilters,
+  refreshKey: number
+) => {
   const [data, setData] = useState<DeliveryIncidentReport[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
@@ -19,8 +22,11 @@ export const useDeliveryIncidentsReport = (filters: DeliveryIncidentFilters) => 
       setError(null);
 
       try {
+        // ❌ NO mandamos resolved al backend
+        const { resolved, ...filtersWithoutResolved } = filters;
+
         const params = {
-          ...filters,
+          ...filtersWithoutResolved,
           pageNumber,
           pageSize,
         };
@@ -33,8 +39,7 @@ export const useDeliveryIncidentsReport = (filters: DeliveryIncidentFilters) => 
         setData(response.data.items || []);
         setTotalCount(response.data.totalCount);
         setTotalPages(response.data.totalPages);
-      } catch (err: any) {
-        
+      } catch {
         setError("Error al obtener los reportes");
         setData([]);
       } finally {
@@ -43,7 +48,7 @@ export const useDeliveryIncidentsReport = (filters: DeliveryIncidentFilters) => 
     };
 
     fetchData();
-  }, [JSON.stringify(filters), pageNumber, pageSize]);
+  }, [JSON.stringify(filters), pageNumber, refreshKey]);
 
   return {
     data,
@@ -52,8 +57,6 @@ export const useDeliveryIncidentsReport = (filters: DeliveryIncidentFilters) => 
     totalCount,
     totalPages,
     pageNumber,
-    pageSize,
     setPageNumber,
-    setPageSize,
   };
 };

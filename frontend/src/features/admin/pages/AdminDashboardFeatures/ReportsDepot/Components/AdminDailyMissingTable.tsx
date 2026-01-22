@@ -17,7 +17,7 @@ type Props = {
   data: DailyMissing[];
 };
 
-const DailyMissingTable: React.FC<Props> = ({ data }) => {
+const AdminDailyMissingTable: React.FC<Props> = ({ data }) => {
   const totalMissing = data.length;
 
   if (!data || data.length === 0) {
@@ -71,13 +71,13 @@ const DailyMissingTable: React.FC<Props> = ({ data }) => {
                 Nº Pedido
               </th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Cliente
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Nº Producto
               </th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Producto
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Cliente
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Marca
@@ -100,34 +100,28 @@ const DailyMissingTable: React.FC<Props> = ({ data }) => {
                 key={`${item.orderID}-${item.productId}-${index}`}
                 className="hover:bg-gray-50 transition-colors duration-200"
               >
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 text-center w-20">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {item.orderID}
                 </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 text-center w-20">
-                  {item.productId}
-                </td>
-
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {item.productName}
-                </td>
-
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {item.customerName}
                 </td>
-
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {item.productId}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-900">
+                  {item.productName}
+                </td>
+                <td className="px-4 py-4 text-sm text-gray-900">
                   {item.productBrand}
                 </td>
-
                 <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
                   {item.missingQuantity}
                 </td>
-
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-4 py-4 text-sm text-gray-900">
                   {item.packaging}
                 </td>
-
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {formatFullDate(item.missingDate)}
                 </td>
               </tr>
@@ -139,4 +133,4 @@ const DailyMissingTable: React.FC<Props> = ({ data }) => {
   );
 };
 
-export default DailyMissingTable;
+export default AdminDailyMissingTable;

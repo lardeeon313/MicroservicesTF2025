@@ -52,12 +52,12 @@ namespace LogisticService.Infraestructure.Persistence
                     TotalIncidents = g.Sum(o => o.DeliveryIncidents.Count),
                     TotalRejections = g.Sum(o => o.RejectionReasons.Count)
                 });
-                
+
             var totalCount = await grouped.CountAsync();
 
             var pagedData = await grouped
                 .OrderByDescending(r => r.TotalIncidents + r.TotalRejections)
-                .Skip((pageNumber -1) * pageSize)
+                .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
@@ -150,7 +150,7 @@ namespace LogisticService.Infraestructure.Persistence
         {
             var query = _context.DeliveryRejectionReasons
                     .Include(r => r.LogisticOrder)
-                        .ThenInclude(o => o.Customer)                    
+                        .ThenInclude(o => o.Customer)
                     .Include(r => r.LogisticOrder.AssignedDeliveryZone)
                     .Include(r => r.LogisticOrder.AssignedDeliveryTeam)
                     .AsNoTracking()
@@ -250,19 +250,33 @@ namespace LogisticService.Infraestructure.Persistence
             return grouped;
         }
 
-        public async Task<List<LogisticOrder>> GetFilteredOrdersAsync(DateTime? startDate, DateTime? endDate, int? deliveryZoneId, int? deliveryTeamId, Guid? operatorId, PaymentType? paymentType)
+        public async Task<List<LogisticOrder>> GetFilteredOrdersAsync(DateTime? startDate,DateTime? endDate,int? deliveryZoneId,int? deliveryTeamId,Guid? operatorId,PaymentType? paymentType)
         {
             var query = _context.LogisticOrders
                 .AsNoTracking()
-                .Include(o => o.AssignedDeliveryTeam)     
+                .Include(o => o.AssignedDeliveryTeam)
                 .Include(o => o.AssignedDeliveryZone)
+                .Include(o => o.StatusHistory)
                 .AsQueryable();
 
+            
             if (startDate.HasValue)
-                query = query.Where(o => o.OrderDate >= startDate.Value);
+            {
+                query = query.Where(o =>
+                    o.StatusHistory.Any(h =>
+                        h.NewStatus == OrderStatus.Delivered &&
+                        h.ChangedAt >= startDate.Value
+                    ));
+            }
 
             if (endDate.HasValue)
-                query = query.Where(o => o.OrderDate <= endDate.Value);
+            {
+                query = query.Where(o =>
+                    o.StatusHistory.Any(h =>
+                        h.NewStatus == OrderStatus.Delivered &&
+                        h.ChangedAt <= endDate.Value
+                    ));
+            }
 
             if (deliveryZoneId.HasValue)
                 query = query.Where(o => o.AssignedDeliveryZoneId == deliveryZoneId.Value);
@@ -278,6 +292,7 @@ namespace LogisticService.Infraestructure.Persistence
 
             return await query.ToListAsync();
         }
+
 
         public async Task<PagedResult<OrderStatusHistoryReport>> GetOrderStatusHistoryAsync(DateTime? startDate, DateTime? endDate, OrderStatus? oldStatus, OrderStatus? newStatus, Guid? operatorId, int pageNumber, int pageSize)
         {
@@ -316,7 +331,7 @@ namespace LogisticService.Infraestructure.Persistence
                 Items = results.Select(h => new OrderStatusHistoryReport
                 {
                     Id = h.Id,
-                    OrderId = h.OrderId,
+                    OrderId = h.OrderId ?? 0,
                     CustomerName = $"{h.LogisticOrder.Customer.FirstName} {h.LogisticOrder.Customer.LastName}".Trim(),
                     OldStatus = h.OldStatus.ToString(),
                     NewStatus = h.NewStatus.ToString(),

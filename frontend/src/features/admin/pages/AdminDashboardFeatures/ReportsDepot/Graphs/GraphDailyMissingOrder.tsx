@@ -55,37 +55,37 @@ const AdminGraphDailyMissingOrder: React.FC<Props> = ({ data }) => {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-lg p-4 border border-red-100">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        {/* Total Unidades Faltantes */}
+        <div className="bg-red-50 rounded-lg p-4 border border-red-100">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 font-medium">Total Unidades</p>
-              <p className="text-3xl font-bold text-red-600 mt-1">{stats.totalItems}</p>
+              <p className="text-sm text-gray-600 font-medium mb-1">Total Unidades</p>
+              <p className="text-4xl font-bold text-red-600">{stats.totalItems}</p>
             </div>
-            <div className="p-3 bg-red-100 rounded-lg">
+            <div className="p-3 bg-red-100 rounded-full">
               <Package className="w-6 h-6 text-red-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-orange-50 to-yellow-50 rounded-lg p-4 border border-orange-100">
+        {/* Pedidos Afectados */}
+        <div className="bg-orange-50 rounded-lg p-4 border border-orange-100">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 font-medium">Pedidos Afectados</p>
-              <p className="text-3xl font-bold text-orange-600 mt-1">{stats.totalOrders}</p>
+              <p className="text-sm text-gray-600 font-medium mb-1">Pedidos Afectados</p>
+              <p className="text-4xl font-bold text-orange-600">{stats.totalOrders}</p>
             </div>
-            <div className="p-3 bg-orange-100 rounded-lg">
+            <div className="p-3 bg-orange-100 rounded-full">
               <AlertCircle className="w-6 h-6 text-orange-600" />
             </div>
           </div>
         </div>
-
-
       </div>
 
       {/* Chart */}
       <div className="mt-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Grafico de todos los faltantes</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Grafica de las marcas con sus respectivos faltantes</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />

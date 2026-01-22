@@ -4,7 +4,7 @@ import { AdminUseDeliveryRejections } from "../Hocks/AdminUseDeliveryRejections"
 import AdminDeliveryRejectionsFilter from "../Filters/AdminDeliveryRejectionsFilter";
 import AdminDeliveryRejectionsTable from "../Components/DeliveryRejections/AdminDeliveryRejectionsReport";
 import AdminGraphDeliveryRejections from "../Graphs/AdminGraphDeliveryRejections";
-
+import { Pagination } from "../../../../../../components/Pagination";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../../../components/BackButton";
 import { RejectionReportFilters } from "../../../../../verification/types/FilterReports/FilterReportsEntity";
@@ -91,7 +91,7 @@ export const AdminReportDeliveryRejectionsPage: React.FC = () => {
           <button
             onClick={handleRefresh}
             disabled={loading || isRefreshing}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white font-medium rounded-lg shadow-md hover:from-green-600 hover:to-green-700 transition-all duration-200 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-medium rounded-lg shadow-md hover:from-red-600 hover:to-red-700 transition-all duration-200 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
             {isRefreshing ? 'Actualizando...' : 'Refrescar Reporte'}
@@ -115,26 +115,12 @@ export const AdminReportDeliveryRejectionsPage: React.FC = () => {
             )}
 
             {/* Paginación */}
-            <div className="flex justify-center items-center mt-4 gap-4">
-              <button
-                disabled={pagination.pageNumber <= 1}
-                onClick={() => handlePageChange(pagination.pageNumber - 1)}
-                className="px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                ◀ Anterior
-              </button>
-
-              <span className="text-gray-700 font-medium">
-                Página {pagination.pageNumber} de {pagination.totalPages || 1}
-              </span>
-
-              <button
-                disabled={pagination.pageNumber >= pagination.totalPages}
-                onClick={() => handlePageChange(pagination.pageNumber + 1)}
-                className="px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Siguiente ▶
-              </button>
+            <div className="mt-8">
+              <Pagination
+                currentPage={pagination.pageNumber}
+                totalPages={pagination.totalPages || 1}
+                onPageChange={handlePageChange}
+              />
             </div>
           </div>
         )}

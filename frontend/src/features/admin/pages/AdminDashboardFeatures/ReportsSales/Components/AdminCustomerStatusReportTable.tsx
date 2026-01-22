@@ -3,6 +3,7 @@ import React from "react";
 import { CustomerStatusReportDto } from "../Types/CustomerStatusReportType";
 import { CustomerStatusBadge } from "../../../../../sales/components/Customers/CustomerStatusBadge";
 
+
 type Props = {
   data: CustomerStatusReportDto[];
 };
