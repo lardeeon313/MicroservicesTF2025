@@ -57,7 +57,7 @@ export default function OrderTable({
           <table className="w-full text-sm text-gray-800" data-active-tab={activeTab}>
             <thead className="bg-gray-100 text-xs font-semibold uppercase tracking-wide text-gray-600">
               <tr>
-                <th className="px-4 py-3 text-left">ID</th>
+                <th className="px-4 py-3 text-left">Numero de Pedido</th>
                 <th className="px-4 py-3 text-left"><User className="inline w-4 h-4 mr-1" /> Cliente</th>
                 <th className="px-4 py-3 text-left"><CalendarDays className="inline w-4 h-4 mr-1" /> Fecha Pedido</th>
                 <th className="px-4 py-3 text-left"><BadgeCheck className="inline w-4 h-4 mr-1" /> Estado</th>

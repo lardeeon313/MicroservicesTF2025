@@ -1,7 +1,9 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SalesService.API.RequestDtos.OrderSatisfaction;
 using SalesService.Application.Commands.Orders.Cancel;
+using SalesService.Application.Commands.Orders.CreateOrderSatisfaction;
 using SalesService.Application.Commands.Orders.Delete;
 using SalesService.Application.Commands.Orders.OrderReissued;
 using SalesService.Application.Commands.Orders.Register;
@@ -17,9 +19,12 @@ using SalesService.Application.Queries.Orders.GetAllMissingOrders;
 using SalesService.Application.Queries.Orders.GetById;
 using SalesService.Application.Queries.Orders.GetByIdCustomer;
 using SalesService.Application.Queries.Orders.GetByStatus;
+using SalesService.Application.Queries.Orders.GetOrderForSatisfaction;
 using SalesService.Application.Queries.Orders.GetPagedOrders;
-using SalesService.Application.Queries.Orders.GetSalesPerfomanceReport;
 using SalesService.Application.Validators.Order;
+using SalesService.Domain.Enums;
+using System.Reflection.Metadata;
+using System.Runtime.InteropServices;
 
 namespace SalesService.API.Controllers
 {
@@ -37,8 +42,7 @@ namespace SalesService.API.Controllers
         IGetOrderByStatusQueryHandler getOrderByStatusQueryHandler,
         IGetAllOrdersQueryHandler getAllOrdersQueryHandler,
         IGetOrderByIdCustomerQueryHandler getOrderByIdCustomerQueryHandler,
-        IGetPagedOrdersQueryHandler getPagedOrdersQueryHandler,
-        IGetSalesPerfomanceReportQueryHandler getSalesPerfomanceReportQueryHandler,
+        IGetPagedOrdersQueryHandler getPagedOrdersQueryHandler,        
         IValidator<UpdateOrderStatusRequest> updateOrderStatusValidator,
         IValidator<RegisterOrderRequest> registerOrderValidator,
         IValidator<RegisterOrderItemRequest> registerOrderItemValidator,
@@ -48,7 +52,9 @@ namespace SalesService.API.Controllers
         IUpdateMissingOrderCommandHandler updateMissingOrderCommandHandler,
         IValidator<UpdateOrderMissingRequest> updateOrderMissingValidator,
         IGetAllMissingOrdersQueryHandler getAllMissingOrdersQueryHandler,
-        IGetCustomerAddressesQueryHandler getCustomerAddressesQueryHandler
+        IGetCustomerAddressesQueryHandler getCustomerAddressesQueryHandler,
+        ICreateOrderSatisfactionCommandHandler createOrderSatisfactionCommandHandler,
+        IGetOrderForSatisfactionQueryHandler getOrderForSatisfactionQueryHandler
         ) : ControllerBase
     {
         private readonly IGetCustomerAddressesQueryHandler _getCustomerAddressesQueryHandler = getCustomerAddressesQueryHandler;
@@ -62,16 +68,17 @@ namespace SalesService.API.Controllers
         private readonly IUpdateOrderStatusCommandHandler _updateOrderStatusCommandHandler = updateOrderStatusCommandHandler;
         private readonly ICancelOrderCommandHandler _cancelOrderCommandHandler = cancelOrderCommandHandler;
         private readonly IDeleteOrderCommandHandler _deleteOrderCommandHandler = deleteOrderCommandHandler;
+        private readonly ICreateOrderSatisfactionCommandHandler createOrderSatisfactionCommandHandler = createOrderSatisfactionCommandHandler;
         private readonly IGetPagedOrdersQueryHandler _getPagedOrdersQueryHandler = getPagedOrdersQueryHandler;
         private readonly IGetOrderByIdQueryHandler _getOrderByIdQueryHandler = getOrderByIdQueryHandler;
         private readonly IGetOrderByStatusQueryHandler _getOrderByStatusQueryHandler = getOrderByStatusQueryHandler;
-        private readonly IGetAllOrdersQueryHandler _getAllOrdersQueryHandler = getAllOrdersQueryHandler;
-        private readonly IGetSalesPerfomanceReportQueryHandler _getSalesPerfomanceReportQueryHandler = getSalesPerfomanceReportQueryHandler;
-        private readonly IGetOrderByIdCustomerQueryHandler _getOrderByIdCustomerQueryHandler = getOrderByIdCustomerQueryHandler;
+        private readonly IGetAllOrdersQueryHandler _getAllOrdersQueryHandler = getAllOrdersQueryHandler;       
+        private readonly IGetOrderByIdCustomerQueryHandler _getOrderByIdCustomerQueryHandler = getOrderByIdCustomerQueryHandler;        
         private readonly IValidator<UpdateOrderStatusRequest> _updateOrderStatusValidator = updateOrderStatusValidator;
         private readonly IValidator<RegisterOrderRequest> _registerOrderValidator = registerOrderValidator;
         private readonly IValidator<RegisterOrderItemRequest> _registerOrderItemValidator = registerOrderItemValidator;
-        private readonly IValidator<UpdateOrderRequest> _updateOrderValidator = updateOrderValidator;
+        private readonly IValidator<UpdateOrderRequest> _updateOrderValidator = updateOrderValidator;        
+        private readonly IGetOrderForSatisfactionQueryHandler getOrderForSatisfactionQueryHandler = getOrderForSatisfactionQueryHandler;
 
 
         /// <summary>
@@ -251,18 +258,6 @@ namespace SalesService.API.Controllers
             return Ok(result);
         }
 
-        /// <summary> Obtenemos los pedidos ordenados por creador (usuario) - perfomance</summary>
-        [HttpGet("report/performance")]
-        [ProducesResponseType(typeof(IEnumerable<SalesPerfomanceDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetSalesPerformanceReport([FromQuery] DateTime? from,
-                                                                   [FromQuery] DateTime? to)
-        {
-            var query = new GetSalesPerformanceReportQuery(from, to);
-
-            var result = await _getSalesPerfomanceReportQueryHandler.Handle(query);
-            return Ok(result);
-        }
-
         /// <summary> Reemite una orden de pedido</summary>
         [HttpPut("reissued")]
         [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
@@ -338,5 +333,62 @@ namespace SalesService.API.Controllers
             var result = await _getAllMissingOrdersQueryHandler.GetAllMissingOrdersAsync();
             return Ok(result);
         }
+
+        /// <summary>
+        /// Endpoint para crear una satisfaccion de pedido
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost("create/satisfaction")]
+        [ProducesResponseType(typeof(IEnumerable<OrderDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CreateOrderSatisfaction(CreateOrderSatisfactionRequest request)
+        {
+            try
+            {
+                var command = new CreateOrderSatisfactionCommand(
+                    request.Token,
+                    request.Score,
+                    request.Comment
+                );
+
+                await createOrderSatisfactionCommandHandler.Handle(command);
+
+                return Ok(new
+                {
+                    message = "Gracias por calificar tu pedido."
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Endpoint para obtener una orden para ser calificada
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        [HttpGet("public/orders/satisfaction")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetOrderForSatisfaction([FromQuery] string token)
+        {
+            var query = new GetOrderForSatisfactionQuery(token);
+            var result = await getOrderForSatisfactionQueryHandler.Handle(query);
+
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
+        }
+
+
+
     }
 }

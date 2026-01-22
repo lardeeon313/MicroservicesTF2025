@@ -33,6 +33,7 @@ export default function RejectionReasonsModal({ order, isOpen, onClose }: Props)
     setLoading(true);
     try {
       const data = await getRejectionReasonsByOrderId(order.id);
+      console.log(data);
       setRejectionReasons(data);
     } catch (error: any) {
       toast.error('Error al cargar los motivos de rechazo');
@@ -70,7 +71,7 @@ export default function RejectionReasonsModal({ order, isOpen, onClose }: Props)
               </div>
               <div>
                 <h2 className="text-2xl font-bold">
-                  Motivos de Cancelación
+                  Motivos de la asignación cancelada
                 </h2>
                 <p className="text-sm text-white/90 mt-1">
                   Orden L-{order.id} • Cliente: {order.customer ? `${order.customer.firstName} ${order.customer.lastName}` : 'N/A'}
@@ -122,7 +123,7 @@ export default function RejectionReasonsModal({ order, isOpen, onClose }: Props)
                           Cancelación #{index + 1}
                         </h3>
                         <p className="text-xs font-medium text-gray-500 mt-1">
-                          ID: {reason.id}
+                          Numero del pedido: {reason.id}
                         </p>
                       </div>
                     </div>
@@ -148,8 +149,8 @@ export default function RejectionReasonsModal({ order, isOpen, onClose }: Props)
                         <User className="w-4 h-4" />
                         <span>Operador que Canceló</span>
                       </label>
-                      <p className="text-base font-semibold text-gray-900 font-mono">
-                        {typeof reason.deliveryOperatorId === 'string' ? reason.deliveryOperatorId.slice(0, 8) + '...' : 'N/A'}
+                      <p className="text-base font-medium text-slate-900 tracking-tight">
+                        {reason.deliveryOperatorFullName}
                       </p>
                     </div>
                   </div>

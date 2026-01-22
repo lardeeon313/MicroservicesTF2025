@@ -1,15 +1,26 @@
 import React, { useState } from "react";
 import { useDeliveryIncidentsReport } from "../VerificationHocks/useDeliveryIncidentsReport";
 import { DeliveryIncidentsFilter } from "../VerificationFilters/FilterDeliveryIncidents";
+import { DeliveryIncidentFilters } from "../../../../types/FilterReports/FilterReportsEntity";
 import { DeliveryIncidentsTable } from "../VerificationComponents/DeliveryIncidents/DeliveryIncidentsReport";
-import { GraphDeliveryIncidents } from "../VerificationGraphs/GraphDeliveryIncidentsReport";
+
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../../../components/BackButton";
-import { DeliveryIncidentsTeamTable } from "../VerificationComponents/DeliveryIncidents/DeliveryIncidentesTeamReport";
 
 export const DeliveryIncidentsPage: React.FC = () => {
-  const [tempFilters, setTempFilters] = useState({});
-  const [appliedFilters, setAppliedFilters] = useState({});
+  const [tempFilters, setTempFilters] = useState<DeliveryIncidentFilters>({
+    startDate: "",
+    endDate: "",
+    resolved: undefined,
+  });
+
+  const [appliedFilters, setAppliedFilters] = useState<DeliveryIncidentFilters>({
+    startDate: "",
+    endDate: "",
+    resolved: undefined,
+  });
+
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const {
     data,
@@ -18,17 +29,19 @@ export const DeliveryIncidentsPage: React.FC = () => {
     pageNumber,
     totalPages,
     setPageNumber,
-  } = useDeliveryIncidentsReport(appliedFilters);
+  } = useDeliveryIncidentsReport(appliedFilters,refreshKey);
 
   const handleSearch = () => {
     setAppliedFilters(tempFilters);
-    setPageNumber(1); // Reinicia la paginación al aplicar filtros
+    setPageNumber(1);
   };
 
   const handleClear = () => {
-    setTempFilters({});
-    setAppliedFilters({});
+    const empty = { startDate: "", endDate: "", resolved: undefined };
+    setTempFilters(empty);
+    setAppliedFilters(empty);
     setPageNumber(1);
+    setRefreshKey((prev) => prev + 1);
   };
 
   if (isLoading) {
@@ -43,8 +56,7 @@ export const DeliveryIncidentsPage: React.FC = () => {
           Reporte de incidencias en entregas
         </h1>
         <p className="text-center text-lg text-gray-700 mb-12">
-          Aquí podrás visualizar las incidencias registradas durante las entregas, aplicar filtros
-          personalizados y generar gráficos para su análisis.
+          Aquí podrás visualizar las incidencias registradas durante las entregas.
         </p>
       </div>
 
@@ -62,11 +74,9 @@ export const DeliveryIncidentsPage: React.FC = () => {
           <>
             <div className="space-y-12 mt-8">
               <DeliveryIncidentsTable data={data} />
-              <DeliveryIncidentsTeamTable data={data} />
-              <GraphDeliveryIncidents data={data} />
             </div>
 
-            {/* 📄 Paginación */}
+            {/* Paginación */}
             {totalPages > 1 && (
               <div className="flex justify-center items-center gap-4 mt-6">
                 <button
@@ -82,7 +92,9 @@ export const DeliveryIncidentsPage: React.FC = () => {
                 </span>
 
                 <button
-                  onClick={() => setPageNumber((prev) => Math.min(prev + 1, totalPages))}
+                  onClick={() =>
+                    setPageNumber((prev) => Math.min(prev + 1, totalPages))
+                  }
                   disabled={pageNumber === totalPages}
                   className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 disabled:opacity-50"
                 >

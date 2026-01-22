@@ -1,64 +1,58 @@
-import { Order } from "../DepotHocks/useOrderCompletedDay";
-
-// Función utilitaria para formatear la fecha
-const formatDate = (dateString: string | null | undefined): string => {
-  if (!dateString) return "—";
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) return "—";
-  return date.toLocaleString("es-AR", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+import React from "react";
+import { OperatorCompletedCount } from "../DepotHocks/useOrderCompletedDay";
 
 interface Props {
-  data: Order[];
+  data: OperatorCompletedCount[];
 }
 
-export default function OrderCompletedDayTable({ data }: Props) {
+export const CompletedOrdersTable: React.FC<Props> = ({ data }) => {
   return (
-    <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="min-w-full">
-          <thead>
-            <tr className="bg-gradient-to-r from-red-400 to-red-600 text-white">
-              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">ID Pedido</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Sales Order</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Cliente</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Email</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Fecha Pedido</th>
-              <th className="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Fecha Entrega</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {data.map((order, idx) => (
-              <tr
-                key={order.depotOrderId}
-                className={`${
-                  idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-                } hover:bg-blue-50 transition-all duration-200 hover:shadow-sm group`}
-              >
-                <td className="px-6 py-4 whitespace-nowrap">{order.depotOrderId}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{order.salesOrderId}</td>
-                <td className="px-6 py-4">{order.customerName}</td>
-                <td className="px-6 py-4">{order.customerEmail}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{formatDate(order.orderDate)}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{formatDate(order.deliveryDate)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <div className="overflow-hidden"> {/* Quitamos overflow-x-auto innecesario si controlamos el ancho */}
+      <table className="w-full divide-y divide-gray-200">
+        <thead className="bg-gray-100"> {/* Un gris un poco más oscuro para diferenciar mejor */}
+          <tr>
+            <th 
+                scope="col" 
+                className="px-4 py-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider w-1/2"
+            >
+              Operario
+            </th>
+            <th 
+                scope="col" 
+                className="px-4 py-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider w-1/2"
+            >
+              Pedidos Completados
+            </th>
+          </tr>
+        </thead>
 
-      {data.length === 0 && (
-        <div className="text-center py-12">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No hay pedidos completados</h3>
-          <p className="text-gray-500">Los pedidos aparecerán aquí una vez que sean completados.</p>
-        </div>
-      )}
+        <tbody className="bg-white divide-y divide-gray-200">
+          {(!data || data.length === 0) ? (
+            <tr>
+              <td colSpan={2} className="px-4 py-8 text-center text-gray-500 italic">
+                No se encontraron datos.
+              </td>
+            </tr>
+          ) : (
+            data.map((row, index) => (
+              <tr 
+                key={index} 
+                className="hover:bg-gray-50 transition-colors duration-150"
+              >
+                <td className="px-4 py-3 whitespace-nowrap text-center font-medium text-gray-800 capitalize">
+                  {row.operatorName}
+                </td>
+                
+                <td className="px-4 py-3 whitespace-nowrap text-sm text-center">
+                  <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                    {row.count} {row.count === 1 ? 'pedido' : 'pedidos'}
+                  </span>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
     </div>
   );
-}
+};

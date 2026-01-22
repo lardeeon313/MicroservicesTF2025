@@ -1,5 +1,16 @@
 import { AxiosError } from "axios";
-import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from "../types/AuthType";
+import { 
+  LoginRequest,
+  LoginResponse,
+  RegisterRequest,
+  RegisterResponse,
+  CreateNewPasswordRequest,
+  CreateNewPasswordResponse,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse
+} from "../types/AuthType";
 import API from "../../../services/axios";
 
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
@@ -44,5 +55,48 @@ export const register = async (userData: RegisterRequest): Promise<RegisterRespo
     }
     console.log("Unexpected register error:", error);
     throw new Error("An unexpected error occurred");
+  }
+};
+
+//SERVICES PASSWORD
+export const createNewPassword = async (
+  data: CreateNewPasswordRequest
+): Promise<CreateNewPasswordResponse> => {
+  try {
+    const response = await API.post("api/auth/create-new-password", data);
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message);
+    }
+    throw new Error("Unexpected error");
+  }
+};
+
+export const forgotPassword = async (
+  data: ForgotPasswordRequest
+): Promise<ForgotPasswordResponse> => {
+  try {
+    const response = await API.post("api/auth/forgot-password", data);
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message);
+    }
+    throw new Error("Unexpected error");
+  }
+};
+
+export const resetPassword = async (
+  data: ResetPasswordRequest
+): Promise<ResetPasswordResponse> => {
+  try {
+    const response = await API.post("api/auth/reset-password", data);
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data?.message);
+    }
+    throw new Error("Unexpected error");
   }
 };

@@ -34,7 +34,7 @@ export default function EmployeesPage() {
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
-        <BackButton to="/admin/dashboard"></BackButton>
+        <BackButton to="/admin"></BackButton>
         <h1 className="text-center text-4xl font-bold text-red-600 mb-12">Gestión de Empleados</h1>
         <div className="flex flex-col md:flex-row mb-4 w-full justify-between gap-4">
           <input

@@ -10,6 +10,9 @@ namespace LogisticService.Application.DTOs.LogisticReportDtos
     {
         public Guid OperatorId { get; set; }
         public string FullNameDeliveringOperator { get; set; } = string.Empty;
+
+        public int? DeliveryTeamId { get; set; }          
+        public string TeamName { get; set; } = string.Empty; 
         public int TotalOrders { get; set; }
         public int DeliveredOrders { get; set; }
         public int RejectedOrders { get; set; }

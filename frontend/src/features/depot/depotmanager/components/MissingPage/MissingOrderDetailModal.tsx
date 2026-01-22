@@ -15,7 +15,7 @@ export default function MissingOrderDetailModal({ order, onClose, onReport }: Pr
       <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-slate-900">
-            Detalle de Orden #{order.depotOrderId}
+            Detalle de la Orden #{order.depotOrderId}
           </h2>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
             <X className="w-5 h-5" />

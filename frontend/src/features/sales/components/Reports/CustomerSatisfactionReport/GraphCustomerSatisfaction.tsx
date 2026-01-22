@@ -1,3 +1,5 @@
+import React from 'react';
+import { CustomerSatisfactionLevel } from '../../../../admin/pages/AdminDashboardFeatures/ReportsSales/Types/CustomerSatisfactionType';
 import {
   BarChart,
   Bar,
@@ -5,188 +7,159 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
-  Cell,
-  Legend,
   CartesianGrid,
+  Cell,
 } from "recharts";
-import { CustomerSatisfaction, CustomerWithCount } from "../../../types/CustomerTypes";
 
-interface Props {
-  customers: CustomerWithCount[];
+
+interface AdminCustomerSatisfactionReportItem {
+  score: number;
 }
 
-const classifySatisfaction = (text?: string): CustomerSatisfaction => {
-  if (!text || text.trim() === "") return CustomerSatisfaction.Neutra;
+interface Props {
+  data: AdminCustomerSatisfactionReportItem[];
+}
 
-  const lower = text.toLowerCase().trim();
-  const positivas = ["buena", "positiva", "excelente", "amable", "rápida", "satisfecho"];
-  const negativas = ["mala", "negativa", "poca", "insatisfecho", "tarde", "demora"];
-
-  if (positivas.some((p) => lower.includes(p))) return CustomerSatisfaction.Positiva;
-  if (negativas.some((n) => lower.includes(n))) return CustomerSatisfaction.Negativa;
-
-  return CustomerSatisfaction.Neutra;
+const SatisfactionLabels: Record<number, string> = {
+  1: "Muy Malo",
+  2: "Malo",
+  3: "Regular",
+  4: "Bueno",
+  5: "Excelente",
 };
 
-export const GraphSatisfactionCustomer: React.FC<Props> = ({ customers }) => {
-  const stats = { Positiva: 0, Negativa: 0, Neutra: 0 };
+// Colores profesionales con gradiente de rojo a verde
+const COLORS = {
+  1: "#EF4444", // Rojo
+  2: "#F97316", // Naranja
+  3: "#EAB308", // Amarillo
+  4: "#84CC16", // Lima
+  5: "#22C55E", // Verde
+};
 
-  customers.forEach((c) => {
-    const tipo = classifySatisfaction(c.satisfaction ?? "");
-    stats[tipo]++;
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white px-4 py-3 rounded-lg shadow-lg border border-gray-200">
+        <p className="text-sm font-semibold text-gray-900">{payload[0].payload.name}</p>
+        <p className="text-sm text-gray-600 mt-1">
+          Respuestas: <span className="font-bold text-gray-900">{payload[0].value}</span>
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
+export const GraphSatisfactionCustomerSatisfaction: React.FC<Props> = ({ data }) => {
+  
+  // Si no hay datos, mostrar mensaje
+  if (data.length === 0) {
+    return (
+      <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+        <div className="w-full h-full flex flex-col items-center justify-center py-12">
+          <div className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-dashed border-gray-300 rounded-2xl p-12 text-center max-w-md">
+            <div className="text-6xl mb-4 opacity-40">📊</div>
+            <h4 className="text-xl font-semibold text-gray-700 mb-2">
+              Sin datos disponibles
+            </h4>
+            <p className="text-gray-500 text-sm leading-relaxed">
+              No hay datos de satisfacción del cliente para mostrar en este momento.<br/>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const counts: Record<CustomerSatisfactionLevel, number> = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+  };
+
+  data.forEach((d) => {
+    if (d.score >= 1 && d.score <= 5) {
+      counts[d.score as CustomerSatisfactionLevel]++;
+    }
   });
 
-  const data = [
-    { tipo: "Positiva", cantidad: stats.Positiva },
-    { tipo: "Negativa", cantidad: stats.Negativa },
-    { tipo: "Neutra", cantidad: stats.Neutra },
-  ];
+  const chartData = Object.entries(SatisfactionLabels).map(
+    ([value, label]) => ({
+      name: label,
+      cantidad: counts[Number(value) as CustomerSatisfactionLevel],
+      nivel: Number(value),
+    })
+  );
 
-  // Colores por tipo
-  const COLORS: Record<string, string> = {
-    Positiva: "#22c55e", // verde
-    Negativa: "#ef4444", // rojo
-    Neutra: "#facc15", // amarillo
-  };
-
-  // Tooltip personalizado
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const { tipo, cantidad } = payload[0].payload;
-      return (
-        <div
-          className="p-2 rounded-lg shadow-md text-white"
-          style={{ backgroundColor: COLORS[tipo] }}
-        >
-          <p className="font-semibold">{tipo}</p>
-          <p>{`Cantidad: ${cantidad}`}</p>
-        </div>
-      );
-    }
-    return null;
-  };
+  const totalResponses = data.length;
+  const averageScore = totalResponses > 0 
+    ? (data.reduce((sum, d) => sum + d.score, 0) / totalResponses).toFixed(1)
+    : "0";
 
   return (
-  <div className="max-w-full mt-20 mb-14">
-    {/* Header con gradiente y línea decorativa */}
-    <div className="text-center mb-8">
-      <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent mb-3">
-        Clasificación de Comentarios
-      </h1>
-      <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full mb-2"></div>
-      <p className="text-gray-600 text-sm">Análisis de sentimientos por categoría</p>
-    </div>
-
-    {/* Container del gráfico con diseño premium */}
-    <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 p-8 hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-1">
-      {/* Decoración superior */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-          <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-          <div className="w-3 h-3 bg-indigo-400 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
-        </div>
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 px-3 py-1 rounded-full">
-          <span className="text-sm text-blue-700 font-medium">
-            💬 Análisis de Sentimientos
-          </span>
+    <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+      <div className="mb-6">
+        <h3 className="text-2xl font-bold text-gray-800 mb-2">
+          Distribución de Satisfacción del Cliente
+        </h3>
+        <div className="flex items-center gap-6 text-sm text-gray-600">
+          <div className="flex items-center gap-2">
+            <span className="text-gray-500">Total de respuestas:</span>
+            <span className="font-semibold text-gray-900">{totalResponses}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-gray-500">Puntuación promedio:</span>
+            <span className="font-semibold text-gray-900">{averageScore}/5</span>
+          </div>
         </div>
       </div>
 
-      {/* Gráfico mejorado con mayor altura */}
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer width="100%" height={350}>
         <BarChart 
-          data={data} 
-          barSize={100}
-          margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
-          className="drop-shadow-sm"
+          data={chartData}
+          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
         >
-          <defs>
-            {/* Gradientes para diferentes tipos */}
-            <linearGradient id="positiveGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#10B981" stopOpacity={0.9}/>
-              <stop offset="100%" stopColor="#34D399" stopOpacity={0.7}/>
-            </linearGradient>
-            
-            <linearGradient id="negativeGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#EF4444" stopOpacity={0.9}/>
-              <stop offset="100%" stopColor="#F87171" stopOpacity={0.7}/>
-            </linearGradient>
-            
-            <linearGradient id="neutralGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#6B7280" stopOpacity={0.9}/>
-              <stop offset="100%" stopColor="#9CA3AF" stopOpacity={0.7}/>
-            </linearGradient>
-            
-            {/* Sombra para las barras */}
-            <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="2" dy="4" stdDeviation="4" floodOpacity="0.25"/>
-            </filter>
-          </defs>
-          
-          {/* Líneas de referencia mejoradas */}
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke="#f1f5f9" 
-            opacity={0.8}
-            vertical={false}
-          />
-
+          <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
           <XAxis 
-            dataKey="tipo" 
-            tick={{ fontSize: 14, fill: '#4B5563', fontWeight: '500' }}
-            axisLine={{ stroke: '#e5e7eb', strokeWidth: 2 }}
-            tickLine={{ stroke: '#e5e7eb' }}
+            dataKey="name" 
+            tick={{ fill: '#6B7280', fontSize: 12 }}
+            tickLine={{ stroke: '#E5E7EB' }}
           />
-          
           <YAxis 
             allowDecimals={false}
-            tick={{ fontSize: 12, fill: '#6B7280' }}
-            axisLine={{ stroke: '#e5e7eb' }}
-            tickLine={{ stroke: '#e5e7eb' }}
-            label={{ value: 'Cantidad', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
+            tick={{ fill: '#6B7280', fontSize: 12 }}
+            tickLine={{ stroke: '#E5E7EB' }}
+            label={{ value: 'Número de respuestas', angle: -90, position: 'insideLeft', style: { fill: '#6B7280', fontSize: 12 } }}
           />
-          
-          <Tooltip 
-            content={<CustomTooltip />}
-            contentStyle={{
-              backgroundColor: 'white',
-              border: '1px solid #e5e7eb',
-              borderRadius: '12px',
-              boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
-              fontSize: '14px'
-            }}
-            cursor={{ fill: 'rgba(59, 130, 246, 0.1)' }}
-          />
-          
-          <Legend 
-            wrapperStyle={{
-              paddingTop: '20px',
-              fontSize: '14px',
-              fontWeight: '500'
-            }}
-          />
-          
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }} />
           <Bar 
             dataKey="cantidad" 
-            radius={[12, 12, 0, 0]}
-            filter="url(#shadow)"
-            className="hover:opacity-80 transition-opacity duration-200"
+            radius={[8, 8, 0, 0]}
+            maxBarSize={80}
           >
-            {data.map((entry, index) => (
+            {chartData.map((entry, index) => (
               <Cell 
                 key={`cell-${index}`} 
-                fill={COLORS[entry.tipo]}
-                stroke={COLORS[entry.tipo]}
-                strokeWidth={2}
-                style={{
-                  filter: 'brightness(1.1)'
-                }}
+                fill={COLORS[entry.nivel as CustomerSatisfactionLevel]}
               />
             ))}
           </Bar>
         </BarChart>
       </ResponsiveContainer>
+
+      <div className="mt-6 flex justify-center gap-4 flex-wrap">
+        {Object.entries(SatisfactionLabels).map(([value, label]) => (
+          <div key={value} className="flex items-center gap-2">
+            <div 
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: COLORS[Number(value) as CustomerSatisfactionLevel] }}
+            />
+            <span className="text-xs text-gray-600">{label}</span>
+          </div>
+        ))}
       </div>
     </div>
   );

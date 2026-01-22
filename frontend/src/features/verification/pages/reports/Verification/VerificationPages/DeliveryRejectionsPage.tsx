@@ -3,12 +3,11 @@ import React, { useState } from "react";
 import { useDeliveryRejections } from "../VerificationHocks/useDeliveryRejectionsReport";
 import DeliveryRejectionsFilter from "../VerificationFilters/FilterDeliveryRejections";
 import DeliveryRejectionsTable from "../VerificationComponents/DeliveryRejections/DeliveryRejectionsReport";
-import GraphDeliveryRejectionsReport from "../VerificationGraphs/GraphDeliveryRejectionsReport";
+import { Pagination } from "../../../../../../components/Pagination";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../../../components/BackButton";
 import { RejectionReportFilters } from "../../../../types/FilterReports/FilterReportsEntity";
-import DeliveryRejectionsTeamReport from "../VerificationComponents/DeliveryRejections/DeliveryRejectionsTeamReport";
-import DeliveryRejectionsZoneReport from "../VerificationComponents/DeliveryRejections/DeliveryRejectionsZoneReport";
+
 
 export const DeliveryRejectionsPage: React.FC = () => {
   const [appliedFilters, setAppliedFilters] = useState<RejectionReportFilters>({});
@@ -22,7 +21,7 @@ export const DeliveryRejectionsPage: React.FC = () => {
   });
 
   const handleFilterChange = (filters: RejectionReportFilters) => {
-    console.log("📤 Aplicando filtros desde página:", filters);
+    
     setAppliedFilters(filters);
     setPageNumber(1); // Reiniciar al cambiar filtros
   };
@@ -42,10 +41,10 @@ export const DeliveryRejectionsPage: React.FC = () => {
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
         <BackButton to="/verification/reports" />
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-          Reporte de rechazos de entrega
+          Asignaciones canceladas
         </h1>
         <p className="text-center text-lg text-gray-700 mb-12">
-          Visualiza rechazos registrados, filtra y analiza los resultados.
+          Visualiza todas las asignaciones canceladas por los repartidores, filtra y analiza los resultados.
         </p>
       </div>
 
@@ -59,31 +58,15 @@ export const DeliveryRejectionsPage: React.FC = () => {
         ) : (
           <div className="space-y-12 mt-8">
             <DeliveryRejectionsTable data={data} />
-            <div className="flex justify-center items-center mt-4 gap-4">
-              <button
-                disabled={pagination.pageNumber <= 1}
-                onClick={() => handlePageChange(pagination.pageNumber - 1)}
-                className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-              >
-                ◀ Anterior
-              </button>
 
-              <span>
-                Página {pagination.pageNumber} de {pagination.totalPages || 1}
-              </span>
-
-              <button
-                disabled={pagination.pageNumber >= pagination.totalPages}
-                onClick={() => handlePageChange(pagination.pageNumber + 1)}
-                className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-              >
-                Siguiente ▶
-              </button>
+            <div className="mt-8">
+              <Pagination
+                currentPage={pagination.pageNumber}
+                totalPages={pagination.totalPages || 1}
+                onPageChange={handlePageChange}
+              />
             </div>
-
-            <DeliveryRejectionsTeamReport data={data} />
-            <DeliveryRejectionsZoneReport data={data} />
-            <GraphDeliveryRejectionsReport data={data} />
+           
           </div>
         )}
       </div>

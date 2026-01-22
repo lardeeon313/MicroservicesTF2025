@@ -15,16 +15,16 @@ export enum OrderStatus {
     Delivered = "delivered",  
     Canceled = "canceled",
     Modified = "modified",
-    SentToBilling = "sentToBilling",
     Verified = "verified",
-    PendingVerification = "pendingVerification",
-    PendingDelivery = "pendingDelivery",
-    AssignmentCancelled = "assignmentCancelled", 
-    AssignedDelivery = "assignedDelivery",
     PendingCashVerification = "pendingCashVerification",
+    PendingDelivery = "pendingDelivery",
+    AssignmentCancelled = "assignmentCancelled",
+    AssignedDelivery = "assignedDelivery",
+    PendingVerification = "pendingVerification",
     CashVerified = "cashVerified",
     PendingIncidentResolution = "pendingIncidentResolution",
-    IncidentResolved = "incidentResolved"
+    IncidentResolved = "incidentResolved",
+    SentToBilling = "sentToBilling"
 }
 
 export enum PaymentType {

@@ -36,7 +36,6 @@ using SalesService.Application.Queries.Customers.GetPagedCustomers;
 using SalesService.Infraestructure.Services;
 using System.Security.Claims;
 using System.Text;
-using SalesService.Application.Queries.Orders.GetSalesPerfomanceReport;
 using SalesService.Application.Services.IdentityServiceClient;
 using SalesService.Domain.Common.Interfaces;
 using SalesService.Infraestructure.Email;
@@ -49,8 +48,20 @@ using SalesService.Application.Queries.Customers.GetCustomerAddresses;
 using SalesService.Application.Queries.Customers.GetCustomerPaymentTypes;
 using SalesService.Infraestructure.Messaging.Consumer.DepotConsumers;
 using SalesService.Infraestructure.Messaging.Consumer.LogisticConsumers;
+using SalesService.Application.Queries.Reports.CustomerReport;
+using SalesService.Application.Queries.Reports.CustomerSatisfactionReport;
+using SalesService.Application.Queries.Reports.CustomerInactiveReport;
+using SalesService.Application.Queries.Reports.ModifiedCanceledOrders;
+using SalesService.Application.Queries.Reports.GetSalesPerfomanceReport;
+using SalesService.Application.Queries.Reports.CustomerPaymenTypeReport;
+using SalesService.Application.Commands.Orders.CreateOrderSatisfaction;
+using SalesService.Application.Queries.Orders.GetOrderForSatisfaction;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"
+});
 
 // Add services to the container.
 builder.Services.AddControllers()
@@ -115,11 +126,20 @@ builder.Services.AddScoped<IGetOrderByIdQueryHandler, GetOrderByIdQueryHandler>(
 builder.Services.AddScoped<IGetOrderByStatusQueryHandler, GetOrderByStatusQueryHandler>();
 builder.Services.AddScoped<IGetOrderByIdCustomerQueryHandler, GetOrderByIdCustomerQueryHandler>();
 builder.Services.AddScoped<IGetAllOrdersQueryHandler, GetAllOrdersQueryHandler>();
-builder.Services.AddScoped<IGetSalesPerfomanceReportQueryHandler,  GetSalesPerfomanceReportQueryHandler>();
 builder.Services.AddScoped<IOrderReissuedCommandHandler, OrderReissuedCommandHandler>();
 builder.Services.AddScoped<IUpdateMissingOrderCommandHandler, UpdateMissingOrderCommandHandler>();
 builder.Services.AddScoped<IGetAllMissingOrdersQueryHandler, GetAllMissingOrdersQueryHandler>();
 builder.Services.AddScoped<IGetCustomerAddressesQueryHandler, GetCustomerAddressesQueryHandler>();
+builder.Services.AddScoped<ICreateOrderSatisfactionCommandHandler, CreateOrderSatisfactionCommandHandler>();
+builder.Services.AddScoped<IGetOrderForSatisfactionQueryHandler, GetOrderForSatisfactionQueryHandler>();
+
+// Add Services Query Handlers / Reports
+builder.Services.AddScoped<IGetCustomerReportQueryHandler, GetCustomerReportQueryHandler>();
+builder.Services.AddScoped<IGetCustomerSatisfactionQueryHandler, GetCustomerSatisfactionQueryHandler>();
+builder.Services.AddScoped<IGetCustomerInactiveQueryHandler, GetCustomerInactiveQueryHandler>();
+builder.Services.AddScoped<IGetModifiedCanceledOrdersQueryHandler , GetModifiedCanceledOrdersQueryHandler>();
+builder.Services.AddScoped<IGetSalesPerfomanceReportQueryHandler, GetSalesPerfomanceReportQueryHandler>();
+builder.Services.AddScoped<IGetCustomerPaymentTypeQueryHandler, GetCustomerPaymentTypeQueryHandler>();
 
 // Add EmailService
 builder.Services.AddScoped<IEmailService, MailgunEmailService>();
@@ -131,6 +151,7 @@ builder.Services.AddHttpContextAccessor(); // Necesario para acceder al contexto
 // Add services Repository and DbContext
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
 
 // Add RabbitMQ
 builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
@@ -150,16 +171,20 @@ builder.Services.AddHostedService<OrderDeliveryIncidentConsumer>();
 builder.Services.AddHostedService<OrderOnTheWayConsumer>();
 builder.Services.AddHostedService<OrderResolveIncidentConsumer>();
 
-// Obtener la cadena de conexión del appsettings.json
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// Obtener las variables de configuración
+var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
+var rabbitHost = builder.Configuration["RabbitMQ:Host"];
+var rabbitPort = builder.Configuration["RabbitMQ:Port"];
+var rabbitUser = builder.Configuration["RabbitMQ:Username"];
+var rabbitPass = builder.Configuration["RabbitMQ:Password"];
+var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var mailApi = builder.Configuration["MailSettings:ApiKey"];
 
 // Registrar el DbContext
 builder.Services.AddDbContext<SalesDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
         b => b.MigrationsAssembly("SalesService.Infraestructure")));
-
-var jwtKey = builder.Configuration["Jwt:Key"];
-var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 
 // Configuración de autenticación JWT
 builder.Services.AddAuthentication("Bearer")

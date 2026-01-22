@@ -1,12 +1,19 @@
-import { usePerfomanceSalesReport } from "../../hooks/usePerfomanceSalesReport";
-import { SalesPerfomanceReportTable } from "../../components/Reports/PerfomanceSalesReport/SalesPerfomanceReportTable";
-import { GraphSalesPerfomanceReport } from "../../components/Reports/PerfomanceSalesReport/GraphSalesPerfomanceReport";
-import SalesPerfomanceReportFilter from "./SalesFilters/SalesPerfomanceReportFilter";
+import { useState } from "react";
+//import { AdminUsePerfomanceSalesReport } from "../Hocks/AdminSalesStaffPerfomanceHock";
+import { AdminUsePerfomanceSalesReport } from "../../../admin/pages/AdminDashboardFeatures/ReportsSales/Hocks/AdminSalesStaffPerfomanceHock";
+//import { AdminSalesStaffPerfomanceTable } from "../Components/AdminSalesStaffPerfomanceTable";
+import { AdminSalesStaffPerfomanceTable } from "../../../admin/pages/AdminDashboardFeatures/ReportsSales/Components/AdminSalesStaffPerfomanceTable";
+//import { AdminGraphSalesStaffPerfomance } from "../Graphs/AdminGraphSalesStaffPerfomance";
+import { AdminGraphSalesStaffPerfomance } from "../../../admin/pages/AdminDashboardFeatures/ReportsSales/Graphs/AdminGraphSalesStaffPerfomance";
+//import AdminSalesPerfomanceReportFilter from "../Filters/AdminSalesStaffPerfomanceFilter";
+import AdminSalesPerfomanceReportFilter from "../../../admin/pages/AdminDashboardFeatures/ReportsSales/Filters/AdminSalesStaffPerfomanceFilter";
+//import BackButton from "../../../../../../components/BackButton";
 import BackButton from "../../../../components/BackButton";
 
-export const SalesPerfomanceReportPage = () => {
+export const SalesStaffPerfomancePage = () => {
   const {
     data,
+    filteredData,
     loading,
     salesRange,
     setSalesRange,
@@ -14,35 +21,71 @@ export const SalesPerfomanceReportPage = () => {
     setDateFrom,
     dateTo,
     setDateTo,
-  } = usePerfomanceSalesReport();
+    fetchReport,
+    clearFilters,
+  } = AdminUsePerfomanceSalesReport();
+
+  const [showGraph, setShowGraph] = useState(false);
+
+  const handleRefresh = () => {
+    window.location.reload();
+  };
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
-        <BackButton to="/sales/reports/dashboard"></BackButton>
+        <BackButton to="/sales/reports/dashboard" />
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-36">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-20">
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-          Rendimiento de Ventas
+          Desempeño de ventas
         </h1>
+
         <p className="text-center text-lg text-gray-700 mb-12">
-          Se visualiza el rendimiento de todos los encargados de ventas
+          Se visualiza el rendimiento de todos los usuarios con el rol de encargado de ventas
         </p>
 
-        {/* 🔹 Filtros (componente separado) */}
-        <SalesPerfomanceReportFilter
-          salesRange={salesRange}
-          setSalesRange={setSalesRange}
-          dateFrom={dateFrom}
-          setDateFrom={setDateFrom}
-          dateTo={dateTo}
-          setDateTo={setDateTo}
-        />
+        {/* Filtros */}
+        <div className="mb-4">
+          <AdminSalesPerfomanceReportFilter
+            salesRange={salesRange}
+            setSalesRange={setSalesRange}
+            dateFrom={dateFrom}
+            setDateFrom={setDateFrom}
+            dateTo={dateTo}
+            setDateTo={setDateTo}
+            onSearch={fetchReport}
+            onClear={clearFilters}
+          />
+        </div>
 
-        {/* Tabla y gráfico */}
-        <SalesPerfomanceReportTable data={data} loading={loading} />
-        <GraphSalesPerfomanceReport data={data} />
+        {/* Botones */}
+        <div className="flex justify-end gap-2 mb-6">
+          <button
+            onClick={() => setShowGraph(!showGraph)}
+            className="px-4 py-2 rounded-lg shadow text-white font-medium bg-blue-600 hover:bg-blue-700 transition flex items-center gap-2"
+          >
+            {showGraph ? "Ocultar Gráfico" : "Mostrar Gráfico"}
+          </button>
+
+          <button
+            onClick={handleRefresh}
+            className="px-4 py-2 rounded-lg shadow text-white font-medium bg-red-600 hover:bg-red-700 transition flex items-center gap-2"
+          >
+            Refrescar Reporte
+          </button>
+        </div>
+
+        {/* Tabla */}
+        <AdminSalesStaffPerfomanceTable data={filteredData} loading={loading} />
+
+        {/* Gráfico */}
+        {showGraph && (
+          <div className="mt-10">
+            <AdminGraphSalesStaffPerfomance data={data} />
+          </div>
+        )}
       </div>
     </div>
   );

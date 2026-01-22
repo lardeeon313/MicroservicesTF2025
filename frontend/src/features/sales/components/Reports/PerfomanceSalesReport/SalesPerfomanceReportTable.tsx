@@ -1,15 +1,18 @@
-
+//import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import LoadingSpinner from "../../../../../components/LoadingSpinner";
-import { SalesPerfomanceDto } from "../../../types/OrderTypes";
+//import { SalesPerfomanceReportType } from "../Types/SalesPerfomanceReportType";
+import { SalesPerfomanceReportType } from "../../../../admin/pages/AdminDashboardFeatures/ReportsSales/Types/SalesPerfomanceReportType";
 import { format, parseISO } from "date-fns";
 
 interface Props {
-  data: SalesPerfomanceDto[];
+  data: SalesPerfomanceReportType[];
   loading: boolean;
 }
 
-export const SalesPerfomanceReportTable = ({ data, loading }: Props) => {
-  if (loading) return <LoadingSpinner message="Cargando..." height="h-screen" />;
+export const SalesStaffPerfomanceTable = ({ data, loading }: Props) => {
+  if (loading) {
+    return <LoadingSpinner message="Cargando..." height="h-screen" />;
+  }
 
   // Calcular totales
   const totalOrders = data.reduce((acc, item) => acc + item.totalOrders, 0);
@@ -97,18 +100,34 @@ export const SalesPerfomanceReportTable = ({ data, loading }: Props) => {
             ))}
           </tbody>
           <tfoot>
-            <tr className="bg-gray-50 border-t border-gray-200">
+            <tr className="bg-gray-50 border-t border-gray-200 text-sm">
               <td className="px-6 py-4">
-                <div className="text-sm text-gray-600">
-                  Total: {data.length} {data.length === 1 ? 'vendedor' : 'vendedores'}
+                <div className="text-gray-600 font-medium">
+                  Total de vendedores:
+                  <span className="ml-1 text-gray-900 font-semibold">
+                    {data.length}
+                  </span>
                 </div>
               </td>
+
               <td className="px-6 py-4">
-                <div className="text-sm font-semibold text-gray-900">{totalOrders}</div>
+                <div className="text-gray-600 font-medium">
+                  Total de órdenes:
+                  <span className="ml-1 text-gray-900 font-semibold">
+                    {totalOrders}
+                  </span>
+                </div>
               </td>
+
               <td className="px-6 py-4">
-                <div className="text-sm font-semibold text-gray-900">{totalUnitsSold}</div>
+                <div className="text-gray-600 font-medium">
+                  Unidades vendidas:
+                  <span className="ml-1 text-gray-900 font-semibold">
+                    {totalUnitsSold}
+                  </span>
+                </div>
               </td>
+
               <td className="px-6 py-4"></td>
             </tr>
           </tfoot>

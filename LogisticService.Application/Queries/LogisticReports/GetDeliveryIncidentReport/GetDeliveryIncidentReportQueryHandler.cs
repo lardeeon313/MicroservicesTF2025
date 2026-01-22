@@ -1,11 +1,11 @@
-﻿
-using LogisticService.Application.DTOs;
+﻿using LogisticService.Application.DTOs;
 using LogisticService.Application.DTOs.LogisticReportDtos;
 using LogisticService.Application.Queries.LogisticReports.GetDeliveryIncidentReport;
 using LogisticService.Application.Services.IdentityServiceClient;
 using LogisticService.Domain.IRepositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SalesService.Domain.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,18 +27,22 @@ namespace LogisticService.Application.Queries.LogisticReports
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>          
-        public async Task<List<DeliveryIncidentReportDto>> HandleAsync(GetDeliveryIncidentReportQuery query)
+        public async Task<PagedResult<DeliveryIncidentReportDto>> HandleAsync(GetDeliveryIncidentReportQuery query)
         {
             var incidents = await _repository.GetDeliveryIncidentsReportQuery(
                 query.StartDate,
                 query.EndDate,
                 query.DeliveryZoneId,
                 query.DeliveryTeamId,
-                query.OperatorId,
-                query.Resolved
+                query.OperatorId,   
+                query.Resolved,
+                query.PageNumber,
+                query.PageSize  
             );
 
-            _logger.LogInformation("Se recuperaron {Count} incidencias para el reporte.", incidents.Count);
+            _logger.LogInformation("Se recuperaron {Count} incidencias (página {Page}) para el reporte.",
+                incidents.Items.Count(),
+                query.PageNumber);
 
             // Obtener operadores desde el Identity Service
             var deliveryOperators = await _identityServiceClient.GetUserWithRoleDeliveryOperator()
@@ -47,8 +51,8 @@ namespace LogisticService.Application.Queries.LogisticReports
             // Crear diccionario para búsqueda rápida
             var operatorsById = deliveryOperators
                 .ToDictionary(op => op.Id.ToLowerInvariant(), op => op);
-
-            var result = incidents.Select(i =>
+            
+            var result = incidents.Items.Select(i =>
             {
                 string fullNameDelivering = string.Empty;
                 string fullNameReportedBy = string.Empty;
@@ -89,7 +93,14 @@ namespace LogisticService.Application.Queries.LogisticReports
                 };
             }).ToList();
 
-            return result;
+            // Devolver resultado paginado
+            return new PagedResult<DeliveryIncidentReportDto>
+            {
+                Items = result,
+                TotalCount = incidents.TotalCount,
+                PageNumber = incidents.PageNumber,
+                PageSize = incidents.PageSize
+            };
         }
     }
 }

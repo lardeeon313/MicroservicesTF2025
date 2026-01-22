@@ -12,20 +12,20 @@ type Props = {
 }
 
 const AcceptOrder = ({order, onAccept, onReject}: Props) => {
-  console.log("LOG de los productos:", order);
   return (
-  <ScrollView style={{padding: 24,backgroundColor: '#f9f9f9',flexGrow: 1,}}>
-    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
-      <PackageCheck size={22} color="#333" style={{ marginRight: 8 }} />
-        <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#333' }}>
-          Pedido: {order.depotOrderId}
+  <ScrollView style={{padding: 24,flexGrow: 1,}}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+      <PackageCheck size={26} color="#222" style={{ marginRight: 10 }} />
+        <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#222' }}>
+          Confirmar Pedido #{order.depotOrderId}
         </Text>
     </View>
 
-    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    {/* CLIENTE */}
+    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
       <UserRound size={20} color="#555" style={{ marginRight: 8 }} />
         <Text style={{ fontSize: 18, color: '#555' }}>
-          Cliente: {order.customerEmail}
+          {order.customerEmail}
         </Text>
     </View>
 
@@ -48,7 +48,7 @@ const AcceptOrder = ({order, onAccept, onReject}: Props) => {
             textAlign: 'center',
           }}
         >
-          • {producto.productName} x {producto.quantity}
+          • {producto.productName} , {producto.productBrand} x {producto.quantity}
         </Text>
       ))}
 
@@ -68,30 +68,30 @@ const AcceptOrder = ({order, onAccept, onReject}: Props) => {
     </View>
 
       <View style={{marginTop: 30,gap: 16,}}>
-      <TouchableOpacity
-        onPress={onAccept}
-        style={{
-          backgroundColor: '#28a745',
-          paddingVertical: 14,
-          borderRadius: 8,
-          alignItems: 'center',
-        }}
-      >
-        <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>Aceptar</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={onAccept}
+          style={{
+            backgroundColor: '#28a745',
+            paddingVertical: 14,
+            borderRadius: 8,
+            alignItems: 'center',
+          }}
+        >
+          <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>Aceptar</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={onReject}
-        style={{
-          backgroundColor: '#dc3545',
-          paddingVertical: 14,
-          borderRadius: 8,
-          alignItems: 'center',
-        }}
-      >
-        <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>Rechazar</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity
+          onPress={onReject}
+          style={{
+            backgroundColor: '#dc3545',
+            paddingVertical: 14,
+            borderRadius: 8,
+            alignItems: 'center',
+          }}
+        >
+          <Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>Rechazar</Text>
+        </TouchableOpacity>
+      </View>
 
     </ScrollView>
   );

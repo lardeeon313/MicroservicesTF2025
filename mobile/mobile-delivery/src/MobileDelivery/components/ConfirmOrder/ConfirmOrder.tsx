@@ -24,11 +24,11 @@ export default function ConfirmOrderComponent({ order, loading, onConfirm }: Con
           {order.deliveryAddress.street} {order.deliveryAddress.number}, {order.deliveryAddress.city}
         </Text>
         <Text style={styles.label}>Estado:</Text>
-        <Text style={styles.text}>{order.status}</Text>
+        <Text style={styles.text}>{(order as any).statusLabel}</Text>
         <Text style={styles.label}>Tipo de Pago:</Text>
-        <Text style={styles.text}>{order.paymentType}</Text>
+        <Text style={styles.text}>{(order as any).paymentTypeLabel}</Text>
         <Text style={styles.label}>Prioridad:</Text>
-        <Text style={styles.text}>{order.deliveryPriority}</Text>
+        <Text style={styles.text}>{(order as any).deliveryPriorityLabel}</Text>
         {order.totalAmount && (
           <>
             <Text style={styles.label}>Total:</Text>
@@ -67,7 +67,7 @@ export default function ConfirmOrderComponent({ order, loading, onConfirm }: Con
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f9f9f9", padding: 16 },
+  container: { flex: 1, padding: 16 },
   title: { fontSize: 20, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
   card: { backgroundColor: "#fff", borderRadius: 10, padding: 16, marginBottom: 16, elevation: 3 },
   label: { fontWeight: "bold", fontSize: 16, color: "#333" },

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace DepotService.Infraestructure.Persistence.Repositories
 {
     public class DepotReportRepository : IDepotReportRepository
@@ -22,50 +23,72 @@ namespace DepotService.Infraestructure.Persistence.Repositories
             _logger = logger;
         }
 
-        public async Task<PaginatedResult<OrderProcessingTime>> GetAverageProcessingTimePerOrderAsync(DateTime? from, DateTime? to, int page, int pageSize)
+        public async Task<PaginatedResult<OrderProcessingTime>> GetAverageProcessingTimePerOrderAsync(DateTime? from, DateTime? to, string? operatorId, string? customer, int page, int pageSize)
         {
-            var query = _context.OrderStatusHistories.AsQueryable();
+            var query = _context.DepotOrders
+                .Include(o => o.StatusHistory)
+                .AsQueryable();
 
+            // filtro por rango de fechas
             if (from.HasValue)
-                query = query.Where(h => h.ChangedAt >= from.Value);
-            if (to.HasValue)
-                query = query.Where(h => h.ChangedAt <= to.Value);
+                query = query.Where(o => o.StatusHistory.Any(h => h.ChangedAt >= from.Value));
 
-            var grouped = query
-                .GroupBy(h => h.OrderId)
-                .Select(g => new
+            if (to.HasValue)
+                query = query.Where(o => o.StatusHistory.Any(h => h.ChangedAt <= to.Value));
+
+            if (!string.IsNullOrEmpty(operatorId)
+                && Guid.TryParse(operatorId, out var opGuid))
+                query = query.Where(o => o.AssignedOperatorId == opGuid);
+
+            if (!string.IsNullOrEmpty(customer))
+                query = query.Where(o => o.CustomerName.Contains(customer));
+
+            // proceso de calculo de tiempos
+            var processed = query
+                .Select(o => new
                 {
-                    OrderId = g.Key,
-                    Start = g
+                    o.DepotOrderId,
+                    o.CustomerName,
+                    o.AssignedOperatorId,
+
+                    StartPreparation = o.StatusHistory
                         .Where(h => h.NewStatus == OrderStatus.InPreparation)
                         .OrderBy(h => h.ChangedAt)
                         .Select(h => h.ChangedAt)
                         .FirstOrDefault(),
-                    End = g
-                        .Where(h => h.NewStatus == OrderStatus.SentToBilling)
-                        .OrderByDescending(h => h.ChangedAt)
+
+                    Prepared = o.StatusHistory
+                        .Where(h => h.NewStatus == OrderStatus.Prepared)
+                        .OrderBy(h => h.ChangedAt)
                         .Select(h => h.ChangedAt)
                         .FirstOrDefault()
                 })
-                .Where(x => x.Start != default && x.End != default && x.End > x.Start);
-
-            var totalItems = await grouped.CountAsync();
+                .Where(x =>
+                    x.StartPreparation != default &&
+                    x.Prepared != default &&
+                    x.Prepared > x.StartPreparation);
+            // paginacion
+            var totalItems = await processed.CountAsync();
             var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
 
-            var results = await grouped
-                .OrderByDescending(x => x.End)
+            var items = await processed
+                .OrderByDescending(x => x.Prepared)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Select(x => new OrderProcessingTime
                 {
-                    OrderId = x.OrderId,
-                    DurationMinutes = EF.Functions.DateDiffMinute(x.Start, x.End)
+                    OrderId = x.DepotOrderId,
+                    CustomerName = x.CustomerName,
+                    OperatorId = x.AssignedOperatorId,
+                    StartPreparation = x.StartPreparation,
+                    Prepared = x.Prepared,
+                    DurationMinutes = EF.Functions.DateDiffMinute(x.StartPreparation, x.Prepared)
                 })
                 .ToListAsync();
 
             return new PaginatedResult<OrderProcessingTime>
             {
-                Items = results,
+                Items = items,
                 TotalItems = totalItems,
                 TotalPages = totalPages,
                 CurrentPage = page
@@ -74,7 +97,9 @@ namespace DepotService.Infraestructure.Persistence.Repositories
 
         public async Task<List<OrderStatusAverage>> GetAverageTimePerStatusAsync(DateTime? from, DateTime? to)
         {
-            var query = _context.OrderStatusHistories.AsQueryable();
+            var query = _context.OrderStatusHistories
+                .Include(h => h.DepotOrderEntity)
+                .AsQueryable();
 
             if (from.HasValue)
                 query = query.Where(h => h.ChangedAt >= from.Value);
@@ -83,9 +108,9 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 query = query.Where(h => h.ChangedAt <= to.Value);
 
             var histories = await query
-    .OrderBy(h => h.OrderId)
-    .ThenBy(h => h.ChangedAt)
-    .ToListAsync();
+                .OrderBy(h => h.OrderId)
+                .ThenBy(h => h.ChangedAt)
+                .ToListAsync();
 
             var result = new List<OrderStatusAverage>();
 
@@ -104,6 +129,7 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 {
                     Id = history.Id,
                     OrderId = history.OrderId,
+                    CustomerName = history.DepotOrderEntity.CustomerName,
                     OldStatus = history.OldStatus,
                     NewStatus = history.NewStatus,
                     ChangedAt = history.ChangedAt,
@@ -117,8 +143,9 @@ namespace DepotService.Infraestructure.Persistence.Repositories
         public async Task<PaginatedResult<CompletedOrdersReport>> GetCompletedOrdersAsync(DateTime? from, DateTime? to, int page, int pageSize)
         {
             var query = _context.DepotOrders
-                .AsNoTracking()
-                .Where(o => o.Status == OrderStatus.Prepared);
+        .AsNoTracking()
+        .Include(o => o.StatusHistory)
+        .Where(o => o.Status >= OrderStatus.Prepared);
 
             if (from.HasValue)
                 query = query.Where(o => o.OrderDate >= from.Value);
@@ -135,16 +162,17 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 .Select(o => new CompletedOrdersReport
                 {
                     DepotOrderId = o.DepotOrderId,
-                    SalesOrderId = o.SalesOrderId,
                     CustomerName = o.CustomerName,
-                    CustomerEmail = o.CustomerEmail,
+                    OperatorId = o.AssignedOperatorId,
                     OrderDate = o.OrderDate,
-                    CompletedAt = o.StatusHistory
+
+                    PreparedAt = o.StatusHistory
                         .Where(h => h.NewStatus == OrderStatus.Prepared)
-                        .OrderByDescending(h => h.ChangedAt)
+                        .OrderBy(h => h.ChangedAt)
                         .Select(h => h.ChangedAt)
                         .FirstOrDefault(),
-                    DeliveryDate = o.DeliveryDate,
+
+                    DeliveryDate = o.DeliveryDate
                 })
                 .ToListAsync();
 
@@ -153,58 +181,73 @@ namespace DepotService.Infraestructure.Persistence.Repositories
                 Items = items,
                 TotalItems = totalCount,
                 CurrentPage = page,
-                TotalPages = pageSize
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
             };
         }
 
-        public async Task<List<DepotTeamPerformance>> GetDepotTeamPerformancesAsync(DateTime? from, DateTime? to)
+        public async Task<List<DepotTeamPerformance>> GetDepotTeamPerformancesAsync(DateTime? from, DateTime? to, bool agruparPorEquipo)
         {
             var orders = _context.DepotOrders
                 .Include(o => o.AssignedDepotTeam)
                 .Include(o => o.StatusHistory)
                 .Include(o => o.Missings)
-                .Where(o => o.AssignedDepotTeamId != null)
                 .AsQueryable();
 
-            if (from.HasValue)
+            // Filtrar por rango de fechas
+            if (from.HasValue && to.HasValue)
             {
-                _logger.LogInformation("Primer Filtro del FROM: {From}", from.Value);
                 orders = orders.Where(o =>
-                    o.OrderDate >= from.Value || (o.DeliveryDate.HasValue && o.DeliveryDate.Value >= from.Value));
+                    (o.OrderDate >= from.Value && o.OrderDate <= to.Value) ||
+                    (o.DeliveryDate != null &&
+                     o.DeliveryDate >= from.Value && o.DeliveryDate <= to.Value));
             }
 
-            if (to.HasValue)
+            if (agruparPorEquipo)
             {
-                _logger.LogInformation("Segundo Filtro del TO: {To}", to.Value);
-                orders = orders.Where(o =>
-                    o.OrderDate <= to.Value || (o.DeliveryDate.HasValue && o.DeliveryDate.Value <= to.Value));
+                return await orders
+                    .Where(o => o.AssignedDepotTeamId != null)
+                    .GroupBy(o => new { o.AssignedDepotTeamId, o.AssignedDepotTeam!.TeamName })
+                    .Select(g => new DepotTeamPerformance
+                    {
+                        DepotTeamId = g.Key.AssignedDepotTeamId!.Value,
+                        TeamName = g.Key.TeamName,
+                        IsTeam = true,
+                        OrdersHandled = g.Count(),
+                        MissingItemsReported = g.Sum(x => x.Missings.Count)
+                    })
+                    .ToListAsync();
             }
 
-            var grouped = await orders
+            // Si NO agrupo por equipo → equipo + operarios
+            var equipoData = await orders
+                .Where(o => o.AssignedDepotTeamId != null)
                 .GroupBy(o => new { o.AssignedDepotTeamId, o.AssignedDepotTeam!.TeamName })
                 .Select(g => new DepotTeamPerformance
                 {
                     DepotTeamId = g.Key.AssignedDepotTeamId!.Value,
                     TeamName = g.Key.TeamName,
+                    IsTeam = true,
                     OrdersHandled = g.Count(),
-                    MissingItemsReported = g.SelectMany(o => o.Missings).Count(),
-                    AverageProcessingTimeMinutes = (int)g.Average(o =>
-                        EF.Functions.DateDiffMinute(
-                            o.StatusHistory
-                                .Where(s => s.NewStatus == OrderStatus.InPreparation)
-                                .OrderBy(s => s.ChangedAt)
-                                .Select(s => s.ChangedAt)
-                                .FirstOrDefault(),
-                            o.StatusHistory
-                                .Where(s => s.NewStatus == OrderStatus.SentToBilling)
-                                .OrderByDescending(s => s.ChangedAt)
-                                .Select(s => s.ChangedAt)
-                                .FirstOrDefault()
-                        ))
+                    MissingItemsReported = g.Sum(o => o.Missings.Count)
                 })
                 .ToListAsync();
 
-            return grouped;
+            var operadoresData = await orders
+                .Where(o => o.AssignedOperatorId != null)
+                .GroupBy(o => new { o.AssignedOperatorId, o.AssignedDepotTeam!.TeamName })
+                .Select(g => new DepotTeamPerformance
+                {
+                    DepotTeamId = null,
+                    OperatorId = g.Key.AssignedOperatorId!.Value,
+                    TeamName = g.Key.TeamName,
+                    OperatorFullName = "",
+                    IsTeam = false,
+                    OrdersHandled = g.Count(),
+                    MissingItemsReported = g.Sum(o => o.Missings.Count)
+                })
+                .ToListAsync();
+
+            return equipoData.Concat(operadoresData).ToList();
         }
 
         public async Task<List<OrderStatusCount>> GetOrderCountPerStatusAsync(DateTime? from, DateTime? to)

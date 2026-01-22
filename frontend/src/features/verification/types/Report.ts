@@ -100,6 +100,32 @@ export const OrderStatusLabelsReport: Record<number, string> = {
   21: "Incidente resuelto"
 };
 
+export const OrderStatusBackendLogisticMap: Record<number, string> = {
+  0: "pending",
+  1: "issued",
+  2: "confirmed",
+  3: "inPreparation",
+  4: "prepared",
+  5: "sentToBilling",
+  6: "invoiced",
+  7: "verified",
+  8: "onTheWay",
+  9: "delivered",
+  10: "canceled",
+  11: "pendingResolution",
+  12: "reIssued",
+  13: "pendingReissued",
+  14: "pendingVerification",
+  15: "pendingDelivery",
+  16: "assignmentCancelled",
+  17: "assignedDelivery",
+  18: "pendingCashVerification",
+  19: "cashVerified",
+  20: "pendingIncidentResolution",
+  21: "incidentResolved"
+};
+
+
 
 export const OrderStatusLabelsReportEs: Record<string, string> = {
   pending: "Pendiente",
@@ -132,6 +158,8 @@ export interface TeamActivityReport {
   teamName: string;
   totalOrders: number;
   deliveredOrders: number;
+  onTheWayOrders: number;
+  pendingCashVerificationOrders: number;
   incidentsCount: number;
   rejectionsCount: number;
   averageDeliveryTimeHours: number;
@@ -154,6 +182,8 @@ export interface PendingCashVerificationReport {
 
 export interface OperatorProductivityReport {
   operatorId: string;
+  deliveryTeamId: number | null;   // ← viene desde la DB de Logistic
+  teamName: string | null;         // ← viene desde AssignedDeliveryTeam
   fullNameDeliveringOperator: string;
   totalOrders: number;
   deliveredOrders: number;
@@ -168,6 +198,8 @@ export interface OperatorProductivityReport {
 export interface DeliveryTimeReportItem {
   deliveryZoneId: number;
   deliveryZoneName: string;
+  teamId: number;
+  teamName: string;  
   operatorId: string;
   fullNameDeliveringOperator: string;
   totalDeliveredOrders: number;
@@ -228,4 +260,28 @@ export interface PagedResponse<T> {
   pageNumber: number;
   pageSize: number;
   totalPages: number;
+}
+
+///
+export interface DeliveryTimeReportDto {
+  deliveryZoneId: number | null;
+  deliveryZoneName: string | null;
+  teamId: number | null;
+  teamName: string | null;
+  operatorId: string;
+  fullNameDeliveringOperator: string;
+  totalDeliveredOrders: number;
+  estimatedDeliveryDate?: string;
+  actualDeliveryDate?: string;
+  deliveredOnTime: boolean;
+  delayInHours?: number;
+  orderId?: number;
+}
+
+export interface GeneralGridRow {
+  teamName: string | null;
+  zoneName: string | null;
+  total: number;
+  onTime: number;
+  late: number;
 }

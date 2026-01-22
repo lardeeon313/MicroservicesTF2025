@@ -1,14 +1,8 @@
-import {Boxes, TriangleAlert,Siren,ShieldX,Users,History,LandPlot,Clock2,PersonStanding,Receipt } from "lucide-react";
+import { TriangleAlert,ShieldX,Users,History,LandPlot,Clock2,PersonStanding,Receipt } from "lucide-react";
 import { Link } from "react-router-dom";
 import BackButton from "../../../../components/BackButton";
 
 const cards = [
-    {
-        title: "Clientes con mayor Incidencia",
-        description : "Visualiza todos los clientes que han tenido la mayor cantidad de incidentes",
-        icon: <Siren className="h-10 w-10 text-red-600" />,
-        link: "/verification/reports/CustomersIncidents",
-    },
     {
         title: "Incidentes de entrega",
         description: "Revisa cuales fueron los pedidos que tuvieron incidentes durante , antes o despues del reparto.",
@@ -16,8 +10,8 @@ const cards = [
         link: "/verification/reports/OrderIncidents",
     },
     {
-        title: "Pedidos Rechazados",
-        description : "Visualiza todos los pedidos que han sido rechazados por el repartidor y el impacto obtenido.",
+        title: "Asignaciones canceladas",
+        description : "Visualiza todas las asignaciones canceladas por los repartidores.",
         icon: <ShieldX className="h-10 w-10 text-red-600"/>,
         link: "/verification/reports/RejectOrders",
     },
@@ -32,12 +26,6 @@ const cards = [
         description : "Visualiza todos los pedidos que ya han sido entregados por los diferentes equipos de reparto.",
         icon : <Clock2 className="h-10 w-10 text-red-600"/>,
         link : "/verification/reports/DeliveryTimes",
-    },
-    {
-        title: "Estados de cada pedido",
-        description : "Verifica la cantidad de pedidos que hay por estado.",
-        icon : <Boxes className="h-10 w-10 text-red-600" />,
-        link: "/verification/reports/OrderStatus",
     },
     {
         title : "Historial de estados de pedido",
@@ -59,7 +47,7 @@ const cards = [
         link: "/verification/reports/OperatorProdictivity",
     },
     {
-        title: "Eficiencia por Zona",
+        title: "Cantidad de pedidos por zona",
         description: "Visualiza la cantidad de pedidos entregados por las diferentes zonas",
         icon: <LandPlot className="h-10 w-10 text-purple-600"/>,
         link: "/verification/reports/ZonePerfomance"

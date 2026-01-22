@@ -20,5 +20,8 @@ namespace LogisticService.Application.DTOs.LogisticOrderDtos
         public DateTime? ResolvedAt { get; set; }
         public string? ResolutionNote { get; set; }
         public DeliveryIncidentStatus DeliveryIncidentStatus { get; set; }
+
+        //Nuevo : para que se vea en el modal de incidentes 
+        public string? ReportedByOperatorFullName { get; set; }
     }
 }

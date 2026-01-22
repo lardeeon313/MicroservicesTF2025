@@ -1,4 +1,5 @@
 ﻿using LogisticService.Application.DTOs.LogisticReportDtos;
+using SalesService.Domain.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace LogisticService.Application.Queries.LogisticReports.GetDeliveryRejecti
 {
     public interface IGetDeliveryRejectionsReportQueryHandler
     {
-        Task<List<DeliveryRejectionReportDto>> HandleAsync(GetDeliveryRejectionsReportQuery query);
+        Task<PagedResult<DeliveryRejectionReportDto>> HandleAsync(GetDeliveryRejectionsReportQuery query);
     }
 }

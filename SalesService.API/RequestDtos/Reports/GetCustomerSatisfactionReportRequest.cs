@@ -1,0 +1,14 @@
+﻿using SalesService.Domain.Helper;
+
+namespace SalesService.API.RequestDtos.Reports
+{
+    public class GetCustomerSatisfactionReportRequest
+    {
+        public string? Name { get; init; }
+        public string? Email { get; init; }
+        public string? Level { get; set; }
+
+        public int Page { get; init; } = 1;
+        public int PageSize { get; init; } = 10;
+    }
+}

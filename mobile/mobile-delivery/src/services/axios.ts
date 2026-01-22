@@ -5,9 +5,8 @@ import { Platform } from "react-native";
 // 💡 Definí directamente la URL correcta acá
 const API_BASE_URL =
   Platform.OS === "web"
-    ? "http://localhost:5000/"          // si estás probando desde el navegador
-    : "http://192.168.100.10:5000/";    // si usás Expo Go en el celular
-
+    ? "http://localhost:5000/"
+    : "http://192.168.100.206:5000/";
 console.log("✅ API_BASE_URL inicializada:", API_BASE_URL);
 
 // Crear instancia de axios

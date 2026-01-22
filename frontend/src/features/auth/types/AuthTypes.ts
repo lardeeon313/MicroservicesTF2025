@@ -52,7 +52,7 @@ export interface JwtPayload {
 
 export interface ProtectedRouteProps {
   children: JSX.Element;
-  requiredRole?: string;
+  requiredRoles?: string[];
 }
 
 export interface SalesStaffDto {

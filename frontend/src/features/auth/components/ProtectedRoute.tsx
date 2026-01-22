@@ -3,22 +3,28 @@ import { getRoleFromToken } from "../../../utils/jwtUtils";
 import { useAuth } from "../context/useAuth";
 import { ProtectedRouteProps } from "../types/AuthTypes";
 
+// ProtectedRoute valida autenticación y autorización por roles
+const ProtectedRoute = ({ children, requiredRoles }: ProtectedRouteProps) => {
+  const { token, isAuthenticated } = useAuth();
 
-// ProtectedRoute se encarga de validar las credenciales del usuario, y lo redirige en base a la respuesta
-const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
-    const { token, isAuthenticated } = useAuth();
+  // 1️⃣ No autenticado
+  if (!isAuthenticated || !token) {
+    return <Navigate to="/login" replace />;
+  }
 
-    if(!isAuthenticated || !token ) {
-        return <Navigate to={"/login"} replace/>
+  // 2️⃣ Autorización por roles (si aplica)
+  if (requiredRoles && requiredRoles.length > 0) {
+    const role = getRoleFromToken(token);
+
+    const hasAccess = role && requiredRoles.includes(role);
+
+    if (!hasAccess) {
+      return <Navigate to="/unauthorized" replace />;
     }
+  }
 
-    if (requiredRole) {
-        const role = getRoleFromToken(token);
-        if(!role || role !== requiredRole) {
-            return <Navigate to="/unauthorized" replace />
-        } 
-    }
-    return children;
+  // 3️⃣ Autorizado
+  return children;
 };
 
 export default ProtectedRoute;

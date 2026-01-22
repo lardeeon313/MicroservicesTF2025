@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { OrderStatusLabels } from '../../constants/UseStatusOrderOperator';
 import { DepotOrderDTO, DepotOrderStatus } from '../../types/OrderDTO';
+import { ListCollapse,PackageCheck } from "lucide-react-native";
 
 type Props = {
   order: DepotOrderDTO;
@@ -11,7 +12,7 @@ type Props = {
 };
 
 const ListofConfirmedOrders = ({ order, customer, status, onSeeDetail, onAceeptOrder }: Props) => {
-  const address = order.address; // ✅ tomamos la dirección
+  const address = order.address; 
 
   return (
     <View
@@ -28,16 +29,28 @@ const ListofConfirmedOrders = ({ order, customer, status, onSeeDetail, onAceeptO
       }}
     >
       <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-        Pedido# : {order.depotOrderId}
+        Pedido #{order.depotOrderId}
       </Text>
 
-      <Text style={{ fontSize: 20, fontWeight: '300', marginTop: 4 }}>
-        Cliente: {customer}
-      </Text>
+      <View style={{ marginTop: 8 }}>
+        <View style={{ marginBottom: 12, flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ fontSize: 14, color: '#666', fontWeight: 'bold',marginRight: 16 }}>
+            Cliente: 
+          </Text>
+          <Text style={{ fontSize: 18, fontWeight: '400',color: '#000'}}>
+            {customer}
+          </Text>
+        </View>
 
-      <Text style={{ marginTop: 4, fontSize: 20 }}>
-        Estado: {OrderStatusLabels[status as DepotOrderStatus]}
-      </Text>
+        <View style={{ marginBottom: 12, flexDirection: 'row', alignItems: 'center' }}> 
+          <Text style={{ fontSize: 14, color: '#666', fontWeight: 'bold',marginRight: 16 }}>
+            Estado: 
+          </Text>
+          <Text style={{ fontSize: 18, fontWeight: '400',color: '#000'}}>
+            {OrderStatusLabels[status as DepotOrderStatus]}
+          </Text>
+        </View>
+      </View>
       
       {address && (
         <View
@@ -79,22 +92,45 @@ const ListofConfirmedOrders = ({ order, customer, status, onSeeDetail, onAceeptO
       )}
 
       <View style={{ flexDirection: 'row', marginTop: 12, gap: 10 }}>
+  
+        {/* Botón Ver Detalle */}
         <TouchableOpacity
           onPress={onSeeDetail}
-          style={{ backgroundColor: '#3B82F6', padding: 8, borderRadius: 8 }}
+          style={{
+            backgroundColor: '#3B82F6',
+            paddingVertical: 10,
+            paddingHorizontal: 14,
+            borderRadius: 10,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8
+          }}
         >
+          <ListCollapse size={20} color="#fff" />
           <Text style={{ color: '#fff', fontWeight: 'bold' }}>Ver Detalle</Text>
         </TouchableOpacity>
 
+        {/* Botón Confirmar */}
         {status === DepotOrderStatus.Assigned && (
           <TouchableOpacity
             onPress={onAceeptOrder}
-            style={{ backgroundColor: '#F59E0B', padding: 8, borderRadius: 8 }}
+            style={{
+              backgroundColor: '#F59E0B',
+              paddingVertical: 10,
+              paddingHorizontal: 14,
+              borderRadius: 10,
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 8
+            }}
           >
+            <PackageCheck size={20} color="#fff" />
             <Text style={{ color: '#fff', fontWeight: 'bold' }}>Confirmar</Text>
           </TouchableOpacity>
         )}
+
       </View>
+
     </View>
   );
 };

@@ -383,7 +383,6 @@ namespace LogisticService.API.Controllers
         /// </summary>
         /// <param name="operatorId"></param>
         /// <returns></returns>
-
         [HttpGet("get-my-orders-with-incident/{operatorId}")]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]

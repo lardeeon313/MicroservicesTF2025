@@ -2,7 +2,6 @@ import { LogisticOrderDto } from "../../types/OrderTypes";
 import { OrderItemsTable } from "../../../../components/OrderItemsTable";
 import { OrderStatusLabels } from "../../constants/OrderStatusLabel";
 import { DeliveryPriorityLabels } from "../../constants/PriorityOrderLabel";
-
 type Props = {
   order: LogisticOrderDto;
 };

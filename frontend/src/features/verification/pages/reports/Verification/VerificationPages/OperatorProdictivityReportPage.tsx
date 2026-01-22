@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { useOperatorProductivityReport } from "../VerificationHocks/useOperatorProdictivityReport";
 import { FilterOperatorProductivity } from "../VerificationFilters/FilterOperatorProdictivity";
 import { OperatorProductivityTable } from "../VerificationComponents/OperatorProdictivityFolder/OperatorProdictivityReport";
-import { GraphOperatorProductivity } from "../VerificationGraphs/GraphOperatorProdictivityReport";
 import { OperatorProductivityFilterEntity } from "../../../../types/FilterReports/FilterReportsEntity";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
-import BackButton from "../../../../components/BackButton";
+import BackButton from "../../../../../../components/BackButton";
 
 export const OperatorProductivityPage: React.FC = () => {
   // ✅ Estado inicial del filtro
@@ -29,7 +28,7 @@ export const OperatorProductivityPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10">
+    <div className="min-h-screen py-10">
       {/* Contenedor central con ancho máximo */}
       <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-10">
         {/* Encabezado */}
@@ -51,8 +50,24 @@ export const OperatorProductivityPage: React.FC = () => {
         {/* Tabla y gráfico simplificado */}
         {!isLoading && (
           <div className="space-y-12 mt-8">
-            <OperatorProductivityTable data={data} />
-            <GraphOperatorProductivity data={data} />
+            <OperatorProductivityTable 
+              data={data.filter(op => {
+
+                const matchOperator = filters.operatorName
+                  ? op.fullNameDeliveringOperator
+                      .toLowerCase()
+                      .includes(filters.operatorName.toLowerCase())
+                  : true;
+
+                const matchTeam = filters.teamName
+                  ? (op.teamName || "").toLowerCase().includes(filters.teamName.toLowerCase())
+                  : true;
+
+                return matchOperator && matchTeam;
+              })}
+            />
+
+            
           </div>
         )}
       </div>

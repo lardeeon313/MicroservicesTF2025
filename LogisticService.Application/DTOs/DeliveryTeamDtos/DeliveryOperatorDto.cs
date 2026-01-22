@@ -15,5 +15,8 @@ namespace LogisticService.Application.DTOs
         public string? Email { get; set; }
 
         public string FullName => $"{FirstName} {LastName}".Trim();
+
+        public int? DeliveryTeamId { get; set; }
+        public string? TeamName { get; set; }
     }
 }

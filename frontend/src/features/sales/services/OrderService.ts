@@ -1,5 +1,5 @@
 import API from "../../../api/axios";
-import { Order, OrderMissingDto, OrderReissuedRequest, SalesPerfomanceDto } from "../types/OrderTypes";
+import { Order, OrderMissingDto, OrderReissuedRequest } from "../types/OrderTypes";
 import {
    UpdateOrderRequest, 
    UpdateOrderStatusRequest, 
@@ -33,13 +33,32 @@ export const getOrdersByCustomer = async (customerId: string): Promise<Order[]> 
   return response.data;
 };
 
-// Registrar una nueva orden
-export const registerOrder = async (data: RegisterOrderRequest): Promise<Order> => {
-  
-  const response = await API.post("/sales/Order/register", data);
-  
-  return response.data
+// Registrar una nueva orden (ACTUALIZADO : NO TIRA EL ERROR DEL LADO VISUAL)
+export const registerOrder = async (data: RegisterOrderRequest): Promise<any> => {
+  const response = await API.post("/sales/Order/register", data, {
+    validateStatus: () => true,
+  });
+
+  // Si el backend devolvió 500 pero contiene OrderId => se registró igual
+  const orderRegisteredAnyway =
+    response.status === 500 && response.data?.id;
+
+  if ((response.status >= 200 && response.status < 300) || orderRegisteredAnyway) {
+    return {
+      ok: true,
+      data: response.data ?? null,
+      status: response.status
+    };
+  }
+
+  return Promise.reject({
+    ok: false,
+    status: response.status,
+    data: response.data
+  });
 };
+
+
 
 // Actualizar orden
 export const updateOrder = async (id: number, data: UpdateOrderRequest): Promise<Order> => {
@@ -124,16 +143,21 @@ export const getPagedOrders = async (pageNumber = 1, pageSize = 20): Promise<{
 };
 
 // Obtener los pedidos ordenados por userId para el reporte PerfomanceSales
+// En services/OrderService.ts
 export const getSalesPerfomance = async (
-  from?: string,
-  to?: string
-): Promise<SalesPerfomanceDto[]> => {
-  const response = await API.get("/sales/Order/report/performance", {
-    params: { from, to }, // Axios se encarga de armar la query string automáticamente
-  });
+    from?: string,
+    to?: string,
+    range?: "all" | "quincena" | "mensual" | "trimestral" | "semestral" | "anual"
+) => {
+    const params = new URLSearchParams();
+    if (from) params.append('from', from);
+    if (to) params.append('to', to);
+    if (range) params.append('range', range); // Añadir el parámetro range
 
-  return response.data;
+    const response = await API.get(`/sales/SalesReport/report/performance?${params.toString()}`);
+    return response.data;
 };
+
 
 //Obtiene las direcciones asociadas a un cliente especifico: 
 export const getCustomerAddresses = async (customerId: string): Promise<Address[]> => {

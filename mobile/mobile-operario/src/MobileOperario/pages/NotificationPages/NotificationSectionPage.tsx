@@ -46,8 +46,8 @@ const NotificationSectionPage = () => {
           <GetBack/>
       </View>
       
-      <View style={{ flex: 1, padding: 16, backgroundColor: "#fff" }}>
-        <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 16 }}>
+      <View style={{ flex: 1, padding: 16}}>
+        <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 16, textAlign: "center" }}>
           Faltantes del Pedido#: {fullOrder.depotOrderId}
         </Text>
         <NotificacionSection missingItems={fullOrder.missings} />

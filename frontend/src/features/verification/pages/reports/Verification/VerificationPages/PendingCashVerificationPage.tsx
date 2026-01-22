@@ -5,7 +5,8 @@ import { PendingCashVerificationTable } from "../VerificationComponents/PendingC
 import { GraphPendingCashVerification } from "../VerificationGraphs/GraphPendingCashVerification";
 import { PendingCashVerificationFilter } from "../../../../types/FilterReports/FilterReportsEntity";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
-import BackButton from "../../../../components/BackButton";
+import { Pagination } from "../../../../../../components/Pagination";
+import BackButton from "../../../../../../components/BackButton";
 
 export const PendingCashVerificationPage: React.FC = () => {
   const [filters, setFilters] = useState<PendingCashVerificationFilter>({
@@ -21,6 +22,9 @@ export const PendingCashVerificationPage: React.FC = () => {
   // 📄 PAGINADO
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize] = useState(10);
+
+  // 🔹 NUEVO: mostrar/ocultar gráfico
+  const [showGraph, setShowGraph] = useState(false);
 
   const { data, isLoading, error } = usePendingCashVerificationReport(
     searchParams,
@@ -62,18 +66,6 @@ export const PendingCashVerificationPage: React.FC = () => {
     }));
   };
 
-  const handleNextPage = () => {
-    if (data && pageNumber < data.totalPages) {
-      setPageNumber(pageNumber + 1);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (pageNumber > 1) {
-      setPageNumber(pageNumber - 1);
-    }
-  };
-
   if (isLoading) {
     return (
       <LoadingSpinner
@@ -84,7 +76,7 @@ export const PendingCashVerificationPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10">
+    <div className="min-h-screen py-10">
       <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-10">
         <BackButton to="/verification/reports" />
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
@@ -104,33 +96,32 @@ export const PendingCashVerificationPage: React.FC = () => {
           />
         </div>
 
-        {/* Tabla */}
         {!isLoading && data && (
           <div className="space-y-12 mt-8">
             <PendingCashVerificationTable data={data.items} />
-            <GraphPendingCashVerification data={data.items} />
 
-            {/* 🔹 Controles de paginación */}
-            <div className="flex justify-center items-center gap-4 mt-6">
+            {/* 🔘 BOTÓN MOSTRAR/OCULTAR GRÁFICO */}
+            <div className="flex justify-center mt-6 mb-4">
               <button
-                onClick={handlePrevPage}
-                disabled={pageNumber === 1}
-                className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg shadow hover:bg-gray-300 transition disabled:opacity-50"
+                onClick={() => setShowGraph((prev) => !prev)}
+                className="px-4 py-2 bg-gray-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
               >
-                ◀ Anterior
+                {showGraph ? "Ocultar gráfico" : "Mostrar gráfico"}
               </button>
+            </div>
 
-              <span className="text-gray-600 font-medium">
-                Página {pageNumber} de {data.totalPages || 1}
-              </span>
+            {/* 📊 GRÁFICO CONDICIONAL */}
+            {showGraph && (
+              <GraphPendingCashVerification data={data.items} />
+            )}
 
-              <button
-                onClick={handleNextPage}
-                disabled={pageNumber >= (data.totalPages || 1)}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg shadow hover:bg-red-700 transition disabled:opacity-50"
-              >
-                Siguiente ▶
-              </button>
+            {/* 🔹 PAGINACIÓN */}
+            <div className="mt-6">
+              <Pagination
+                currentPage={pageNumber}
+                totalPages={data.totalPages || 1}
+                onPageChange={setPageNumber}
+              />
             </div>
           </div>
         )}

@@ -6,6 +6,10 @@ import type { MarkItemCommand } from "../../../types/AddPackings";
 import type { UnMarkItemReadyCommand } from "../../../types/AddPackings";
 import AddPackingForm from "../AddPackings/AddPackingForm";
 import { DepotOrderStatus } from "../../../types/OrderDTO";
+import AllProductsMarkedModal from "./AllProductsMarkedModal";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { DepotStackParamList } from "../../../types/DepotStackType";
 
 type OrderItem = {
   id: number;
@@ -23,6 +27,9 @@ type Props = {
 
 const ItemOrdersComponent: React.FC<Props> = ({ operatorUserId, pedidoItems, pedidoStatus }) => {
   const [items, setItems] = useState<OrderItem[]>(pedidoItems);
+  const [showAllMarkedModal, setShowAllMarkedModal] = useState(false);
+
+  const navigation = useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
 
   const isDisabled = [
     DepotOrderStatus.Assigned,
@@ -49,8 +56,9 @@ const ItemOrdersComponent: React.FC<Props> = ({ operatorUserId, pedidoItems, ped
       setItems(updatedItems);
 
       const allMarked = updatedItems.every(i => i.marcado);
+      //REMPLAZO POR MODAL 
       if (allMarked) {
-        Alert.alert('¡Enhorabuena!', 'Se han marcado todos los productos de este pedido. Ahora se encuentra en la lista de pedidos armados.');
+        setShowAllMarkedModal(true);
       }
 
     } catch (error: any) {
@@ -113,6 +121,16 @@ const ItemOrdersComponent: React.FC<Props> = ({ operatorUserId, pedidoItems, ped
         </View>
       )}
     />
+
+    <AllProductsMarkedModal
+      visible={showAllMarkedModal}
+      onClose={() => setShowAllMarkedModal(false)}
+      onAccept={() => {
+        setShowAllMarkedModal(false);
+        navigation.navigate("OperatorDashboard");
+      }}
+    />
+
   </View>
 );
 

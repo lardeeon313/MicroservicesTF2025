@@ -3,7 +3,7 @@ import React from "react";
 type Filters = {
   customerName: string;
   date: string;          // YYYY-MM-DD (valor de <input type="date" />)
-  totalAmount?: string;  // string para poder limpiar fácilmente
+  totalAmount: string;  // string para poder limpiar fácilmente
 };
 
 type Props = {
@@ -41,7 +41,7 @@ const CustomerIncomeFilter: React.FC<Props> = ({
 
         {/* Fecha (única) */}
         <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-600 mb-1">Fecha:</label>
+          <label className="text-sm font-medium text-gray-600 mb-1">Buscar por fecha de factura:</label>
           <input
             type="date"
             value={filters.date} // siempre en YYYY-MM-DD
@@ -71,7 +71,7 @@ const CustomerIncomeFilter: React.FC<Props> = ({
           onClick={onSearch}
           className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
         >
-          Filtrar
+          Buscar
         </button>
         <button
           onClick={onClear}

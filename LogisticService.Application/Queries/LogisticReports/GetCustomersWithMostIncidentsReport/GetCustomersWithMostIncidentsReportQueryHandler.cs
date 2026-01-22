@@ -1,6 +1,7 @@
 ﻿using LogisticService.Application.DTOs.LogisticReportDtos;
 using LogisticService.Domain.IRepositories;
 using Microsoft.Extensions.Logging;
+using SalesService.Domain.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,27 +20,36 @@ namespace LogisticService.Application.Queries.LogisticReports.GetCustomersWithMo
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>   
-        public async Task<IEnumerable<CustomerIncidentReportDto>> HandleAsync(GetCustomersWithMostIncidentsReportQuery query)
+        public async Task<PagedResult<CustomerIncidentReportDto>> HandleAsync(GetCustomersWithMostIncidentsReportQuery query)
         {
             var results = await _repository.GetCustomersWithMostIncidentsAsync(
                 query.StartDate,
                 query.EndDate,
                 query.CustomerId,
-                query.IncidentType
+                query.IncidentType,
+                query.PageNumber,
+                query.PageSize
             );
 
-            _logger.LogInformation("Reporte de clientes con mayor incidencia generado con {Count} registros.", results.Count);
+            _logger.LogInformation("Reporte de clientes con mayor incidencia generado. Página {PageNumber}/{TotalPages}",
+                query.PageNumber, results.TotalPages);
 
-            return results.Select(r => new CustomerIncidentReportDto
+            return new PagedResult<CustomerIncidentReportDto>
             {
-                CustomerId = r.CustomerId,
-                CustomerName = r.CustomerName,
-                TotalOrders = r.TotalOrders,
-                TotalIncidents = r.TotalIncidents,
-                TotalRejections = r.TotalRejections,
-                IncidentRatePercent = r.IncidentRatePercent,
-                RejectionRatePercent = r.RejectionRatePercent
-            }).ToList();
+                Items = results.Items.Select(r => new CustomerIncidentReportDto
+                {
+                    CustomerId = r.CustomerId,
+                    CustomerName = r.CustomerName,
+                    TotalOrders = r.TotalOrders,
+                    TotalIncidents = r.TotalIncidents,
+                    TotalRejections = r.TotalRejections,
+                    IncidentRatePercent = r.IncidentRatePercent,
+                    RejectionRatePercent = r.RejectionRatePercent
+                }),
+                TotalCount = results.TotalCount,
+                PageNumber = results.PageNumber,
+                PageSize = results.PageSize
+            };
         }
     }
 }

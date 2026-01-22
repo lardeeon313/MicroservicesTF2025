@@ -17,19 +17,19 @@ export const useOperatorProductivityReport = (filters: OperatorProductivityFilte
           params: filters,
         });
 
-        console.log("📦 Datos recibidos del endpoint /operator-productivity:", data);
+        console.log(data)
+
+      
         setData(data);
       } catch (err: any) {
-        console.error("❌ Error al obtener operator productivity:", err);
+        
         setError(err.message);
       } finally {
         setIsLoading(false);
       }
     };
 
-    // ✅ Siempre hace la primera carga al entrar en la página
-    // ✅ Y también cada vez que cambian los filtros
-    console.log("🔍 Ejecutando fetch con filtros:", filters);
+
     fetchData();
   }, [filters]);
 

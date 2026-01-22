@@ -23,8 +23,6 @@ namespace SalesService.Domain.Entities.CustomerEntity
         public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
 
         public CustomerStatus Status { get; set; } = CustomerStatus.Inactive;
-        public string? SatisfactionDescription { get; set; }
-        public int? SatisfactionScore { get; set; }
         public List<Address> Addresses { get; set; } = [];
         public List<CustomerPaymentType> PaymentTypes { get; set; } = [];
         public bool IsActive { get; set; } = true;

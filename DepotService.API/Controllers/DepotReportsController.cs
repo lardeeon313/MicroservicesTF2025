@@ -8,12 +8,16 @@ using DepotService.Application.Queries.Reports.GetOrdersCompleted;
 using DepotService.Application.Queries.Reports.GetOrdersInPreparation;
 using DepotService.Application.Queries.Reports.GetOrderStatusCount;
 using DepotService.Application.Queries.Reports.GetReissuedReportOrders;
+using DepotService.Domain.Entities;
+using DepotService.Domain.IRepositories;
+using DepotService.Infraestructure.Documents;
+using DepotService.Infraestructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DepotService.API.Controllers
 {
-    [Authorize(Roles = "DepotManager, DepotOperator, BillingManager")]
+    [Authorize(Roles = "DepotManager, DepotOperator, BillingManager, Admin")]
     [ApiController]
     [Route("api/depotreports")]
     public class DepotReportsController(
@@ -24,7 +28,10 @@ namespace DepotService.API.Controllers
         IGetOrdersByDeliveryDateQueryHandler getOrdersByDeliveryDateQueryHandler,
         IGetReissuedOrdersQueryHandler getReissuedOrdersQueryHandler,
         IGetOrdersCompletedQueryHandler getOrdersCompletedQueryHandler,
-        IGetOrdersInPreparationQueryHandler getOrdersInPreparationQueryHandler
+        IGetOrdersInPreparationQueryHandler getOrdersInPreparationQueryHandler,
+        IDepotOrderRepository getorderRepository,
+        IInvoicedOrdersReportPdfGenerator getPdfGenerator,
+        IInvoicedOrdersByCustomerPdfGenerator getPdfCustomers
         ) : ControllerBase
     {
         private readonly IGetOrdersInPreparationQueryHandler _getOrdersInPreparationQueryHandler = getOrdersInPreparationQueryHandler;
@@ -35,8 +42,9 @@ namespace DepotService.API.Controllers
         private readonly IGetProcessingTimePerOrderQueryHandler _getProcessingTimePerOrderQueryHandler = getProcessingTimePerOrderQueryHandler;
         private readonly IGetOrderCountPerStatusQueryHandler _getOrderCountPerStatusQueryHandler = getOrderCountPerStatusQueryHandler;
         private readonly IGetAverageTimePerStatusQueryHandler _getAverageTimePerStatusQueryHandler = getAverageTimePerStatusQueryHandler;
-
-
+        private readonly IDepotOrderRepository _orderRepository = getorderRepository ;
+        private readonly IInvoicedOrdersReportPdfGenerator _pdfGenerator = getPdfGenerator;
+        private readonly IInvoicedOrdersByCustomerPdfGenerator _pdfCustomersGenerator = getPdfCustomers;
 
         /// <summary>
         /// Endpoint para obtener el tiempo promedio por estado de las órdenes.
@@ -73,10 +81,12 @@ namespace DepotService.API.Controllers
         }
 
         /// <summary>
-        /// Endpoint para obtener el tiempo de procesamiento promedio por orden.
+        /// Endpoint para obtener el tiempo de procesamiento por orden.
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
+        /// <param name="oper"></param>
+        /// <param name="customer"></param>
         /// <param name="page"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
@@ -87,27 +97,32 @@ namespace DepotService.API.Controllers
         public async Task<IActionResult> GetProcessingTimePerOrder(
             [FromQuery] DateTime? from,
             [FromQuery] DateTime? to,
+            [FromQuery] string? oper,
+            [FromQuery] string? customer,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10)
         {
-            var query = new GetProcessingTimePerOrderQuery(from, to, page, pageSize);
+            var query = new GetProcessingTimePerOrderQuery(from, to, oper, customer, page, pageSize);
             var orderProcessingTimes = await _getProcessingTimePerOrderQueryHandler.HandleAsync(query);
             return Ok(orderProcessingTimes);
         }
 
         /// <summary>
-        /// Endpoint para obtener el rendimiento del equipo del depósito.
+        /// Endpoint para obtener el desempeño del equipo del depósito.
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
+        /// <param name="agruparPorEquipo"></param>
         /// <returns></returns>
         [HttpGet("reports/depot-team-performance")]
         [ProducesResponseType(typeof(List<DepotTeamPerformanceDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetDepotTeamPerformance([FromQuery] DateTime? from, [FromQuery] DateTime? to)
+        public async Task<IActionResult> GetDepotTeamPerformance([FromQuery] DateTime? from,
+                                                                 [FromQuery] DateTime? to,
+                                                                 [FromQuery] bool agruparPorEquipo = true)
         {
-            var query = new GetDepotTeamPerformanceQuery(from, to);
+            var query = new GetDepotTeamPerformanceQuery(from, to, agruparPorEquipo);
             var performanceData = await _getDepotTeamPerformanceQueryHandler.HandleAsync(query);
             return Ok(performanceData);
         }
@@ -198,5 +213,49 @@ namespace DepotService.API.Controllers
             var completedOrders = await _getOrdersInPreparationQueryHandler.HandleAsync(query);
             return Ok(completedOrders);
         }
+
+
+        [HttpGet("invoiced-orders/pdf")]
+        public async Task<IActionResult> GetInvoicedOrdersReport()
+        {
+            try
+            {
+                var orders = await _orderRepository.GetAllInvoicedOrdersAsync();
+
+                if (orders == null || !orders.Any())
+                    return BadRequest("No hay órdenes facturadas.");
+
+                var pdfBytes = _pdfGenerator.Generate(orders);
+
+                return File(pdfBytes, "application/pdf", "Reporte_Ordenes_Facturadas.pdf");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.ToString());
+            }
+        }
+
+        //ENDPOINT PARA EXPORTAR EN PDF EL REPORTE DE PEDIDOS FACTURADOS POR CLIENTE: 
+
+        [HttpGet("invoiced-orders/by-customer/pdf")]
+        public async Task<IActionResult> GenerateInvoicedOrdersByCustomerPdf([FromQuery] string customerName)
+        {
+            if (string.IsNullOrWhiteSpace(customerName))
+                return BadRequest("Debe especificar el nombre del cliente.");
+
+            // 1. Obtener SOLO pedidos del cliente
+            var orders = await _orderRepository.GetInvoicedOrdersByCustomerAsync(customerName);
+
+            if (orders == null || orders.Count == 0)
+                return NotFound($"No existen pedidos facturados para el cliente '{customerName}'.");
+
+            // 2. Generar PDF
+            var pdf = _pdfCustomersGenerator.Generate(orders);
+
+            // 3. Descargar archivo
+            return File(pdf, "application/pdf", $"Pedidos_Facturados_{customerName}.pdf");
+        }
+
+
     }
 }

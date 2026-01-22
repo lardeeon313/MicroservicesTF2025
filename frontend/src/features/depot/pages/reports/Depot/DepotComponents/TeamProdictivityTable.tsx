@@ -1,76 +1,74 @@
 import React from "react";
+import { DepotTeamPerformanceDto } from "../DepotHocks/useTeamProdictivity";
+import { AlertTriangle } from "lucide-react";
 
-type Props = {
-  data: {
-    depotTeamId: number;
-    teamName: string;
-    ordersHandled: number;
-  }[];
-};
 
-const TeamProductivityTable: React.FC<Props> = ({ data }) => {
+interface Props {
+  data: DepotTeamPerformanceDto[];
+}
+
+export const TeamPerformanceTable: React.FC<Props> = ({ data }) => {
+  const teams = data.filter((x) => x.isTeam);
+
+    if (!data || data.length === 0) {
+    return (
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+        <div className="flex flex-col items-center">
+          <div className="p-3 bg-green-100 rounded-full mb-4">
+            <AlertTriangle className="w-8 h-8 text-green-600" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Sin equipos</h3>
+          <p className="text-gray-600">No hay datos de los equipos para los filtros selecciados</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-      <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900">Productividad por Equipo</h3>
+    <div className="bg-white rounded-xl shadow-md mt-10 overflow-hidden">
+      <div className="px-6 py-4 bg-gray-50">
+        <h2 className="text-xl font-bold text-gray-700">Rendimiento por Equipo</h2>
+        <p className="text-sm text-gray-500">Agrupado por equipos del depósito</p>
       </div>
-      
-      <div className="overflow-x-auto">
-        <table className="min-w-full">
-          <thead>
-            <tr className="bg-red-500 text-white backdrop-opacity-90">
-              <th className="px-6 py-4 text-left text-sm font-medium uppercase tracking-wide">
-                ID Equipo
-              </th>
-              <th className="px-6 py-4 text-left text-sm font-medium uppercase tracking-wide">
-                Nombre Equipo
-              </th>
-              <th className="px-6 py-4 text-right text-sm font-medium uppercase tracking-wide">
-                Pedidos Completados
-              </th>
+
+      <table className="w-full">
+        <thead className="bg-gray-100 text-gray-600 text-xs uppercase tracking-wide">
+          <tr>
+            <th className="p-4 text-left">Equipo</th>
+            <th className="p-4 text-center">Pedidos Armados</th>
+            <th className="p-4 text-center">Faltantes</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {teams.map((t) => (
+            <tr
+              key={t.depotTeamId}
+              className="hover:bg-gray-50 transition cursor-pointer"
+            >
+              <td className="p-4 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-red-600 text-white flex items-center justify-center font-bold">
+                  {t.name.charAt(0).toUpperCase()}
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-medium text-gray-800">{t.name}</span>
+                  <span className="text-xs text-gray-500">Equipo</span>
+                </div>
+              </td>
+
+              <td className="p-4 text-center text-sm font-semibold text-gray-800">
+                {t.ordersHandled}
+              </td>
+
+              <td className="p-4 text-center">
+                <span className="px-3 py-1 text-xs rounded-full bg-red-100 text-red-700 font-semibold">
+                  {t.missingItemsReported}
+                </span>
+              </td>
             </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {data.length > 0 ? (
-              data.map((item, index) => (
-                <tr 
-                  key={item.depotTeamId} 
-                  className={`hover:bg-gray-50 transition-colors ${
-                    index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
-                  }`}
-                >
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100 text-red-800 font-semibold text-sm">
-                      {item.depotTeamId}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 font-medium text-gray-900">
-                    {item.teamName}
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <span className="text-lg font-semibold text-gray-900">
-                      {item.ordersHandled.toLocaleString()}
-                    </span>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={3} className="px-6 py-12 text-center text-gray-500">
-                  <div>
-                    <p className="text-lg font-medium mb-1">No hay datos disponibles</p>
-                    <p className="text-sm">No se encontraron datos para el rango seleccionado</p>
-                  </div>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
-
-export default TeamProductivityTable;
-
-

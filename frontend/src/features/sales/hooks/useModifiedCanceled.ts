@@ -15,7 +15,10 @@ const fetchData = useCallback(async () => {
         const [customerData, orderData] = await Promise.all([
             getPagedCustomers(page, pageSize),
             getPagedOrders(1, 1000), // Podés paginar orders también si querés performance
-      ]);
+        ]);
+
+        console.log("👉 customerData:", customerData);
+        console.log("👉 orderData:", orderData);
 
         const customers = customerData.customers;
         const orders = orderData.orders;
@@ -26,7 +29,7 @@ const fetchData = useCallback(async () => {
             ...o,
             customerInfo: customer ? { ...customer } : null,
             };
-      });
+        });
 
       setData(combined);
       setTotalPages(customerData.totalPages);

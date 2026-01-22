@@ -14,14 +14,16 @@ export const useDeliveryTeamActivity = () => {
 
   const fetchReport = async (filters: Filters = {}) => {
     try {
-      console.log("📡 Fetching Delivery Team Activity report with params:", filters);
+      
       setLoading(true);
 
       const res = await API.get("/logistic/LogisticReport/delivery-team-activity", {
         params: filters,
       });
+      
+      console.log(res)
 
-      console.log("✅ API Response:", res.data);
+      
       setData(res.data);
     } catch (e) {
       console.error("❌ Error fetching delivery team report:", e);

@@ -136,7 +136,7 @@ export default function ListOrdersToIncidentComponent({
               source={require("../../../assetsImages/GoogleLogo.png")}
               style={styles.googleLogo}
             />
-            <Text style={styles.buttonText}>Abrir en Google Maps</Text>
+            <Text style={styles.buttonTextGoogle}>Abrir en Google Maps</Text>
           </View>
         </TouchableOpacity>
 
@@ -270,8 +270,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   mapContent: {
-    flexDirection: "row",
+        flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "#fff",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3, // Para Android
+    borderWidth: 1,
+    borderColor: "rgba(0, 0, 0, 0.05)",
   },
   googleLogo: {
     width: 18,
@@ -290,5 +304,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 14,
     textAlign: "center",
+  },
+  buttonTextGoogle: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#1a73e8", // Color azul de Google
   },
 });

@@ -5,9 +5,11 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
+COPY ["SalesService.API/SalesService.API.csproj", "SalesService.API/"]
+COPY ["SalesService.Application/SalesService.Application.csproj", "SalesService.Application/"]
+COPY ["SalesService.Domain/SalesService.Domain.csproj", "SalesService.Domain/"]
+COPY ["SalesService.Infraestructure/SalesService.Infraestructure.csproj", "SalesService.Infraestructure/"]
 
-# Copiamos solo el .csproj primero
-COPY SalesService.API/SalesService.API.csproj SalesService.API/
 RUN dotnet restore SalesService.API/SalesService.API.csproj
 
 # Ahora copiamos TODO

@@ -14,13 +14,18 @@ namespace LogisticService.Application.Queries.LogisticReports.GetDeliveryRejecti
         public int? DeliveryTeamId { get; set; }
         public Guid? OperatorId { get; set; }
 
-        public GetDeliveryRejectionsReportQuery(DateTime? startDate, DateTime? endDate, Guid? operatorId, int? deliveryZoneId)
+        public int PageNumber { get; } = 1;
+        public int PageSize { get; } = 20;
+
+        public GetDeliveryRejectionsReportQuery(DateTime? startDate, DateTime? endDate, Guid? operatorId, int? deliveryZoneId, int? deliveryTeamId, int pageNumber, int pageSize)
         {
             StartDate = startDate;
             EndDate = endDate;
             OperatorId = operatorId;
-            DeliveryZoneId = deliveryZoneId;            
-        }
-       
-    }
+            DeliveryZoneId = deliveryZoneId;
+            DeliveryTeamId = deliveryTeamId;
+            PageNumber = pageNumber;
+            PageSize = pageSize;
+        }       
+    }   
 }

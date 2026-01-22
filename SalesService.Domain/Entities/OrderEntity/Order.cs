@@ -36,5 +36,16 @@ namespace SalesService.Domain.Entities.OrderEntity
         // Relacion 1 a 1 con Address
         public int? DeliveryAddressId { get; set; }
         public Address? DeliveryAddress { get; set; } = null!;
+
+        // Relacion 1 a 1 con OrderSatisfaction
+        public OrderSatisfaction? Satisfaction { get; private set; }
+
+        public void SetSatisfaction(OrderSatisfaction satisfaction)
+        {
+            if (Satisfaction != null)
+                throw new InvalidOperationException("Order already has a satisfaction.");
+
+            Satisfaction = satisfaction;
+        }
     }
 }

@@ -32,7 +32,7 @@ export const usePendingCashVerificationReport = (
           },
         });
 
-        console.log("📊 Datos cargados:", response.data);
+        
         setData(response.data);
       } catch (err: any) {
         setError(err.message);

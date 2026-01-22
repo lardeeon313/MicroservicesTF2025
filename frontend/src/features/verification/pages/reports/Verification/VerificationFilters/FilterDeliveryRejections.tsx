@@ -67,21 +67,7 @@ const DeliveryRejectionsFilter: React.FC<FilterProps> = ({
           className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
         />
       </div>
-
-      {/* Zona */}
-      <div className="flex flex-col">
-        <label className="text-sm font-medium text-gray-600 mb-1">Zona</label>
-        <input
-          type="number"
-          placeholder="Ej: 12"
-          value={deliveryZoneId ?? ""}
-          onChange={(e) => {
-            const value = e.target.value;
-            setDeliveryZoneId(value ? Number(value) : undefined);
-          }}
-          className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+ 
 
       {/* Equipo */}
       <div className="flex flex-col">

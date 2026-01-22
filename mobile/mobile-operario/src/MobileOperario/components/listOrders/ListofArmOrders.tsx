@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import type { DepotOrderDTO } from '../../types/OrderDTO';
 import { OrderStatusLabels } from '../../constants/UseStatusOrderOperator';
 import { DepotOrderStatus } from '../../types/OrderDTO';
+import { ListCollapse } from "lucide-react-native";
 
 type Props = {
   order: DepotOrderDTO;
@@ -25,16 +26,28 @@ const ListOfArmOrders = ({ order, id, customer, onSeeDetail }: Props) => {
       }}
     >
       <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
-        Pedido#: {order.depotOrderId.toString()}
+        Pedido #{order.depotOrderId.toString()}
       </Text>
 
-      <Text style={{ fontSize: 20, fontWeight: '300', marginTop: 4 }}>
-        Cliente: {customer}
-      </Text>
+      <View style={{ marginTop: 8 }}>
+        <View style={{ marginBottom: 12, flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ fontSize: 14, color: '#666', fontWeight: 'bold',marginRight: 16 }}>
+            Cliente:
+          </Text>
+          <Text style={{ fontSize: 18, fontWeight: '400',color: '#000'}}>
+            {customer}
+          </Text>
+        </View>
 
-      <Text style={{ marginTop: 4, fontSize: 20 }}>
-        Estado: {OrderStatusLabels[order.status as DepotOrderStatus]}
-      </Text>
+        <View style={{ marginBottom: 12, flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ fontSize: 14, color: '#666', fontWeight: 'bold',marginRight: 16 }}>
+            Estado:
+          </Text>
+          <Text style={{ fontSize: 18, fontWeight: '400',color: '#000'}}>
+            {OrderStatusLabels[order.status as DepotOrderStatus]}
+          </Text>
+        </View>
+      </View>
 
 
       {address && (
@@ -78,9 +91,18 @@ const ListOfArmOrders = ({ order, id, customer, onSeeDetail }: Props) => {
 
       <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginTop: 12 }}>
         <TouchableOpacity
-          style={{ backgroundColor: '#3B82F6', padding: 8, borderRadius: 8 }}
+          style={{
+            backgroundColor: '#3B82F6',
+            paddingVertical: 10,
+            paddingHorizontal: 14,
+            borderRadius: 10,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8
+          }}
           onPress={onSeeDetail}
         >
+          <ListCollapse size={20} color="#fff" />
           <Text style={{ color: '#fff', fontWeight: 'bold' }}>Ver Detalle</Text>
         </TouchableOpacity>
       </View>

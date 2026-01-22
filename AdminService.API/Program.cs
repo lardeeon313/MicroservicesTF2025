@@ -23,7 +23,11 @@ using System.Text;
 
 
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"
+});
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
@@ -60,19 +64,21 @@ builder.Services.AddScoped<IGetEmployeeByIdQueryHandler, GetEmployeeByIdQueryHan
 builder.Services.AddScoped<IGetEmployeesByStatusQueryHandler, GetEmployeesByStatusQueryHandler>();
 builder.Services.AddScoped<IGetEmployeesBySectorQueryHandler, GetEmployeesBySectorQueryHandler>();
 
-
-
-// Get the connection string from appsettings.json
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// Obtener las variables de configuración
+var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
+var rabbitHost = builder.Configuration["RabbitMQ:Host"];
+var rabbitPort = builder.Configuration["RabbitMQ:Port"];
+var rabbitUser = builder.Configuration["RabbitMQ:Username"];
+var rabbitPass = builder.Configuration["RabbitMQ:Password"];
+var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var mailApi = builder.Configuration["MailSettings:ApiKey"];
 
 // Register the DbContext
 builder.Services.AddDbContext<AdminDbContext>(options =>
     options.UseMySql(connectionString,
         ServerVersion.AutoDetect(connectionString),
-        b => b.MigrationsAssembly("AdminService.API"))); 
-
-var jwtKey = builder.Configuration["Jwt:Key"];
-var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+        b => b.MigrationsAssembly("AdminService.Infraestructure")));
 
 // Configuración de autenticación JWT
 builder.Services.AddAuthentication("Bearer")

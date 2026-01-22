@@ -6,6 +6,10 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 COPY ["AdminService.API/AdminService.API.csproj", "AdminService.API/"]
+COPY ["AdminService.Application/AdminService.Application.csproj", "AdminService.Application/"]
+COPY ["AdminService.Domain/AdminService.Domain.csproj", "AdminService.Domain/"]
+COPY ["AdminService.Infraestructure/AdminService.Infraestructure.csproj", "AdminService.Infraestructure/"]
+
 RUN dotnet restore "AdminService.API/AdminService.API.csproj"
 
 COPY . .

@@ -18,7 +18,7 @@ const cards = [
 
 const AdminDashboardPage = () => {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-6 sm:px-12 py-16">
+    <div className="min-h-screen bg-white-50 flex flex-col items-center justify-center px-6 sm:px-12 py-16">
       <div className="w-full max-w-5xl text-center">
         <h1 className="text-4xl md:text-5xl font-bold text-red-600 mb-4">
           Panel de Administración

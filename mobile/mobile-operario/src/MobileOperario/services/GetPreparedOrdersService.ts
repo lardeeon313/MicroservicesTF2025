@@ -14,7 +14,7 @@ export const GetPreparedOrdersService = async(operatorUserId: string): Promise<D
         console.log("✅ Pedidos recibidos desde el backend con status SentToBilling y Prepared:", allOrders);
         return allOrders;
     } catch (error) {
-        console.error("❌ Momentaneamente no se pueden obtener los pedidos", error);
+        
         return [];
     }
 }

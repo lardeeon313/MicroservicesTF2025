@@ -51,23 +51,6 @@
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
-          "Host": "deliveryservice",
-          "Port": 8080
-        }
-      ],
-      "UpstreamPathTemplate": "/delivery/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "JwtBearer",
-        "AllowedScopes": [],
-        "Authority": "http://identityservice:8080"
-      }
-    },
-    {
-      "DownstreamPathTemplate": "/api/{everything}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
           "Host": "depotservice",
           "Port": 8080
         }
@@ -96,24 +79,7 @@
         "AllowedScopes": [],
         "Authority": "http://identityservice:8080"
       }
-    },
-    {
-      "DownstreamPathTemplate": "/api/{everything}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "verificationservice",
-          "Port": 8080
-        }
-      ],
-      "UpstreamPathTemplate": "/verification/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "JwtBearer",
-        "AllowedScopes": [],
-        "Authority": "http://identityservice:8080"
-      }
-    }
+    }    
   ],
   "GlobalConfiguration": {
     "BaseUrl": "http://0.0.0.0:5000"

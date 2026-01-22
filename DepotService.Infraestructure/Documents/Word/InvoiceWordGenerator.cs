@@ -152,7 +152,7 @@ namespace DepotService.Infraestructure.Documents.Word
             invoiceInfoCell.AppendChild(CreateInfoParagraph("INFORMACIÓN DE FACTURA", true, "B91C1C"));
             invoiceInfoCell.AppendChild(CreateInfoParagraph($"Factura N°: {order.DepotOrderId}", false, "000000", true));
             invoiceInfoCell.AppendChild(CreateInfoParagraph($"Fecha: {order.OrderDate:dd/MM/yyyy}", false, "000000"));
-            invoiceInfoCell.AppendChild(CreateInfoParagraph($"Tipo de pago: {GetPaymentTypeName((int)order.PaymentType)}", false, "000000"));
+            invoiceInfoCell.AppendChild(CreateInfoParagraph($"Tipo de pago: {GetPaymentTypeName((int)order.PaymentType!)}", false, "000000"));
 
 
             // Columna derecha - Información del cliente

@@ -7,18 +7,20 @@ using RabbitMQ.Client.Events;
 using SalesService.Domain.Entities.OrderEntity;
 using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
+using SalesService.Domain.Common.Interfaces;
+using SalesService.Infraestructure.Email;
+using SalesService.Infraestructure.Email.EmailTemplates;
 using SharedKernel.IntegrationEvents.LogisticEvents;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SalesService.Infraestructure.Messaging.Consumer.LogisticConsumers
 {
     /// <summary>
-    /// Consumidor para eventos de pedidos Entregados.
+    /// Consumidor para eventos de pedidos entregados.
     /// </summary>
     public class OrderDeliveredConsumer : BackgroundService
     {
@@ -70,65 +72,142 @@ namespace SalesService.Infraestructure.Messaging.Consumer.LogisticConsumers
 
             if (_channel == null) return;
 
-            await _channel.ExchangeDeclareAsync(EXCHANGE_NAME, ExchangeType.Fanout, durable: true, autoDelete: false);
-            await _channel.QueueDeclareAsync(QUEUE_NAME, durable: true, exclusive: false, autoDelete: false);
-            await _channel.QueueBindAsync(QUEUE_NAME, EXCHANGE_NAME, "");
+            await _channel.ExchangeDeclareAsync(
+                EXCHANGE_NAME,
+                ExchangeType.Fanout,
+                durable: true,
+                autoDelete: false
+            );
+
+            await _channel.QueueDeclareAsync(
+                QUEUE_NAME,
+                durable: true,
+                exclusive: false,
+                autoDelete: false
+            );
+
+            await _channel.QueueBindAsync(
+                QUEUE_NAME,
+                EXCHANGE_NAME,
+                routingKey: string.Empty
+            );
 
             var consumer = new AsyncEventingBasicConsumer(_channel);
 
-            consumer.ReceivedAsync += async (model, ea) =>
+            consumer.ReceivedAsync += async (_, ea) =>
             {
-                var json = Encoding.UTF8.GetString(ea.Body.ToArray());
                 OrderDeliveredIntegrationEvent? evento = null;
 
                 try
                 {
+                    var json = Encoding.UTF8.GetString(ea.Body.ToArray());
                     evento = JsonSerializer.Deserialize<OrderDeliveredIntegrationEvent>(json);
 
-                    if (evento is not null)
+                    if (evento == null)
+                        throw new Exception("Evento deserializado como null");
+
+                    using var scope = _scopeFactory.CreateScope();
+
+                    var repository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
+                    var context = scope.ServiceProvider.GetRequiredService<SalesDbContext>();
+                    var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+
+                    var order = await repository.GetByIdAsync(evento.SalesOrderId);
+
+                    if (order == null)
                     {
-                        using var scope = _scopeFactory.CreateScope();
-                        var repository = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
-                        var context = scope.ServiceProvider.GetRequiredService<SalesDbContext>();
-
-                        var order = await repository.GetByIdAsync(evento.SalesOrderId);
-                        if (order != null)
-                        {
-                            order.Status = OrderStatus.Delivered;
-                            order.ModifiedStatusDate = evento.DeliveredAt;
-
-                            await repository.UpdateAsync(order);
-                            await context.SaveChangesAsync();
-
-                            var statusHistory = new OrderStatusHistory
-                            {
-                                OrderId = order.Id,
-                                OldStatus = OrderStatus.Verify,
-                                NewStatus = OrderStatus.AssignedDelivery,
-                                ChangedAt = evento.DeliveredAt,
-                            };
-
-                            await context.OrderStatusHistories.AddAsync(statusHistory);
-                            await context.SaveChangesAsync();
-
-                            _logger.LogInformation("📦 Order {OrderId} marked as Delivered.", order.Id);
-                            await _channel.BasicAckAsync(ea.DeliveryTag, multiple: false);
-                        }
-                        else
-                        {
-                            _logger.LogWarning("⚠️ Order not found: {OrderId}", evento.SalesOrderId);
-                            await _channel.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
-                        }
+                        _logger.LogWarning("⚠️ Order not found: {OrderId}", evento.SalesOrderId);
+                        await _channel.BasicNackAsync(ea.DeliveryTag, false, false);
+                        return;
                     }
+
+                    if (order.Customer == null)
+                    {
+                        _logger.LogError("❌ Customer is NULL for Order {OrderId}", order.Id);
+                        await _channel.BasicNackAsync(ea.DeliveryTag, false, false);
+                        return;
+                    }
+
+                    // 1️⃣ Actualizar estado del pedido
+                    order.Status = OrderStatus.Delivered;
+                    order.ModifiedStatusDate = evento.DeliveredAt;
+                    await repository.UpdateAsync(order); // ⬅ guarda internamente
+
+                    // 2️⃣ Crear token de satisfacción
+                    var token = new OrderSatisfactionToken(
+                        order.Id,
+                        TimeSpan.FromDays(7)
+                    );
+
+                    await repository.AddSatisfactionTokenAsync(token);
+                    await context.SaveChangesAsync();
+
+                    // 3️⃣ Guardar historial de estado
+                    var statusHistory = new OrderStatusHistory
+                    {
+                        OrderId = order.Id,
+                        OldStatus = OrderStatus.OnTheWay,
+                        NewStatus = OrderStatus.Delivered,
+                        ChangedAt = evento.DeliveredAt
+                    };
+
+                    await context.OrderStatusHistories.AddAsync(statusHistory);
+                    await context.SaveChangesAsync();
+
+                    // 4️⃣ Enviar mail
+                    var satisfactionUrl =
+                        $"http://localhost:3000/order-satisfaction?token={token.Token}";
+
+                    var bodyHtml =
+                        EmailTemplateGenerator.BuildOrderDeliveredSatisfactionBody(
+                            order.Id,
+                            satisfactionUrl
+                        );
+
+                    var html = EmailTemplateGenerator.Generate(
+                        subject: "¿Cómo fue tu experiencia con Verona?",
+                        title: "Tu pedido fue entregado 📦",
+                        recipientName: order.Customer.FirstName,
+                        bodyHtml: bodyHtml
+                    );
+
+                    _logger.LogInformation(
+                        "📧 Sending satisfaction email to {Email}",
+                        order.Customer.Email
+                    );
+
+                    await emailService.SendEmailAsync(
+                        order.Customer.Email,
+                        "Valorá tu pedido – Verona",
+                        html
+                    );
+
+                    _logger.LogInformation(
+                        "📧 Satisfaction email sent for Order {OrderId} to {Email}",
+                        order.Id,
+                        order.Customer.Email
+                    );
+
+                    await _channel.BasicAckAsync(ea.DeliveryTag, false);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "❌ Error processing delivered order event {OrderId}", evento?.SalesOrderId ?? 0);
-                    await _channel.BasicNackAsync(ea.DeliveryTag, false, requeue: false);
+                    _logger.LogError(
+                        ex,
+                        "❌ Error processing delivered order event {OrderId}",
+                        evento?.SalesOrderId ?? 0
+                    );
+
+                    await _channel.BasicNackAsync(ea.DeliveryTag, false, false);
                 }
             };
 
-            await _channel.BasicConsumeAsync(QUEUE_NAME, autoAck: false, consumer: consumer);
+            await _channel.BasicConsumeAsync(
+                QUEUE_NAME,
+                autoAck: false,
+                consumer: consumer
+            );
+
             _logger.LogInformation("🎧 Listening on queue {Queue}", QUEUE_NAME);
 
             try

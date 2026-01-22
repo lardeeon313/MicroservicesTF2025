@@ -45,5 +45,8 @@ namespace LogisticService.Domain.IRepositories
         Task<DeliveryIncident?> GetDeliveryIncidentByIdAsync(int id);
         Task<List<DeliveryIncident>> GetDeliveryIncidentByOrderIdAsync(int logisticOrderId);
         Task UpdateDeliveryIncidentAsync(DeliveryIncident incident);
+
+        //NUEVO METODO REPORTE ; PERMITE OBTENER EL TIEMPO PROMEDIO ENTRE LOS CAMBIOS DE ESTADOS: 
+        Task<OrderStatusHistory?> GetLastStatusHistoryAsync(int orderId);
     }
 }

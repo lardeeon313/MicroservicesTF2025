@@ -34,31 +34,35 @@ export const FilterOperatorProductivity: React.FC<FilterProps> = ({ filters, onC
   return (
     <form
       onSubmit={handleSubmit}
-      className="p-4 bg-white shadow-md rounded-xl mb-6 flex flex-wrap items-end justify-around gap-6"
+      className="p-4 mb-6 flex flex-wrap items-end justify-around gap-6"
     >
-      {/* Fecha inicio */}
+
+      {/* Nombre del repartidor */}
       <div className="flex flex-col">
-        <label className="text-sm font-medium text-gray-600 mb-1">Fecha inicio</label>
+        <label className="text-sm font-medium text-gray-600 mb-1">Buscar por repartidor:</label>
         <input
-          type="date"
-          name="startDate"
-          value={localFilters.startDate || ""}
+          type="text"
+          name="operatorName"
+          placeholder="Buscar por nombre..."
+          value={localFilters.operatorName || ""}
           onChange={handleChange}
           className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
-      {/* Fecha fin */}
+      {/* Nombre del equipo */}
       <div className="flex flex-col">
-        <label className="text-sm font-medium text-gray-600 mb-1">Fecha fin</label>
+        <label className="text-sm font-medium text-gray-600 mb-1">Buscar por equipo:</label>
         <input
-          type="date"
-          name="endDate"
-          value={localFilters.endDate || ""}
+          type="text"
+          name="teamName"
+          placeholder="Buscar por equipo..."
+          value={localFilters.teamName || ""}
           onChange={handleChange}
           className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
         />
       </div>
+
 
       {/* Tipo de pago */}
       <div className="flex flex-col">

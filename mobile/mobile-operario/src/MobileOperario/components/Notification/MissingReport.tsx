@@ -27,13 +27,13 @@ const MissingReport = ({
     onBrandIssueChange
 }: Props) => {
     return (
-        <View style={{ flex: 1, backgroundColor: '#f9fafb', padding: 20 }}>
+        <View style={{ flex: 1, padding: 20 }}>
 
             {/* Logo, Título y Descripción (sin cambios) */}
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
                 <Image
                     source={require('../../../assetsImages/LogoVerona.png')}
-                    style={{ width: 42, height: 42, resizeMode: 'contain', marginRight: 10 }}
+                    style={{ width: 48, height: 48, resizeMode: 'contain', marginRight: 10 }}
                 />
             </View>
             <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#111827', marginBottom: 10 }}>

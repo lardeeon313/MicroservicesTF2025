@@ -1,26 +1,48 @@
-import * as Yup from "yup";
+import * as Yup from 'yup';
 
 export const registerValidationSchema = Yup.object({
-    userName: Yup.string()
-        .required("El nombre de usuario es obligatorio."),
-    name: Yup.string()
-        .required("El nombre es obligatorio"),
-    lastName: Yup.string()
-        .required("El apellido es obligatorio"),
-    email: Yup.string()
-        .email("Formato de correo invÃ¡lido")
-        .required("El correo electrÃ³nico es obligatorio"),
-    password: Yup.string()
-        .required("La contraseÃ±a es obligatoria")
-        .min(6, "La contraseÃ±a debe tener al menos 6 caracteres")
-        .matches(/[A-Z]/, "La contraseÃ±a debe tener al menos 1 mayÃºscula") 
-        .matches(/[a-z]/, "La contraseÃ±a debe tener al menos 1 minÃºscula")  
-        .matches(/[0-9]/, "La contraseÃ±a debe tener al menos 1 nÃºmero")      
-        .matches(/[@!?.*$]/, "La contraseÃ±a debe tener al menos un carÃ¡cter especial"), 
-    confirmPassword: Yup.string()
-        .required("Debes confirmar tu contraseÃ±a")
-        .oneOf([Yup.ref("password")], "Las contraseÃ±as no coinciden"),
-    role: Yup.string()
-        .required("Seleccionar un rol es obligatorio.")
-        .oneOf(["Admin", "SalesStaff", "BillingManager","DepotManager","DepotOperator", "DeliveryOperator", "VerificationStaff"], "Rol invÃ¡lido")
+  userName: Yup.string()
+    .required("El nombre de usuario es obligatorio."),
+
+  name: Yup.string()
+    .required("El nombre es obligatorio"),
+
+  lastName: Yup.string()
+    .required("El apellido es obligatorio"),
+
+  email: Yup.string()
+    .email("Formato de correo inválido")
+    .required("El correo electrónico es obligatorio"),
+
+  phoneNumber: Yup.string()
+    .required("El teléfono es obligatorio")
+    .matches(/^[0-9]+$/, "El teléfono solo debe contener números")
+    .min(8, "El teléfono debe tener al menos 8 dígitos"),
+
+  password: Yup.string()
+    .required("La contraseña es obligatoria")
+    .min(6, "La contraseña debe tener al menos 6 caracteres")
+    .matches(/[A-Z]/, "Debe tener al menos 1 mayúscula")
+    .matches(/[a-z]/, "Debe tener al menos 1 minúscula")
+    .matches(/[0-9]/, "Debe tener al menos 1 número")
+    .matches(/[@!?.*$]/, "Debe tener al menos un carácter especial"),
+
+  confirmPassword: Yup.string()
+    .required("Debes confirmar tu contraseña")
+    .oneOf([Yup.ref("password")], "Las contraseñas no coinciden"),
+
+  role: Yup.string()
+    .required("Seleccionar un rol es obligatorio.")
+    .oneOf(
+      [
+        "Admin",
+        "SalesStaff",
+        "BillingManager",
+        "DepotManager",
+        "DepotOperator",
+        "DeliveryOperator",
+        "VerificationStaff",
+      ],
+      "Rol inválido"
+    ),
 });

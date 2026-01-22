@@ -141,8 +141,8 @@ export default function IncidentDetailsModal({ order, isOpen, onClose }: Props) 
                         <User className="w-4 h-4" />
                         <span>Operador Reportante</span>
                       </label>
-                      <p className="text-base font-semibold text-gray-900 font-mono">
-                        {typeof incident.reportedByOperatorId === 'string' ? incident.reportedByOperatorId.slice(0, 8) + '...' : 'N/A'}
+                      <p className="text-base font-medium text-slate-900 tracking-tight">
+                        {incident.reportedByOperatorFullName}
                       </p>
                     </div>
                   </div>
@@ -154,7 +154,7 @@ export default function IncidentDetailsModal({ order, isOpen, onClose }: Props) 
                     </label>
                     <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-100 to-red-100 rounded-lg border border-orange-300">
                       <p className="text-sm font-bold text-gray-900 capitalize">
-                        {incident.incidentType}
+                        {DeliveryIncidentStatusLabels[String(incident.deliveryIncidentStatus).toLowerCase()]}
                       </p>
                     </div>
                   </div>

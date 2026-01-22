@@ -72,7 +72,7 @@ namespace IdentityService.Infraestructure.Messaging.Consumer
                     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-                    var user = await userManager.FindByIdAsync(evento.IdentityUserId);
+                    var user = await userManager.FindByIdAsync(evento.IdentityUserId!);
 
                     if (user == null)
                     {

@@ -12,39 +12,40 @@ export const useDailyMissing = (page: number, pageSize: number) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        console.log("📡 Llamando API con page:", page, "pageSize:", pageSize);
-
-        const response = await API.get<DailyMissing[]>(
+        const response = await API.get<any[]>(
           "/depot/depotmanager/get-all-missing-orders"
         );
 
-        console.log("✅ Datos crudos recibidos del API:", response.data);
+        // EXPANDIR missingItems → una fila por item faltante
+        const expanded: DailyMissing[] = response.data.flatMap((missing: any) => {
+          return missing.missingItems.map((mi: any) => ({
+            orderID: missing.salesOrderId,
+            missingID: missing.missingId,
+            customerName: missing.depotOrder.customerName ?? "",
+            missingDate: missing.missingDate ?? "",
 
-        const allData: DailyMissing[] = response.data.map((item: any) => ({
-            orderID: item.salesOrderId,
-            ItemID: item.missingId, // o si tenés missingItemId usá ese
-            MissingDate: item.missingDate ?? "" // puede venir null, lo dejamos vacío
-        }));
+            productId: mi.id,
+            productName: mi.productName,
+            productBrand: mi.productBrand,
+            packaging: mi.packaging,
+            missingQuantity: mi.missingQuantity,
+          }));
+        });
+
+        
+
+        // PAGINACIÓN LOCAL
         const start = (page - 1) * pageSize;
         const end = start + pageSize;
-
-        const paginatedData = allData.slice(start, end);
-
-        console.log(
-          `📊 Mostrando registros ${start} a ${end} de un total de ${allData.length}`
-        );
-        console.log("📑 Datos paginados:", paginatedData);
+        const paginatedData = expanded.slice(start, end);
 
         setData(paginatedData);
-        setTotalPages(Math.ceil(allData.length / pageSize));
+        setTotalPages(Math.ceil(expanded.length / pageSize));
 
-        console.log("📄 Total de páginas calculado:", Math.ceil(allData.length / pageSize));
       } catch (error) {
-        console.error("❌ Error al obtener los datos: ", error);
-        setError("No se pudieron obtener los datos ");
+        setError("No se pudieron obtener los datos");
       } finally {
         setLoading(false);
-        console.log("⏳ Finalizó la carga de datos.");
       }
     };
 

@@ -92,6 +92,8 @@ export interface OperatorProductivityFilterEntity {
   deliveryZoneId?: number;
   deliveryTeamId?: number;
   paymentType?: string;
+  operatorName?: string;  
+  teamName?: string;      
 }
 
 //Delivery times Filter: 
@@ -128,3 +130,14 @@ export const mapPaymentTypeToBackend = (frontendValue: string): string | undefin
   };
   return mapping[frontendValue];
 };
+
+
+///
+export interface DeliveryTimesFilters {
+  startDate?: string;
+  endDate?: string;
+  deliveryZoneId?: number;
+  deliveryTeamId?: number;
+  onlyOnTime?: boolean;
+  onlyLate?: boolean;
+}

@@ -20,7 +20,7 @@ export const GetMissingOrdersService = async(operatorUserId:string) : Promise<De
         return AllOrders;
 
     }catch(error){
-        console.error("Momentanamente, no se pudo obtener los pedidos con faltantes",error);
+        
         return[];
     }
 }
