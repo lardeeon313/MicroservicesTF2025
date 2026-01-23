@@ -12,10 +12,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import { Package, AlertCircle, CheckCircle } from 'lucide-react';
-import {
-  GeneralGridRow,
-  DeliveryTimeReportDto
-} from '../../../../../verification/pages/reports/Verification/VerificationHocks/useDeliveryTimesReport';
+import { GeneralGridRow , DeliveryTimeReportDto} from '../../../../../verification/types/Report';
 
 interface Props {
   generalGrid: GeneralGridRow[];

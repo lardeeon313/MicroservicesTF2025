@@ -331,7 +331,7 @@ namespace LogisticService.Infraestructure.Persistence
                 Items = results.Select(h => new OrderStatusHistoryReport
                 {
                     Id = h.Id,
-                    OrderId = h.OrderId ?? 0,
+                    OrderId = h.OrderId,
                     CustomerName = $"{h.LogisticOrder.Customer.FirstName} {h.LogisticOrder.Customer.LastName}".Trim(),
                     OldStatus = h.OldStatus.ToString(),
                     NewStatus = h.NewStatus.ToString(),
