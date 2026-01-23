@@ -11,9 +11,8 @@ import { RejectOrderWithReasonModal } from "../../components/additional/AlertWin
 import { useAuth } from "../../Login/context/useAuth";
 import GetBack from "../../../components/GetBack";
 import Footer from "../../../components/Footer";
-
-import AcceptOrderModal from "@/MobileOperario/components/detail/AcceptOrderModal";
-import AcceptOrderSuccessModal from "@/MobileOperario/components/detail/AccepOrderSuccessModal";
+import AcceptOrderSuccessModal from "../../components/detail/AccepOrderSuccessModal";
+import AcceptOrderModal from "../../components/detail/AcceptOrderModal";
 
 type AcceptOrderPageProp = RouteProp<DepotStackParamList, "AcceptOrder">;
 type NavigationProp = NativeStackNavigationProp<DepotStackParamList>;
