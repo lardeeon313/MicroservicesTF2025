@@ -7,7 +7,8 @@ export const createOrderSatisfaction = async (
 ) => {
   try {
     const response = await API.post(
-      "/api/orders/satisfaction",
+      /*"/api/orders/satisfaction", -- esta mal*/
+      "/sales/Order/create/satisfaction",
       data
     );
     return response.data;
