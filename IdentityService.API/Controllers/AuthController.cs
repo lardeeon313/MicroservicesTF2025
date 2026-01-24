@@ -7,6 +7,7 @@ using IdentityService.Application.Commands.Employees.ResetPassword;
 using IdentityService.Application.Commands.Employees.SetMustCreatePassword;
 using IdentityService.Application.Commands.Login;
 using IdentityService.Application.Commands.Register;
+using IdentityService.Application.Common;
 using IdentityService.Application.DTOs;
 using IdentityService.Application.Interfaces;
 using IdentityService.Application.Queries.GetAllDeliverys;
@@ -69,8 +70,14 @@ namespace IdentityService.API.Controllers
             var validationResult = await _registerValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
             {
-                var errors = validationResult.Errors.Select(e => new { field = e.PropertyName, error = e.ErrorMessage });
-                return BadRequest(errors);
+                var errors = validationResult.Errors
+                    .Select(e => e.ErrorMessage);
+
+                return BadRequest(new CommandResult
+                {
+                    Success = false,
+                    Message = string.Join(" | ", errors)
+                });
             }
 
             var command = new RegisterCommand
@@ -88,7 +95,7 @@ namespace IdentityService.API.Controllers
             if (!result.Success)
                 return BadRequest(new { error = result.Message});
             
-            return Ok(new { message = result.Message});
+            return Ok(result);
         }
 
         /// <summary>
