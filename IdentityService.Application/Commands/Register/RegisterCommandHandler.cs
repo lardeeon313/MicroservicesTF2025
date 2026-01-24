@@ -27,7 +27,13 @@ namespace IdentityService.Application.Commands.Register
         {
             var existingUser = await _userManager.FindByEmailAsync(command.Email);
             if (existingUser != null)
-                return new CommandResult { Success = true , Message = "User it exists"};
+            {
+                return new CommandResult
+                {
+                    Success = false,
+                    Message = "Ya existe un usuario registrado con ese email."
+                };
+            }
 
             var user = new ApplicationUser
             {
@@ -48,20 +54,19 @@ namespace IdentityService.Application.Commands.Register
             }
             
             var selectedRole = command.Role;
-            var validRoles = new[]
-            {
-                "DepotManager", "DepotOperator", "BillingManager", "SalesStaff", "DeliveryOperator", "VerificationManager", "Admin"
-            };
-
-            if (!validRoles.Contains(selectedRole))
-            {
-                return new CommandResult { Success = false, Message = $"Rol inválido: {selectedRole}" };
-            }
 
             if (!await _roleManager.RoleExistsAsync(selectedRole))
                 await _roleManager.CreateAsync(new IdentityRole(selectedRole));
 
-            await _userManager.AddToRoleAsync(user, selectedRole);
+            var roleResult = await _userManager.AddToRoleAsync(user, selectedRole);
+            if (!roleResult.Succeeded)
+            {
+                return new CommandResult
+                {
+                    Success = false,
+                    Message = "Error al asignar el rol"
+                };
+            }
 
             // Publicar evento a AdminService
             var integrationEvent = new UserRegisteredIntegrationEvent
