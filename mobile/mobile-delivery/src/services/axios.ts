@@ -2,40 +2,48 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
 
-// 💡 Definí directamente la URL correcta acá
+// Detecta la URL base según plataforma
 const API_BASE_URL =
   Platform.OS === "web"
-    ? "http://localhost:5000/"
-    : "http://192.168.100.206:5000/";
-console.log("✅ API_BASE_URL inicializada:", API_BASE_URL);
+    ? import.meta.env.VITE_API_BASE_URL
+    : process.env.API_BASE_URL || import.meta.env.VITE_API_BASE_URL;  
 
-// Crear instancia de axios
+  /*
+  ? "http://localhost:5000/"
+    : "http://192.168.100.206:5000/";
+  */
+
+{/* Aqui deberiamos de realizar pruebas, utilizando la variable de entorno
+    La cual es, la manera en la que deberia de realizarse, ya que estariamos
+    en modo produccion, cuando presentemos la tesis.
+    Realizar pruebas, al utilizar el API_BASE_URL del "".env"                */}
+
+// Crear instancia de axios 
 const API = axios.create({
   baseURL: API_BASE_URL,
   headers: { "Content-Type": "application/json" },
 });
 
-// Interceptor → agrega token automáticamente
+// Interceptor request para enviar token automáticamente
 API.interceptors.request.use(async (config) => {
   const token = await AsyncStorage.getItem("token");
-  console.log("🔑 Token actual:", token);
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization =  `Bearer ${token}`;
   }
   return config;
 });
 
-// Interceptor → maneja errores globales
+// Interceptor response para manejar 401
 API.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
       await AsyncStorage.removeItem("token");
-      console.log("⚠️ Sesión expirada. Redirigir a Login.");
+      console.log("Sesión expirada. Redirigir a Login usando React Navigation");
+      // Ejemplo: navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
     }
     return Promise.reject(error);
   }
 );
 
-export { API_BASE_URL };
 export default API;

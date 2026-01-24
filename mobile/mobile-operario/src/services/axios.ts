@@ -5,9 +5,13 @@ import { Platform } from "react-native";
 // Detecta la URL base según plataforma
 const API_BASE_URL =
   Platform.OS === "web"
-    ? "http://localhost:5000/"
-    : "http://192.168.100.206:5000/";
+    ? import.meta.env.VITE_API_BASE_URL
+    : process.env.API_BASE_URL || import.meta.env.VITE_API_BASE_URL;  
 
+  /*
+  ? "http://localhost:5000/"
+    : "http://192.168.100.206:5000/";
+  */
 
 {/* Aqui deberiamos de realizar pruebas, utilizando la variable de entorno
     La cual es, la manera en la que deberia de realizarse, ya que estariamos
