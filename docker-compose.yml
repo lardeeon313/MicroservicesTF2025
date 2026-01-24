@@ -82,9 +82,12 @@ services:
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest
     depends_on:
-      - mysql
-      - rabbitmq
-      - apigateway
+        mysql:
+          condition: service_healthy
+        rabbitmq:
+          condition: service_healthy
+        apigateway:
+          condition: service_started
     networks:
       - micro_net   
 
@@ -114,9 +117,12 @@ services:
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest
     depends_on:
-      - mysql
-      - rabbitmq
-      - apigateway
+        mysql:
+          condition: service_healthy
+        rabbitmq:
+          condition: service_healthy
+        apigateway:
+          condition: service_started
     networks:
       - micro_net
 
@@ -146,9 +152,12 @@ services:
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest
     depends_on:
-      - mysql
-      - rabbitmq
-      - apigateway
+        mysql:
+          condition: service_healthy
+        rabbitmq:
+          condition: service_healthy
+        apigateway:
+          condition: service_started
     networks:
       - micro_net
 
@@ -178,9 +187,12 @@ services:
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest
     depends_on:
-      - mysql
-      - rabbitmq
-      - apigateway
+        mysql:
+          condition: service_healthy
+        rabbitmq:
+          condition: service_healthy
+        apigateway:
+          condition: service_started
     networks:
       - micro_net
 
@@ -211,9 +223,12 @@ services:
       - RabbitMQ__Username=guest
       - RabbitMQ__Password=guest      
     depends_on:
-      - mysql
-      - rabbitmq
-      - apigateway 
+        mysql:
+          condition: service_healthy
+        rabbitmq:
+          condition: service_healthy
+        apigateway:
+          condition: service_started 
     networks:
       - micro_net
 
@@ -228,12 +243,23 @@ services:
     networks:
      - micro_net
 
-  mobile:
+  mobileoperator:
     build:
       context: ./mobile/mobile-operario
       dockerfile: docker/Dockerfile
     ports:
-      - "${MOBILE_PORT}:80"
+      - "${MOBILE_OPERATOR_PORT}:80"
+    depends_on:
+      - apigateway
+    networks:
+      - micro_net
+ 
+  mobiledelivery:
+    build:
+      context: ./mobile/mobile-delivery
+      dockerfile: docker/Dockerfile
+    ports:
+      - "${MOBILE_DELIVERY_PORT}:80"
     depends_on:
       - apigateway
     networks:
