@@ -40,8 +40,8 @@ export default function InvoicedOrdersPage() {
       period: newFilters.period,
     });
 
-    if (newFilters.fromDate !== undefined) setFromDate(newFilters.fromDate);
-    if (newFilters.toDate !== undefined) setToDate(newFilters.toDate);
+    setFromDate(newFilters.fromDate || "");
+    setToDate(newFilters.toDate || "");
 
     fetchOrders({
       customerName: newFilters.customerName || "",
