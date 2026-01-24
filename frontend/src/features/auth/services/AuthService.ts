@@ -4,13 +4,14 @@ import API from "../../../api/axios";
 
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
     try {
+        console.log(credentials)
         const response = await API.post<LoginResponse>("api/auth/login",credentials);
         return response.data;
     } catch(error) {
         if (error instanceof AxiosError) {
-            throw new Error(error.response?.data?.message || "Login failed");
+            throw new Error(error.response?.data?.message || "No ha sido posible iniciar sesión");
         }
-        throw new Error("An unexpected error occurred");
+        throw new Error("Ha ocurrido un error inesperado" );
     }
 };
 
@@ -21,9 +22,9 @@ export const register = async (userData: RegisterRequest): Promise<RegisterRespo
         return response.data
     } catch (error) {
         if (error instanceof AxiosError) {
-            throw new Error(error.response?.data?.message || "Register failed");
+            throw new Error(error.response?.data?.message || "Registro fallido");
         }
-        throw new Error("An unexpected error occurred");
+        throw new Error("Ha ocurrido un error inesperado");
     }
 };
 
@@ -50,9 +51,9 @@ export const createNewPassword = async (
         return response.data;
     } catch (error) {
         if (error instanceof AxiosError) {
-            throw new Error(error.response?.data?.message || "Failed to create password");
+            throw new Error(error.response?.data?.message || "No ha sido posible crear la contraseña");
         }
-        throw new Error("Unexpected error");
+        throw new Error("Error inesperado");
     }
 };
 
@@ -67,9 +68,9 @@ export const forgotPassword = async (
         return response.data;
     } catch (error) {
         if (error instanceof AxiosError) {
-            throw new Error(error.response?.data?.message || "Forgot password failed");
+            throw new Error(error.response?.data?.message || "Recuperación de contraseña fallida");
         }
-        throw new Error("Unexpected error");
+        throw new Error("Error inesperado");
     }
 };
 
@@ -84,8 +85,8 @@ export const resetPassword = async (
         return response.data;
     } catch (error) {
         if (error instanceof AxiosError) {
-            throw new Error(error.response?.data?.message || "Reset password failed");
+            throw new Error(error.response?.data?.message || "Reinicio de contraseña fallido");
         }
-        throw new Error("Unexpected error");
+        throw new Error("Error inesperado");
     }
 };
