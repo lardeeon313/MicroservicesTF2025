@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useOrderOperations } from '../../hooks/useOrders';
-import { DeliveryPriority } from '../../types/OrderTypes';
+import { DeliveryPriority, PaymentType } from '../../types/OrderTypes';
 import { DeliveryPriorityLabels } from '../../constants/PriorityOrderLabel';
 import { normalizePaymentType } from '../../utils/normalize';
 import toast from 'react-hot-toast';
@@ -120,7 +120,7 @@ export const ProcessOrderModal = ({
               onClick={handleProcessOrder}
               disabled={loading}
               className={`px-6 py-2 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                paymentType === 'Efectivo' 
+                paymentType === PaymentType.Cash || normalizePaymentType(paymentType) === 'Efectivo'
                   ? 'bg-red-600 hover:bg-red-700' 
                   : 'bg-green-600 hover:bg-green-700'
               }`}

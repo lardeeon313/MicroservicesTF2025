@@ -36,8 +36,8 @@ export enum DeliveryPriority {
 
 export enum PaymentType {
   Transfer = "Transferencia",
-  Credit_Card = "Tarjeta de Credito",
-  Debit_Card = "Tarjeta de Debito",
+  Credit_Card = "Tarjeta de Crédito",
+  Debit_Card = "Tarjeta de Débito",
   Cash = "Efectivo",
   Current_Account = "Cuenta Corriente",
   Check = "Cheque",
