@@ -55,35 +55,11 @@ export function normalizeOrderStatus(s: any): OrderStatus | undefined {
   return undefined;
 }
 
+import { getPaymentTypeLabel } from '../constants/PaymentTypeLabel';
+
 export function normalizePaymentType(paymentType: any): string {
   if (paymentType === null || paymentType === undefined) return '';
-  if (typeof paymentType === 'string') {
-    const v = paymentType.toLowerCase().trim();
-    const map: { [key: string]: string } = {
-      'cash': 'Efectivo',
-      'efectivo': 'Efectivo',
-      'transfer': 'Transferencia',
-      'transferencia': 'Transferencia',
-      'bank transfer': 'Transferencia',
-      'credit_card': 'Tarjeta de Credito',
-      'credit card': 'Tarjeta de Credito',
-      'tarjeta de credito': 'Tarjeta de Credito',
-      'debit_card': 'Tarjeta de Debito',
-      'debit card': 'Tarjeta de Debito',
-      'tarjeta de debito': 'Tarjeta de Debito',
-      'current_account': 'Cuenta Corriente',
-      'current account': 'Cuenta Corriente',
-      'cuenta corriente': 'Cuenta Corriente',
-      'check': 'Cheque',
-      'cheque': 'Cheque',
-      'promissory_note': 'Pagaré',
-      'promissory note': 'Pagaré',
-      'pagare': 'Pagaré',
-      'pagaré': 'Pagaré',
-    };
-    return map[v] || paymentType;
-  }
-  return String(paymentType);
+  return getPaymentTypeLabel(paymentType);
 }
 
 export function normalizeDeliveryPriority(p: any): DeliveryPriority | undefined {
