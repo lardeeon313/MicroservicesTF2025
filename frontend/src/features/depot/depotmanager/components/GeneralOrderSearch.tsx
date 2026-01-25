@@ -1,10 +1,41 @@
 import { useState, useEffect } from 'react';
 import { getAllOrders } from '../services/orderService';
-import { DepotOrderDto } from '../types/OrderTypes';
+import { DepotOrderDto, OrderStatus } from '../types/OrderTypes';
 import LoadingSpinner from '../../../../components/LoadingSpinner';
 import { Search, Filter } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { OrderStatusLabel } from '../constants/OrderStatusLabel';
+
+const statusColors: Record<string | number, string> = {
+  0: 'bg-blue-100 text-blue-800',           // Recibido
+  1: 'bg-blue-200 text-blue-800',           // Re-Recibido
+  2: 'bg-yellow-100 text-yellow-800',       // Asignado
+  3: 'bg-orange-100 text-orange-800',       // En preparación
+  4: 'bg-amber-100 text-amber-800',         // Notificado falta
+  5: 'bg-purple-100 text-purple-800',       // Enviado a facturar
+  6: 'bg-yellow-200 text-yellow-900',       // Pendiente de resolución
+  7: 'bg-green-100 text-green-800',         // Preparado
+  8: 'bg-emerald-100 text-emerald-800',     // Facturado
+  9: 'bg-blue-100 text-blue-800',           // Emitido
+  10: 'bg-red-100 text-red-800',            // Cancelado
+  11: 'bg-gray-200 text-gray-800',          // Eliminado
+  12: 'bg-cyan-100 text-cyan-800',          // Verificado
+  13: 'bg-yellow-100 text-yellow-800',      // En camino
+  14: 'bg-green-200 text-green-800',        // Entregado
+  15: 'bg-lime-100 text-lime-800',          // Pendiente de verificación
+  16: 'bg-fuchsia-100 text-fuchsia-800',    // Asignado a reparto
+  17: 'bg-violet-100 text-violet-800',      // Pendiente de reparto
+  18: 'bg-rose-50 text-rose-700',           // Pendiente de resolución de incidente
+  19: 'bg-green-50 text-green-700',         // Incidente resuelto
+};
+
+const getStatusClasses = (status: any) => {
+  const key = Number.isNaN(Number(status)) ? status : Number(status);
+  return statusColors[key] ?? 'bg-gray-100 text-gray-800';
+};
+
+const formatMoney = (value: number) =>
+  `$${Number(value || 0).toFixed(2)}`;
 
 interface GeneralOrderSearchProps {
   // onOrderSelected?: (order: DepotOrderDto) => void; // Comentado temporalmente
@@ -125,11 +156,26 @@ const GeneralOrderSearch = ({}: GeneralOrderSearchProps) => {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
             >
               <option value="all">Todos los estados</option>
-              <option value="0">Emitido</option>
+              <option value="9">Emitido</option>
               <option value="2">Asignado</option>
-              <option value="3">En Preparación</option>
+              <option value="3">En preparación</option>
+              <option value="4">Notificado falta</option>
+              <option value="5">Enviado a facturar</option>
+              <option value="6">Pendiente de resolución</option>
               <option value="7">Preparado</option>
               <option value="8">Facturado</option>
+              <option value="12">Verificado</option>
+              <option value="13">En camino</option>
+              <option value="14">Entregado</option>
+              <option value="15">Pendiente de verificación</option>
+              <option value="16">Asignado a reparto</option>
+              <option value="17">Pendiente de reparto</option>
+              <option value="18">Pendiente de resolución de incidente</option>
+              <option value="19">Incidente resuelto</option>
+              <option value="10">Cancelado</option>
+              <option value="11">Eliminado</option>
+              <option value="0">Recibido</option>
+              <option value="1">Re-Recibido</option>
             </select>
           </div>
         </div>
@@ -176,15 +222,8 @@ const GeneralOrderSearch = ({}: GeneralOrderSearchProps) => {
                     <span className="font-medium text-gray-900">
                       D-{order.depotOrderId}
                     </span>
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      Number(order.status) === 0 ? 'bg-blue-100 text-blue-800' :
-                      Number(order.status) === 2 ? 'bg-yellow-100 text-yellow-800' :
-                      Number(order.status) === 3 ? 'bg-orange-100 text-orange-800' :
-                      Number(order.status) === 7 ? 'bg-green-100 text-green-800' :
-                      Number(order.status) === 8 ? 'bg-purple-100 text-purple-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      {OrderStatusLabel[Number(order.status)] ?? 'Desconocido'}
+                    <span className={`px-2 py-1 text-xs rounded-full ${getStatusClasses(order.status)}`}>
+                      {OrderStatusLabel[Number(order.status)] ?? OrderStatusLabel[order.status as string] ?? 'Desconocido'}
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 mt-1">
@@ -251,15 +290,8 @@ const GeneralOrderSearch = ({}: GeneralOrderSearchProps) => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-600 mb-4">Estado:</label>
-                    <span className={`rounded-lg border border-gray-300 px-3 py-2.5 font-semibold text-gray-900 shadow-sm ${
-                      Number((selectedOrder as any).status) === 0 ? 'bg-blue-100' :
-                      Number((selectedOrder as any).status) === 2 ? 'bg-yellow-100' :
-                      Number((selectedOrder as any).status) === 3 ? 'bg-orange-100' :
-                      Number((selectedOrder as any).status) === 7 ? 'bg-green-100' :
-                      Number((selectedOrder as any).status) === 8 ? 'bg-purple-100' :
-                      'bg-gray-100'
-                    }`}>
-                      {OrderStatusLabel[Number((selectedOrder as any).status)] ?? 'Desconocido'}
+                    <span className={`rounded-lg border border-gray-300 px-3 py-2.5 font-semibold text-gray-900 shadow-sm ${getStatusClasses((selectedOrder as any).status)}`}>
+                      {OrderStatusLabel[Number((selectedOrder as any).status)] ?? OrderStatusLabel[(selectedOrder as any).status as string] ?? 'Desconocido'}
                     </span>
                   </div>
                 </div>
@@ -272,7 +304,7 @@ const GeneralOrderSearch = ({}: GeneralOrderSearchProps) => {
                         <th className="px-4 py-3">Producto</th>
                         <th className="px-4 py-3">Marca</th>
                         <th className="px-4 py-3">Cantidad</th>
-                        {Number((selectedOrder as any).status) === 8 && (
+                        {Number((selectedOrder as any).status) >= OrderStatus.Invoiced && (
                           <>
                             <th className="px-4 py-3">Precio Unitario</th>
                             <th className="px-4 py-3">Subtotal</th>
@@ -281,35 +313,50 @@ const GeneralOrderSearch = ({}: GeneralOrderSearchProps) => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                      {Array.isArray((selectedOrder as any).items) && (selectedOrder as any).items.map((item: any, index: number) => (
-                        <tr key={index} className="hover:bg-gray-50 transition">
-                          <td className="px-4 py-3">{item.productName}</td>
-                          <td className="px-4 py-3">{item.productBrand}</td>
-                          <td className="px-4 py-3">{item.quantity}</td>
-                          {Number((selectedOrder as any).status) === 8 && (
-                            <>
-                              <td className="px-4 py-3 font-medium text-gray-800">
-                                ${item.unitPrice || 0}
-                              </td>
-                              <td className="px-4 py-3 font-semibold text-gray-900">
-                                ${((item.unitPrice || 0) * item.quantity).toFixed(2)}
-                              </td>
-                            </>
-                          )}
-                        </tr>
-                      ))}
+                        {Array.isArray((selectedOrder as any).items) && (selectedOrder as any).items.map((item: any, index: number) => {
+                          // Derivar precio unitario aunque no venga explícito
+                          const rawUnitPrice = item.unitPrice ?? item.price;
+                          const derivedUnitPrice = (item.total && item.quantity) ? Number(item.total) / Number(item.quantity || 1) : undefined;
+                          const unitPrice = Number(rawUnitPrice ?? derivedUnitPrice ?? 0);
+
+                          const subtotal = Number(item.total ?? unitPrice * Number(item.quantity));
+
+                          return (
+                            <tr key={index} className="hover:bg-gray-50 transition">
+                              <td className="px-4 py-3">{item.productName}</td>
+                              <td className="px-4 py-3">{item.productBrand}</td>
+                              <td className="px-4 py-3">{item.quantity}</td>
+                              {Number((selectedOrder as any).status) >= OrderStatus.Invoiced && (
+                                <>
+                                  <td className="px-4 py-3 font-medium text-gray-800">
+                                    {formatMoney(unitPrice)}
+                                  </td>
+                                  <td className="px-4 py-3 font-semibold text-gray-900">
+                                    {formatMoney(subtotal)}
+                                  </td>
+                                </>
+                              )}
+                            </tr>
+                          );
+                        })}
                     </tbody>
                   </table>
                 </div>
 
                 {/* Total - Solo para órdenes facturadas */}
-                {Number((selectedOrder as any).status) === 8 && (
+                {Number((selectedOrder as any).status) >= OrderStatus.Invoiced && (
                   <div className="flex justify-end items-center gap-4 mt-4">
                     <span className="text-lg font-bold">Total:</span>
                     <span className="text-2xl font-bold text-green-700">
-                      ${Array.isArray((selectedOrder as any).items) ? (selectedOrder as any).items.reduce((acc: number, item: any) => {
-                        return acc + ((item.unitPrice || 0) * item.quantity);
-                      }, 0).toFixed(2) : '0.00'}
+                      {formatMoney(
+                        Array.isArray((selectedOrder as any).items)
+                          ? (selectedOrder as any).items.reduce((acc: number, item: any) => {
+                              const unitPrice = item.unitPrice ?? item.price ?? 0;
+                              const subtotal = item.total ?? unitPrice * item.quantity;
+                              return acc + subtotal;
+                            }, 0)
+                          : 0
+                      )}
                     </span>
                   </div>
                 )}

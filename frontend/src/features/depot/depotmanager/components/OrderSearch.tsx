@@ -113,7 +113,9 @@ export const OrderSearch = ({ onOrderFound }: OrderSearchProps) => {
               </div>
               <div>
                 <span className="text-gray-500">Estado:</span>
-                <span className="ml-2 font-medium">{OrderStatusLabel[foundOrder.status as unknown as number] ?? String(foundOrder.status)}</span>
+                <span className="ml-2 font-medium">
+                  {OrderStatusLabel[foundOrder.status as unknown as number] ?? OrderStatusLabel[foundOrder.status as unknown as string] ?? String(foundOrder.status)}
+                </span>
               </div>
               <div>
                 <span className="text-gray-500">Fecha:</span>
@@ -153,7 +155,7 @@ export const OrderSearch = ({ onOrderFound }: OrderSearchProps) => {
               <OrderDetails 
                 order={{
                   id: foundOrder.depotOrderId,
-                  status: OrderStatusLabel[foundOrder.status as unknown as number] ?? String(foundOrder.status),
+                  status: OrderStatusLabel[foundOrder.status as unknown as number] ?? OrderStatusLabel[foundOrder.status as unknown as string] ?? String(foundOrder.status),
                   orderDate: foundOrder.orderDate.toString(),
                   deliveryDate: undefined, // DepotOrderEntity no tiene DeliveryDate
                   deliveryDetail: foundOrder.deliveryDetail || '',
