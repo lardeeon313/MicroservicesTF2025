@@ -81,7 +81,7 @@ namespace LogisticService.Infraestructure.Persistence
             };
         }
 
-        public async Task<PagedResult<DeliveryIncident>> GetDeliveryIncidentsReportQuery(DateTime? startDate,DateTime? endDate,int? deliveryZoneId,int? deliveryTeamId,Guid? operatorId,bool? resolved,int pageNumber,int pageSize)
+        public async Task<PagedResult<DeliveryIncident>> GetDeliveryIncidentsReportQuery(DateTime? startDate, DateTime? endDate, int? deliveryZoneId, int? deliveryTeamId, Guid? operatorId, bool? resolved, int pageNumber, int pageSize)
         {
             var query = _context.DeliveryIncidents
                 .Include(i => i.LogisticOrder)
@@ -250,7 +250,7 @@ namespace LogisticService.Infraestructure.Persistence
             return grouped;
         }
 
-        public async Task<List<LogisticOrder>> GetFilteredOrdersAsync(DateTime? startDate,DateTime? endDate,int? deliveryZoneId,int? deliveryTeamId,Guid? operatorId,PaymentType? paymentType)
+        public async Task<List<LogisticOrder>> GetFilteredOrdersAsync(DateTime? startDate, DateTime? endDate, int? deliveryZoneId, int? deliveryTeamId, Guid? operatorId, PaymentType? paymentType)
         {
             var query = _context.LogisticOrders
                 .AsNoTracking()
@@ -259,7 +259,7 @@ namespace LogisticService.Infraestructure.Persistence
                 .Include(o => o.StatusHistory)
                 .AsQueryable();
 
-            
+
             if (startDate.HasValue)
             {
                 query = query.Where(o =>
@@ -331,7 +331,7 @@ namespace LogisticService.Infraestructure.Persistence
                 Items = results.Select(h => new OrderStatusHistoryReport
                 {
                     Id = h.Id,
-                    OrderId = h.OrderId,
+                    OrderId = h.OrderId ?? 0,
                     CustomerName = $"{h.LogisticOrder.Customer.FirstName} {h.LogisticOrder.Customer.LastName}".Trim(),
                     OldStatus = h.OldStatus.ToString(),
                     NewStatus = h.NewStatus.ToString(),
