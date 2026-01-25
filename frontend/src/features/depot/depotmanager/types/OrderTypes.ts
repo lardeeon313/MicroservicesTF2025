@@ -147,35 +147,28 @@ export interface DepotOrderEntity {
     deliveryAddress: OrderAddressEntity;
 }
 
+// Mantener los valores numéricos alineados con el backend (DepotService.Domain.Enums.OrderStatus)
 export enum OrderStatus {
-    /*
-    Pending = "pending",
-    ReReceived = "reReceived",
-    Issued = "issued",
-    Confirmed = "confirmed",
-    InPreparation = "inPreparation",
-    PendingResolution = "pendingResolution",
-    MissingProduct = "missingProduct",
-    Prepared = "prepared",
-    Invoiced = "invoiced",   
-    Verify = "verify",
-    OnTheWay = "onTheWay",   
-    Delivered = "delivered",  
-    Canceled = "canceled",
-    Assigned = "assigned"
-    */
-    Received = 0,
-    ReReceived = 1,
-    Assigned = 2,
-    InPreparation = 3,
-    MissingProduct = 4,
-    SentToBilling = 5,
-    PendingResolution = 6,
-    Prepared = 7,
-    Invoiced = 8,
-    Issued = 9,
-    Cancelled = 10,
-    Deleted = 11
+    Received = 0,                 // Recibido desde ventas
+    ReReceived = 1,               // Re recibido desde ventas
+    Assigned = 2,                 // Asignado a operario
+    InPreparation = 3,            // En preparación
+    MissingProduct = 4,           // Notificado falta
+    SentToBilling = 5,            // Enviado a facturar
+    PendingResolution = 6,        // Pendiente de resolución
+    Prepared = 7,                 // Preparado
+    Invoiced = 8,                 // Facturado
+    Issued = 9,                   // Emitido por ventas
+    Cancelled = 10,               // Cancelado
+    Deleted = 11,                 // Eliminado
+    Verify = 12,                  // Verificado
+    OnTheWay = 13,                // En camino
+    Delivered = 14,               // Entregado
+    PendingVerification = 15,     // Pendiente de verificación
+    AssignedDelivery = 16,        // Asignado a reparto
+    PendingDelivered = 17,        // Pendiente de reparto
+    PendingIncidentResolution = 18, // Pendiente de resolución de incidente
+    IncidentResolved = 19         // Incidente resuelto
 }
 
 // Tipo para compatibilidad con componentes de tabla
