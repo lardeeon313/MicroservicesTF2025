@@ -78,3 +78,5 @@ export const orderStatusStyles: Record<OrderStatus, { text: string; bg: string }
     bg: "bg-green-50",
   }, //verde medio: Incidente resuelto 
 }
+
+
