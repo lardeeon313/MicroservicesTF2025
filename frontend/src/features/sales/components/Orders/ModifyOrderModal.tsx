@@ -32,7 +32,17 @@ const ModifyOrderModal: React.FC<Props> = ({ order, onClose, onSave }) => {
 
   const handleItemChange = (index: number, field: keyof UpdateOrderItemRequest, value: string | number) => {
     const newItems = [...items];
-    (newItems[index] as any)[field] = value;
+    // Validar que la cantidad no sea negativa
+    if (field === 'quantity') {
+      const numValue = typeof value === 'number' ? value : parseInt(value as string, 10);
+      if (isNaN(numValue) || numValue < 0) {
+        (newItems[index] as any)[field] = 0;
+      } else {
+        (newItems[index] as any)[field] = numValue;
+      }
+    } else {
+      (newItems[index] as any)[field] = value;
+    }
     setItems(newItems);
   };
 
@@ -99,8 +109,26 @@ const ModifyOrderModal: React.FC<Props> = ({ order, onClose, onSave }) => {
                   />
                   <input
                     type="number"
+                    min="0"
+                    step="1"
                     value={item.quantity}
-                    onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value, 10) || 0)}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (value === '') {
+                        handleItemChange(index, 'quantity', 0);
+                      } else {
+                        const numValue = parseInt(value, 10);
+                        if (!isNaN(numValue) && numValue >= 0) {
+                          handleItemChange(index, 'quantity', numValue);
+                        }
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      // Prevenir la entrada de caracteres negativos
+                      if (e.key === '-' || e.key === '+' || e.key === 'e' || e.key === 'E') {
+                        e.preventDefault();
+                      }
+                    }}
                     placeholder="Cantidad"
                     className="w-20 px-3 py-2 border rounded-md border-gray-300 focus:border-red-400 focus:outline-none"
                   />
