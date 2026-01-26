@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useState } from 'react';
 import { useOrderDetails } from '../hooks/useOrders';
 import { useOperators } from '../hooks/useOperators';
-import { OrderStatus } from '../types/OrderTypes';
+import { OrderStatus, PaymentType } from '../types/OrderTypes';
 import { DeliveryPriorityLabels } from '../constants/PriorityOrderLabel';
 import { OrderStatusBadge } from '../components/Order/OrderStatusBadge';
 import { ProcessOrderModal } from '../components/Order/ProcessOrderModal';
@@ -202,7 +202,7 @@ const PendingOrderVerificationDetailsPage = () => {
                   <button
                     onClick={() => setShowProcessModal(true)}
                     className={`px-8 py-3 text-white font-semibold rounded-lg transition-colors ${
-                      order.paymentType === 'Efectivo' 
+                      order.paymentType === PaymentType.Cash || normalizedPayment === 'Efectivo'
                         ? 'bg-red-600 hover:bg-red-700' 
                         : 'bg-green-600 hover:bg-green-700'
                     }`}

@@ -208,7 +208,7 @@ const OrdersInRouteDetailsPage = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1">Tipo de Pago:</label>
                 <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">
-                  {order.paymentType || 'N/A'}
+                  {normalizedPaymentType || 'N/A'}
                 </p>
               </div>
               <div>

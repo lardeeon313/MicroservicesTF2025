@@ -2,6 +2,7 @@ import { LogisticOrderDto } from "../../types/OrderTypes";
 import { OrderItemsTable } from "../../../../components/OrderItemsTable";
 import { OrderStatusLabels } from "../../constants/OrderStatusLabel";
 import { DeliveryPriorityLabels } from "../../constants/PriorityOrderLabel";
+import { getPaymentTypeLabel } from "../../constants/PaymentTypeLabel";
 type Props = {
   order: LogisticOrderDto;
 };
@@ -67,7 +68,7 @@ export default function OrderDetails({ order }: Props) {
         <div>
           <label className="block text-sm font-medium text-gray-900 mb-1">Tipo de Pago:</label> 
           <p className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300">
-            {order.paymentType || 'N/A'}
+            {getPaymentTypeLabel(order.paymentType) || 'N/A'}
           </p>
         </div>
       </div>

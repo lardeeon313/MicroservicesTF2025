@@ -48,6 +48,10 @@ export const orderStatusStyles: Record<OrderStatus, { text: string; bg: string }
   [OrderStatus.PendingResolution]: {
     text: "text-yellow-700",
     bg: "bg-yellow-100", // amarillo claro = pendiente de resolución
+    },
+  [OrderStatus.ReIssued]: {
+    text: "text-amber-700",
+    bg: "bg-amber-100", // amarillo = reemitido
   },
   [OrderStatus.PendingReissued]: {
     text: "text-orange-700",
