@@ -37,8 +37,9 @@ export default function OrdersPage() {
       const order = orders.find((o) => o.id === id);
       if (!order) return;
 
-      if (!editableStatuses.includes(order.status)) {
-        return Swal.fire("Acción no permitida", `Solo puedes eliminar órdenes en estado "${OrderStatusLabels[OrderStatus.Pending]}", "${OrderStatusLabels[OrderStatus.PendingResolution]}" o "${OrderStatusLabels[OrderStatus.PendingReissued]}".`, "warning");
+      const deletableStatuses = [...editableStatuses, OrderStatus.Canceled];
+      if (!deletableStatuses.includes(order.status)) {
+        return Swal.fire("Acción no permitida", `Solo puedes eliminar órdenes en estado "${OrderStatusLabels[OrderStatus.Pending]}", "${OrderStatusLabels[OrderStatus.PendingResolution]}", "${OrderStatusLabels[OrderStatus.PendingReissued]}" o "${OrderStatusLabels[OrderStatus.Canceled]}".`, "warning");
       }
 
       const confirmResult = await Swal.fire({

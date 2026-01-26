@@ -22,6 +22,11 @@ const editableStatuses = [
   OrderStatus.PendingReissued,
 ];
 
+const deletableStatuses = [
+  ...editableStatuses,
+  OrderStatus.Canceled,
+];
+
 const getPaymentTypeLabel = (type?: string) => {
   
   if (!type) return "No especificado";
@@ -130,7 +135,7 @@ export default function OrderTable({
                       </button>
                       <button
                         onClick={() => onDelete(order.id)}
-                        disabled={!editableStatuses.includes(order.status)}
+                        disabled={!deletableStatuses.includes(order.status)}
                         className="p-2 rounded-full hover:bg-red-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
                         title="Eliminar"
                       >
