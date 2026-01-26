@@ -70,8 +70,6 @@ const RegisterOrderForm: React.FC<Props> = ({
     }
   : undefined
   };
-
-  console.log("🚀 Payload final enviado al backend:", payload);
   onSubmit(payload);
 };
 
@@ -82,10 +80,7 @@ const RegisterOrderForm: React.FC<Props> = ({
       validationSchema={registerOrderValidationSchema}
       onSubmit={handleSubmit}
     >
-      {({ values, setFieldValue }) => {
-        console.log("Valores actuales del formulario:", values);
-
-        // Trae direcciones del cliente
+      {({ values, setFieldValue }) => {                
         useEffect(() => {
           const fetchAddresses = async () => {
             if (values.customerId) {
@@ -93,8 +88,7 @@ const RegisterOrderForm: React.FC<Props> = ({
                 const data = await getCustomerAddresses(values.customerId);
                 setAddresses(data);
                 setFieldValue("deliveryAddressId", null);
-              } catch (error) {
-                console.error("Error al traer direcciones:", error);
+              } catch (error) {                
                 setAddresses([]);
               }
             } else {
@@ -104,8 +98,6 @@ const RegisterOrderForm: React.FC<Props> = ({
           fetchAddresses();
         }, [values.customerId, setFieldValue]);
 
-        // Trae tipos de pago del cliente
-        // ✅ Trae y mapea tipos de pago del cliente
         useEffect(() => {
           const fetchPaymentTypes = async () => {
             if (values.customerId) {
@@ -122,7 +114,7 @@ const RegisterOrderForm: React.FC<Props> = ({
                 setPaymentTypes(mapped);
                 setFieldValue("paymentType", ""); // antes era paymentTypeId
               } catch (error) {
-                console.error("Error al traer tipos de pago:", error);
+                error;
                 setPaymentTypes([]);
               }
             } else {

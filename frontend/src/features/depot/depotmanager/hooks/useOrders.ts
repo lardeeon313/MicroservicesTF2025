@@ -94,8 +94,7 @@ export const useOrders = (): UseOrdersReturn => {
       if (data.length === 0) {
         setError('No hay órdenes pendientes en el sistema. Las órdenes se sincronizan automáticamente desde el módulo de ventas.');
       }
-    } catch (err) {
-      console.error('Error fetching all orders:', err);
+    } catch (err) {      
       const errorMessage = handleOrderError(err, 'Error al cargar las órdenes');
       setError(errorMessage);
       // En caso de error, establecer un array vacío
@@ -117,8 +116,7 @@ export const useOrders = (): UseOrdersReturn => {
       if (data.length === 0) {
         setError(`No hay órdenes con estado "${status}" disponibles.`);
       }
-    } catch (err) {
-      console.error('Error fetching orders by status:', err);
+    } catch (err) {    
       const errorMessage = handleOrderError(err, 'Error al cargar las órdenes por estado');
       setError(errorMessage);
     }
@@ -128,16 +126,13 @@ export const useOrders = (): UseOrdersReturn => {
     try {
       setError(null);
       const data = await getMissingOrders();
-      setMissingOrders(data);
-      console.log(data)
+      setMissingOrders(data);      
       
       // Si no hay órdenes con faltantes
       if (data.length === 0) {
-        // No establecer error aquí ya que es normal no tener faltantes
-        console.log('No hay órdenes con faltantes reportados.');
+        // No establecer error aquí ya que es normal no tener faltantes        
       }
-    } catch (err) {
-      console.error('Error fetching missing orders:', err);
+    } catch (err) {      
       const errorMessage = handleOrderError(err, 'Error al cargar las órdenes con faltantes');
       setError(errorMessage);
       // En caso de error, establecer un array vacío
@@ -150,8 +145,7 @@ export const useOrders = (): UseOrdersReturn => {
       setError(null);
       const data = await getAllOperators();
       setOperators(data);
-    } catch (err) {
-      console.error('Error fetching operators:', err);
+    } catch (err) {      
       const errorMessage = handleOrderError(err, 'Error al cargar los operadores');
       setError(errorMessage);
       // En caso de error, establecer un array vacío
@@ -169,8 +163,7 @@ export const useOrders = (): UseOrdersReturn => {
       await assignOperator(orderId, request);
       // Recargar órdenes después de asignar
       await fetchAllOrders();
-    } catch (err) {
-      console.error('Error assigning operator:', err);
+    } catch (err) {      
       const errorMessage = handleOrderError(err, 'Error al asignar operador');
       setError(errorMessage);
       throw err;
@@ -184,8 +177,7 @@ export const useOrders = (): UseOrdersReturn => {
       // Recargar órdenes después de reportar faltante
       await fetchAllOrders();
       await fetchMissingOrders();
-    } catch (err) {
-      console.error('Error reporting missing order:', err);
+    } catch (err) {      
       const errorMessage = handleOrderError(err, 'Error al reportar orden faltante');
       setError(errorMessage);
       throw err;
@@ -196,8 +188,7 @@ export const useOrders = (): UseOrdersReturn => {
     try {
       setError(null);
       return await getOrderByIdService(orderId);
-    } catch (err) {
-      console.error('Error getting order by id:', err);
+    } catch (err) {      
       const errorMessage = handleOrderError(err, 'Error al obtener la orden');
       setError(errorMessage);
       throw err;
@@ -221,8 +212,7 @@ export const useOrders = (): UseOrdersReturn => {
           fetchMissingOrders(),
           fetchOperators()
         ]);
-      } catch (error) {
-        console.error('Error loading initial data:', error);
+      } catch (error) {        
       } finally {
         setLoading(false);
       }
@@ -269,8 +259,7 @@ export const useInPreparationOrders = () => {
       if (data.length === 0) {
         setError('No hay órdenes en preparación disponibles.');
       }
-    } catch (err) {
-      console.error('Error fetching in preparation orders:', err);
+    } catch (err) {      
       const errorMessage = handleOrderError(err, 'Error al cargar las órdenes en preparación');
       setError(errorMessage);
       setOrders([]);

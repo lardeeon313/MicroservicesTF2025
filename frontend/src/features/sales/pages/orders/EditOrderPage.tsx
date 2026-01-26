@@ -85,22 +85,18 @@ const EditOrderPage = () => {
     items: Array<{ id: number; productName: string; productBrand: string; quantity: number }>
   ) => {
     if (initialValues) {
-      const updatedValues = { ...initialValues, items };
-      console.log("Nuevos initialValues:", updatedValues);
+      const updatedValues = { ...initialValues, items };      
       setInitialValues(updatedValues);
     }
   };
 
   const handleSubmit = async (values: UpdateOrderRequest) => {
-    console.log("🚀 Enviando updateOrder con:", values);
-    console.log("🚀 Items enviados:", values.items);
     setIsSubmitting(true);
     try {
       await updateOrder(values.orderId, values);
       toast.success("Orden actualizada correctamente");
       navigate("/sales/orders");
-    } catch (error) {
-      console.error("Error al actualizar la orden:", error);
+    } catch (error) {      
       handleFormikError({
         error,
         customMessages: {

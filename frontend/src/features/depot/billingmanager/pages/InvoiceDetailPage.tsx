@@ -57,8 +57,8 @@ const InvoiceOneDetailPage = () => {
         };
 
         setInvoice(mappedInvoice);
-      } catch (err) {
-        console.error(err);
+      } catch (err) {     
+        toast.error("Error al cargar la factura. Intenta recargar la página.");   
       } finally {
         setLoading(false);
       }

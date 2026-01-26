@@ -18,8 +18,7 @@ export function usePagedOrders(page: number, pageSize: number) {
         const mappedOrders = result.orders.map(mapOrderToOrderTableData);
 
         setOrders(mappedOrders);
-        setTotalPages(result.totalPages);
-        console.log("Orders fetched:", result.orders);
+        setTotalPages(result.totalPages);        
     } catch (error) {
       handleFormikError({
         error,

@@ -8,6 +8,7 @@ import {
    DeleteOrderRequest } from "../types/OrderTypes";
 import { Address } from "../types/CustomerTypes";
 import { CustomerPaymenType } from "../types/CustomerTypes";
+import toast from "react-hot-toast";
 
 // Obtener todas las órdenes
 export const getAllOrders = async (): Promise<Order[]> => {
@@ -182,21 +183,17 @@ export const getCustomerPaymentTypes = async (
     if (error.response) {
       const { status, data } = error.response;
 
-      if (status === 404) {
-        // Manejo explícito del mensaje del backend
-        const message =
-          data?.message || "El cliente no no tiene los tipos de pago.";
-        console.warn(message);
+      if (status === 404) {   
+        error.message =           
+          data?.message || "El cliente no no tiene los tipos de pago."; 
+        toast.error(error.message);       
         return [];
       }
 
-      if (status === 500) {
-        console.error("Internal Server Error:", data);
+      if (status === 500) {        
         throw new Error("Internal Server Error");
       }
-    }
-
-    console.error("Unexpected error while fetching customer payment types:", error);
+    }    
     throw error;
   }
 };

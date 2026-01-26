@@ -8,6 +8,7 @@ import {
 import { 
     AssignOrderRequest
 } from "../types/OperatorTypes";
+import toast from "react-hot-toast";
 
 // Tipos para las peticiones
 export interface OrderMissingReportedRequest {
@@ -38,7 +39,8 @@ export const getOrdersByStatus = async (status: number): Promise<DepotOrderDto[]
         const response = await API.get(`/depot/depotmanager/get-orders-by-status/${status}`);
         return response.data;
     } catch (error) {
-        throw error;
+        toast.error("Error al obtener las órdenes por estado.");
+        return [];
     }
 };
 

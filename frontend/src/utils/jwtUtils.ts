@@ -1,5 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import { JwtPayload } from "../features/auth/types/AuthTypes";
+import toast from "react-hot-toast";
 
 
 export const getRoleFromToken = (token: string): string | null => {
@@ -23,8 +24,7 @@ export const getRoleFromToken = (token: string): string | null => {
 
     return null;
 
-  } catch (error) {
-    console.error("Error decoding token", error);
+  } catch (error) {    
     return null;
   }
 };
@@ -34,7 +34,7 @@ export const getTokenPayload = (token: string): JwtPayload | null => {
   try {
     return jwtDecode<JwtPayload>(token);
   } catch (error) {
-    console.error("Error decoding token", error);
+    toast.error("Token inválido");   
     return null;
   }
 };
@@ -51,7 +51,7 @@ export const getUserIdFromToken = (token: string): string | null => {
     const decoded = jwtDecode<JwtPayload>(token);
     return decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] || null;
   } catch (error) {
-    console.error("Token inválido:", error);
+    toast.error("Token inválido"); 
     return null;
   }
 };
@@ -62,7 +62,7 @@ export const isTokenExpired = (token: string): boolean => {
     const currentTime = Date.now() / 1000;
     return decoded.exp < currentTime;
   } catch (error) {
-    console.error("Error checking token expiration:", error);
+    toast.error("Error al verificar el token");
     return true;
   }
 };

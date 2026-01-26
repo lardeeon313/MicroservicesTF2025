@@ -17,9 +17,6 @@ const fetchData = useCallback(async () => {
             getPagedOrders(1, 1000), // Podés paginar orders también si querés performance
         ]);
 
-        console.log("👉 customerData:", customerData);
-        console.log("👉 orderData:", orderData);
-
         const customers = customerData.customers;
         const orders = orderData.orders;
 

@@ -83,8 +83,7 @@ export default function OrdersPage() {
           });
           await Swal.fire("¡Listo!", `Se eliminó el pedido #${id}`, "success");
           refetch(); // actualiza la tabla
-        } catch (error) {
-          console.error("Error al eliminar:", error);
+        } catch (error) {          
           Swal.fire("Error", "No se pudo eliminar el pedido. Intenta de nuevo.", "error");
         }
       }
@@ -124,10 +123,6 @@ export default function OrdersPage() {
         if (!newStatus) return;
 
         try {
-            console.log("Response from updateOrderStatus:", {
-            orderId: id,
-            status: newStatus
-          });
           await updateOrderStatus(id, {
             orderId: id,
             status: newStatus

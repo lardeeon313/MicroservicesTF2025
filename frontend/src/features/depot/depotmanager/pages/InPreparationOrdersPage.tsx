@@ -67,11 +67,6 @@ function InPreparationOrdersPage() {
     setSelectedOrder(order || null);
   };
 
-  //const handleActionChange = (action: string, id: number) => {
-    // Sin acciones específicas para pedidos en preparación
-    //console.log('Acción no implementada:', action, id);
-  //};
-
   if (loading) {
     return <LoadingSpinner message="Cargando órdenes en preparación..." height='h-screen' />;
   }

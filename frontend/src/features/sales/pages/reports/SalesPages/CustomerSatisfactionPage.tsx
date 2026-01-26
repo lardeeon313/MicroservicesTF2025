@@ -5,6 +5,7 @@ import { Customer } from "../../../types/CustomerTypes";
 import type { Order } from "../../../types/OrderTypes";
 import API from "../../../../../api/axios";
 import BackButton from "../../../../../components/BackButton";
+import toast from "react-hot-toast";
 
 
 const CustomerSatisfacionPage: React.FC = () => {
@@ -31,7 +32,7 @@ const CustomerSatisfacionPage: React.FC = () => {
 
         setCustomers(mergedCustomers);
       } catch (error) {
-        console.error("Error al cargar datos:", error);
+        toast.error("Error al cargar los datos de satisfacción del cliente.");
       }
     };
 

@@ -3,6 +3,7 @@ import { useEffect, useState, useMemo } from "react";
 
 import { getAllCustomers } from "../../../services/CustomerService";
 import { getCustomerPaymentTypes } from "../../../services/OrderService";
+import toast from "react-hot-toast";
 
 // Types
 export interface CustomerReportRow {
@@ -64,7 +65,7 @@ export const useCustomerReport = (filters: CustomerReportFilters) => {
 
         setData(report);
       } catch (err) {
-        console.error("Error fetching report:", err);
+        toast.error("Error al cargar el reporte de tipos de pago por cliente");
       } finally {
         setLoading(false);
       }

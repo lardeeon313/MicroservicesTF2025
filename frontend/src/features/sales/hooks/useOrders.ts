@@ -16,7 +16,6 @@ export function useOrders() {
       const data = await getAllOrders();
       setOrders(data);
     } catch (err) {
-      console.error(err);
       toast.error("No se pudo cargar las órdenes");
       setError("Error al cargar las órdenes.");
     } finally {

@@ -5,6 +5,7 @@ import SalesPerfomanceTable from "../SalesComponents/IndividualComponentsSales/S
 import GraphSalesPerfomance from "../SalesGraph/GraphSalesPerfomance";
 import API from "../../../../../api/axios";
 import Footer from "../../../../../components/Footer";
+import toast from "react-hot-toast";
 
 const SalesPerfomancePage:React.FC = () => {
     const [empleados, setEmpleados] = useState<EmployeeSales[]>([]);
@@ -16,9 +17,9 @@ const SalesPerfomancePage:React.FC = () => {
         try {
             const response = await API.get("/empleados"); // Ajustá el endpoint si es diferente
             setEmpleados(response.data);
-        } catch (error) {
-            console.error("Error al obtener los datos:");
-          }
+        } catch (error) {            
+          toast.error("Error al cargar los datos de desempeño de ventas."); 
+        }         
         };
 
         fetchEmpleados();

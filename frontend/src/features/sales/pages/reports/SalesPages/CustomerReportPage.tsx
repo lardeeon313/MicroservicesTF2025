@@ -6,6 +6,7 @@ import CustomerReportTable, { CustomerWithCount } from "../SalesComponents/Indiv
 import GraphCustomerReport from "../SalesGraph/GraphCustomerReport";
 import API from "../../../../../api/axios";
 import BackButton from "../../../../../components/BackButton";
+import toast from "react-hot-toast";
 
 
 const CustomerReportPage: React.FC = () => {
@@ -36,7 +37,7 @@ const CustomerReportPage: React.FC = () => {
 
         setData(enrichedData);
       } catch (error) {
-        console.error("Fallo al obtener datos reales, se usarán datos mock:", error);
+        toast.error("Error al cargar el reporte de clientes y pedidos");    
       }
     };
 
