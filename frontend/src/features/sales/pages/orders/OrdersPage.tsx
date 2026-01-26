@@ -19,7 +19,11 @@ export default function OrdersPage() {
     const [page, setPage] = useState(1);
     const { orders, loading, error, totalPages, refetch } = usePagedOrders(page, pageSize);
 
-
+    const editableStatuses = [
+      OrderStatus.Pending,
+      OrderStatus.PendingResolution,
+      OrderStatus.PendingReissued,
+    ];
 
     const filteredOrders = orders.filter((order) => {
         const idMatch = order.id.toString().includes(searchId.toLowerCase());
@@ -33,11 +37,8 @@ export default function OrdersPage() {
       const order = orders.find((o) => o.id === id);
       if (!order) return;
 
-      if (order.status === OrderStatus.Confirmed || order.status === OrderStatus.InPreparation || order.status === OrderStatus.SentToBilling
-        || order.status === OrderStatus.Invoiced || order.status === OrderStatus.Prepared || order.status === OrderStatus.OnTheWay 
-        || order.status === OrderStatus.Delivered
-      ) {
-        return Swal.fire("Acción no permitida", `No se puede eliminar una orden si se encuentra en "${OrderStatusLabels[order.status] ?? order.status}" .`, "warning");
+      if (!editableStatuses.includes(order.status)) {
+        return Swal.fire("Acción no permitida", `Solo puedes eliminar órdenes en estado "${OrderStatusLabels[OrderStatus.Pending]}", "${OrderStatusLabels[OrderStatus.PendingResolution]}" o "${OrderStatusLabels[OrderStatus.PendingReissued]}".`, "warning");
       }
 
       const confirmResult = await Swal.fire({
@@ -87,12 +88,8 @@ export default function OrdersPage() {
         const order = orders.find((o) => o.id === id);
         if (!order) return;
 
-        if (order.status === OrderStatus.Issued) {
-          return Swal.fire("Acción no permitida", "No se puede modificar una orden ya emitida.", "warning");
-        }
-
-        if (order.status === OrderStatus.Canceled) {
-          return Swal.fire("Acción no permitida", "No se puede cambiar el estado de un pedido ya cancelado", "warning")
+        if (!editableStatuses.includes(order.status)) {
+          return Swal.fire("Acción no permitida", `Solo puedes cambiar estado cuando la órden está en "${OrderStatusLabels[OrderStatus.Pending]}", "${OrderStatusLabels[OrderStatus.PendingResolution]}" o "${OrderStatusLabels[OrderStatus.PendingReissued]}".`, "warning");
         }
 
         const statusMap: Record<string ,OrderStatus> = {
@@ -102,7 +99,7 @@ export default function OrdersPage() {
         };
 
         if (order.status === statusMap[action]) {
-          return Swal.fire("Accion no permitida", "La órden ya se encuentra en ese estado.", "info" )
+          return Swal.fire("Acción no permitida", `La órden ya se encuentra en "${OrderStatusLabels[order.status]}".`, "info" )
         }
 
         const confirmResult = await Swal.fire({
@@ -127,7 +124,7 @@ export default function OrdersPage() {
           });
           Swal.fire(
             "Estado actualizado",
-            `El pedido #${id} fue marcado como ""${OrderStatusLabels[newStatus] ?? newStatus}"".`,
+            `El pedido #${id} fue marcado como "${OrderStatusLabels[newStatus]}".`,
             "success"
           );
           refetch(); // Actualiza la pagina
@@ -150,10 +147,8 @@ export default function OrdersPage() {
         const order = orders.find((o) => o.id === id);
         if (!order) return;
 
-        if (order.status === OrderStatus.Confirmed || order.status === OrderStatus.InPreparation || order.status === OrderStatus.SentToBilling
-        || order.status === OrderStatus.Invoiced || order.status === OrderStatus.Prepared || order.status === OrderStatus.OnTheWay 
-        || order.status === OrderStatus.Delivered) {
-          return Swal.fire("Acción no permitida", `No se puede editar una orden si se encuentra en el estado: "${OrderStatusLabels[order.status] ?? order.status}"`, "warning");
+        if (!editableStatuses.includes(order.status)) {
+          return Swal.fire("Acción no permitida", `Solo puedes editar órdenes en estado "${OrderStatusLabels[OrderStatus.Pending]}", "${OrderStatusLabels[OrderStatus.PendingResolution]}" o "${OrderStatusLabels[OrderStatus.PendingReissued]}".`, "warning");
         }
         navigate(`/sales/orders/update/${id}`);
       };
@@ -164,6 +159,9 @@ export default function OrdersPage() {
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
         <BackButton to="/sales/home"></BackButton>
         <h1 className="text-center text-4xl font-bold text-red-600 mb-12">Gestión de Pedidos</h1>
+        <div className="flex items-center justify-end mb-6">
+          <BackButton to="/sales/orders/registerOrder" label="Registrar Nuevo Pedido"></BackButton>
+        </div>
         <div className="flex flex-col md:flex-row mb-4 w-full justify-between">
           <input
             type="text"
@@ -191,10 +189,6 @@ export default function OrdersPage() {
           onDelete={handleDelete}
           onActionChange={handleActionChange}
         />
-
-        <div className="flex items-center justify-end py-4 ">
-          <BackButton to="/sales/orders/registerOrder" label="Registrar Nuevo Pedido"></BackButton>
-        </div>
 
         {/* Paginación */}
         <div className="flex justify-center mt-6 gap-4 ">

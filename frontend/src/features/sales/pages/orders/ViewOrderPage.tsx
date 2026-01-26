@@ -15,10 +15,8 @@ export default function ViewOrderPage() {
 
   const editableStatuses = [
     OrderStatus.Pending, 
-    OrderStatus.Issued,
     OrderStatus.PendingResolution,
     OrderStatus.PendingReissued,
-    OrderStatus.ReIssued
   ];
   const canEditOrder = order && editableStatuses.includes(order.status);
 

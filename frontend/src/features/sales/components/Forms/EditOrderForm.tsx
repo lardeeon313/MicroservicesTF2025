@@ -238,11 +238,21 @@ export default function EditOrderForm({
                               name={`items[${index}].productName`}
                               className="block w-full rounded-md bg-white px-3 py-1.5 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
                             />
+                            <ErrorMessage
+                              name={`items[${index}].productName`}
+                              component="div"
+                              className="text-red-700 text-sm pt-1"
+                            />
                           </td>
                           <td className="pr-2 px-4 py-2">
                             <Field
                               name={`items[${index}].productBrand`}
                               className="block w-full rounded-md bg-white px-3 py-1.5 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
+                            />
+                            <ErrorMessage
+                              name={`items[${index}].productBrand`}
+                              component="div"
+                              className="text-red-700 text-sm pt-1"
                             />
                           </td>
                           <td className="pr-2 px-4 py-2">
@@ -250,7 +260,14 @@ export default function EditOrderForm({
                               name={`items[${index}].quantity`}
                               type="number"
                               min={1}
+                              placeholder="Cantidad"
                               className="block w-full rounded-md bg-white px-3 py-1.5 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Solo números, mínimo 1.</p>
+                            <ErrorMessage
+                              name={`items[${index}].quantity`}
+                              component="div"
+                              className="text-red-700 text-sm pt-1"
                             />
                           </td>
                           <td className="p-2 px-4 py-2 text-center">
