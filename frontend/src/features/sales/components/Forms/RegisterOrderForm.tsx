@@ -4,6 +4,7 @@ import { registerOrderValidationSchema } from "../../validations/orderSchemas";
 import type { Customer, Address } from "../../types/CustomerTypes";
 import { RegisterOrderRequest } from "../../types/OrderTypes";
 import { getCustomerAddresses, getCustomerPaymentTypes } from "../../services/OrderService";
+import toast from "react-hot-toast";
 
 interface Props {
   customers: Customer[];
@@ -80,7 +81,8 @@ const RegisterOrderForm: React.FC<Props> = ({
       validationSchema={registerOrderValidationSchema}
       onSubmit={handleSubmit}
     >
-      {({ values, setFieldValue }) => {                
+      {({ values, setFieldValue }) => {        
+        // Trae direcciones del cliente
         useEffect(() => {
           const fetchAddresses = async () => {
             if (values.customerId) {
@@ -88,7 +90,8 @@ const RegisterOrderForm: React.FC<Props> = ({
                 const data = await getCustomerAddresses(values.customerId);
                 setAddresses(data);
                 setFieldValue("deliveryAddressId", null);
-              } catch (error) {                
+              } catch (error) {
+                toast.error("Error al traer direcciones.");
                 setAddresses([]);
               }
             } else {
@@ -98,6 +101,8 @@ const RegisterOrderForm: React.FC<Props> = ({
           fetchAddresses();
         }, [values.customerId, setFieldValue]);
 
+        // Trae tipos de pago del cliente
+        // ✅ Trae y mapea tipos de pago del cliente
         useEffect(() => {
           const fetchPaymentTypes = async () => {
             if (values.customerId) {
@@ -114,7 +119,7 @@ const RegisterOrderForm: React.FC<Props> = ({
                 setPaymentTypes(mapped);
                 setFieldValue("paymentType", ""); // antes era paymentTypeId
               } catch (error) {
-                error;
+                toast.error("Error al traer tipos de pago.");
                 setPaymentTypes([]);
               }
             } else {
@@ -334,11 +339,6 @@ const RegisterOrderForm: React.FC<Props> = ({
                               placeholder="Producto"
                               className="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
                             />
-                            <ErrorMessage
-                              name={`items.${index}.productName`}
-                              component="div"
-                              className="text-red-700 text-sm pt-1"
-                            />
                           </td>
                           <td className="pr-2 px-4 py-2">
                             <Field
@@ -346,25 +346,13 @@ const RegisterOrderForm: React.FC<Props> = ({
                               placeholder="Marca"
                               className="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
                             />
-                            <ErrorMessage
-                              name={`items.${index}.productBrand`}
-                              component="div"
-                              className="text-red-700 text-sm pt-1"
-                            />
                           </td>
                           <td className="pr-2 px-4 py-2">
                             <Field
                               name={`items.${index}.quantity`}
                               type="number"
                               min={1}
-                              placeholder="Cantidad"
                               className="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-                            />
-                            <p className="text-xs text-gray-500 mt-1">Solo números, mínimo 1.</p>
-                            <ErrorMessage
-                              name={`items.${index}.quantity`}
-                              component="div"
-                              className="text-red-700 text-sm pt-1"
                             />
                           </td>
                           <td className="p-2 py-2 text-center">
