@@ -34,7 +34,7 @@ export default function OrdersPage() {
 
       if (order.status === OrderStatus.Confirmed || order.status === OrderStatus.InPreparation || order.status === OrderStatus.SentToBilling
         || order.status === OrderStatus.Invoiced || order.status === OrderStatus.Prepared || order.status === OrderStatus.OnTheWay 
-        || order.status === OrderStatus.Delivered
+        || order.status === OrderStatus.Delivered || order.status === OrderStatus.AssignedDelivery || order.status === OrderStatus.PendingIncidentResolution
       ) {
         return Swal.fire("Acción no permitida", `No se puede eliminar una orden si se encuentra en "${order.status}" .`, "warning");
       }
@@ -156,7 +156,7 @@ export default function OrdersPage() {
 
         if (order.status === OrderStatus.Confirmed || order.status === OrderStatus.InPreparation || order.status === OrderStatus.SentToBilling
         || order.status === OrderStatus.Invoiced || order.status === OrderStatus.Prepared || order.status === OrderStatus.OnTheWay 
-        || order.status === OrderStatus.Delivered) {
+        || order.status === OrderStatus.Delivered || order.status === OrderStatus.AssignedDelivery || order.status === OrderStatus.PendingIncidentResolution) {
           return Swal.fire("Acción no permitida", `No se puede editar una orden si se encuentra en "${order.status}`, "warning");
         }
         navigate(`/sales/orders/update/${id}`);

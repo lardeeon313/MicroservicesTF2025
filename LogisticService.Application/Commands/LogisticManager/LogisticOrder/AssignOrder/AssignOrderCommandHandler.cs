@@ -122,7 +122,7 @@ namespace LogisticService.Application.Commands.LogisticManager.LogisticOrder.Ass
             };
 
             // Publicar el evento de orden confirmada            
-            await _publisher.PublishToExchangeAsync(integrationEvent, "order_assigned_delivery_exchange ");
+            await _publisher.PublishToExchangeAsync(integrationEvent, "order_assigned_delivery_exchange");
 
             _logger.LogInformation("✅ Evento OrderAssignDeliveryIntegrationEvent publicado para la orden {DepotOrderId}", order.DepotOrderId);
 

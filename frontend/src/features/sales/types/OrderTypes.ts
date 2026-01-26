@@ -2,20 +2,24 @@ import {AddressRequest, Customer, CustomerResponse, Address } from "./CustomerTy
 
 export enum OrderStatus {
     Pending = "pending",
-    PendingResolution = "pendingResolution",
-    PendingReissued = "pendingReissued",
     Issued = "issued",
-    ReIssued = "reIssued",
     Confirmed = "confirmed",
     InPreparation = "inPreparation",
     Prepared = "prepared",
-    Invoiced = "invoiced",   
+    SentToBilling = "sentToBilling",
+    Invoiced = "invoiced",
     Verify = "verify",
-    OnTheWay = "onTheWay",   
-    Delivered = "delivered",  
+    OnTheWay = "onTheWay",
+    Delivered = "delivered",
     Canceled = "canceled",
-    Modified = "modified",
-    SentToBilling = "sentToBilling"
+    PendingResolution = "pendingResolution",
+    ReIssued = "reIssued",
+    PendingReissued = "pendingReissued",
+    PendingVerification = "pendingVerification",
+    AssignedDelivery = "assignedDelivery",
+    PendingDelivered = "pendingDelivered",
+    PendingIncidentResolution = "pendingIncidentResolution",
+    IncidentResolved = "incidentResolved",
 }
 
 export enum PaymentType {

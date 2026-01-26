@@ -81,7 +81,7 @@ namespace LogisticService.Application.Commands.DeliveryOperator.LogisticOrder.Re
             };
 
             // Publicar el evento de notificacion de cambio de estado
-            await _publisher.PublishToExchangeAsync(integrationEvent, "order_delivered_exchange");
+            await _publisher.PublishToExchangeAsync(integrationEvent, "order_delivery_incident_exchange");
 
             return true;
         }

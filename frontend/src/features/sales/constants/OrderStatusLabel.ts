@@ -15,5 +15,9 @@ export const OrderStatusLabels: Record<OrderStatus, string> = {
   [OrderStatus.OnTheWay]: "En camino",
   [OrderStatus.Delivered]: "Entregado",
   [OrderStatus.Canceled]: "Cancelado",
-  [OrderStatus.Modified]: "Modificado",
+  [OrderStatus.PendingVerification]: "Pendiente de verificación",
+  [OrderStatus.AssignedDelivery]: "Asignado a reparto",
+  [OrderStatus.PendingDelivered]: "Pendiente de reparto",
+  [OrderStatus.PendingIncidentResolution]: "Pedido con incidente",
+  [OrderStatus.IncidentResolved]: "Incidente resuelto",
 };

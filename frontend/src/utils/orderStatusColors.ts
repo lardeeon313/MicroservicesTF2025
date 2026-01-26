@@ -57,8 +57,24 @@ export const orderStatusStyles: Record<OrderStatus, { text: string; bg: string }
     text: "text-red-700",
     bg: "bg-red-100", // rojo = cancelado
   },
-  [OrderStatus.Modified]: {
-    text: "text-pink-700",
-    bg: "bg-pink-100", // rosado = modificado/alterado
+  [OrderStatus.PendingVerification]: {
+    text: "text-yellow-600",
+    bg: "bg-yellow-50", //amarillo medio: Pendiente de verificacion 
   },
+  [OrderStatus.AssignedDelivery]: {
+    text: "text-blue-600",
+    bg: "bg-blue-50", //azul medio: asginado a reparto 
+  },
+  [OrderStatus.PendingDelivered]: {
+    text: "text-orange-600",
+    bg: "bg-orange-50", //narajana medio: Pendiente de reparto 
+  },
+  [OrderStatus.PendingIncidentResolution]: {
+    text: "text-red-600",
+    bg: "bg-red-50", //rojo medio: pendiente de incidente de resolucion 
+  },
+  [OrderStatus.IncidentResolved]: {
+    text: "text-green-600",
+    bg: "bg-green-50",
+  }, //verde medio: Incidente resuelto 
 }
