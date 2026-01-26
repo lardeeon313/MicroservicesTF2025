@@ -19,18 +19,16 @@ export default function InvoicedOrdersFilter({ onSearch }: Props) {
   const [toDate, setToDate] = useState("");
   const [minAmount, setMinAmount] = useState("");
   const [maxAmount, setMaxAmount] = useState("");
-
-  // 💡 period bien tipado
   const [period, setPeriod] = useState<PeriodType | undefined>(undefined);
 
   const handleSearch = () => {
     onSearch({
-      customerName,
-      fromDate,
-      toDate,
+      customerName: customerName || undefined,
+      fromDate: fromDate || undefined,
+      toDate: toDate || undefined,
       minAmount: minAmount ? Number(minAmount) : undefined,
       maxAmount: maxAmount ? Number(maxAmount) : undefined,
-      period: period ?? undefined,
+      period,
     });
   };
 
@@ -47,12 +45,15 @@ export default function InvoicedOrdersFilter({ onSearch }: Props) {
 
   return (
     <div className="bg-gray-50 border border-gray-200 shadow-sm rounded-xl p-4 w-full">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">Buscar órdenes facturadas</h2>
+      <h2 className="text-lg font-semibold text-gray-800 mb-4">
+        Buscar órdenes facturadas
+      </h2>
 
       <div className="flex gap-2 items-end">
-
         <div className="flex-1">
-          <label className="text-sm font-medium px-2 text-gray-600 mb-1">Cliente:</label>
+          <label className="text-sm font-medium px-2 text-gray-600 mb-1">
+            Cliente:
+          </label>
           <input
             type="text"
             value={customerName}
@@ -66,7 +67,10 @@ export default function InvoicedOrdersFilter({ onSearch }: Props) {
           <input
             type="date"
             value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
+            onChange={(e) => {
+              setFromDate(e.target.value);
+              setPeriod(undefined); // 🔥 limpia período
+            }}
             className="border border-gray-300 rounded-lg px-3 py-2 w-full"
           />
         </div>
@@ -76,7 +80,10 @@ export default function InvoicedOrdersFilter({ onSearch }: Props) {
           <input
             type="date"
             value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
+            onChange={(e) => {
+              setToDate(e.target.value);
+              setPeriod(undefined); // 🔥 limpia período
+            }}
             className="border border-gray-300 rounded-lg px-3 py-2 w-full"
           />
         </div>
@@ -88,6 +95,8 @@ export default function InvoicedOrdersFilter({ onSearch }: Props) {
             onChange={(e) => {
               const val = e.target.value;
               setPeriod(val === "" ? undefined : (val as PeriodType));
+              setFromDate(""); // 🔥 limpia fechas
+              setToDate("");
             }}
             className="border border-gray-300 rounded-lg px-3 py-2 w-full"
           >

@@ -1,19 +1,19 @@
 import { useInvoicedOrdersByCustomer } from "../../../../../depot/pages/reports/Billing/BillingHocks/useOrderBilled";
 import InvoicedOrdersFilter from "../../../../../depot/pages/reports/Billing/BillingFilters/OrderBilledFilter";
 import InvoicedOrdersTable from "../../../../../depot/pages/reports/Billing/BillingComponents/OrderBilledTable";
+
 import BackButton from "../../../../../../components/BackButton";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import EmptyState from "../../../../../../components/EmptyState";
-import { AlertCircle, Search,EyeOff, BarChart3, RefreshCw } from "lucide-react";
+import { AlertCircle, Search, EyeOff, BarChart3, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import Pagination from "../../../../../depot/depotmanager/components/Pagination";
 import AdminOrderBilledGraph from "../Graphs/GraphOrderBilled";
 
 export default function AdminInvoiceOrdersBilled() {
-  const [showGraph, setShowGraph] = useState(true);
-  const [, setRefreshKey] = useState(0);
-  
   const { data, loading, error, fetchOrders } = useInvoicedOrdersByCustomer();
+
+  const [showGraph, setShowGraph] = useState(true);
 
   const [page, setPage] = useState<number>(1);
   const [pageSize] = useState<number>(10);
@@ -43,8 +43,8 @@ export default function AdminInvoiceOrdersBilled() {
       period: newFilters.period,
     });
 
-    if (newFilters.fromDate !== undefined) setFromDate(newFilters.fromDate);
-    if (newFilters.toDate !== undefined) setToDate(newFilters.toDate);
+    setFromDate(newFilters.fromDate || "");
+    setToDate(newFilters.toDate || "");
 
     fetchOrders({
       customerName: newFilters.customerName || "",
@@ -59,18 +59,19 @@ export default function AdminInvoiceOrdersBilled() {
   };
 
   const handleRefresh = () => {
-    setRefreshKey(prev => prev + 1);
     fetchOrders({
       customerName: filters.customerName,
-      fromDate: fromDate,
-      toDate: toDate,
+      fromDate,
+      toDate,
       minAmount: filters.minAmount,
       maxAmount: filters.maxAmount,
       period: filters.period,
     });
+
+    setPage(1);
   };
 
-  const filteredData = data.filter(item => {
+  const filteredData = data.filter((item) => {
     let pass = true;
 
     if (filters.customerName.trim() !== "") {
@@ -146,58 +147,46 @@ export default function AdminInvoiceOrdersBilled() {
             <InvoicedOrdersFilter onSearch={handleSearch} />
           </div>
 
-          {/* Botones de control */}
-<div className="flex justify-end gap-3 mb-6">
-  <button
-    onClick={() => setShowGraph(!showGraph)}
-    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-colors"
-  >
-    {showGraph ? (
-      <>
-        <EyeOff className="w-4 h-4" />
-        Ocultar Gráfico
-      </>
-    ) : (
-      <>
-        <BarChart3 className="w-4 h-4" />
-        Mostrar Gráfico
-      </>
-    )}
-  </button>
+          {/* CONTROLES ADMIN */}
+          <div className="flex justify-end gap-3 mb-6">
+            <button
+              onClick={() => setShowGraph(!showGraph)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              {showGraph ? <EyeOff size={16} /> : <BarChart3 size={16} />}
+              {showGraph ? "Ocultar Gráfico" : "Mostrar Gráfico"}
+            </button>
 
-  <button
-    onClick={handleRefresh}
-    disabled={loading}
-    className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-  >
-    <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-    Refrescar Reporte
-  </button>
-</div>
+            <button
+              onClick={handleRefresh}
+              disabled={loading}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+              Refrescar Reporte
+            </button>
+          </div>
 
           <div className="mt-12">
             {loading && (
-              <div className="flex items-center justify-center gap-3 p-8 bg-red-50 rounded-lg border border-red-200 mb-6">
-                <LoadingSpinner message="Cargando pedidos facturados..." height="h-32" />
-                <p className="text-red-600 font-medium">Cargando datos...</p>
-              </div>
+              <LoadingSpinner
+                message="Cargando pedidos facturados..."
+                height="h-32"
+              />
             )}
 
             {error && (
-              <div className="mb-6">
-                <EmptyState
-                  icon={AlertCircle}
-                  title="Ha habido un problema"
-                  description="Se ha detectado un problema al cargar los pedidos facturados."
-                />
-              </div>
+              <EmptyState
+                icon={AlertCircle}
+                title="Ha habido un problema"
+                description="Se ha detectado un problema al cargar los pedidos facturados."
+              />
             )}
 
             {!loading && !error && filteredData.length > 0 && (
               <>
                 <InvoicedOrdersTable data={paginatedData} />
 
-                {/* Gráfico con espacio superior */}
                 {showGraph && filteredData.length > 0 && (
                   <div className="mt-10">
                     <AdminOrderBilledGraph data={filteredData} />

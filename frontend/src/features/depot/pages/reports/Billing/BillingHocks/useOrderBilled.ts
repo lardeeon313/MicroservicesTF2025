@@ -14,10 +14,11 @@ export type DepotOrderItem = {
 };
 
 export type DepotOrderDtoBilling = {
-  salesOrderId: string;
+  salesOrderId: number;
   customerName: string;
   totalAmount: number;
   orderDate: string;
+  status: number;
   items: DepotOrderItem[];
   productCount: number;
 };
@@ -31,6 +32,9 @@ type Filters = {
   period?: "day" | "week" | "month" | "fortnight";
 };
 
+// 🔥 ESTADOS FACTURADOS REALES
+const INVOICED_STATUSES = [8];
+
 export function useInvoicedOrdersByCustomer() {
   const [data, setData] = useState<DepotOrderDtoBilling[]>([]);
   const [loading, setLoading] = useState(false);
@@ -43,34 +47,77 @@ export function useInvoicedOrdersByCustomer() {
     try {
       const params = new URLSearchParams();
 
-      if (filters.customerName) params.append("CustomerName", filters.customerName);
-      if (filters.fromDate) params.append("FromDate", filters.fromDate);
-      if (filters.toDate) params.append("ToDate", filters.toDate);
-      if (filters.minAmount !== undefined) params.append("MinAmount", filters.minAmount.toString());
-      if (filters.maxAmount !== undefined) params.append("MaxAmount", filters.maxAmount.toString());
-      if (filters.period) params.append("Period", filters.period); // 🔥 nuevo filtro
+      if (filters.customerName)
+        params.append("CustomerName", filters.customerName);
+      if (filters.fromDate)
+        params.append("FromDate", filters.fromDate);
+      if (filters.toDate)
+        params.append("ToDate", filters.toDate);
+      if (filters.minAmount !== undefined)
+        params.append("MinAmount", filters.minAmount.toString());
+      if (filters.maxAmount !== undefined)
+        params.append("MaxAmount", filters.maxAmount.toString());
+      if (filters.period)
+        params.append("Period", filters.period);
 
       const res = await API.get<DepotOrderDtoBilling[]>(
         `/depot/billingmanager/invoiced-orders-by-customer?${params.toString()}`
       );
 
-      console.log(res)
+      const rawData = res.data ?? [];
 
-      const mapped = res.data
-        .map(order => ({
-          ...order,
-          productCount: order.items.reduce((acc, item) => acc + item.quantity, 0),
-        }))
-        .filter(order => order.totalAmount > 0);
+      console.log("RAW DATA:", rawData);
 
-      setData(mapped);
+      // ✅ FILTRO REAL
+      const onlyInvoiced = rawData.filter(order => {
+        const valid =
+          order.totalAmount > 0 &&
+          INVOICED_STATUSES.includes(order.status);
+
+        if (!valid) {
+          console.warn("DESCARTADO POR STATUS:", {
+            salesOrderId: order.salesOrderId,
+            status: order.status,
+            total: order.totalAmount,
+          });
+        }
+
+        return valid;
+      });
+
+      // ✅ DEDUPLICADO FINAL
+      const unique = new Map<number, DepotOrderDtoBilling>();
+
+      onlyInvoiced.forEach(order => {
+        if (!unique.has(order.salesOrderId)) {
+          unique.set(order.salesOrderId, {
+            ...order,
+            productCount: order.items.reduce(
+              (acc, item) => acc + item.quantity,
+              0
+            ),
+          });
+        }
+      });
+
+      const sanitized = Array.from(unique.values());
+
+      console.log("FACTURADOS REALES:", sanitized);
+
+      setData(sanitized);
     } catch (err: any) {
-      setError(err.message || "Error al obtener órdenes facturadas.");
+      console.error("ERROR:", err);
+      setError(err.message || "Error al obtener pedidos facturados");
       setData([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  return { data, loading, error, fetchOrders };
+  return {
+    data,
+    loading,
+    error,
+    fetchOrders,
+  };
 }

@@ -13,21 +13,21 @@ export const AdminuseCustomerIncome = () => {
     try {
       setLoading(true);
       setError(null);
-      const res = await API.get<Billing[]>("/depot/billingmanager/all-invoiced-orders");
-      console.log("Datos recibidos (sin filtrar):", res.data);
 
-      if (!res.data) {
+      const res = await API.get<Billing[]>(
+        "/depot/billingmanager/all-invoiced-orders"
+      );
+
+      if (!res.data || res.data.length === 0) {
         setOrders([]);
         setError("No hay órdenes facturadas.");
-      } else {
-        // Filtrar solo si hay datos y si tienen la propiedad Status
-        const filteredOrders = res.data.filter(order => {
-          // Verificar si el pedido tiene la propiedad Status y si es igual a 8
-          return order.Status !== undefined ? order.Status === 8 : true;
-        });
-        console.log("Datos filtrados por Status=8:", filteredOrders);
-        setOrders(filteredOrders);
+        return;
       }
+
+      // ✅ Este endpoint YA devuelve solo facturadas
+      setOrders(res.data);
+
+      console.log("Órdenes facturadas (general):", res.data);
     } catch (err) {
       console.error("Error al obtener órdenes:", err);
       setError("Error al conectar con el servidor.");
@@ -37,28 +37,32 @@ export const AdminuseCustomerIncome = () => {
     }
   }, []);
 
-  // useCustomerIncome.tsx
-const fetchOrdersByCustomer = useCallback(async (customerName: string) => {
-  if (!customerName.trim()) {
-    setFilteredByCustomer([]);
-    return;
-  }
-  try {
-    setLoading(true);
-    const params = new URLSearchParams();
-    params.append("customerName", customerName);
-    const res = await API.get<Billing[]>(
-      `/depot/billingmanager/invoiced-orders-by-customer?${params.toString()}`
-    );
-    console.log("Datos recibidos para cliente (sin filtrar):", res.data);
-    setFilteredByCustomer(res.data ?? []);
-  } catch (error) {
-    console.error("Error al obtener pedidos por cliente:", error);
-    setFilteredByCustomer([]);
-  } finally {
-    setLoading(false);
-  }
-}, []);
+  // =========================
+  // PARTICULAR POR CLIENTE
+  // PARCHE FRONTEND CORRECTO
+  // =========================
+  const fetchOrdersByCustomer = useCallback(
+    (customerName: string) => {
+      if (!customerName.trim()) {
+        setFilteredByCustomer([]);
+        return;
+      }
+
+      const filtered = orders.filter(order =>
+        order.customerName
+          .toLowerCase()
+          .includes(customerName.toLowerCase())
+      );
+
+      console.log(
+        "Pedidos facturados del cliente (desde general):",
+        filtered
+      );
+
+      setFilteredByCustomer(filtered);
+    },
+    [orders]
+  );
 
 
   useEffect(() => {

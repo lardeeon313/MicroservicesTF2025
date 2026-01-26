@@ -3,7 +3,7 @@ import { useOrders } from "../hooks/useOrders";
 import { DepotOrderMissingDto, OrderStatus } from "../types/OrderTypes";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
 import toast from "react-hot-toast";
-import { getMissingOrderById, reportMissingOrder } from "../services/orderService";
+import { /*getMissingOrderById */ reportMissingOrder } from "../services/orderService";
 import SearchBar from "../components/MissingPage/SearchBar";
 import MissingOrdersGrid from "../components/MissingPage/MissingOrderGrid";
 import MissingOrderDetailModal from "../components/MissingPage/MissingOrderDetailModal";
@@ -20,7 +20,10 @@ function MissingOrdersPage() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [orderToReport, setOrderToReport] =
     useState<DepotOrderMissingDto | null>(null);
-  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchLoading] = useState(false);
+
+  //
+  const [filteredOrders, setFilteredOrders] = useState<DepotOrderMissingDto[] | null>(null);
 
   const pendingMissingOrders = missingOrders.filter(
     (m) => m.depotOrder.status === OrderStatus.MissingProduct
@@ -29,10 +32,12 @@ function MissingOrdersPage() {
     (m) => m.depotOrder.status === OrderStatus.PendingResolution
   );
 
-  const orderToShow =
-    activeStatus === OrderStatus.MissingProduct
-      ? pendingMissingOrders
-      : reportedMissingOrders;
+  const baseOrders =
+  activeStatus === OrderStatus.MissingProduct
+    ? pendingMissingOrders
+    : reportedMissingOrders;
+
+  const orderToShow = filteredOrders ?? baseOrders;
 
   const handleReportToSales = (missingOrder: DepotOrderMissingDto) => {
     setOrderToReport(missingOrder);
@@ -63,17 +68,25 @@ function MissingOrdersPage() {
     }
   };
 
-  const handleSearch = async (id: number) => {
-    try {
-      setSearchLoading(true);
-      const order = await getMissingOrderById(id);
-      setSelectedMissingOrder(order);
-      toast.success("Faltante encontrado");
-    } catch (error) {
-      toast.error("No se encontró el faltante con ese ID");
-    } finally {
-      setSearchLoading(false);
+  const handleSearch = (id: number) => {
+    const found = baseOrders.filter(
+      (m) => m.depotOrderId === id
+    );
+
+    if (found.length === 0) {
+      toast.error("No se encontró el pedido con ese ID en este estado");
+      setFilteredOrders([]);
+      return;
     }
+
+    setFilteredOrders(found);
+    setSelectedMissingOrder(found[0]);
+    toast.success("Pedido encontrado");
+  }
+
+  const handleTabChange = (status: OrderStatus) => {
+    setActiveStatus(status);
+    setFilteredOrders(null);
   };
 
   if (loading) {
@@ -98,7 +111,7 @@ function MissingOrdersPage() {
           <SearchBar onSearch={handleSearch} loading={searchLoading} />
           <OrderTabs
             activeStatus={activeStatus}
-            onChange={setActiveStatus}
+            onChange={handleTabChange}
             tabs={[
               {
                 status: OrderStatus.MissingProduct,
