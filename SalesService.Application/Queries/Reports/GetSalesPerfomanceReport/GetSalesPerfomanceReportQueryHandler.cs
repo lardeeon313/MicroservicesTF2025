@@ -3,47 +3,103 @@ using SalesService.Domain.Enums;
 using SalesService.Domain.IRepositories;
 using SalesService.Infraestructure.Services;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using System.Data;
 
 namespace SalesService.Application.Queries.Reports.GetSalesPerfomanceReport
 {
-    public class GetSalesPerfomanceReportQueryHandler(IOrderRepository repository, IIdentityServiceClient identityClient) : IGetSalesPerfomanceReportQueryHandler
+    public class GetSalesPerfomanceReportQueryHandler
+        : IGetSalesPerfomanceReportQueryHandler
     {
-        private readonly IOrderRepository _repository = repository;
-        private readonly IIdentityServiceClient _identityClient = identityClient;
+        private readonly IOrderRepository _repository;
+        private readonly IIdentityServiceClient _identityClient;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public GetSalesPerfomanceReportQueryHandler(
+            IOrderRepository repository,
+            IIdentityServiceClient identityClient,
+            IHttpContextAccessor httpContextAccessor)
+        {
+            _repository = repository;
+            _identityClient = identityClient;
+            _httpContextAccessor = httpContextAccessor;
+        }
 
         public async Task<IEnumerable<SalesPerfomanceDto>> Handle(GetSalesPerformanceReportQuery query)
         {
             var orders = await _repository.GetAllWithItemsAsync();
             DateTime now = DateTime.UtcNow;
 
-            // Filtro por fechas "from" y "to"
-            if (query.DateFrom.HasValue)
-                orders = orders.Where(o => o.OrderDate >= query.DateFrom.Value).ToList();
-            if (query.DateTo.HasValue)
-                orders = orders.Where(o => o.OrderDate <= query.DateTo.Value).ToList();
+            // ==============================
+            // ROL DESDE JWT
+            // ==============================
+            var role = _httpContextAccessor.HttpContext?
+                .User?
+                .Claims
+                .FirstOrDefault(c => c.Type == ClaimTypes.Role || c.Type == "role")
+                ?.Value;
 
-            // Agrupar y calcular los resultados
             var currentUser = await _identityClient.GetCurrentUserAsync();
+
+            // 👉 SI ES VENDEDOR, SOLO SUS ÓRDENES
+            if (string.Equals(role, "SalesStaff", StringComparison.OrdinalIgnoreCase))
+            {
+                orders = orders
+                    .Where(o => o.CreatedByUserId == currentUser.Id)
+                    .ToList();
+            }
+
+            // ==============================
+            // FILTROS POR FECHA
+            // ==============================
+            if (query.DateFrom.HasValue)
+                orders = orders
+                    .Where(o => o.OrderDate >= query.DateFrom.Value)
+                    .ToList();
+
+            if (query.DateTo.HasValue)
+                orders = orders
+                    .Where(o => o.OrderDate <= query.DateTo.Value)
+                    .ToList();
+
+            // ==============================
+            // OBTENER VENDEDORES
+            // ==============================
+            var salesStaffs = await _identityClient.GetSalesStaffsAsync();
+
+            // ==============================
+            // AGRUPAR Y CALCULAR
+            // ==============================
             var performance = orders
                 .GroupBy(o => o.CreatedByUserId)
                 .Select(group =>
                 {
-                    var user = currentUser;
+                    var staff = salesStaffs
+                        .FirstOrDefault(s => s.Id == group.Key);
+
                     return new SalesPerfomanceDto
                     {
-                        SalespersonName = $"{user?.FirstName} {user?.LastName}".Trim(),
+                        SalespersonName = staff != null
+                            ? $"{staff.FirstName} {staff.LastName}".Trim()
+                            : "Usuario desconocido",
+
                         TotalOrders = group.Count(),
-                        TotalUnitsSold = group.SelectMany(o => o.Items).Sum(i => i.Quantity),
+
+                        TotalUnitsSold = group
+                            .SelectMany(o => o.Items)
+                            .Sum(i => i.Quantity),
+
                         LastOrderDate = group.Max(o => o.OrderDate)
                     };
                 })
                 .ToList();
 
-            // Aplicar filtro de rango después de agrupar
+            // ==============================
+            // FILTRO POR RANGO
+            // ==============================
             if (query.Range != SalesRangeReport.All)
             {
                 DateTime? limitDate = query.Range switch
@@ -58,15 +114,13 @@ namespace SalesService.Application.Queries.Reports.GetSalesPerfomanceReport
 
                 if (limitDate.HasValue)
                 {
-                    
-                    performance = performance.Where(p => p.LastOrderDate >= limitDate.Value).ToList();
-                    
+                    performance = performance
+                        .Where(p => p.LastOrderDate >= limitDate.Value)
+                        .ToList();
                 }
             }
 
             return performance;
         }
-
-
     }
 }
