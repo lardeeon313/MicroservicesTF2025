@@ -1,11 +1,17 @@
 import { Link } from "react-router-dom";
-import { OrderTableData } from "../../types/OrderTypes";
+import { OrderStatus, OrderTableData } from "../../types/OrderTypes";
 import { OrderStatusBadge } from "../../../../components/OrderStatusBadge";
 import { OrderItemsTable } from "../../../../components/OrderItemsTable";
 
 type Props = {
   order: OrderTableData | null;
 };
+
+const editableStatuses = [
+  OrderStatus.Pending,
+  OrderStatus.PendingResolution,
+  OrderStatus.PendingReissued,
+];
 
 // 🔹 Mapea el enum de tipo de pago a español
 const getPaymentTypeLabel = (type?: string) => {
@@ -100,14 +106,16 @@ export default function OrderDetails({ order }: Props) {
             <OrderItemsTable items={order.items} />
           </div>
 
-          <div className="mt-10">
-            <Link
-              to={`/sales/orders/update/${order.id}`}
-              className="flex w-full justify-center items-center rounded-md bg-red-700 px-3 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-red-600 transition duration-150 disabled:opacity-50"
-            >
-              Editar órden
-            </Link>
-          </div>
+          {editableStatuses.includes(order.status) && (
+            <div className="mt-10">
+              <Link
+                to={`/sales/orders/update/${order.id}`}
+                className="flex w-full justify-center items-center rounded-md bg-red-700 px-3 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-red-600 transition duration-150 disabled:opacity-50"
+              >
+                Editar órden
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </div>

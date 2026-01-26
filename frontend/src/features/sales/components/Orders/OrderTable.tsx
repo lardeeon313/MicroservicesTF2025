@@ -1,5 +1,5 @@
 import { CalendarDays, Package, User, BadgeCheck, Eye, Pencil, Trash,MapPin,CircleDollarSign } from "lucide-react"
-import { OrderTableData } from "../../types/OrderTypes";
+import { OrderStatus, OrderTableData } from "../../types/OrderTypes";
 import formatDate from "../../../../utils/formateDate";
 import { OrderStatusBadge } from "../../../../components/OrderStatusBadge";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
@@ -15,6 +15,12 @@ interface Props {
   onDelete: (id: number) => void;
   onActionChange: (action: string, id: number) => void;
 }
+
+const editableStatuses = [
+  OrderStatus.Pending,
+  OrderStatus.PendingResolution,
+  OrderStatus.PendingReissued,
+];
 
 const getPaymentTypeLabel = (type?: string) => {
   
@@ -116,14 +122,16 @@ export default function OrderTable({
                       </button>
                       <button
                         onClick={() => onEdit(order.id)}
-                        className="p-2 rounded-full hover:bg-yellow-100 transition"
+                        disabled={!editableStatuses.includes(order.status)}
+                        className="p-2 rounded-full transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-yellow-100"
                         title="Editar"
                       >
                         <Pencil className="w-5 h-5 text-yellow-600" />
                       </button>
                       <button
                         onClick={() => onDelete(order.id)}
-                        className="p-2 rounded-full hover:bg-red-100 transition"
+                        disabled={!editableStatuses.includes(order.status)}
+                        className="p-2 rounded-full hover:bg-red-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
                         title="Eliminar"
                       >
                         <Trash className="w-5 h-5 text-red-600" />
@@ -132,9 +140,10 @@ export default function OrderTable({
                   </td>
                   <td className="px-4 py-3 text-center">
                     <select
+                      disabled={!editableStatuses.includes(order.status)}
                       onChange={(e) => onActionChange(e.target.value, order.id)}
                       defaultValue=""
-                      className="text-sm  rounded border border-gray-300 px-2 py-1 focus:outline-none"
+                      className="text-sm  rounded border border-gray-300 px-2 py-1 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <option value="" disabled>Estado</option>
                       <option value="emitir">Emitir</option>
