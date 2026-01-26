@@ -114,8 +114,8 @@ namespace LogisticService.Infraestructure.Messaging.Consumer
                         {
                             customer = new LogisticCustomer { 
                                 Id = evento.CustomerId,
-                                FirstName = evento.CustomerName.Split(" ").First(), 
-                                LastName = evento.CustomerName.Split(" ").Last(),
+                                FirstName = evento.CustomerName,
+                                LastName = string.Empty,
                                 Email = evento.CustomerEmail,
                                 PhoneNumber = evento.PhoneNumber,
                                 RegistrationDate = evento.RegistrationDate,
