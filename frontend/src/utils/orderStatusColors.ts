@@ -49,13 +49,17 @@ export const orderStatusStyles: Record<OrderStatus, { text: string; bg: string }
     text: "text-yellow-700",
     bg: "bg-yellow-100", // amarillo claro = pendiente de resolución
   },
-  [OrderStatus.ReIssued]: {
-    text: "text-amber-700",
-    bg: "bg-amber-100", // amarillo = reemitido
-  },
   [OrderStatus.PendingReissued]: {
     text: "text-orange-700",
     bg: "bg-orange-100", // naranja claro = pendiente de reemision
+  },
+  [OrderStatus.Modified]: {
+    text: "text-gray-800",
+    bg: "bg-gray-300", // gris oscuro = modificado
+  },
+  [OrderStatus.Verify]: {
+    text: "text-yellow-700",
+    bg: "bg-yellow-200", // amarillo = por verificar
   },
   [OrderStatus.PendingVerification]: {
     text: "text-lime-700",
@@ -89,12 +93,4 @@ export const orderStatusStyles: Record<OrderStatus, { text: string; bg: string }
     text: "text-green-600",
     bg: "bg-green-200", // verde = incidente resuelto
   },
-  [OrderStatus.Modified]: {
-    text: "text-gray-800",
-    bg: "bg-gray-300", // gris oscuro = modificado
-  },
-  [OrderStatus.Verify]: {
-    text: "text-yellow-700",
-    bg: "bg-yellow-200", // amarillo = por verificar
-  },
-}
+};
