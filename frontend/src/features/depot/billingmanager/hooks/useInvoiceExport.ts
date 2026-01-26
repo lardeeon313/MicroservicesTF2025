@@ -16,8 +16,7 @@ export const useInvoiceExport = () => {
 
   const handleExport = async (billingOrderId: number, type: number) => {
     try {
-      setLoading(true);
-      console.log("Intentando exportar factura con:", { billingOrderId, type });
+      setLoading(true);      
       const blob = await exportInvoice(billingOrderId, type);
       const extension = getExtension(type);
 
@@ -27,8 +26,7 @@ export const useInvoiceExport = () => {
       link.download = `factura_${billingOrderId}.${extension}`;
       link.click();
       window.URL.revokeObjectURL(url);
-    }catch (error) {
-      console.error("Error en el hook al exportar:", error); // Log 2: Error en el hook
+    }catch (error) {      
       alert("Error al exportar la factura. Verifica la consola para más detalles.");
     } finally {
       setLoading(false);

@@ -3,8 +3,7 @@ import { CreateNewPasswordRequest, CreateNewPasswordResponse, ForgotPasswordRequ
 import API from "../../../api/axios";
 
 export const login = async (credentials: LoginRequest): Promise<LoginResponse> => {
-    try {
-        console.log(credentials)
+    try {        
         const response = await API.post<LoginResponse>("api/auth/login",credentials);
         return response.data;
     } catch(error) {
@@ -16,8 +15,7 @@ export const login = async (credentials: LoginRequest): Promise<LoginResponse> =
 };
 
 export const register = async (userData: RegisterRequest): Promise<RegisterResponse> => {
-    try{
-        console.log(userData)
+    try{        
         const response = await API.post<RegisterResponse>("api/auth/register", userData);
         return response.data
     } catch (error) {

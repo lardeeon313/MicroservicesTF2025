@@ -24,9 +24,7 @@ const InvoicedOrdersPage = () => {
 
   useEffect(() => {
   getAllInvoicedOrders()
-    .then((data) => {
-      console.log("Datos API crudos:", data);
-
+    .then((data) => {      
       // Mapeo para usar los campos correctos
       const mappedOrders = data.map((item) => ({
         billingOrderId: item.depotOrderId,  // Ajuste de nombre

@@ -9,6 +9,7 @@ import { OrderStatus } from "../../types/OrderTypes";
 import { handleFormikError } from "../../../../components/ErrorHandler";
 import { Pagination } from "../../../../components/Pagination";
 import BackButton from "../../../../components/BackButton";
+import { OrderStatusLabels } from "../../constants/OrderStatusLabel";
 
 export default function OrdersPage() {
     const [searchId, setSearchId]  = useState("");
@@ -36,7 +37,7 @@ export default function OrdersPage() {
         || order.status === OrderStatus.Invoiced || order.status === OrderStatus.Prepared || order.status === OrderStatus.OnTheWay 
         || order.status === OrderStatus.Delivered
       ) {
-        return Swal.fire("Acción no permitida", `No se puede eliminar una orden si se encuentra en "${order.status}" .`, "warning");
+        return Swal.fire("Acción no permitida", `No se puede eliminar una orden si se encuentra en "${OrderStatusLabels[order.status] ?? order.status}" .`, "warning");
       }
 
       const confirmResult = await Swal.fire({
@@ -76,8 +77,7 @@ export default function OrdersPage() {
           });
           await Swal.fire("¡Listo!", `Se eliminó el pedido #${id}`, "success");
           refetch(); // actualiza la tabla
-        } catch (error) {
-          console.error("Error al eliminar:", error);
+        } catch (error) {          
           Swal.fire("Error", "No se pudo eliminar el pedido. Intenta de nuevo.", "error");
         }
       }
@@ -121,17 +121,13 @@ export default function OrdersPage() {
         if (!newStatus) return;
 
         try {
-            console.log("Response from updateOrderStatus:", {
-            orderId: id,
-            status: newStatus
-          });
           await updateOrderStatus(id, {
             orderId: id,
             status: newStatus
           });
           Swal.fire(
             "Estado actualizado",
-            `El pedido #${id} fue marcado como "${newStatus}".`,
+            `El pedido #${id} fue marcado como ""${OrderStatusLabels[newStatus] ?? newStatus}"".`,
             "success"
           );
           refetch(); // Actualiza la pagina
@@ -157,7 +153,7 @@ export default function OrdersPage() {
         if (order.status === OrderStatus.Confirmed || order.status === OrderStatus.InPreparation || order.status === OrderStatus.SentToBilling
         || order.status === OrderStatus.Invoiced || order.status === OrderStatus.Prepared || order.status === OrderStatus.OnTheWay 
         || order.status === OrderStatus.Delivered) {
-          return Swal.fire("Acción no permitida", `No se puede editar una orden si se encuentra en "${order.status}`, "warning");
+          return Swal.fire("Acción no permitida", `No se puede editar una orden si se encuentra en el estado: "${OrderStatusLabels[order.status] ?? order.status}"`, "warning");
         }
         navigate(`/sales/orders/update/${id}`);
       };

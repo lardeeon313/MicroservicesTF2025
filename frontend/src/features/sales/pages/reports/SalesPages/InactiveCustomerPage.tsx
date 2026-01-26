@@ -27,8 +27,7 @@ const InactiveCustomerPage: React.FC = () => {
 
             setCustomers(inactiveOrLost);
         } catch (err: any) {
-            setError("Error al obtener los clientes.");
-            console.error(err);
+            setError("Error al obtener los clientes.");            
         } finally {
             setLoading(false);
         }

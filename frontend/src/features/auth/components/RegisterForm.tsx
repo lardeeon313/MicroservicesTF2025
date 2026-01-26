@@ -3,18 +3,19 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { registerValidationSchema } from "../validations/registerValidation";
 import { RegisterRequest } from "../types/AuthTypes";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logoVerona from "../../../assets/logo-verona.png";
 
 
 const RegisterForm = () => {
-
+  const navigate = useNavigate();
   const handleSubmit = async (values: RegisterRequest) => {
-    try {
-      console.log(values)
+    try {      
       await register(values);
       toast.success("Registro exitoso! ahora puedes iniciar sesión.")
-        // Redireccionar al Login
+      setTimeout(() => {
+      navigate("/login", { replace: true });
+    }, 2000);
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message);

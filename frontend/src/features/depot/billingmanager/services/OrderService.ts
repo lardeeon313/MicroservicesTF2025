@@ -66,8 +66,7 @@ export const exportInvoice = async (billingOrderId: number, type: number) => {
     });
 
     return response.data; // 👈 YA es un Blob
-  } catch (error) {
-    console.error("Error al exportar la factura:", error);
+  } catch (error) {    
     throw error;
   }
 }

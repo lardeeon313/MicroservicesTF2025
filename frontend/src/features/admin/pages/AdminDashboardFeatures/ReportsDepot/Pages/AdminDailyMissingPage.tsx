@@ -128,7 +128,7 @@ const AdminReportDailyMissingPage: React.FC = () => {
             selectedTime={selectedTime}
             onHourChange={handleDateChange}
             onSearch={() =>
-              console.log("Buscando por fecha:", selectedTime)
+              selectedTime
             }
             onClear={() => setSelectedTime("")}
           />
@@ -137,7 +137,7 @@ const AdminReportDailyMissingPage: React.FC = () => {
             filterType={filterType}
             onFilterTypeChange={handleFilterTypeChange}
             onSearch={() =>
-              console.log("Buscando filtro rápido:", filterType)
+              filterType
             }
             onClear={() => setFilterType("")}
           />

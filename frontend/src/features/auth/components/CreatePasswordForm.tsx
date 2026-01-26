@@ -17,9 +17,6 @@ const CreatePasswordForm = () => {
       toast.error("Falta el ID del usuario.");
       return;
     }
-
-    console.log("UserId:", userId);
-    console.log("New Password:", values.newPassword);
     try {
       await createNewPassword({
         userIdentityId: userId,

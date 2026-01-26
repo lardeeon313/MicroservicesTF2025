@@ -19,8 +19,7 @@ const ModifiedCanceledOrdersPage: React.FC = () => {
             const response = await API.get<Order[]>("/orders"); // 👈 usa tu instancia
             setOrders(response.data); // 👈 carga los datos al estado
         } catch (err: any) {
-            setError("Error al cargar los pedidos.");
-            console.error(err);
+            setError("Error al cargar los pedidos.");            
         } finally {
         setLoading(false);
         }

@@ -60,8 +60,7 @@ export default function RegisterOrderPage() {
         }));
         setCustomers(mappedCustomers);
       } catch (error) {
-        toast.error("Error al cargar clientes");
-        console.error(error);
+        toast.error("Error al cargar clientes");      
       }
     };
     fetchCustomers();
@@ -76,9 +75,7 @@ export default function RegisterOrderPage() {
       createdByUserId: userId!,
     };
 
-    const response = await registerOrder(orderToSend);
-
-    console.log("Respuesta del backend:", response);
+    const response = await registerOrder(orderToSend);    
 
     // Si el backend respondió 200-299 ⇒ ÉXITO REAL
     if (response.ok === true) {
@@ -90,11 +87,7 @@ export default function RegisterOrderPage() {
     // Si vino ok === false ⇒ cayó en reject
     throw response;
 
-  } catch (error: any) {
-
-    console.log("ERROR CAPTURADO:", error);
-
-    // Si el backend devolvió error pero igual registró la orden
+  } catch (error: any) {    
     if (error?.status >= 200 && error?.status < 300) {
       // No mostrar error
       return;
