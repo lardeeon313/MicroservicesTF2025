@@ -1,22 +1,29 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Platform } from "react-native";
+import Constants from "expo-constants";
 
-// Detecta la URL base según plataforma
-const API_BASE_URL =
-  Platform.OS === "web"
-    ? import.meta.env.VITE_API_BASE_URL
-    : process.env.API_BASE_URL || import.meta.env.VITE_API_BASE_URL;  
+let API_BASE_URL: string | undefined;
 
-  /*
-  ? "http://localhost:5000/"
-    : "http://192.168.100.206:5000/";
-  */
+// 1. Intentar desde app.json (producción web / docker)
+API_BASE_URL = Constants.expoConfig?.extra?.EXPO_PUBLIC_API_BASE_URL;
 
-{/* Aqui deberiamos de realizar pruebas, utilizando la variable de entorno
-    La cual es, la manera en la que deberia de realizarse, ya que estariamos
-    en modo produccion, cuando presentemos la tesis.
-    Realizar pruebas, al utilizar el API_BASE_URL del "".env"                */}
+// 2. Fallback a @env (desarrollo mobile)
+if (!API_BASE_URL) {
+  try {
+    // Import dinámico para no romper en web
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const env = require("@env");
+    API_BASE_URL = env.EXPO_PUBLIC_API_BASE_URL;
+  } catch (e) {
+    console.warn("⚠️ No se pudo leer EXPO_PUBLIC_API_BASE_URL desde @env");
+  }
+}
+
+if (!API_BASE_URL) {
+  console.error("❌ EXPO_PUBLIC_API_BASE_URL NO DEFINIDA (ni en app.json ni en .env)");
+} else {
+  console.log("🔗 API BASE URL:", API_BASE_URL);
+}
 
 // Crear instancia de axios 
 const API = axios.create({
@@ -28,7 +35,7 @@ const API = axios.create({
 API.interceptors.request.use(async (config) => {
   const token = await AsyncStorage.getItem("token");
   if (token) {
-    config.headers.Authorization =  `Bearer ${token}`;
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
@@ -40,7 +47,6 @@ API.interceptors.response.use(
     if (error.response?.status === 401) {
       await AsyncStorage.removeItem("token");
       console.log("Sesión expirada. Redirigir a Login usando React Navigation");
-      // Ejemplo: navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
     }
     return Promise.reject(error);
   }

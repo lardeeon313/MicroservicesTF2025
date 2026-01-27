@@ -7,7 +7,7 @@ import { useAuth } from "./src/MobileDelivery/Login/context/useAuth";
 import LogisticNavigation from "./src/MobileDelivery/navigation/LogisticNavigation";
 //import LoginNavigator from "./src/Login/LoginNavigator"; 
 import LoginNavigator from "./src/MobileDelivery/Login/LoginNavigator/LoginNavigator";
-import { API_BASE_URL } from "@env";
+import { EXPO_PUBLIC_API_BASE_URL } from "@env";
 import { ActivityIndicator, View } from "react-native";
 
 function RootNavigation() {
@@ -26,7 +26,7 @@ function RootNavigation() {
 
 export default function App() {
   useEffect(() => {
-    console.log("🔗 API_BASE_URL:", API_BASE_URL);
+    console.log("🔗 API_BASE_URL:", EXPO_PUBLIC_API_BASE_URL);
   }, []);
 
   return (
