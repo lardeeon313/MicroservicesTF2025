@@ -1,6 +1,8 @@
 // src/types/global.d.ts
-declare module 'react-native-sweet-alert';
+interface ImportMetaEnv {
+  readonly VITE_API_BASE_URL: string;
+}
 
-declare module '@env' {
-  export const  API_BASE_URL: string;
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
 }
