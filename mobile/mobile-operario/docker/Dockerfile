@@ -1,25 +1,23 @@
 # Etapa 1: Build del frontend
 FROM node:18-alpine AS builder
 
-# Instalar herramientas necesarias para esbuild y otros binarios
 RUN apk add --no-cache python3 make g++
 
 WORKDIR /app
 
-# Copiar solo archivos de dependencias primero para aprovechar cache
-COPY package*.json ./
+# 👇 Declaramos argumento de build
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
-# Instalar dependencias con `--force` para resolver conflictos de binarios
+COPY package*.json ./
 RUN npm install --force
 
-# Copiar el resto del código
 COPY . .
 
-# 🔧 Recompilar esbuild para que el binario coincida con la plataforma
 RUN npm rebuild esbuild
 
-# Ejecutar el build de Vite
-RUN npm run build
+# 👇 Vite va a leer VITE_API_BASE_URL en este momento
+RUN npx expo export --platform web
 
 # Etapa 2: Servir con nginx
 FROM nginx:alpine
