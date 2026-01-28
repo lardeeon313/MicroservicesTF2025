@@ -26,14 +26,7 @@ export default function BackButton({
     <button
       onClick={handleBack}
       aria-label={label}
-      className={`group inline-flex items-center gap-2 px-5 py-2.5 
-        text-sm font-medium text-gray-700 bg-white border border-gray-300 
-        rounded-xl shadow-sm 
-        hover:bg-red-500 hover:text-white 
-        hover:shadow-md 
-        focus:outline-none focus:ring-1 focus:ring-red-500 
-        transition-all duration-200 
-        hover:translate-x-1 active:scale-95
+      className={`group inline-flex items-center gap-2 px-5 py-2.5 bg-red-600 text-white rounded-xl shadow-sm  font-bold transition-all hover:cursor-pointer hover:bg-red-700 hover:shadow-xl transform hover:-translate-x-1
         ${className}`}
     >
       <ArrowLeft className="w-4 h-4 transition-transform duration-200" />

@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
+import { Edit } from "lucide-react";
 import EditOrderForm from "../../components/Forms/EditOrderForm";
 import { UpdateOrderRequest, Order } from "../../types/OrderTypes";
 import { AddressRequest } from "../../types/CustomerTypes";
@@ -37,33 +38,41 @@ const EditOrderPage = () => {
         setSavedAddresses(mappedAddresses);
         setPaymentTypes(payments);
 
+        // Construir addressRequest con los datos de la orden
+        const addressRequest = order.address
+          ? {
+              id: order.address.id,
+              street: order.address.street || "",
+              number: order.address.number?.toString() ?? "",
+              apartment: order.address.apartment || "",
+              city: order.address.city || "",
+              province: order.address.province || "",
+              country: order.address.country || "",
+              postalCode: order.address.postalCode || "",
+            }
+          : {
+              street: "",
+              number: "",
+              apartment: "",
+              city: "",
+              province: "",
+              country: "",
+              postalCode: "",
+            };
         setInitialValues({
           orderId: order.id,
           customerId: order.customerId,
           deliveryDetail: order.deliveryDetail || "",
           deliveryDate: order.deliveryDate?.slice(0, 10) || "",
-          status: order.status,
-          paymentType: order.paymentType || payments[0]?.paymentType || "Cash" ,
+          status: order.status || "",
+          paymentType: order.paymentType,
           items: order.items.map((item) => ({
             id: item.id,
             productName: item.productName,
             productBrand: item.productBrand,
             quantity: item.quantity,
           })),
-          addressRequest: order.deliveryAddress
-            ? {
-                ...order.deliveryAddress,
-                number: order.deliveryAddress.number?.toString() ?? "",
-              }
-            : {
-                street: "",
-                number: "",
-                apartment: "",
-                city: "",
-                province: "",
-                country: "",
-                postalCode: "",
-              },
+          addressRequest,
         });
       } catch (error) {
         handleFormikError({
@@ -85,7 +94,7 @@ const EditOrderPage = () => {
     items: Array<{ id: number; productName: string; productBrand: string; quantity: number }>
   ) => {
     if (initialValues) {
-      const updatedValues = { ...initialValues, items };      
+      const updatedValues = { ...initialValues, items };
       setInitialValues(updatedValues);
     }
   };
@@ -98,7 +107,7 @@ const EditOrderPage = () => {
       await updateOrder(values.orderId, values);
       toast.success("Orden actualizada correctamente");
       navigate("/sales/orders");
-    } catch (error) {      
+    } catch (error) {
       handleFormikError({
         error,
         customMessages: {
@@ -111,23 +120,36 @@ const EditOrderPage = () => {
     }
   };
 
+  if (!initialValues) {
+    return <LoadingSpinner message="Cargando datos de la orden..." height="h-screen" />;
+  }
+
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
-      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+      <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 max-w-7xl">
         <BackButton to="/sales/orders" />
-        <h2 className="text-center text-4xl font-bold text-red-600 mb-12">Editar Orden</h2>
-        {initialValues ? (
+
+        {/* Header Section */}
+        <div className="text-center mb-10 mt-6">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-red-100 rounded-full mb-4">
+            <Edit className="w-7 h-7 text-red-600" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Editar Orden #{id}
+          </h1>
+        </div>
+
+        {/* Form Container */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <EditOrderForm
             initialValues={initialValues}
             savedAddresses={savedAddresses}
-            paymentTypes={paymentTypes} // ✅ ahora coincide con el form
+            paymentTypes={paymentTypes}
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
             onItemsChange={handleItemsChange}
           />
-        ) : (
-          <LoadingSpinner message="Cargando datos de la orden" height="h-screen" />
-        )}
+        </div>
       </div>
     </div>
   );

@@ -39,7 +39,7 @@ function MissingOrdersSalesPage() {
     if (!searchId.trim()) return;
     const id = parseInt(searchId.trim());
     if (isNaN(id)) {
-      toast.error('El ID debe ser un número válido');
+      toast.error('El número de orden ingresado no es válido.');
       return;
     }
 
@@ -114,7 +114,7 @@ function MissingOrdersSalesPage() {
               <button
                 type="submit"
                 disabled={searchLoading || !searchId.trim()}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-red-500"
                 >
                 {searchLoading ? 'Buscando...' : 'Buscar'}
               </button>
@@ -129,7 +129,7 @@ function MissingOrdersSalesPage() {
                   className={`py-2 px-1 border-b-2 font-medium text-sm ${
                     statusFilter === 'PendingResolution'
                     ? 'border-red-500 text-red-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-800'
                   }`}
                   >
                   Pendientes de Solución
@@ -139,7 +139,7 @@ function MissingOrdersSalesPage() {
                   className={`py-2 px-1 border-b-2 font-medium text-sm ${
                     statusFilter === 'PendingReissued'
                     ? 'border-red-500 text-red-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-800'
                   }`}
                   >
                   Pendientes de Reemisión

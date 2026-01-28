@@ -44,6 +44,7 @@ namespace SalesService.Application.Queries.Orders.GetById
                 ? null
                 : new AddressDto
                 {
+                    Id = order.DeliveryAddress.Id,
                     Street = order.DeliveryAddress.Street,
                     Number = order.DeliveryAddress.Number,
                     Apartment = order.DeliveryAddress.Apartment,
