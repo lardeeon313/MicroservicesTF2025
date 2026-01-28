@@ -82,7 +82,7 @@ export default function OrderTable({
           <table className="w-full text-sm text-gray-800">
             <thead className="bg-gray-100 text-xs font-semibold uppercase tracking-wide text-gray-600">
               <tr>
-                <th className="px-4 py-3 text-left">ID</th>
+                <th className="px-4 py-3 text-left w-3">Nº</th>
                 <th className="px-4 py-3 text-left"><User className="inline w-4 h-4 mr-1" /> Cliente</th>
                 <th className="px-4 py-3 text-left"><CalendarDays className="inline w-4 h-4 mr-1" /> Fecha Pedido</th>
                 <th className="px-4 py-3 text-left"><Package className="inline w-4 h-4 mr-1" /> Fecha Entrega</th>
@@ -96,7 +96,7 @@ export default function OrderTable({
             <tbody className="divide-y divide-gray-200">
               {orders.map((order) => (
                 <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3 font-medium">V-{order.id}</td>
+                  <td className="px-4 py-3 font-medium whitespace-nowrap">V-{order.id}</td>
                   <td className="px-4 py-3">{order.customerFirstName ?? ""} {order.customerLastName ?? ""}</td>
                   <td className="px-4 py-3">{formatDate(order.orderDate)}</td>
                   <td className="px-4 py-3">{order.deliveryDate ? formatDate(order.deliveryDate) : "No asignada"}</td>

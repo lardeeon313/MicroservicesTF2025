@@ -380,7 +380,7 @@ const RegisterOrderForm: React.FC<Props> = ({
                               type="button"
                               onClick={() => remove(index)}
                               disabled={values.items.length === 1}
-                              className="block w-full rounded-md text-red-700 font-semibold bg-white px-3 py-1.5 hover:bg-red-600 hover:text-white transition duration-150"
+                              className="block w-full rounded-md text-red-700 font-semibold bg-white px-3 py-1.5 hover:bg-red-600 hover:text-white transition duration-150 focus:outline-none"
                             >
                               Quitar
                             </button>
@@ -398,7 +398,7 @@ const RegisterOrderForm: React.FC<Props> = ({
                                 quantity: 1,
                               })
                             }
-                            className="text-sm font-semibold text-red-700 hover:text-red-600"
+                            className="text-sm font-semibold text-red-700 hover:text-red-600 focus:outline-none"
                           >
                             + Agregar Producto
                           </button>
@@ -434,7 +434,7 @@ const RegisterOrderForm: React.FC<Props> = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex w-full justify-center items-center rounded-md bg-red-700 px-3 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-red-600 transition duration-150 disabled:opacity-50"
+                className="flex w-full justify-center items-center rounded-md bg-red-700 px-3 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-red-600 transition duration-150 disabled:opacity-50 focus:outline-none"
               >
                 {isSubmitting ? "Registrando..." : "Registrar Pedido"}
               </button>

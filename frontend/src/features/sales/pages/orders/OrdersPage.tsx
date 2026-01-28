@@ -175,7 +175,7 @@ export default function OrdersPage() {
         <div className="flex flex-col md:flex-row mb-4 w-full justify-between">
           <input
             type="text"
-            placeholder="Buscar por ID"
+            placeholder="Buscar por Nº de Pedido"
             className="border border-gray-300 rounded px-3 py-2 focus:bg-red-100 focus:outline-gray-400 focus:transition-colors focus:duration-500 outline-gray-200 "
             value={searchId}
             onChange={(e) => setSearchId(e.target.value)}

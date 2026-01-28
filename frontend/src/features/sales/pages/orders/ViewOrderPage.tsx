@@ -1,5 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import { 
+  FileText, 
+  User, 
+  MapPin, 
+  Calendar, 
+  CreditCard,  
+  Package, 
+  Edit, 
+  Text
+} from "lucide-react";
 import { OrderTableData, OrderStatus } from "../../types/OrderTypes";
 import { getOrderById } from "../../services/OrderService";
 import { handleFormikError } from "../../../../components/ErrorHandler";
@@ -20,7 +30,6 @@ export default function ViewOrderPage() {
   ];
   const canEditOrder = order && editableStatuses.includes(order.status);
 
-  // 🔹 Traductor del tipo de pago
   const getPaymentTypeLabel = (type?: string) => {
     if (!type) return "No especificado";
     switch (type) {
@@ -49,7 +58,6 @@ export default function ViewOrderPage() {
         if (!id) return;
         const data = await getOrderById(Number(id));
         
-
         const mappedOrder = {
           ...data,
           deliveryAddress: data.address,
@@ -76,95 +84,175 @@ export default function ViewOrderPage() {
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
-      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+      <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 max-w-7xl">
         <BackButton to="/sales/orders" />
 
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-center text-4xl font-bold text-red-600 mb-2">
-            Detalles de la Órden {order?.id}
-          </h2>
-          <p className="text-center text-lg text-gray-700 mb-12">
-            Aquí puedes ver los detalles completos de la orden.
-          </p>
+        {/* Header Section */}
+        <div className="text-center mb-8 mt-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+            <FileText className="w-8 h-8 text-red-600" />
+          </div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            Pedido #{order?.id}
+          </h1>
+        </div>
 
-          {order && (
-            <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-8 space-y-10">
-              {/* Datos del cliente */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {order && (
+          <div className="space-y-6">
+            {/* Status Card - Destacado */}
+            <div className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-red-500">
+              <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Cliente:</label>
-                  <p className="rounded-md bg-gray-50 px-3 py-2 text-gray-900 shadow-sm">
-                    {order.customerFirstName} {order.customerLastName}
+                  <p className="text-sm font-medium text-gray-500 mb-2">Estado del Pedido</p>
+                  <OrderStatusBadge status={order.status} />
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium text-gray-500 mb-1">Fecha de Pedido</p>
+                  <p className="text-lg font-semibold text-gray-900">
+                    {new Date(order.orderDate).toLocaleDateString("es-AR", {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
                   </p>
                 </div>
+              </div>
+            </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Fecha Pedido:</label>
-                  <p className="rounded-md bg-gray-50 px-3 py-2 text-gray-900 shadow-sm">
-                    {new Date(order.orderDate).toLocaleDateString("es-AR")}
-                  </p>
+            {/* Main Content Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Customer Information Card */}
+              <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div className="bg-gradient-to-r from-red-500 to-red-600 px-6 py-4">
+                  <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                    <User className="w-6 h-6" />
+                    Información del Cliente
+                  </h2>
                 </div>
+                <div className="p-6 space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <User className="w-5 h-5 text-red-600" />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                        Cliente
+                      </label>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {order.customerFirstName} {order.customerLastName}
+                      </p>
+                    </div>
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Fecha Entrega:</label>
-                  <p className="rounded-md bg-gray-50 px-3 py-2 text-gray-900 shadow-sm">
-                    {order.deliveryDate
-                      ? new Date(order.deliveryDate).toLocaleDateString("es-AR")
-                      : "No asignada"}
-                  </p>
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <MapPin className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+                        Dirección de Entrega
+                      </label>
+                      <p className="text-base text-gray-900">
+                        {order.deliveryAddress
+                          ? `${order.deliveryAddress.street} ${order.deliveryAddress.number}${order.deliveryAddress.apartment ? `, ${order.deliveryAddress.apartment}` : ''}, ${order.deliveryAddress.city}, ${order.deliveryAddress.province}`
+                          : "No especificado"}
+                      </p>
+                    </div>
+                  </div>
                 </div>
+              </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 mb-4">Estado:</label>
-                  <div className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">
-                    <OrderStatusBadge status={order.status} />
+              {/* Delivery & Payment Info Card */}
+              <div className="space-y-6">
+                {/* Delivery Date Card */}
+                <div className="bg-white rounded-2xl shadow-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                      <Calendar className="w-6 h-6 text-green-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        Fecha de Entrega
+                      </p>
+                      <p className="text-lg font-bold text-gray-900">
+                        {order.deliveryDate
+                          ? new Date(order.deliveryDate).toLocaleDateString("es-AR", {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric'
+                            })
+                          : "No asignada"}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Detalles de entrega:</label>
-                  <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">
-                    {order.deliveryDetail || "No especificado"}
-                  </p>
-                </div>
-
-                {/* 🔹 Nuevo bloque: Tipo de pago */}
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Tipo de Pago:</label>
-                  <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">
-                    {getPaymentTypeLabel(order.paymentType)}
-                  </p>
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-600 mb-1">Dirección de entrega:</label>
-                  <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">
-                    {order.deliveryAddress
-                      ? `${order.deliveryAddress.street}, ${order.deliveryAddress.number}, ${order.deliveryAddress.apartment}, ${order.deliveryAddress.city}, ${order.deliveryAddress.province}`
-                      : "No especificado"}
-                  </p>
+                {/* Payment Type Card */}
+                <div className="bg-white rounded-2xl shadow-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                      <CreditCard className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        Tipo de Pago
+                      </p>
+                      <p className="text-lg font-bold text-gray-900">
+                        {getPaymentTypeLabel(order.paymentType)}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              {/* Tabla de productos */}
-              <div className="overflow-x-auto rounded-lg shadow border border-gray-200">
+            {/* Delivery Details Card */}
+            {order.deliveryDetail && (
+              <div className="bg-white rounded-2xl shadow-lg p-6">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Text className="w-5 h-5 text-amber-600" />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                      Detalles de Entrega
+                    </label>
+                    <p className="text-base text-gray-700 leading-relaxed">
+                      {order.deliveryDetail}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Products Table Card */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+              <div className="bg-gradient-to-r from-red-500 to-red-600 px-6 py-4">
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <Package className="w-6 h-6" />
+                  Productos del Pedido
+                </h2>
+              </div>
+              <div className="p-6">
                 <OrderItemsTable items={order.items} />
               </div>
+            </div>
 
-              {/* Botón de editar */}
+            {/* Action Buttons */}
+            <div className="flex justify-between items-center gap-4 flex-wrap">
               {canEditOrder && (
-                <div className="flex justify-end mt-6">
-                  <Link
-                    to={`/sales/orders/update/${order.id}`}
-                    className="px-6 py-2 bg-red-600 text-white rounded-lg shadow font-bold transition hover:bg-red-700"
-                  >
-                    Editar Órden
-                  </Link>
-                </div>
+                <Link
+                  to={`/sales/orders/update/${order.id}`}
+                  className="group inline-flex items-center gap-2 px-5 py-2.5 bg-red-600 text-white rounded-xl shadow-sm  font-bold transition-all hover:bg-red-700 hover:shadow-xl transform hover:-translate-x-1"
+                >
+                  <Edit className="w-5 h-5" />
+                  Editar Orden
+                </Link>
               )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
