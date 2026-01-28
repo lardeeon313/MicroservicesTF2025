@@ -1,5 +1,6 @@
 import { Form, ErrorMessage, Field, FieldArray, Formik } from "formik";
-import {  useState } from "react";
+import { useState } from "react";
+import { Calendar, MapPin, CreditCard, FileText, AlertCircle, Package, Trash2, Plus } from "lucide-react";
 import { UpdateOrderRequest } from "../../types/OrderTypes";
 import { CustomerPaymenType } from "../../types/CustomerTypes";
 import { AddressRequest } from "../../types/CustomerTypes";
@@ -10,7 +11,7 @@ interface EditOrderFormProps {
   onSubmit: (values: UpdateOrderRequest) => void;
   isSubmitting: boolean;
   savedAddresses?: AddressRequest[];
-  paymentTypes: CustomerPaymenType[]; // ✅ agregado para recibir desde la page
+  paymentTypes: CustomerPaymenType[];
   onItemsChange?: (
     items: Array<{ id: number; productName: string; productBrand: string; quantity: number }>
   ) => void;
@@ -25,18 +26,16 @@ export default function EditOrderForm({
   onItemsChange,
 }: EditOrderFormProps) {
   const [selectedSavedAddressId, setSelectedSavedAddressId] = useState<number | null>(
-    initialValues.deliveryAddress?.id ?? null
+    initialValues.addressRequest?.id ?? null
   );
 
-    // Traductor de tipos de pago
   const getPaymentTypeLabel = (paymentType: string): string => {
     if (!paymentType) return "Tipo de pago desconocido";
 
-    // Normalizamos (por si vienen con mayúsculas mezcladas)
     const normalized = paymentType
-      .replace(/([A-Z])/g, "_$1") // pone guión antes de cada mayúscula
-      .toLowerCase() // todo minúscula
-      .replace(/__+/g, "_"); // limpia posibles dobles guiones bajos
+      .replace(/([A-Z])/g, "_$1")
+      .toLowerCase()
+      .replace(/__+/g, "_");
 
     const labels: Record<string, string> = {
       transfer: "Transferencia",
@@ -51,15 +50,9 @@ export default function EditOrderForm({
     return labels[normalized] ?? paymentType;
   };
 
-  const handleSavedAddressChange = (id: number, setFieldValue: any) => {
-    setSelectedSavedAddressId(id);
-    if (id != null) {
-      const savedAddress = savedAddresses.find((addr) => addr.id === id);
-      if (savedAddress) {
-        setFieldValue("addressRequest", { ...savedAddress }); // 🟢 aquí rellenamos el objeto
-      }
-    } else {
-      // Si el usuario decide ingresar manualmente, limpiamos addressRequest
+  const handleSavedAddressChange = (value: string, setFieldValue: any) => {
+    if (value === "") {
+      setSelectedSavedAddressId(null);
       setFieldValue("addressRequest", {
         street: "",
         number: "",
@@ -69,6 +62,13 @@ export default function EditOrderForm({
         postalCode: "",
         apartment: "",
       });
+    } else {
+      const id = Number(value);
+      setSelectedSavedAddressId(id);
+      const savedAddress = savedAddresses.find((addr) => addr.id === id);
+      if (savedAddress) {
+        setFieldValue("addressRequest", { ...savedAddress });
+      }
     }
   };
 
@@ -78,7 +78,6 @@ export default function EditOrderForm({
       validationSchema={EditOrderValidationSchema}
       enableReinitialize
       onSubmit={(values) => {
-        
         if (selectedSavedAddressId != null) {
           const savedAddress = savedAddresses.find((addr) => addr.id === selectedSavedAddressId);
           if (savedAddress) {
@@ -88,226 +87,490 @@ export default function EditOrderForm({
         onSubmit(values);
       }}
     >
-      {({ values, setFieldValue }) => (
-        <Form className="space-y-6 container mx-auto py-10 px-16 sm:max-w-6xl">
-          {/* Fecha de entrega */}
-          <div>
-            <label htmlFor="deliveryDate" className="block text-sm font-medium text-gray-900 mb-1">
-              Fecha de entrega
-            </label>
-            <Field
-              name="deliveryDate"
-              type="date"
-              className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-            />
-            <ErrorMessage name="deliveryDate" component="div" className="text-red-700 text-sm pt-1" />
-          </div>
+      {({ values, setFieldValue, errors, touched }) => (
+        <Form className="p-8 space-y-8">
+          {/* Delivery Information Section */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-2 pb-4 border-b border-gray-200">
+              <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+                <Calendar className="w-4 h-4 text-white font-bold" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Información de Entrega</h3>
+            </div>
 
-          {/* Dirección guardada */}
-          {savedAddresses.length > 0 && (
+            {/* Delivery Date */}
             <div>
-              <label className="block text-sm font-medium text-gray-900 mb-1">
-                Usar dirección guardada
+              <label htmlFor="deliveryDate" className="block text-sm font-medium text-gray-700 mb-2">
+                Fecha de entrega <span className="text-red-600">*</span>
               </label>
-              <select
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-                value={selectedSavedAddressId ?? ""}
-                onChange={(e) => 
-                  handleSavedAddressChange(Number(e.target.value), setFieldValue)
-                }
-              >
-                <option value="">Ingresar dirección manual</option>
-                {savedAddresses.map((addr) => (
-                  <option key={addr.id} value={addr.id}>
-                    {addr.street} {addr.number}, {addr.city}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {/* Dirección manual */}
-          {selectedSavedAddressId == null && (
-            <div className="grid grid-cols-2 gap-3 mt-3">
-              {[
-                { name: "street", placeholder: "Calle" },
-                { name: "number", placeholder: "Número" },
-                { name: "apartment", placeholder: "Departamento (opcional)", col: 2 },
-                { name: "city", placeholder: "Ciudad" },
-                { name: "province", placeholder: "Provincia" },
-                { name: "country", placeholder: "País" },
-                { name: "postalCode", placeholder: "Código Postal" },
-              ].map((field) => (
-                <Field
-                  key={field.name}
-                  name={`addressRequest.${field.name}`}
-                  placeholder={field.placeholder}
-                  className={`block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200 ${
-                    field.col ? `col-span-${field.col}` : ""
-                  }`}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Tipo de pago */}
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">
-              Tipo de pago
-            </label>
-            {paymentTypes.length > 0 ? (
               <Field
-                as="select"
-                name="paymentType"
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-              >
-                <option value="">Seleccione un tipo de pago</option>
-                {paymentTypes.map((p) => (
-                  <option key={p.id} value={p.paymentType}>
-                    {getPaymentTypeLabel(p.paymentType)}
-                  </option>
-                ))}
-              </Field>
-            ) : (
-              <p className="text-gray-600 italic">
-                No hay tipos de pago disponibles para este cliente.
-              </p>
+                name="deliveryDate"
+                type="date"
+                className={`block w-full rounded-lg border ${
+                  errors.deliveryDate && touched.deliveryDate
+                    ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                    : "border-gray-300 bg-white"
+                } px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none`}
+              />
+              <ErrorMessage name="deliveryDate" component="div" className="text-red-600 text-sm mt-2 flex items-center gap-1.5 font-medium bg-red-50 px-3 py-2 rounded-md">
+                {(msg) => (
+                  <>
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    <span>{msg}</span>
+                  </>
+                )}
+              </ErrorMessage>
+            </div>
+
+            {/* Delivery Details */}
+            <div>
+              <label htmlFor="deliveryDetail" className="block text-sm font-medium text-gray-700 mb-2">
+                Detalles de entrega
+              </label>
+              <Field
+                as="textarea"
+                name="deliveryDetail"
+                rows={3}
+                placeholder="Ej. Dejar en portería, tocar timbre 3 veces..."
+                className={`block w-full rounded-lg border ${
+                  errors.deliveryDetail && touched.deliveryDetail
+                    ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                    : "border-gray-300 bg-white"
+                } px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors resize-none focus:outline-none`}
+              />
+              <ErrorMessage name="deliveryDetail" component="div" className="text-red-600 text-sm mt-2 flex items-center gap-1.5 font-medium bg-red-50 px-3 py-2 rounded-md">
+                {(msg) => (
+                  <>
+                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                    <span>{msg}</span>
+                  </>
+                )}
+              </ErrorMessage>
+            </div>
+          </div>
+
+          {/* Address Section */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-2 pb-4 border-b border-gray-200">
+              <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+                <MapPin className="w-4 h-4 text-white font-bold" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Dirección de Entrega</h3>
+            </div>
+
+            {/* Saved Address Selector */}
+            {savedAddresses.length > 0 && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Usar dirección guardada
+                </label>
+                <select
+                  className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none"
+                  value={selectedSavedAddressId ?? ""}
+                  onChange={(e) => handleSavedAddressChange(e.target.value, setFieldValue)}
+                >
+                  <option value="">Ingresar dirección manual</option>
+                  {savedAddresses.map((addr) => (
+                    <option key={addr.id} value={addr.id}>
+                      {addr.street} {addr.number}, {addr.city}
+                    </option>
+                  ))}
+                </select>
+              </div>
             )}
-            <ErrorMessage name="paymentType" component="div" className="text-red-700 text-sm pt-1" />
+
+            {/* Manual Address Input */}
+            {selectedSavedAddressId === null && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Calle <span className="text-red-600">*</span>
+                  </label>
+                  <Field
+                    name="addressRequest.street"
+                    placeholder="Ingrese la calle"
+                    className={`block w-full rounded-lg border ${
+                      errors.addressRequest?.street && touched.addressRequest?.street
+                        ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                        : "border-gray-300 bg-white"
+                    } px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none`}
+                  />
+                  <ErrorMessage name="addressRequest.street" component="div" className="text-red-600 text-sm mt-1.5 flex items-center gap-1 font-medium">
+                    {(msg) => (
+                      <>
+                        <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>{msg}</span>
+                      </>
+                    )}
+                  </ErrorMessage>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Número <span className="text-red-600">*</span>
+                  </label>
+                  <Field
+                    name="addressRequest.number"
+                    placeholder="Número"
+                    className={`block w-full rounded-lg border ${
+                      errors.addressRequest?.number && touched.addressRequest?.number
+                        ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                        : "border-gray-300 bg-white"
+                    } px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none`}
+                  />
+                  <ErrorMessage name="addressRequest.number" component="div" className="text-red-600 text-sm mt-1.5 flex items-center gap-1 font-medium">
+                    {(msg) => (
+                      <>
+                        <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>{msg}</span>
+                      </>
+                    )}
+                  </ErrorMessage>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Departamento (opcional)</label>
+                  <Field
+                    name="addressRequest.apartment"
+                    placeholder="Piso/Dpto"
+                    className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ciudad <span className="text-red-600">*</span>
+                  </label>
+                  <Field
+                    name="addressRequest.city"
+                    placeholder="Ciudad"
+                    className={`block w-full rounded-lg border ${
+                      errors.addressRequest?.city && touched.addressRequest?.city
+                        ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                        : "border-gray-300 bg-white"
+                    } px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none`}
+                  />
+                  <ErrorMessage name="addressRequest.city" component="div" className="text-red-600 text-sm mt-1.5 flex items-center gap-1 font-medium">
+                    {(msg) => (
+                      <>
+                        <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>{msg}</span>
+                      </>
+                    )}
+                  </ErrorMessage>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Provincia <span className="text-red-600">*</span>
+                  </label>
+                  <Field
+                    name="addressRequest.province"
+                    placeholder="Provincia"
+                    className={`block w-full rounded-lg border ${
+                      errors.addressRequest?.province && touched.addressRequest?.province
+                        ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                        : "border-gray-300 bg-white"
+                    } px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none`}
+                  />
+                  <ErrorMessage name="addressRequest.province" component="div" className="text-red-600 text-sm mt-1.5 flex items-center gap-1 font-medium">
+                    {(msg) => (
+                      <>
+                        <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>{msg}</span>
+                      </>
+                    )}
+                  </ErrorMessage>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    País <span className="text-red-600">*</span>
+                  </label>
+                  <Field
+                    name="addressRequest.country"
+                    placeholder="País"
+                    className={`block w-full rounded-lg border ${
+                      errors.addressRequest?.country && touched.addressRequest?.country
+                        ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                        : "border-gray-300 bg-white"
+                    } px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none`}
+                  />
+                  <ErrorMessage name="addressRequest.country" component="div" className="text-red-600 text-sm mt-1.5 flex items-center gap-1 font-medium">
+                    {(msg) => (
+                      <>
+                        <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>{msg}</span>
+                      </>
+                    )}
+                  </ErrorMessage>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Código Postal <span className="text-red-600">*</span>
+                  </label>
+                  <Field
+                    name="addressRequest.postalCode"
+                    placeholder="CP"
+                    className={`block w-full rounded-lg border ${
+                      errors.addressRequest?.postalCode && touched.addressRequest?.postalCode
+                        ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                        : "border-gray-300 bg-white"
+                    } px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none`}
+                  />
+                  <ErrorMessage name="addressRequest.postalCode" component="div" className="text-red-600 text-sm mt-1.5 flex items-center gap-1 font-medium">
+                    {(msg) => (
+                      <>
+                        <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                        <span>{msg}</span>
+                      </>
+                    )}
+                  </ErrorMessage>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Detalles de entrega */}
-          <div>
-            <label htmlFor="deliveryDetail" className="block text-sm font-medium text-gray-900 mb-1">
-              Detalles de entrega
-            </label>
-            <Field
-              as="textarea"
-              name="deliveryDetail"
-              rows={3}
-              placeholder="Ej. Dejar en portería..."
-              className="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-            />
-            <ErrorMessage name="deliveryDetail" component="div" className="text-red-700 text-sm pt-1" />
+          {/* Payment and Status Section */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-2 pb-4 border-b border-gray-200">
+              <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+                <CreditCard className="w-4 h-4 text-white font-bold" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Pago y Estado</h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Payment Type */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tipo de pago <span className="text-red-600">*</span>
+                </label>
+                {paymentTypes.length > 0 ? (
+                  <>
+                    <Field
+                      as="select"
+                      name="paymentType"
+                      className={`block w-full rounded-lg border ${
+                        errors.paymentType && touched.paymentType
+                          ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                          : "border-gray-300 bg-white"
+                      } px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none`}
+                    >
+                      <option value="">Seleccione un tipo de pago</option>
+                      {paymentTypes.map((p) => (
+                        <option key={p.id} value={p.paymentType}>
+                          {getPaymentTypeLabel(p.paymentType)}
+                        </option>
+                      ))}
+                    </Field>
+                    <ErrorMessage name="paymentType" component="div" className="text-red-600 text-sm mt-2 flex items-center gap-1.5 font-medium bg-red-50 px-3 py-2 rounded-md">
+                      {(msg) => (
+                        <>
+                          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                          <span>{msg}</span>
+                        </>
+                      )}
+                    </ErrorMessage>
+                  </>
+                ) : (
+                  <p className="text-gray-500 italic text-sm bg-gray-50 rounded-lg px-4 py-3 border border-gray-200">
+                    No hay tipos de pago disponibles para este cliente.
+                  </p>
+                )}
+              </div>
+
+              {/* Status */}
+              <div>
+                <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+                  Estado <span className="text-red-600">*</span>
+                </label>
+                <Field
+                  as="select"
+                  name="status"
+                  className={`block w-full rounded-lg border ${
+                    errors.status && touched.status
+                      ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                      : "border-gray-300 bg-white"
+                  } px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none`}
+                >
+                  <option value="">Seleccionar estado</option>
+                  <option value="pending">Pendiente</option>
+                  <option value="issued">Emitido</option>
+                  <option value="canceled">Cancelado</option>
+                </Field>
+                <ErrorMessage name="status" component="div" className="text-red-600 text-sm mt-2 flex items-center gap-1.5 font-medium bg-red-50 px-3 py-2 rounded-md">
+                  {(msg) => (
+                    <>
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      <span>{msg}</span>
+                    </>
+                  )}
+                </ErrorMessage>
+              </div>
+            </div>
           </div>
 
-          {/* Estado */}
-          <div>
-            <label htmlFor="status" className="block text-sm font-medium text-gray-900 mb-1">
-              Estado
-            </label>
-            <Field
-              as="select"
-              name="status"
-              className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-            >
-              <option value="">Seleccionar estado</option>
-              <option value="Pending">Pendiente</option>
-              <option value="Issued">Emitido</option>
-              <option value="Canceled">Cancelado</option>
-            </Field>
-            <ErrorMessage name="status" component="div" className="text-red-700 text-sm pt-1" />
-          </div>
+          {/* Products Section */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-2 pb-4 border-b border-gray-200">
+              <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+                <Package className="w-4 h-4 text-white font-bold" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Productos</h3>
+            </div>
 
-          {/* Items */}
-          <FieldArray name="items">
-            {({ push }) => (
-              <div className="space-y-4 pt-2">
-                <table className="table-fixed w-full border-separate">
-                  <thead>
-                    <tr>
-                      <th className="w-1/3 text-left px-4 py-2">Productos</th>
-                      <th className="w-1/3 text-left px-4 py-2">Marca</th>
-                      <th className="w-1/3 text-left px-4 py-2">Cantidad</th>
-                      <th className="w-1/8 text-left px-4 py-2"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {values.items.map((item, index) => {
-                      const handleRemove = () => {
-                        const newItems = [...values.items];
-                        newItems.splice(index, 1);
-                        setFieldValue("items", newItems);
-                        if (onItemsChange) onItemsChange(newItems);
-                      };
+            <FieldArray name="items">
+              {({ push }) => (
+                <div className="space-y-4">
+                  {values.items.map((item, index) => {
+                    const handleRemove = () => {
+                      const newItems = [...values.items];
+                      newItems.splice(index, 1);
+                      setFieldValue("items", newItems);
+                      if (onItemsChange) onItemsChange(newItems);
+                    };
 
-                      return (
-                        <tr key={item.id || index} className="align-top">
-                          <td className="pr-2 px-4 py-2">
+                    const itemErrors = errors.items?.[index] as any;
+                    const itemTouched = touched.items?.[index] as any;
+
+                    return (
+                      <div
+                        key={item.id || index}
+                        className="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:border-gray-300 transition-colors"
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                              Producto <span className="text-red-600">*</span>
+                            </label>
                             <Field
                               name={`items[${index}].productName`}
-                              className="block w-full rounded-md bg-white px-3 py-1.5 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
+                              placeholder="Nombre del producto"
+                              className={`block w-full rounded-lg border ${
+                                itemErrors?.productName && itemTouched?.productName
+                                  ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                                  : "border-gray-300 bg-white"
+                              } px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none`}
                             />
                             <ErrorMessage
                               name={`items[${index}].productName`}
                               component="div"
-                              className="text-red-700 text-sm pt-1"
-                            />
-                          </td>
-                          <td className="pr-2 px-4 py-2">
+                              className="text-red-600 text-xs mt-1.5 flex items-center gap-1 font-medium"
+                            >
+                              {(msg) => (
+                                <>
+                                  <AlertCircle className="w-3 h-3 flex-shrink-0" />
+                                  <span>{msg}</span>
+                                </>
+                              )}
+                            </ErrorMessage>
+                          </div>
+
+                          <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                              Marca <span className="text-red-600">*</span>
+                            </label>
                             <Field
                               name={`items[${index}].productBrand`}
-                              className="block w-full rounded-md bg-white px-3 py-1.5 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
+                              placeholder="Marca del producto"
+                              className={`block w-full rounded-lg border ${
+                                itemErrors?.productBrand && itemTouched?.productBrand
+                                  ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                                  : "border-gray-300 bg-white"
+                              } px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none`}
                             />
                             <ErrorMessage
                               name={`items[${index}].productBrand`}
                               component="div"
-                              className="text-red-700 text-sm pt-1"
-                            />
-                          </td>
-                          <td className="pr-2 px-4 py-2">
+                              className="text-red-600 text-xs mt-1.5 flex items-center gap-1 font-medium"
+                            >
+                              {(msg) => (
+                                <>
+                                  <AlertCircle className="w-3 h-3 flex-shrink-0" />
+                                  <span>{msg}</span>
+                                </>
+                              )}
+                            </ErrorMessage>
+                          </div>
+
+                          <div>
+                            <div className="flex items-center justify-between mb-1.5">
+                              <label className="block text-xs font-medium text-gray-700">
+                                Cantidad <span className="text-red-600">*</span>
+                              </label>
+                              {values.items.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={handleRemove}
+                                  className="inline-flex items-center focus:outline-none gap-1 text-xs font-medium text-red-600 hover:text-red-700 transition-colors"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                  Quitar
+                                </button>
+                              )}
+                            </div>
                             <Field
                               name={`items[${index}].quantity`}
                               type="number"
                               min={1}
                               placeholder="Cantidad"
-                              className="block w-full rounded-md bg-white px-3 py-1.5 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
+                              className={`block w-full rounded-lg border ${
+                                itemErrors?.quantity && itemTouched?.quantity
+                                  ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                                  : "border-gray-300 bg-white"
+                              } px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none`}
                             />
-                            <p className="text-xs text-gray-500 mt-1">Solo números, mínimo 1.</p>
                             <ErrorMessage
                               name={`items[${index}].quantity`}
                               component="div"
-                              className="text-red-700 text-sm pt-1"
-                            />
-                          </td>
-                          <td className="p-2 px-4 py-2 text-center">
-                            <button
-                              type="button"
-                              disabled={values.items.length === 1}
-                              onClick={handleRemove}
-                              className="block w-full rounded-md text-red-700 font-semibold bg-white px-3 py-1.5 hover:bg-red-600 hover:text-white transition duration-150"
+                              className="text-red-600 text-xs mt-1.5 flex items-center gap-1 font-medium"
                             >
-                              Quitar
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                    <tr>
-                      <td colSpan={4} className="p-2 text-left">
-                        <button
-                          type="button"
-                          onClick={() => push({ productName: "", productBrand: "", quantity: 1 })}
-                          className="text-sm font-semibold text-red-700 hover:text-red-600"
-                        >
-                          + Agregar Producto
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </FieldArray>
+                              {(msg) => (
+                                <>
+                                  <AlertCircle className="w-3 h-3 flex-shrink-0" />
+                                  <span>{msg}</span>
+                                </>
+                              )}
+                            </ErrorMessage>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
 
-          {/* Submit */}
-          <div className="mt-10">
+                  <button
+                    type="button"
+                    onClick={() => push({ productName: "", productBrand: "", quantity: 1 })}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors focus:outline-none"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Agregar Producto
+                  </button>
+                </div>
+              )}
+            </FieldArray>
+          </div>
+
+          {/* Submit Button */}
+          <div className="pt-6 border-t border-gray-200">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex w-full justify-center items-center rounded-md bg-red-700 px-3 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-red-600 transition duration-150 disabled:opacity-50"
+              className="w-full inline-flex justify-center items-center gap-2 rounded-lg bg-gradient-to-r bg-red-500 px-6 py-3.5 text-base font-semibold text-white shadow-lg hover:bg-red-600 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
             >
-              {isSubmitting ? "Guardando..." : "Guardar Cambios"}
+              {isSubmitting ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Guardando cambios...
+                </>
+              ) : (
+                <>
+                  <FileText className="w-5 h-5" />
+                  Guardar Cambios
+                </>
+              )}
             </button>
           </div>
         </Form>
