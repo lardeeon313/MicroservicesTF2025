@@ -22,12 +22,14 @@ type Props = {
   operatorUserId: string;
   pedidoItems: OrderItem[];
   pedidoStatus: DepotOrderStatus;
+  onPackagingChange: (itemId: number, packaging: string) => void;
 };
 
 const ItemOrdersComponent: React.FC<Props> = ({
   operatorUserId,
   pedidoItems,
   pedidoStatus,
+  onPackagingChange,
 }) => {
   const [items, setItems] = useState<OrderItem[]>(pedidoItems);
   const [showAllMarkedModal, setShowAllMarkedModal] = useState(false);
@@ -41,6 +43,15 @@ const ItemOrdersComponent: React.FC<Props> = ({
     DepotOrderStatus.MissingProduct,
     DepotOrderStatus.SentToBilling,
   ].includes(pedidoStatus);
+
+  const handlePackagingChange = (itemId: number, packaging: string) => {
+    const updatedItems = items.map((i) =>
+      i.id === itemId ? { ...i, embalaje: packaging } : i
+    );
+    setItems(updatedItems);
+    onPackagingChange(itemId, packaging); // Llama a la función para actualizar el embalaje en el objeto order
+  };
+
 
   const handleMarkToggle = async (item: OrderItem) => {
     try {
@@ -77,7 +88,6 @@ const ItemOrdersComponent: React.FC<Props> = ({
       Alert.alert("Error", error.message || "Error al actualizar ítem");
     }
   };
-
   return (
     <View style={{ flex: 1, padding: 2, borderRadius: 12 }}>
       {pedidoStatus === DepotOrderStatus.Prepared && (
@@ -144,6 +154,8 @@ const ItemOrdersComponent: React.FC<Props> = ({
             <AddPackingForm
               depotOrderItemId={item.id}
               pedidoStatus={pedidoStatus}
+              onSuccess={() => {}}
+              onPackagingChange={onPackagingChange}
             />
 
             <Button
@@ -156,7 +168,7 @@ const ItemOrdersComponent: React.FC<Props> = ({
         )}
       />
 
-      {/* MODAL: TODOS MARCADOS */}
+      
       <AllProductsMarkedModal
         visible={showAllMarkedModal}
         onClose={() => setShowAllMarkedModal(false)}
@@ -166,7 +178,7 @@ const ItemOrdersComponent: React.FC<Props> = ({
         }}
       />
 
-      {/* MODAL: FALTA EMBALAJE */}
+      
       {showNoPackingModal && (
         <View
           style={{
