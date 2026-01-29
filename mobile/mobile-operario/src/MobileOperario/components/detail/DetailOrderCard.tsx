@@ -3,6 +3,7 @@ import { OrderStatusLabels } from '../../constants/UseStatusOrderOperator';
 import { DepotOrderDTO, DepotOrderStatus } from '../../types/OrderDTO';
 import ItemOrdersComponent from '../additional/checkList/ItemOrdersComponent'; 
 import { useAuth } from '../../Login/context/useAuth';
+import { useState } from 'react';
 
 type Props = {
   order: DepotOrderDTO;
@@ -11,6 +12,7 @@ type Props = {
 
 
 const DetailOrderCard = ({order}: Props) => {
+  const [updatedOrder, setUpdatedOrder] = useState<DepotOrderDTO>(order);
 
   const { userId, name, role, isAuthenticated, logout } = useAuth();
   
@@ -18,6 +20,13 @@ const DetailOrderCard = ({order}: Props) => {
     id: userId!,
     name: name!,
     role: role!
+  };
+
+  const handlePackagingChange = (itemId: number, packaging: string) => {
+    const updatedItems = updatedOrder.items.map((item) =>
+      item.id === itemId ? { ...item, packaging: packaging, packagingType: packaging } : item
+    );
+    setUpdatedOrder({ ...updatedOrder, items: updatedItems });
   };
 
   const address = order.address;
@@ -97,19 +106,18 @@ const DetailOrderCard = ({order}: Props) => {
       </View>
       
       <ItemOrdersComponent
-        pedidoItems={order.items.map(item => ({
-          id: item.id,
-          nombre: item.productName,
-          marca : item.productBrand,
-          marcado: item.isReady,
-          embalaje: item.packaging, 
-          cantidad: item.quantity,
+        pedidoItems={updatedOrder.items.map(item => ({ 
+        id: item.id,
+        nombre: item.productName,
+        marca: item.productBrand,
+        marcado: item.isReady,
+        embalaje: item.packaging || item.packagingType, 
+        cantidad: item.quantity,
         }))}
         operatorUserId={user.id}
-        pedidoStatus={order.status}
-      />
-
-      
+        pedidoStatus={updatedOrder.status} 
+        onPackagingChange={handlePackagingChange}
+      />      
     </View>
   )
 }

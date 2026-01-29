@@ -51,6 +51,7 @@ const MissingPage = () => {
             maxQuantity: item.quantity,
             hasBrandIssue: false, // Para saber si el botón de "Falla Marca" está activo
             brandIssueDescription: '', // Para guardar el texto del input de la marca
+            packagingType: item.packagingType || 'No aplica'
         }))
     );
     
@@ -71,8 +72,11 @@ const MissingPage = () => {
 
     const handleQuantityTextChange = (index: number, text: string) => {
         const updated = [...missingItemsState];
-        updated[index].missingQuantityInput = text.replace(/[^0-9]/g, '');
+        const numericValue = text.replace(/[^0-9]/g, '');
+        updated[index].missingQuantityInput = numericValue;
+        updated[index].missingQuantity = numericValue === '' ? 0 : parseInt(numericValue, 10);
         setMissingItemsState(updated);
+        //console.log(`handleQuantityTextChange - Índice: ${index}, missingQuantityInput: ${numericValue}, missingQuantity: ${updated[index].missingQuantity}`);
     };
 
     const handleQuantityEndEditing = (index: number) => {
@@ -84,7 +88,9 @@ const MissingPage = () => {
         currentItem.missingQuantity = validQty;
         currentItem.missingQuantityInput = String(validQty);
         setMissingItemsState(updated);
+        //console.log(`handleQuantityEndEditing - INDICE : ${index}, missingQuantity: ${validQty}`);
     };
+
     
     // --- 2. AÑADIMOS LAS FUNCIONES PARA MANEJAR LA FALLA DE MARCA ---
     const handleToggleBrandIssue = (index: number) => {
@@ -103,26 +109,24 @@ const MissingPage = () => {
     };
 
     const onSubmit = () => {
-        const selectedItems = missingItemsState
-            .filter(item => item.isMissing && item.missingQuantity > 0)
-            .map(item => {
-                // --- 3. ACTUALIZAMOS LA LÓGICA DE ENVÍO ---
-                let finalBrand = item.productBrand;
-
-                // Si se reportó una falla de marca y se escribió un detalle,
-                // ese detalle SOBREESCRIBE la marca original.
-                if (item.hasBrandIssue && item.brandIssueDescription.trim()) {
-                    finalBrand = item.brandIssueDescription.trim();
-                }
-
-                return {
-                    orderItemId: item.id,
-                    productName: item.productName,
-                    productBrand: finalBrand, // El campo correcto ahora recibe la descripción
-                    packaging: item.packagingType ?? 'No aplica',
-                    quantity: item.missingQuantity,
-                };
-            });
+        console.log('Estado de missingItemsState antes de enviar:', missingItemsState);
+            const selectedItems = missingItemsState
+                .filter(item => item.isMissing && item.missingQuantity > 0)
+                .map(item => {
+                    let finalBrand = item.productBrand;
+                    if (item.hasBrandIssue && item.brandIssueDescription.trim()) {
+                        finalBrand = item.brandIssueDescription.trim();
+                    }
+                    console.log(`Item seleccionado - Nombre: ${item.productName}, Embalaje: ${item.packagingType}, Cantidad faltante: ${item.missingQuantity}`);
+                    return {
+                        orderItemId: item.id,
+                        productName: item.productName,
+                        productBrand: finalBrand,
+                        packaging: item.packagingType ?? 'No aplica',
+                        quantity: item.missingQuantity,
+                    };
+                });
+            //console.log('Items seleccionados para enviar:', selectedItems);
 
         if (!description.trim() && selectedItems.length === 0) {
             Alert.alert('Error', 'Debe ingresar una descripción o seleccionar al menos un producto con cantidad mayor a cero.');

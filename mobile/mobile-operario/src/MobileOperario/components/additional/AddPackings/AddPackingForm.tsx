@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {View,Text,TextInput,Button,ActivityIndicator,StyleSheet,Alert} from 'react-native';
+import { View, Text, TextInput, Button, ActivityIndicator, StyleSheet, Alert } from 'react-native';
 import { useAddPackagings } from "../../../hocks/useAddPackings";
 import type { AddPackingCommand } from "../../../types/AddPackings";
 import { DepotOrderStatus } from "../../../types/OrderDTO";
@@ -9,13 +9,18 @@ type Props = {
   depotOrderItemId: number;
   onSuccess?: () => void;
   pedidoStatus: DepotOrderStatus;
+  onPackagingChange: (itemId: number, packaging: string) => void; // Nueva prop
 };
 
-const AddPackingForm: React.FC<Props> = ({ depotOrderItemId, onSuccess, pedidoStatus }) => {
+const AddPackingForm: React.FC<Props> = ({
+  depotOrderItemId,
+  onSuccess,
+  pedidoStatus,
+  onPackagingChange, // Recibe la función
+}) => {
   const [packagingType, setPackagingType] = useState('');
   const { addPackagings, loading, error, success } = useAddPackagings();
 
-  
   const isDisabled = [
     DepotOrderStatus.Assigned,
     DepotOrderStatus.MissingProduct,
@@ -51,18 +56,23 @@ const AddPackingForm: React.FC<Props> = ({ depotOrderItemId, onSuccess, pedidoSt
 
     await addPackagings(payload);
 
-    if (onSuccess && !error) {
-      onSuccess();
+    if (!error) {
+      // Llama a `onPackagingChange` para actualizar el embalaje en el objeto `order`
+      onPackagingChange(depotOrderItemId, packagingType.trim());
+
+      if (onSuccess) {
+        onSuccess();
+      }
     }
   };
 
   return (
-    <View style={{marginTop: 10,padding: 10,backgroundColor: '#f2f2f2',borderRadius: 8}}>
-      <Text style={{fontWeight: 'bold',marginBottom: 6}}>Agregar tipo de empaque:</Text>
+    <View style={{ marginTop: 10, padding: 10, backgroundColor: '#f2f2f2', borderRadius: 8 }}>
+      <Text style={{ fontWeight: 'bold', marginBottom: 6 }}>Agregar tipo de empaque:</Text>
 
       <TextInput
         style={[
-          {borderWidth: 1,borderColor: '#ccc',padding: 8,borderRadius: 4,marginBottom: 10},
+          { borderWidth: 1, borderColor: '#ccc', padding: 8, borderRadius: 4, marginBottom: 10 },
           { backgroundColor: isDisabled ? "#eee" : "#fff" }
         ]}
         placeholder="Ej: Caja, Bolsa, Enlatado..."
@@ -72,21 +82,21 @@ const AddPackingForm: React.FC<Props> = ({ depotOrderItemId, onSuccess, pedidoSt
       />
 
       {isDisabled && disabledMessage && (
-      <View style={{flexDirection: 'column',alignItems: 'center',marginBottom: 10}}>
-        <AlertCircle
-          color={pedidoStatus === DepotOrderStatus.SentToBilling ? 'green' : 'red'}
-          size={18}
-          style={{ marginBottom: 6 }}
-        />
-        <Text
+        <View style={{ flexDirection: 'column', alignItems: 'center', marginBottom: 10 }}>
+          <AlertCircle
+            color={pedidoStatus === DepotOrderStatus.SentToBilling ? 'green' : 'red'}
+            size={18}
+            style={{ marginBottom: 6 }}
+          />
+          <Text
             style={[
-              {color: 'red',fontStyle: 'normal',textAlign: 'center'},
+              { color: 'red', fontStyle: 'normal', textAlign: 'center' },
               pedidoStatus === DepotOrderStatus.SentToBilling && { color: 'green' }
             ]}
-            >
-          {disabledMessage}
-        </Text>
-      </View>
+          >
+            {disabledMessage}
+          </Text>
+        </View>
       )}
 
       {loading ? (
@@ -99,9 +109,9 @@ const AddPackingForm: React.FC<Props> = ({ depotOrderItemId, onSuccess, pedidoSt
         />
       )}
 
-      {error && <Text style={{color: 'red',marginTop: 6}}>Error: {error.message}</Text>}
+      {error && <Text style={{ color: 'red', marginTop: 6 }}>Error: {error.message}</Text>}
       {success && (
-        <Text style={{color: 'green',marginTop: 6}}>✅ Empaque agregado con éxito ✅.</Text>
+        <Text style={{ color: 'green', marginTop: 6 }}>✅ Empaque agregado con éxito ✅.</Text>
       )}
     </View>
   );
