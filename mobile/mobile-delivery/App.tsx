@@ -21,6 +21,9 @@ function RootNavigation() {
     );
   }
 
+  return isAuthenticated ? <LogisticNavigation /> : <LoginNavigator />;
+}
+
 export default function App() {
   useEffect(() => {
     console.log("🔗 API_BASE_URL:", EXPO_PUBLIC_API_BASE_URL);

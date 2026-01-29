@@ -1,7 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import LoginForm from '../components/LoginForm'; // Ajust· si tu LoginForm est· en otra carpeta
-import RegisterForm from '../components/RegisterForm'; // Opcional si tenÈs registro
+import LoginForm from '../components/LoginForm'; // Ajust√° si tu LoginForm est√° en otra carpeta
+import RegisterForm from '../components/RegisterForm'; // Opcional si ten√©s registro
 import { ForgotPasswordPage } from '../pages/ForgotPasswordPage';
 import { CreatePasswordPage } from '../pages/CreatePasswordPage';
 import { ResetPasswordPage } from '../pages/ResetPasswordPage';

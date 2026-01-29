@@ -11,25 +11,25 @@ export const registerValidationSchema = Yup.object({
     .required("El apellido es obligatorio"),
 
   email: Yup.string()
-    .email("Formato de correo inválido")
-    .required("El correo electrónico es obligatorio"),
+    .email("Formato de correo invÃ¡lido")
+    .required("El correo electrÃ³nico es obligatorio"),
 
   phoneNumber: Yup.string()
-    .required("El teléfono es obligatorio")
-    .matches(/^[0-9]+$/, "El teléfono solo debe contener números")
-    .min(8, "El teléfono debe tener al menos 8 dígitos"),
+    .required("El telÃ©fono es obligatorio")
+    .matches(/^[0-9]+$/, "El telÃ©fono solo debe contener nÃºmeros")
+    .min(8, "El telÃ©fono debe tener al menos 8 dÃ­gitos"),
 
   password: Yup.string()
-    .required("La contraseña es obligatoria")
-    .min(6, "La contraseña debe tener al menos 6 caracteres")
-    .matches(/[A-Z]/, "Debe tener al menos 1 mayúscula")
-    .matches(/[a-z]/, "Debe tener al menos 1 minúscula")
-    .matches(/[0-9]/, "Debe tener al menos 1 número")
-    .matches(/[@!?.*$]/, "Debe tener al menos un carácter especial"),
+    .required("La contraseÃ±a es obligatoria")
+    .min(6, "La contraseÃ±a debe tener al menos 6 caracteres")
+    .matches(/[A-Z]/, "Debe tener al menos 1 mayÃºscula")
+    .matches(/[a-z]/, "Debe tener al menos 1 minÃºscula")
+    .matches(/[0-9]/, "Debe tener al menos 1 nÃºmero")
+    .matches(/[@!?.*$]/, "Debe tener al menos un carÃ¡cter especial"),
 
   confirmPassword: Yup.string()
-    .required("Debes confirmar tu contraseña")
-    .oneOf([Yup.ref("password")], "Las contraseñas no coinciden"),
+    .required("Debes confirmar tu contraseÃ±a")
+    .oneOf([Yup.ref("password")], "Las contraseÃ±as no coinciden"),
 
   role: Yup.string()
     .required("Seleccionar un rol es obligatorio.")
@@ -43,6 +43,6 @@ export const registerValidationSchema = Yup.object({
         "DeliveryOperator",
         "VerificationStaff",
       ],
-      "Rol inválido"
+      "Rol invÃ¡lido"
     ),
 });
