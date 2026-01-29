@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FilePlus } from "lucide-react";
 import toast from "react-hot-toast";
 import RegisterOrderForm from "../../components/Forms/RegisterOrderForm";
 import { RegisterOrderRequest } from "../../types/OrderTypes";
@@ -10,13 +11,13 @@ import { handleFormikError } from "../../../../components/ErrorHandler";
 import { useAuth } from "../../../auth/context/useAuth";
 import { getUserIdFromToken } from "../../../../utils/jwtUtils";
 import BackButton from "../../../../components/BackButton";
-
+import LoadingSpinner from "../../../../components/LoadingSpinner";
 
 const initialValues: RegisterOrderRequest = {
   customerId: "",
   deliveryDate: "",
   deliveryDetail: "",
-  paymentType: undefined, // 👈 inicializado como string del enum
+  paymentType: undefined,
   items: [{ productName: "", productBrand: "", quantity: 1 }],
   deliveryAddressId: null,
   deliveryAddress: {
@@ -37,6 +38,7 @@ const initialValues: RegisterOrderRequest = {
 export default function RegisterOrderPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingCustomers, setIsLoadingCustomers] = useState(true);
   const navigate = useNavigate();
   const { token } = useAuth();
   const userId = token ? getUserIdFromToken(token) : null;
@@ -61,77 +63,80 @@ export default function RegisterOrderPage() {
         setCustomers(mappedCustomers);
       } catch (error) {
         toast.error("Error al cargar clientes");
-        console.error(error);
+      } finally {
+        setIsLoadingCustomers(false);
       }
     };
     fetchCustomers();
   }, []);
 
   const handleRegisterOrder = async (values: RegisterOrderRequest) => {
-  setIsSubmitting(true);
+    setIsSubmitting(true);
 
-  try {
-    const orderToSend = {
-      ...values,
-      createdByUserId: userId!,
-    };
+    try {
+      const orderToSend = {
+        ...values,
+        createdByUserId: userId!,
+      };
 
-    const response = await registerOrder(orderToSend);
+      const response = await registerOrder(orderToSend);
 
-    console.log("Respuesta del backend:", response);
+      if (response.ok === true) {
+        toast.success("Orden registrada con éxito!");
+        navigate("/sales/orders");
+        return;
+      }
 
-    // Si el backend respondió 200-299 ⇒ ÉXITO REAL
-    if (response.ok === true) {
-      toast.success("Orden registrada con éxito!");
-      navigate("/sales/orders");
-      return;
+      throw response;
+    } catch (error: any) {
+      if (error?.status >= 200 && error?.status < 300) {
+        return;
+      }
+
+      handleFormikError({
+        error,
+        customMessages: {
+          400: "Datos inválidos, por favor verificá los campos.",
+          404: "Cliente no encontrado.",
+          500: "Error interno del servidor.",
+        },
+      });
+    } finally {
+      setIsSubmitting(false);
     }
+  };
 
-    // Si vino ok === false ⇒ cayó en reject
-    throw response;
-
-  } catch (error: any) {
-
-    console.log("ERROR CAPTURADO:", error);
-
-    // Si el backend devolvió error pero igual registró la orden
-    if (error?.status >= 200 && error?.status < 300) {
-      // No mostrar error
-      return;
-    }
-
-    // Caso error real
-    handleFormikError({
-      error,
-      customMessages: {
-        400: "Datos inválidos, por favor verificá los campos.",
-        404: "Cliente no encontrado.",
-        500: "Error interno del servidor.",
-      },
-    });
+  if (isLoadingCustomers) {
+    return <LoadingSpinner message="Cargando clientes..." height="h-screen" />;
   }
-
-  finally {
-    setIsSubmitting(false);
-  }
-};
-
-
-
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
-      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+      <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 max-w-7xl">
         <BackButton to="/sales/home" />
-        <h2 className="text-center text-4xl font-bold text-red-600 mb-12">
-          Registrar Orden
-        </h2>
-        <RegisterOrderForm
-          initialValues={initialValues}
-          customers={customers}
-          onSubmit={handleRegisterOrder}
-          isSubmitting={isSubmitting}
-        />
+
+        {/* Header Section */}
+        <div className="text-center mb-10 mt-6">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-red-100 rounded-full mb-4">
+            <FilePlus className="w-7 h-7 text-red-600" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Registrar Nueva Orden
+          </h1>
+          <p className="text-base text-gray-600">
+            Complete los datos para crear una nueva orden
+          </p>
+        </div>
+
+        {/* Form Container */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <RegisterOrderForm
+            initialValues={initialValues}
+            customers={customers}
+            onSubmit={handleRegisterOrder}
+            isSubmitting={isSubmitting}
+          />
+        </div>
       </div>
     </div>
   );

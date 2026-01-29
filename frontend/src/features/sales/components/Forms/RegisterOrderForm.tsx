@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Formik, Form, Field, FieldArray, ErrorMessage } from "formik";
+import { User, Calendar, MapPin, CreditCard, Package, Plus, Trash2, FileText, AlertCircle } from "lucide-react";
 import { registerOrderValidationSchema } from "../../validations/orderSchemas";
 import type { Customer, Address } from "../../types/CustomerTypes";
 import { RegisterOrderRequest } from "../../types/OrderTypes";
 import { getCustomerAddresses, getCustomerPaymentTypes } from "../../services/OrderService";
+import toast from "react-hot-toast";
 
 interface Props {
   customers: Customer[];
@@ -21,16 +23,13 @@ const RegisterOrderForm: React.FC<Props> = ({
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [paymentTypes, setPaymentTypes] = useState<{ id: number; paymentType: string }[]>([]);
 
-
-  // Traductor de tipos de pago
   const getPaymentTypeLabel = (paymentType: string): string => {
     if (!paymentType) return "Tipo de pago desconocido";
 
-    // Normalizamos (por si vienen con mayúsculas mezcladas)
     const normalized = paymentType
-      .replace(/([A-Z])/g, "_$1") // pone guión antes de cada mayúscula
-      .toLowerCase() // todo minúscula
-      .replace(/__+/g, "_"); // limpia posibles dobles guiones bajos
+      .replace(/([A-Z])/g, "_$1")
+      .toLowerCase()
+      .replace(/__+/g, "_");
 
     const labels: Record<string, string> = {
       transfer: "Transferencia",
@@ -45,36 +44,27 @@ const RegisterOrderForm: React.FC<Props> = ({
     return labels[normalized] ?? paymentType;
   };
 
-
   const handleSubmit = (values: RegisterOrderRequest) => {
+    const isManualAddress = !values.deliveryAddressId;
 
-  const isManualAddress = !values.deliveryAddressId;
-
-  const payload: RegisterOrderRequest = {
-    ...values,
-
-    // Si es manual → NO mandamos ID
-    deliveryAddressId: isManualAddress ? null : values.deliveryAddressId,
-
-    // Si es por ID → NO mandamos objeto dirección
-    deliveryAddress: isManualAddress
-  ? {
-      street: values.deliveryAddress?.street ?? "",
-      number: values.deliveryAddress?.number ?? "",
-      apartment: values.deliveryAddress?.apartment,
-      city: values.deliveryAddress?.city ?? "",
-      province: values.deliveryAddress?.province ?? "",
-      country: values.deliveryAddress?.country ?? "",
-      postalCode: values.deliveryAddress?.postalCode,
-      formattedAddress: values.deliveryAddress?.formattedAddress,
-    }
-  : undefined
+    const payload: RegisterOrderRequest = {
+      ...values,
+      deliveryAddressId: isManualAddress ? null : values.deliveryAddressId,
+      deliveryAddress: isManualAddress
+        ? {
+            street: values.deliveryAddress?.street ?? "",
+            number: values.deliveryAddress?.number ?? "",
+            apartment: values.deliveryAddress?.apartment,
+            city: values.deliveryAddress?.city ?? "",
+            province: values.deliveryAddress?.province ?? "",
+            country: values.deliveryAddress?.country ?? "",
+            postalCode: values.deliveryAddress?.postalCode,
+            formattedAddress: values.deliveryAddress?.formattedAddress,
+          }
+        : undefined,
+    };
+    onSubmit(payload);
   };
-
-  console.log("🚀 Payload final enviado al backend:", payload);
-  onSubmit(payload);
-};
-
 
   return (
     <Formik
@@ -82,10 +72,8 @@ const RegisterOrderForm: React.FC<Props> = ({
       validationSchema={registerOrderValidationSchema}
       onSubmit={handleSubmit}
     >
-      {({ values, setFieldValue }) => {
-        console.log("Valores actuales del formulario:", values);
-
-        // Trae direcciones del cliente
+      {({ values, setFieldValue, errors, touched }) => {
+        // Fetch addresses
         useEffect(() => {
           const fetchAddresses = async () => {
             if (values.customerId) {
@@ -94,7 +82,7 @@ const RegisterOrderForm: React.FC<Props> = ({
                 setAddresses(data);
                 setFieldValue("deliveryAddressId", null);
               } catch (error) {
-                console.error("Error al traer direcciones:", error);
+                toast.error("Error al traer direcciones.");
                 setAddresses([]);
               }
             } else {
@@ -104,25 +92,20 @@ const RegisterOrderForm: React.FC<Props> = ({
           fetchAddresses();
         }, [values.customerId, setFieldValue]);
 
-        // Trae tipos de pago del cliente
-        // ✅ Trae y mapea tipos de pago del cliente
+        // Fetch payment types
         useEffect(() => {
           const fetchPaymentTypes = async () => {
             if (values.customerId) {
               try {
                 const data = await getCustomerPaymentTypes(values.customerId);
-  
-
-                // Mapeo correcto
                 const mapped = data.map((pt: any) => ({
                   id: pt.id,
-                  paymentType: pt.paymentType, // el enum string (ej: "Cash")
+                  paymentType: pt.paymentType,
                 }));
-
                 setPaymentTypes(mapped);
-                setFieldValue("paymentType", ""); // antes era paymentTypeId
+                setFieldValue("paymentType", "");
               } catch (error) {
-                console.error("Error al traer tipos de pago:", error);
+                toast.error("Error al traer tipos de pago.");
                 setPaymentTypes([]);
               }
             } else {
@@ -136,11 +119,9 @@ const RegisterOrderForm: React.FC<Props> = ({
           const selectedAddressId = e.target.value;
 
           if (selectedAddressId) {
-            // Dirección existente
             setFieldValue("deliveryAddressId", Number(selectedAddressId));
-
             const selectedAddress = addresses.find(
-              addr => addr.id === Number(selectedAddressId)
+              (addr) => addr.id === Number(selectedAddressId)
             );
 
             if (selectedAddress) {
@@ -154,13 +135,10 @@ const RegisterOrderForm: React.FC<Props> = ({
                 postalCode: selectedAddress.postalCode,
               });
             }
-
           } else {
-            // 🔴 MODO DIRECCIÓN MANUAL
-            setFieldValue("deliveryAddressId", null);   // CLAVE
-
+            setFieldValue("deliveryAddressId", null);
             setFieldValue("deliveryAddress", {
-              id: null,               // 🔴 CLAVE ABSOLUTA
+              id: null,
               street: "",
               number: "",
               apartment: "",
@@ -175,268 +153,438 @@ const RegisterOrderForm: React.FC<Props> = ({
           }
         };
 
-
-
-
         return (
-          <Form className="space-y-6 container mx-auto py-10 px-16 sm:max-w-6xl">
-            {/* Cliente */}
-            <div className="mb-2">
-              <label className="block text-sm font-medium text-gray-900 mb-1">
-                Cliente
-              </label>
-              <Field
-                as="select"
-                name="customerId"
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-              >
-                <option value="">Seleccione un cliente</option>
-                {customers.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.firstName} {c.lastName}
-                  </option>
-                ))}
-              </Field>
-              <ErrorMessage
-                name="customerId"
-                component="div"
-                className="text-red-700 text-sm pt-1"
-              />
-            </div>
+          <Form className="p-8 space-y-8">
+            {/* Customer Selection Section */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-2 pb-4 border-b border-gray-200">
+                <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+                  <User className="w-4 h-4 text-white font-bold" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Cliente</h3>
+              </div>
 
-            {/* Fecha de entrega */}
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-1">
-                Fecha de entrega
-              </label>
-              <Field
-                type="date"
-                name="deliveryDate"
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-              />
-              <ErrorMessage
-                name="deliveryDate"
-                component="div"
-                className="text-red-700 text-sm pt-1"
-              />
-            </div>
-
-            {/* Dirección */}
-            {values.customerId && (
               <div>
-                <label className="block text-sm font-medium text-gray-900 mb-1">
-                  Dirección de entrega
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Seleccione el cliente <span className="text-red-600">*</span>
                 </label>
-                {addresses.length > 0 && (
-                  <Field
-                    as="select"
-                    name="deliveryAddressId"
-                    onChange={handleAddressChange}
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-                  >
-                    <option value="">
-                      Seleccione una dirección o complete manualmente
+                <Field
+                  as="select"
+                  name="customerId"
+                  className={`block w-full rounded-lg border ${
+                    errors.customerId && touched.customerId
+                      ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                      : "border-gray-300 bg-white"
+                  } px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none`}
+                >
+                  <option value="">Seleccione un cliente</option>
+                  {customers.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.firstName} {c.lastName}
                     </option>
-                    {addresses.map((addr: Address) => (
-                      <option key={addr.id} value={addr.id}>
-                        {addr.street} {addr.number}, {addr.city}, {addr.province}
-                      </option>
-                    ))}
-                  </Field>
+                  ))}
+                </Field>
+                <ErrorMessage
+                  name="customerId"
+                  component="div"
+                  className="text-red-600 text-sm mt-2 flex items-center gap-1.5 font-medium bg-red-50 px-3 py-2 rounded-md"
+                >
+                  {(msg) => (
+                    <>
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      <span>{msg}</span>
+                    </>
+                  )}
+                </ErrorMessage>
+              </div>
+            </div>
+
+            {/* Delivery Information Section */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-2 pb-4 border-b border-gray-200">
+                <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+                  <Calendar className="w-4 h-4 text-white font-bold" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Información de Entrega</h3>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Fecha de entrega <span className="text-red-600">*</span>
+                </label>
+                <Field
+                  type="date"
+                  name="deliveryDate"
+                  className={`block w-full rounded-lg border ${
+                    errors.deliveryDate && touched.deliveryDate
+                      ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                      : "border-gray-300 bg-white"
+                  } px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none`}
+                />
+                <ErrorMessage
+                  name="deliveryDate"
+                  component="div"
+                  className="text-red-600 text-sm mt-2 flex items-center gap-1.5 font-medium bg-red-50 px-3 py-2 rounded-md"
+                >
+                  {(msg) => (
+                    <>
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      <span>{msg}</span>
+                    </>
+                  )}
+                </ErrorMessage>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Detalles de entrega
+                </label>
+                <Field
+                  as="textarea"
+                  name="deliveryDetail"
+                  rows={3}
+                  placeholder="Ej. Dejar en portería, tocar timbre 3 veces..."
+                  className={`block w-full rounded-lg border ${
+                    errors.deliveryDetail && touched.deliveryDetail
+                      ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                      : "border-gray-300 bg-white"
+                  } px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors resize-none focus:outline-none`}
+                />
+                <ErrorMessage
+                  name="deliveryDetail"
+                  component="div"
+                  className="text-red-600 text-sm mt-2 flex items-center gap-1.5 font-medium bg-red-50 px-3 py-2 rounded-md"
+                >
+                  {(msg) => (
+                    <>
+                      <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                      <span>{msg}</span>
+                    </>
+                  )}
+                </ErrorMessage>
+              </div>
+            </div>
+
+            {/* Address Section */}
+            {values.customerId && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-2 pb-4 border-b border-gray-200">
+                  <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+                    <MapPin className="w-4 h-4 text-white font-bold" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">Dirección de Entrega</h3>
+                </div>
+
+                {addresses.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Seleccione una dirección guardada
+                    </label>
+                    <Field
+                      as="select"
+                      name="deliveryAddressId"
+                      onChange={handleAddressChange}
+                      className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none"
+                    >
+                      <option value="">Seleccione una dirección o complete manualmente</option>
+                      {addresses.map((addr: Address) => (
+                        <option key={addr.id} value={addr.id}>
+                          {addr.street} {addr.number}, {addr.city}, {addr.province}
+                        </option>
+                      ))}
+                    </Field>
+                  </div>
                 )}
-                {/* Campos de dirección manual */}
+
                 {!values.deliveryAddressId && (
-                  <div className="grid grid-cols-2 gap-3 mt-3">
-                    <Field
-                      name="deliveryAddress.street"
-                      placeholder="Calle"
-                      className="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-                    />
-                    <Field
-                      name="deliveryAddress.number"
-                      placeholder="Número"
-                      className="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-                    />
-                    <Field
-                      name="deliveryAddress.apartment"
-                      placeholder="Departamento (opcional)"
-                      className="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200 col-span-2"
-                    />
-                    <Field
-                      name="deliveryAddress.city"
-                      placeholder="Ciudad"
-                      className="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-                    />
-                    <Field
-                      name="deliveryAddress.province"
-                      placeholder="Provincia"
-                      className="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-                    />
-                    <Field
-                      name="deliveryAddress.country"
-                      placeholder="País"
-                      className="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-                    />
-                    <Field
-                      name="deliveryAddress.postalCode"
-                      placeholder="Código Postal"
-                      className="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Calle <span className="text-red-600">*</span>
+                      </label>
+                      <Field
+                        name="deliveryAddress.street"
+                        placeholder="Ingrese la calle"
+                        className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Número <span className="text-red-600">*</span>
+                      </label>
+                      <Field
+                        name="deliveryAddress.number"
+                        placeholder="Número"
+                        className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Departamento (opcional)
+                      </label>
+                      <Field
+                        name="deliveryAddress.apartment"
+                        placeholder="Piso/Dpto"
+                        className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Ciudad <span className="text-red-600">*</span>
+                      </label>
+                      <Field
+                        name="deliveryAddress.city"
+                        placeholder="Ciudad"
+                        className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Provincia <span className="text-red-600">*</span>
+                      </label>
+                      <Field
+                        name="deliveryAddress.province"
+                        placeholder="Provincia"
+                        className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        País <span className="text-red-600">*</span>
+                      </label>
+                      <Field
+                        name="deliveryAddress.country"
+                        placeholder="País"
+                        className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Código Postal <span className="text-red-600">*</span>
+                      </label>
+                      <Field
+                        name="deliveryAddress.postalCode"
+                        placeholder="CP"
+                        className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none"
+                      />
+                    </div>
                   </div>
                 )}
               </div>
             )}
 
-            {/* Tipo de Pago */}
+            {/* Payment Type Section */}
             {values.customerId && (
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-1">
-                  Tipo de Pago
-                </label>
-                {paymentTypes.length > 0 ? (
-                  <Field
-                    as="select"
-                    name="paymentType"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-                  >
-                    <option value="">Seleccione un tipo de pago</option>
-                    {paymentTypes.map((p) => (
-                      <option key={p.id} value={p.paymentType}>
-                        {getPaymentTypeLabel(p.paymentType)}
-                      </option>
-                    ))}
-                  </Field>
-                ) : (
-                  <p className="text-gray-600 italic">
-                    No hay tipos de pago disponibles para este cliente.
-                  </p>
-                )}
-                <ErrorMessage
-                  name="paymentType"  // <-- Cambiar de "paymentTypeId" a "paymentType"
-                  component="div"
-                  className="text-red-700 text-sm pt-1"
-                />
+              <div className="space-y-6">
+                <div className="flex items-center gap-2 pb-4 border-b border-gray-200">
+                  <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+                    <CreditCard className="w-4 h-4 text-white font-bold" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900">Tipo de Pago</h3>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Seleccione el tipo de pago <span className="text-red-600">*</span>
+                  </label>
+                  {paymentTypes.length > 0 ? (
+                    <>
+                      <Field
+                        as="select"
+                        name="paymentType"
+                        className={`block w-full rounded-lg border ${
+                          errors.paymentType && touched.paymentType
+                            ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                            : "border-gray-300 bg-white"
+                        } px-4 py-2.5 text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none`}
+                      >
+                        <option value="">Seleccione un tipo de pago</option>
+                        {paymentTypes.map((p) => (
+                          <option key={p.id} value={p.paymentType}>
+                            {getPaymentTypeLabel(p.paymentType)}
+                          </option>
+                        ))}
+                      </Field>
+                      <ErrorMessage
+                        name="paymentType"
+                        component="div"
+                        className="text-red-600 text-sm mt-2 flex items-center gap-1.5 font-medium bg-red-50 px-3 py-2 rounded-md"
+                      >
+                        {(msg) => (
+                          <>
+                            <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                            <span>{msg}</span>
+                          </>
+                        )}
+                      </ErrorMessage>
+                    </>
+                  ) : (
+                    <p className="text-gray-500 italic text-sm bg-gray-50 rounded-lg px-4 py-3 border border-gray-200">
+                      No hay tipos de pago disponibles para este cliente.
+                    </p>
+                  )}
+                </div>
               </div>
             )}
 
-
-            {/* Items */}
-            <FieldArray name="items">
-              {({ push, remove }) => (
-                <div className="space-y-4 pt-2">
-                  <table className="table-fixed w-full border-separate">
-                    <thead>
-                      <tr>
-                        <th className="w-1/3 text-left px-4 py-2">Producto</th>
-                        <th className="w-1/3 text-left px-4 py-2">Marca</th>
-                        <th className="w-1/3 text-left px-4 py-2">Cantidad</th>
-                        <th className="w-1/8 text-left px-4 py-2"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {values.items.map((_, index) => (
-                        <tr key={index} className="align-top">
-                          <td className="pr-2 px-4 py-2">
-                            <Field
-                              name={`items.${index}.productName`}
-                              placeholder="Producto"
-                              className="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-                            />
-                            <ErrorMessage
-                              name={`items.${index}.productName`}
-                              component="div"
-                              className="text-red-700 text-sm pt-1"
-                            />
-                          </td>
-                          <td className="pr-2 px-4 py-2">
-                            <Field
-                              name={`items.${index}.productBrand`}
-                              placeholder="Marca"
-                              className="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-                            />
-                            <ErrorMessage
-                              name={`items.${index}.productBrand`}
-                              component="div"
-                              className="text-red-700 text-sm pt-1"
-                            />
-                          </td>
-                          <td className="pr-2 px-4 py-2">
-                            <Field
-                              name={`items.${index}.quantity`}
-                              type="number"
-                              min={1}
-                              placeholder="Cantidad"
-                              className="block w-full rounded-md bg-white px-3 py-1.5 text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-                            />
-                            <p className="text-xs text-gray-500 mt-1">Solo números, mínimo 1.</p>
-                            <ErrorMessage
-                              name={`items.${index}.quantity`}
-                              component="div"
-                              className="text-red-700 text-sm pt-1"
-                            />
-                          </td>
-                          <td className="p-2 py-2 text-center">
-                            <button
-                              type="button"
-                              onClick={() => remove(index)}
-                              disabled={values.items.length === 1}
-                              className="block w-full rounded-md text-red-700 font-semibold bg-white px-3 py-1.5 hover:bg-red-600 hover:text-white transition duration-150 focus:outline-none"
-                            >
-                              Quitar
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                      <tr>
-                        <td colSpan={4} className="p-2 text-left">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              push({
-                                productName: "",
-                                productBrand: "",
-                                quantity: 1,
-                              })
-                            }
-                            className="text-sm font-semibold text-red-700 hover:text-red-600 focus:outline-none"
-                          >
-                            + Agregar Producto
-                          </button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+            {/* Products Section */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-2 pb-4 border-b border-gray-200">
+                <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+                  <Package className="w-4 h-4 text-white font-bold" />
                 </div>
-              )}
-            </FieldArray>
+                <h3 className="text-lg font-semibold text-gray-900">Productos</h3>
+              </div>
 
-            {/* Detalle adicional */}
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-1">
-                Detalles de entrega
-              </label>
-              <Field
-                as="textarea"
-                name="deliveryDetail"
-                rows={3}
-                placeholder="Ej. Dejar en portería..."
-                className="block w-full rounded-md bg-white px-3 py-2 text-base text-gray-900 outline-1 outline-gray-300 focus:outline-2 focus:outline-red-200"
-              />
-              <ErrorMessage
-                name="deliveryDetail"
-                component="div"
-                className="text-red-700 text-sm pt-1"
-              />
+              <FieldArray name="items">
+                {({ push, remove }) => (
+                  <div className="space-y-4">
+                    {values.items.map((_, index) => {
+                      const itemErrors = errors.items?.[index] as any;
+                      const itemTouched = touched.items?.[index] as any;
+
+                      return (
+                        <div
+                          key={index}
+                          className="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:border-gray-300 transition-colors"
+                        >
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                                Producto <span className="text-red-600">*</span>
+                              </label>
+                              <Field
+                                name={`items.${index}.productName`}
+                                placeholder="Nombre del producto"
+                                className={`block w-full rounded-lg border ${
+                                  itemErrors?.productName && itemTouched?.productName
+                                    ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                                    : "border-gray-300 bg-white"
+                                } px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none`}
+                              />
+                              <ErrorMessage
+                                name={`items.${index}.productName`}
+                                component="div"
+                                className="text-red-600 text-xs mt-1.5 flex items-center gap-1 font-medium"
+                              >
+                                {(msg) => (
+                                  <>
+                                    <AlertCircle className="w-3 h-3 flex-shrink-0" />
+                                    <span>{msg}</span>
+                                  </>
+                                )}
+                              </ErrorMessage>
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                                Marca <span className="text-red-600">*</span>
+                              </label>
+                              <Field
+                                name={`items.${index}.productBrand`}
+                                placeholder="Marca del producto"
+                                className={`block w-full rounded-lg border ${
+                                  itemErrors?.productBrand && itemTouched?.productBrand
+                                    ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                                    : "border-gray-300 bg-white"
+                                } px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none`}
+                              />
+                              <ErrorMessage
+                                name={`items.${index}.productBrand`}
+                                component="div"
+                                className="text-red-600 text-xs mt-1.5 flex items-center gap-1 font-medium"
+                              >
+                                {(msg) => (
+                                  <>
+                                    <AlertCircle className="w-3 h-3 flex-shrink-0" />
+                                    <span>{msg}</span>
+                                  </>
+                                )}
+                              </ErrorMessage>
+                            </div>
+
+                            <div>
+                              <div className="flex items-center justify-between mb-1.5">
+                                <label className="block text-xs font-medium text-gray-700">
+                                  Cantidad <span className="text-red-600">*</span>
+                                </label>
+                                {values.items.length > 1 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => remove(index)}
+                                    className="inline-flex items-center focus:outline-none gap-1 text-xs font-medium text-red-600 hover:text-red-700 transition-colors"
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                    Quitar
+                                  </button>
+                                )}
+                              </div>
+                              <Field
+                                name={`items.${index}.quantity`}
+                                type="number"
+                                min={1}
+                                placeholder="Cantidad"
+                                className={`block w-full rounded-lg border ${
+                                  itemErrors?.quantity && itemTouched?.quantity
+                                    ? "border-red-500 bg-red-50 ring-2 ring-red-200"
+                                    : "border-gray-300 bg-white"
+                                } px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-colors focus:outline-none`}
+                              />
+                              <ErrorMessage
+                                name={`items.${index}.quantity`}
+                                component="div"
+                                className="text-red-600 text-xs mt-1.5 flex items-center gap-1 font-medium"
+                              >
+                                {(msg) => (
+                                  <>
+                                    <AlertCircle className="w-3 h-3 flex-shrink-0" />
+                                    <span>{msg}</span>
+                                  </>
+                                )}
+                              </ErrorMessage>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    <button
+                      type="button"
+                      onClick={() => push({ productName: "", productBrand: "", quantity: 1 })}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors focus:outline-none"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Agregar Producto
+                    </button>
+                  </div>
+                )}
+              </FieldArray>
             </div>
 
-            {/* Botón submit */}
-            <div className="mt-10">
+            {/* Submit Button */}
+            <div className="pt-6 border-t border-gray-200">
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex w-full justify-center items-center rounded-md bg-red-700 px-3 py-1.5 text-lg font-semibold text-white shadow-sm hover:bg-red-600 transition duration-150 disabled:opacity-50 focus:outline-none"
+                className="w-full inline-flex justify-center items-center gap-2 rounded-lg bg-red-500 px-6 py-3.5 text-base font-semibold text-white shadow-lg hover:bg-red-600 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
               >
-                {isSubmitting ? "Registrando..." : "Registrar Pedido"}
+                {isSubmitting ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Registrando orden...
+                  </>
+                ) : (
+                  <>
+                    <FileText className="w-5 h-5" />
+                    Registrar Pedido
+                  </>
+                )}
               </button>
             </div>
           </Form>

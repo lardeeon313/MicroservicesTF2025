@@ -54,8 +54,8 @@ export default function CustomerTable({
                 <td className="px-4 py-2">{c.phoneNumber}</td>
                 <td className="px-4 py-2">
                   {c.addresses && c.addresses.length > 0 ? (
-                    c.addresses.map(a => (
-                      <div key={a.id}>
+                    c.addresses.map((a, index) => (
+                      <div key={`${c.id}-${a.street}-${a.number}-${index}`}>
                         {a.street} {a.number}{a.apartment ? ', ' + a.apartment : ''}, {a.city}, {a.province}, {a.country}
                       </div>
                     ))

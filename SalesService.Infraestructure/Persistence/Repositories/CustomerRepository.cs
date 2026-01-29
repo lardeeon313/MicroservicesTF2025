@@ -46,6 +46,7 @@ namespace SalesService.Infraestructure.Persistence.Repositories
         {
             return await _context.Customers
                 .Include(o => o.Addresses)
+                .Include(o => o.PaymentTypes)                    
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == customerId);
         }
@@ -58,12 +59,15 @@ namespace SalesService.Infraestructure.Persistence.Repositories
 
         public async Task<(List<Customer> Customers, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
-            var query = _context.Customers.OrderBy(c => c.FirstName);
+            var query = _context.Customers
+                        .AsSplitQuery() 
+                        .Include(c => c.Addresses)
+                        .Include(c => c.PaymentTypes)
+                        .OrderBy(c => c.FirstName);
 
             var totalCount = await query.CountAsync(cancellationToken);
 
             var customers = await query
-                .Include(o => o.Addresses)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync(cancellationToken);

@@ -32,6 +32,7 @@ namespace SalesService.Application.Queries.Customers.GetPagedCustomers
                     PhoneNumber = c.PhoneNumber,
                     Addresses = c.Addresses.Select(a => new AddressDto
                     {
+                        Id = a.Id,
                         Street = a.Street,
                         Number = a.Number,
                         Apartment = a.Apartment,
