@@ -73,7 +73,7 @@ const ListOfConfirmedOrdersPage = () => {
           letterSpacing: 0.5, 
           textAlign: 'center'
         }}>
-          Pedidos para poder confirmar  
+          Pedidos para poder confirmar
         </Text>
 
         { orders.length === 0 ? (

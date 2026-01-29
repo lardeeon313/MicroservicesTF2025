@@ -72,14 +72,6 @@ const MissingAndPreparationOrdersPage = () => {
     return <ActivityIndicator size="large" color="#3B82F6" style={{ marginTop: 40 }} />;
   }
 
-  if (!orders.length) {
-    return (
-      <View style={{ padding: 20 }}>
-        <Text>No se encontraron pedidos con faltantes o en preparación.</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={{ flex: 1 }}>
       <NavbarOperator
@@ -97,17 +89,70 @@ const MissingAndPreparationOrdersPage = () => {
         <Text style={{ fontSize: 22,fontWeight: '600',marginBottom: 20,color: '#333', letterSpacing: 0.5, textAlign: 'center'}}>
           Pedidos con faltantes
         </Text>
-        {orders.map((order) => (
-          <ListOfMissingOrders
-            key={order.depotOrderId}
-            order={order}
-            missings={order.missings}
-            onVerDetalle={() => goToDetalle(order)}
-            onEmitirFaltante={() => goToEmitirFaltante(order)}
-            onMarcarArmado={() => marcarComoPreparado(order)}
-            onSeccionNotificaciones={() => goToNotificaciones(order)}
-          />
-        ))}
+        {orders.length === 0 ? (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: 24,
+              paddingVertical: 60,
+            }}
+          >
+            {/* Ícono */}
+            <View
+              style={{
+                width: 80,
+                height: 80,
+                borderRadius: 40,
+                backgroundColor: '#fee2e2',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginBottom: 20,
+              }}
+            >
+              <Text style={{ fontSize: 48 }}>🚫</Text>
+            </View>
+
+            {/* Título */}
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: '700',
+                color: '#111827',
+                textAlign: 'center',
+                marginBottom: 8,
+              }}
+            >
+              No hay pedidos con faltantes.
+            </Text>
+
+            {/* Descripción */}
+            <Text
+              style={{
+                fontSize: 14,
+                color: '#6b7280',
+                textAlign: 'center',
+                lineHeight: 20,
+              }}
+            >
+              Aún no se encontraron pedidos con faltantes o en preparacion,{'\n'}
+              vuelve a intentarlo más tarde.
+            </Text>
+          </View>
+        ) : (
+          orders.map((order) => (
+            <ListOfMissingOrders
+              key={order.depotOrderId}
+              order={order}
+              missings={order.missings}
+              onVerDetalle={() => goToDetalle(order)}
+              onEmitirFaltante={() => goToEmitirFaltante(order)}
+              onMarcarArmado={() => marcarComoPreparado(order)}
+              onSeccionNotificaciones={() => goToNotificaciones(order)}
+            />
+          ))
+        )}
       </ScrollView>
       <Footer/>
     </View>
