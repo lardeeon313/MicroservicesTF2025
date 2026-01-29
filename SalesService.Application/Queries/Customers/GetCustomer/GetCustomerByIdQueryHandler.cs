@@ -40,7 +40,7 @@ namespace SalesService.Application.Queries.Customers.GetCustomer
                     Country = a.Country,
                     PostalCode = a.PostalCode,
                     Latitude = a.Latitude,
-                    Longitude = a.Longitude,
+                    Longitude = a.Longitude,    
                     FormattedAddress = a.FormattedAddress,
                 }).ToList(),
                 PaymentTypes = customer.PaymentTypes
