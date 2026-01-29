@@ -23,13 +23,13 @@ export enum OrderStatus {
 }
 
 export enum PaymentType {
-  Transfer = "Transfer",
-  Credit_Card = "Credit_Card",
-  Debit_Card = "Debit_Card",
-  Cash = "Cash",
-  Current_Account = "Current_Account",
-  Check = "Check",
-  Promissory_Note = "Promissory_Note",
+  Transfer = "transfer",
+  Credit_Card = "credit_Card",
+  Debit_Card = "debit_Card",
+  Cash = "cash",
+  Current_Account = "current_Account",
+  Check = "check",
+  Promissory_Note = "promissory_Note",
 }
 
 

@@ -74,7 +74,7 @@ export interface CustomerResponse {
   email: string;
   phoneNumber: string;
   addresses: Address[];
-  paymentTypes : CustomerPaymenType[];
+  paymentTypes: PaymentType[];
   status: CustomerStatus;
 }
 
@@ -96,7 +96,7 @@ export interface UpdateCustomerRequest {
   email?: string;
   phoneNumber?: string;
   addresses: AddressRequest[];
-  paymentTypes : PaymentType[];
+  paymentTypes: PaymentType[];
 }
 
 // Get: CustomerPaginated 

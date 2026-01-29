@@ -91,11 +91,6 @@ namespace SalesService.Infraestructure
                 .HasForeignKey(a => a.CustomerId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<CustomerPaymentType>()
-                .HasOne(cpt => cpt.Customer)
-                .WithMany(c => c.PaymentTypes)
-                .HasForeignKey(cpt => cpt.CustomerId);
-
             modelBuilder.Entity<Order>()
                 .HasOne(os => os.Satisfaction)
                 .WithOne()
@@ -105,6 +100,21 @@ namespace SalesService.Infraestructure
             modelBuilder.Entity<OrderSatisfactionToken>()
                 .HasIndex(x => x.Token)
                 .IsUnique();
+
+            modelBuilder.Entity<CustomerPaymentType>(entity =>
+            {
+                entity.HasKey(cpt => cpt.Id);
+
+                entity.HasOne(cpt => cpt.Customer)
+                    .WithMany(c => c.PaymentTypes)
+                    .HasForeignKey(cpt => cpt.CustomerId)
+                    .IsRequired();
+
+                entity.Property(cpt => cpt.PaymentType)
+                    .HasConversion<int>()
+                    .IsRequired();
+            });
+
         }
     }
 }
