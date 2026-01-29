@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { View, StyleSheet, Platform } from "react-native";
 import MapView, { Marker, Region } from "react-native-maps";
-import { LogisticOrder } from "../../types/DeliveryOrderTypeDto";
+import { LogisticOrder } from "../../../types/DeliveryOrderTypeDto";
 
 type Props = {
   orders: LogisticOrder[];
@@ -19,15 +19,11 @@ export default function MapWithDirections({ orders }: Props) {
     }
 
     const avgLat =
-      orders.reduce(
-        (sum, o) => sum + (o.deliveryAddress.latitude || 0),
-        0
-      ) / orders.length;
+      orders.reduce((sum, o) => sum + (o.deliveryAddress.latitude || 0), 0) /
+      orders.length;
     const avgLng =
-      orders.reduce(
-        (sum, o) => sum + (o.deliveryAddress.longitude || 0),
-        0
-      ) / orders.length;
+      orders.reduce((sum, o) => sum + (o.deliveryAddress.longitude || 0), 0) /
+      orders.length;
 
     return {
       latitude: avgLat,
@@ -39,19 +35,10 @@ export default function MapWithDirections({ orders }: Props) {
 
   return (
     <View style={styles.wrapper}>
-      <View style={styles.backgroundFix} />
       <MapView
-        key={Platform.OS === "android" ? Math.random().toString() : "map"} // fuerza rerender limpio
+        key={Platform.OS === "android" ? Math.random().toString() : "map"}
         style={styles.map}
         initialRegion={initialRegion}
-        mapType="standard"
-        showsBuildings={false}
-        moveOnMarkerPress={false}
-        toolbarEnabled={false}
-        pitchEnabled
-        rotateEnabled
-        zoomEnabled
-        scrollEnabled
       >
         {orders.map((order) => {
           const { deliveryAddress, customer } = order;
@@ -65,7 +52,7 @@ export default function MapWithDirections({ orders }: Props) {
                 longitude: deliveryAddress.longitude,
               }}
               title={`${customer.firstName} ${customer.lastName}`}
-              description={`${deliveryAddress.street} ${deliveryAddress.number}, ${deliveryAddress.city}`}
+              description={`${deliveryAddress.street} ${deliveryAddress.number}`}
             />
           );
         })}
@@ -77,14 +64,8 @@ export default function MapWithDirections({ orders }: Props) {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    position: "relative",
     borderRadius: 16,
     overflow: "hidden",
-  },
-  backgroundFix: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#fff", // evita que se vea el mapa anterior
-    zIndex: -1,
   },
   map: {
     ...StyleSheet.absoluteFillObject,
