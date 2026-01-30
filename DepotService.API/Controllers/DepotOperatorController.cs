@@ -18,6 +18,8 @@ using DepotService.Domain.IRepositories;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+
 
 namespace DepotService.API.Controllers
 {
@@ -369,12 +371,16 @@ namespace DepotService.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAssignedPendingOrders()
         {
-            var orders = await _getAssignedPendingOrdersQueryHandler.GetAssignedPendingOrders();
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-            if (orders == null)
-            {
-                return NotFound("No pending orders found for the operator.");
-            }
+            if (userIdClaim == null)
+                return Unauthorized("UserId not found in token");
+
+            var operatorId = Guid.Parse(userIdClaim.Value);
+
+            var orders = await _getAssignedPendingOrdersQueryHandler
+                .GetAssignedPendingOrders(operatorId);
+
             return Ok(orders);
         }
 
