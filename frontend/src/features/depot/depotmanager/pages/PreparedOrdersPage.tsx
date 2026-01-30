@@ -6,6 +6,7 @@ import LoadingSpinner from '../../../../components/LoadingSpinner';
 import BackButton from '../../../../components/BackButton';
 import Pagination from '../components/Pagination';
 import OrderTabs from '../../../../components/OrderTabs';
+import { BadgeCheck, CalendarDays, CircleDollarSign, MapPin, Package, User } from 'lucide-react';
 
 function PreparedOrdersPage() {
   const {
@@ -168,117 +169,264 @@ function PreparedOrdersPage() {
           {selectedOrder && (
             <>
               <div className="fixed inset-0 backdrop-blur-sm bg-black/30 z-40" />
-              <div className="fixed inset-0 flex items-center justify-center z-50">
-                <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-red-600">
-                      Detalles de la Orden {activeTab === OrderStatus.Prepared ? 'Preparada' : activeTab === OrderStatus.Invoiced ? 'Facturada' : 'Enviada a Facturar'}
-                    </h2>
+              <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+                  
+                  {/* Header del modal */}
+                  <div className={`bg-gradient-to-r px-8 py-6 flex justify-between items-center ${
+                    activeTab === OrderStatus.Prepared
+                      ? 'from-green-600 to-green-700'
+                      : activeTab === OrderStatus.Invoiced
+                      ? 'from-emerald-600 to-emerald-700'
+                      : 'from-purple-600 to-purple-700'
+                  }`}>
+                    <div className="flex items-center gap-3">
+                      <Package className="w-8 h-8 text-white" />
+                      <div>
+                        <h2 className="text-2xl font-bold text-white">
+                          Detalles de la Orden {activeTab === OrderStatus.Prepared ? 'Preparada' : activeTab === OrderStatus.Invoiced ? 'Facturada' : 'Enviada a Facturar'}
+                        </h2>
+                        <p className={`text-sm ${
+                          activeTab === OrderStatus.Prepared
+                            ? 'text-green-100'
+                            : activeTab === OrderStatus.Invoiced
+                            ? 'text-emerald-100'
+                            : 'text-purple-100'
+                        }`}>
+                          Orden V-{(selectedOrder as any).depotOrderId || selectedOrder.depotOrderId}
+                        </p>
+                      </div>
+                    </div>
                     <button
                       onClick={() => setSelectedOrder(null)}
-                      className="text-gray-500 hover:text-gray-700 text-2xl"
+                      className="text-white hover:bg-white/20 rounded-full p-2 transition-colors"
                     >
-                      ✕
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
                     </button>
                   </div>
-                  
-                  <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-8 space-y-10">
-                    {/* Datos del cliente */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                  {/* Contenido scrolleable */}
+                  <div className="overflow-y-auto flex-1 px-8 py-6">
+                    <div className="space-y-8">
+                      
+                      {/* Sección: Información General */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-600 mb-1">Cliente:</label>
-                        <p className="rounded-md bg-gray-50 px-3 py-2 text-gray-900 shadow-sm">{selectedOrder.customerName}</p>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-600 mb-1">Fecha Pedido:</label>
-                        <p className="rounded-md bg-gray-50 px-3 py-2 text-gray-900 shadow-sm">
-                          {selectedOrder.orderDate ? new Date(selectedOrder.orderDate).toLocaleDateString("es-AR") : 'Sin fecha'}
-                        </p>
-                      </div>
-                      <div className='md:col-span-2'>
-                        <label className="block text-sm font-medium text-gray-600 mb-1">Detalles de entrega:</label>
-                        <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">
-                          {selectedOrder.deliveryDetail || "No especificado"}
-                        </p>
+                        <div className="flex items-center gap-2 mb-4">
+                          <User className={`w-5 h-5 ${
+                            activeTab === OrderStatus.Prepared
+                              ? 'text-green-600'
+                              : activeTab === OrderStatus.Invoiced
+                              ? 'text-emerald-600'
+                              : 'text-purple-600'
+                          }`} />
+                          <h3 className="text-lg font-semibold text-gray-800">Información General</h3>
+                        </div>
+                        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                                Cliente
+                              </label>
+                              <p className="text-gray-900 font-medium text-base">
+                                {selectedOrder.customerName}
+                              </p>
+                            </div>
+                            <div>
+                              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                                Fecha de Pedido
+                              </label>
+                              <div className="flex items-center gap-2">
+                                <CalendarDays className="w-4 h-4 text-gray-400" />
+                                <p className="text-gray-900 font-medium text-base">
+                                  {selectedOrder.orderDate 
+                                    ? new Date(selectedOrder.orderDate).toLocaleDateString("es-AR", {
+                                        weekday: 'long',
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                      })
+                                    : 'Sin fecha'}
+                                </p>
+                              </div>
+                            </div>
+                            <div>
+                              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                                Estado Actual
+                              </label>
+                              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold shadow-sm border-2 ${
+                                activeTab === OrderStatus.Prepared
+                                  ? 'bg-green-100 text-green-800 border-green-300'
+                                  : activeTab === OrderStatus.Invoiced
+                                  ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                                  : 'bg-purple-100 text-purple-800 border-purple-300'
+                              }`}>
+                                <BadgeCheck className="w-4 h-4" />
+                                <span>
+                                  {activeTab === OrderStatus.Prepared
+                                    ? 'Preparada'
+                                    : activeTab === OrderStatus.Invoiced
+                                    ? 'Facturada'
+                                    : 'Enviada a Facturar'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
-                      <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-600 mb-1">Dirección:</label>
-                        <p className="rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-gray-900 shadow-sm">
-                          {selectedOrder.address
-                            ? `${selectedOrder.address.street} , ${selectedOrder.address.number},${selectedOrder.address.apartment}, ${selectedOrder.address.city}, ${selectedOrder.address.province}`
-                            : 'No especificado'}
-                        </p>
-                      </div>
-
+                      {/* Sección: Detalles de Entrega */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-600 mb-4">Estado:</label>
-                        <span className={`rounded-lg border border-gray-300 px-3 py-2.5 font-semibold text-gray-900 shadow-sm ${
-                          activeTab === OrderStatus.Prepared
-                            ? 'bg-green-100'
-                            : activeTab === OrderStatus.Invoiced
-                            ? 'bg-green-100'
-                            : 'bg-purple-100'
-                        }`}>
-                          {activeTab === OrderStatus.Prepared
-                            ? 'Preparada'
-                            : activeTab === OrderStatus.Invoiced
-                            ? 'Facturada'
-                            : 'Enviada a Facturar'}
-                        </span>
+                        <div className="flex items-center gap-2 mb-4">
+                          <MapPin className={`w-5 h-5 ${
+                            activeTab === OrderStatus.Prepared
+                              ? 'text-green-600'
+                              : activeTab === OrderStatus.Invoiced
+                              ? 'text-emerald-600'
+                              : 'text-purple-600'
+                          }`} />
+                          <h3 className="text-lg font-semibold text-gray-800">Detalles de Entrega</h3>
+                        </div>
+                        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                          <div className="space-y-4">
+                            <div>
+                              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                                Dirección de Entrega
+                              </label>
+                              <p className="text-gray-900 text-base leading-relaxed">
+                                {selectedOrder.address
+                                  ? `${selectedOrder.address.street} ${selectedOrder.address.number}${
+                                      selectedOrder.address.apartment ? `, ${selectedOrder.address.apartment}` : ''
+                                    }, ${selectedOrder.address.city}, ${selectedOrder.address.province}`
+                                  : 'No especificado'}
+                              </p>
+                            </div>
+                            <div>
+                              <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                                Instrucciones Especiales
+                              </label>
+                              <p className="text-gray-900 text-base leading-relaxed">
+                                {selectedOrder.deliveryDetail || "No especificado"}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Tabla de productos */}
-                    <div className="overflow-x-auto rounded-lg shadow border border-gray-200">
-                      <table className="w-full text-sm text-left border-collapse">
-                        <thead className="bg-gray-100 text-gray-700 uppercase text-xs tracking-wider">
-                          <tr>
-                            <th className="px-4 py-3">Producto</th>
-                            <th className="px-4 py-3">Marca</th>
-                            <th className="px-4 py-3">Cantidad</th>
-                            {activeTab === OrderStatus.Invoiced && (
-                              <>
-                                <th className="px-4 py-3">Precio Unitario</th>
-                                <th className="px-4 py-3">Subtotal</th>
-                              </>
-                            )}
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                          {selectedOrder.items.map((item: any, index: number) => (
-                            <tr key={index} className="hover:bg-gray-50 transition">
-                              <td className="px-4 py-3">{item.productName}</td>
-                              <td className="px-4 py-3">{item.productBrand}</td>
-                              <td className="px-4 py-3">{item.quantity}</td>
-                              {activeTab === OrderStatus.Invoiced && (
-                                <>
-                                  <td className="px-4 py-3 font-medium text-gray-800">
-                                    ${item.unitPrice || 0}
+                      {/* Sección: Productos */}
+                      <div>
+                        <div className="flex items-center gap-2 mb-4">
+                          <Package className={`w-5 h-5 ${
+                            activeTab === OrderStatus.Prepared
+                              ? 'text-green-600'
+                              : activeTab === OrderStatus.Invoiced
+                              ? 'text-emerald-600'
+                              : 'text-purple-600'
+                          }`} />
+                          <h3 className="text-lg font-semibold text-gray-800">Productos</h3>
+                        </div>
+                        <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+                          <table className="w-full text-sm">
+                            <thead className="bg-gray-100">
+                              <tr>
+                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                                  Producto
+                                </th>
+                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                                  Marca
+                                </th>
+                                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                                  Cantidad
+                                </th>
+                                {activeTab === OrderStatus.Invoiced && (
+                                  <>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                                      Precio Unitario
+                                    </th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                                      Subtotal
+                                    </th>
+                                  </>
+                                )}
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200 bg-white">
+                              {selectedOrder.items.map((item: any, index: number) => (
+                                <tr key={index} className="hover:bg-gray-50 transition-colors">
+                                  <td className="px-6 py-4 text-gray-900 font-medium">
+                                    {item.productName}
                                   </td>
-                                  <td className="px-4 py-3 font-semibold text-gray-900">
-                                    ${((item.unitPrice || 0) * item.quantity).toFixed(2)}
+                                  <td className="px-6 py-4 text-gray-700">
+                                    {item.productBrand}
                                   </td>
-                                </>
-                              )}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                                  <td className="px-6 py-4 text-gray-700">
+                                    <span className={`inline-flex items-center px-3 py-1 rounded-full font-semibold text-sm ${
+                                      activeTab === OrderStatus.Prepared
+                                        ? 'bg-green-100 text-green-800'
+                                        : activeTab === OrderStatus.Invoiced
+                                        ? 'bg-emerald-100 text-emerald-800'
+                                        : 'bg-purple-100 text-purple-800'
+                                    }`}>
+                                      {item.quantity}
+                                    </span>
+                                  </td>
+                                  {activeTab === OrderStatus.Invoiced && (
+                                    <>
+                                      <td className="px-6 py-4 font-medium text-gray-800">
+                                        ${(item.unitPrice || 0).toFixed(2)}
+                                      </td>
+                                      <td className="px-6 py-4 font-semibold text-gray-900">
+                                        ${((item.unitPrice || 0) * item.quantity).toFixed(2)}
+                                      </td>
+                                    </>
+                                  )}
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
 
-                    {/* Total - Solo para órdenes facturadas */}
-                    {activeTab === OrderStatus.Invoiced && (
-                      <div className="flex justify-end items-center gap-4 mt-4">
-                        <span className="text-lg font-bold">Total:</span>
-                        <span className="text-2xl font-bold text-green-700">
-                          ${selectedOrder.items.reduce((acc: number, item: any) => {
-                            return acc + ((item.unitPrice || 0) * item.quantity);
-                          }, 0).toFixed(2)}
-                        </span>
+                        {/* Total - Solo para órdenes facturadas */}
+                        {activeTab === OrderStatus.Invoiced && (
+                          <div className="mt-6 bg-emerald-50 border-2 border-emerald-200 rounded-xl p-6">
+                            <div className="flex justify-between items-center">
+                              <div className="flex items-center gap-2">
+                                <CircleDollarSign className="w-6 h-6 text-emerald-700" />
+                                <span className="text-lg font-bold text-gray-800">Total de la Orden:</span>
+                              </div>
+                              <span className="text-3xl font-bold text-emerald-700">
+                                ${selectedOrder.items.reduce((acc: number, item: any) => {
+                                  return acc + ((item.unitPrice || 0) * item.quantity);
+                                }, 0).toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    )}
+
+                    </div>
                   </div>
+
+                  {/* Footer con botón de cerrar */}
+                  <div className="border-t border-gray-200 px-8 py-5 bg-gray-50">
+                    <div className="flex justify-end">
+                      <button
+                        onClick={() => setSelectedOrder(null)}
+                        className={`px-6 py-2.5 bg-gradient-to-r text-white rounded-lg font-semibold 
+                                  transition-all shadow-md hover:shadow-lg ${
+                          activeTab === OrderStatus.Prepared
+                            ? 'from-green-600 to-green-700 hover:from-green-700 hover:to-green-800'
+                            : activeTab === OrderStatus.Invoiced
+                            ? 'from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800'
+                            : 'from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800'
+                        }`}
+                      >
+                        Cerrar
+                      </button>
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </>

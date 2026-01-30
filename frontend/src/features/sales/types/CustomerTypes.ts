@@ -14,7 +14,7 @@ export interface Customer {
   //
   satisfactionScore?: number;
   addresses: Address[];
-  paymentTypes : CustomerPaymenType[];
+  paymentTypes : PaymentType[];
   isActive: boolean;
 }
 
