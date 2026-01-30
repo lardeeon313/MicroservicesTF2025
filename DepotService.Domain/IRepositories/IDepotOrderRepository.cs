@@ -31,7 +31,7 @@ namespace DepotService.Domain.IRepositories
         Task AddMissing(DepotOrderMissing missingOrder);
         Task<List<DepotOrderItemEntity>> GetOrderItemsByIdsAsync(List<int> ids);
         Task UpdateDepotOrderItemsAsync(List<DepotOrderItemEntity> items);
-        Task<List<DepotOrderEntity>> GetAssignedPendingOrdersByOperatorIdAsync();
+        Task<List<DepotOrderEntity>> GetAssignedPendingOrdersByOperatorIdAsync(Guid operatorId);
         Task<List<DepotOrderEntity>> GetOrdersPendingBillingAsync();
         Task<List<DepotOrderEntity>> GetAllInvoicedOrdersAsync();
         Task<List<DepotOrderEntity>> GetInvoicedOrdersByDateRangeAsync(DateTime startDate, DateTime endDate);

@@ -21,9 +21,9 @@ namespace DepotService.Application.Queries.Operator.GetAssignedPendingOrders
         /// Handler para obtener los pedidos pendientes asignados a un operador del depósito.
         /// </summary>
         /// <returns></returns>        
-        public async Task<List<DepotOrderDto>> GetAssignedPendingOrders()
+        public async Task<List<DepotOrderDto>> GetAssignedPendingOrders(Guid operatorId)
         {
-            var orders = await _repository.GetAssignedPendingOrdersByOperatorIdAsync();
+            var orders = await _repository.GetAssignedPendingOrdersByOperatorIdAsync(operatorId);
             if (orders == null)
             {
                 _logger.LogWarning("No pending orders found for the operator.");

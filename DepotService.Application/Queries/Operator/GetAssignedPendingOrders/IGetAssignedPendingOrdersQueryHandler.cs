@@ -12,6 +12,6 @@ namespace DepotService.Application.Queries.Operator.GetAssignedPendingOrders
     /// </summary>
     public interface IGetAssignedPendingOrdersQueryHandler
     {
-        Task<List<DepotOrderDto>> GetAssignedPendingOrders();
+        Task<List<DepotOrderDto>> GetAssignedPendingOrders(Guid operatorId);
     }
 }
