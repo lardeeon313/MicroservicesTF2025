@@ -254,14 +254,8 @@ export const useInPreparationOrders = () => {
       setError(null);
       setLoading(true);
       const data = await getOrdersByStatus(OrderStatus.InPreparation);
-      setOrders(data);
-      
-      if (data.length === 0) {
-        setError('No hay órdenes en preparación disponibles.');
-      }
+      setOrders(data);    
     } catch (err) {      
-      const errorMessage = handleOrderError(err, 'Error al cargar las órdenes en preparación');
-      setError(errorMessage);
       setOrders([]);
     } finally {
       setLoading(false);

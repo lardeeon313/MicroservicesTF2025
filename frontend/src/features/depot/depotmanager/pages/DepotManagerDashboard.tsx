@@ -68,7 +68,7 @@ const DepotManagerDashboardPage = () => {
             </div>
             <div className="flex justify-center space-x-3 mt-1">
               <p className="text-xs text-red-600 hover:text-red-700 font-medium cursor-default">
-                Búsqueda por ID
+                Búsqueda por Nº de Orden
               </p>
             </div>
           </div>
