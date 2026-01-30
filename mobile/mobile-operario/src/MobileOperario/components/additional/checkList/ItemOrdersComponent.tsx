@@ -37,6 +37,7 @@ const ItemOrdersComponent: React.FC<Props> = ({
   const [items, setItems] = useState<OrderItem[]>(pedidoItems);
   const [showAllMarkedModal, setShowAllMarkedModal] = useState(false);
   const [showNoPackingModal, setShowNoPackingModal] = useState(false);
+  const [showBackToPreparationModal, setShowBackToPreparationModal] = useState(false);
 
   const navigation =
     useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
@@ -87,6 +88,13 @@ const ItemOrdersComponent: React.FC<Props> = ({
       );
 
       setItems(updatedItems);
+
+      if (
+        pedidoStatus === DepotOrderStatus.Prepared &&
+        updatedItems.every((i) => !i.marcado)
+      ) {
+        setShowBackToPreparationModal(true);
+      }
 
       if (updatedItems.every((i) => i.marcado)) {
         setShowAllMarkedModal(true);
@@ -209,6 +217,41 @@ const ItemOrdersComponent: React.FC<Props> = ({
             <Button
               title="Entendido"
               onPress={() => setShowNoPackingModal(false)}
+            />
+          </View>
+        </View>
+      )}
+      {showBackToPreparationModal && (
+        <View
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: "rgba(0,0,0,0.6)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "#fff",
+              padding: 20,
+              borderRadius: 12,
+              width: "85%",
+            }}
+          >
+            <Text style={{ fontWeight: "bold", marginBottom: 10 }}>
+              Pedido en preparación
+            </Text>
+            <Text style={{ marginBottom: 20 }}>
+              Todos los productos fueron desmarcados.
+              El pedido volvió al listado de pedidos en preparación.
+            </Text>
+            <Button
+              title="Entendido"
+                onPress={() => {
+                  setShowBackToPreparationModal(false);
+                  navigation.navigate("OperatorDashboard");
+                }}
             />
           </View>
         </View>
