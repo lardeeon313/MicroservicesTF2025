@@ -38,10 +38,15 @@ export const getOrdersByStatus = async (status: number): Promise<DepotOrderDto[]
     try {
         const response = await API.get(`/depot/depotmanager/get-orders-by-status/${status}`);
         return response.data;
-    } catch (error) {
-        toast.error("Error al obtener las órdenes por estado.");
-        return [];
+        
+    } catch (error: any) {
+    if (error?.response?.status === 404) {      
+      return [];
     }
+
+    toast.error("Error al obtener las órdenes por estado.");
+    throw error;
+  }
 };
 
 export const getAllOrders = async (): Promise<DepotOrderDto[]> => {
