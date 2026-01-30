@@ -9,7 +9,7 @@ type Props = {
   depotOrderItemId: number;
   onSuccess?: () => void;
   pedidoStatus: DepotOrderStatus;
-  onPackagingChange: (itemId: number, packaging: string) => void; // Nueva prop
+  onPackagingChange: (packaging: string) => void; // Nueva prop
 };
 
 const AddPackingForm: React.FC<Props> = ({
@@ -58,7 +58,7 @@ const AddPackingForm: React.FC<Props> = ({
 
     if (!error) {
       // Llama a `onPackagingChange` para actualizar el embalaje en el objeto `order`
-      onPackagingChange(depotOrderItemId, packagingType.trim());
+      onPackagingChange(packagingType.trim());
 
       if (onSuccess) {
         onSuccess();
