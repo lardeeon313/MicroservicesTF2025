@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { ListCollapse} from 'lucide-react-native';
 
 type Props = {
   id: number;
@@ -83,7 +84,10 @@ export default function ListPendingCashOrdersComponent({
           style={[styles.button, styles.detailButton]}
           onPress={onSeeDetail}
         >
-          <Text style={styles.buttonText}>Ver Detalle</Text>
+          <View style={{flexDirection: "row",alignItems: "center",}}>
+            <ListCollapse size={20} color="#fff" style={{ marginRight: 8 }} />
+            <Text style={styles.buttonText}>Ver Detalle</Text>
+          </View>
         </TouchableOpacity>
       </View>
     </View>
@@ -146,7 +150,7 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   value: {
-    fontSize: 15,
+    fontSize: 20,
     color: "#1f2937",
     flex: 1,
   },

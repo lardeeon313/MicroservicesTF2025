@@ -134,8 +134,10 @@ export const OrdersSearchModal: React.FC<Props> = ({ visible, onClose }) => {
             <ActivityIndicator size="large" color="#4a9c13" style={{ marginTop: 20 }} />
           )}
 
-          {error && (
-            <Text style={{ color: "red", textAlign: "center", marginTop: 10 }}>{error}</Text>
+          {searchTriggered && error && (
+            <Text style={{ color: "red", textAlign: "center", marginTop: 10 }}>
+              {error}
+            </Text>
           )}
 
           {!loading && searchTriggered && ordersData.length === 0 && (

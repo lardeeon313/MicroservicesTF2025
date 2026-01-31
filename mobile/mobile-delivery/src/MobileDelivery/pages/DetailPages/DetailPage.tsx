@@ -38,6 +38,7 @@ enum AxuziliarStatusType{
   CashVerified = "¡Verificado por Tesoreria!",
   PendingCashVerification = "En espera de Verificacion...",
   PendingIncidentResolution = "Pendiente con Incidente No resuelto",
+  AssignmentCancelled = "Asignación cancelada",
   Unknown = "Desconocido",
 
 }
@@ -91,7 +92,9 @@ const mayStatusToSpanish = (status: string | undefined) : AxuziliarStatusType =>
     case "pendingcashverification":
       return AxuziliarStatusType.PendingCashVerification;
     case "pendingincidentresolution":
-      return AxuziliarStatusType.PendingIncidentResolution
+      return AxuziliarStatusType.PendingIncidentResolution;
+    case "assignmentcancelled": 
+      return AxuziliarStatusType.AssignmentCancelled;
     default: 
       return AxuziliarStatusType.Unknown;
   }

@@ -94,7 +94,7 @@ export default function ListOrdersToOnTheWayComponent({
             onPress={onSeeDetail}
           >
             <View style={{flexDirection: "row",alignItems: "center",}}>
-              <ListCollapse size={20} color="#fff"/>
+              <ListCollapse size={20} color="#fff" style={{ marginRight: 8 }}/>
               <Text style={styles.buttonText}>Ver detalle</Text>
             </View>
           </TouchableOpacity>
@@ -263,10 +263,3 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
 });
-
-/**
- *   mapContent: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
- */

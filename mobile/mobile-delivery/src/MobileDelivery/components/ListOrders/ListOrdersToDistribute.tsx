@@ -83,7 +83,7 @@ export default function ListAssignedOrdersComponent({
           style={[styles.button, styles.detail, styles.fullButton]}
           onPress={onSeeDetail}
         >
-          <ListCollapse size={20} color="#fff" />
+          <ListCollapse size={20} color="#fff" style={{ marginRight: 8 }} />
           <Text style={styles.buttonText}>Ver Detalle</Text>
         </TouchableOpacity>
       </View>

@@ -1,6 +1,8 @@
 import React from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import { DeliveryRejectionReason } from "../../types/DeliveryOrderTypeDto";
+import { TouchableOpacity } from "react-native";
+import { ListCollapse } from "lucide-react-native";
 
 type ItemProps = {
   id: number;
@@ -14,9 +16,10 @@ type ItemProps = {
 
 type Props = {
   items: ItemProps[];
+  onSeeDetail: (orderId: number) => void;
 };
 
-export default function ListRejectOrdersComponent({ items }: Props) {
+export default function ListRejectOrdersComponent({ items,  onSeeDetail }: Props) {
   const renderItem = ({ item }: { item: ItemProps }) => {
     const isUrgent = item.priority.toLowerCase().includes("urg") || item.priority === "Urgente";
 
@@ -93,7 +96,19 @@ export default function ListRejectOrdersComponent({ items }: Props) {
               </View>
             </View>
           </>
-        )}
+        )}    
+        <View style={styles.divider} />
+        <View style={styles.actionsSection}>
+          <TouchableOpacity
+            style={[styles.button, styles.detailButton]}
+            onPress={() => onSeeDetail(item.id)}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <ListCollapse size={20} color="#fff" style={{ marginRight: 8 }} />
+              <Text style={styles.buttonText}>Ver detalle</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   };
@@ -237,4 +252,27 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
     fontWeight: '500',
   },
+  actionsSection: {
+  paddingHorizontal: 16,
+  paddingBottom: 16,
+},
+
+button: {
+  paddingVertical: 12,
+  paddingHorizontal: 16,
+  borderRadius: 8,
+  alignItems: "center",
+  justifyContent: "center",
+},
+
+detailButton: {
+  backgroundColor: "#3B82F6",
+},
+
+buttonText: {
+  color: "#fff",
+  fontWeight: "bold",
+  fontSize: 14,
+},
+
 });
