@@ -37,12 +37,10 @@ export const RejectOrder = async (DepotOrderId: number, OperatorUserId: string,R
             OperatorUserId,
             RejectionReason: RejectReason,
         });
-        console.log("Respuesta del backend:", response.data);
-        console.log("=== RejectOrder - response completa ===", JSON.stringify(response, null, 2));
-        console.log("=== RejectOrder - response.data ===", response.data);
+
         return response.data;
     }catch(error){
-        console.error("=== RejectOrder - ERROR ===", error);
+
         throw error;
     }
 }
