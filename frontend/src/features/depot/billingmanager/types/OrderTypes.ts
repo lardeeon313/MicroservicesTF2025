@@ -79,4 +79,5 @@ export interface OrderTableData {
         productBrand: string;
         quantity: number;
     }[];
+    rejectionReason: string; 
 }
