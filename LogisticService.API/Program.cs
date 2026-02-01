@@ -246,7 +246,7 @@ var mailApi = builder.Configuration["MailSettings:ApiKey"];
 // Registrar el DbContext
 builder.Services.AddDbContext<LogisticDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-        b => b.MigrationsAssembly("LogisticService.API")));
+        b => b.MigrationsAssembly("LogisticService.Infraestructure")));
 
 // Configuración de autenticación JWT
 builder.Services.AddAuthentication("Bearer")

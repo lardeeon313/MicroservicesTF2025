@@ -485,7 +485,7 @@ namespace LogisticService.Infraestructure.Migrations
                         .HasForeignKey("DeliveryZoneId");
 
                     b.HasOne("LogisticService.Domain.Entities.LogisticOrder", "Order")
-                        .WithMany()
+                        .WithMany("DeliveryTeamAssignments")
                         .HasForeignKey("LogisticOrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -609,6 +609,8 @@ namespace LogisticService.Infraestructure.Migrations
             modelBuilder.Entity("LogisticService.Domain.Entities.LogisticOrder", b =>
                 {
                     b.Navigation("DeliveryIncidents");
+
+                    b.Navigation("DeliveryTeamAssignments");
 
                     b.Navigation("Items");
 

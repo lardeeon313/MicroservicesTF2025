@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { CreatePasswordForm } from "../components/CreatePasswordForm";
+import CreatePasswordForm from "../components/CreatePasswordForm";
 
 export const CreatePasswordPage = () => (
   <View>

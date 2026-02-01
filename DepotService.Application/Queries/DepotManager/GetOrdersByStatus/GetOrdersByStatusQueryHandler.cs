@@ -45,6 +45,7 @@ namespace DepotService.Application.Queries.DepotManager.GetOrdersByStatus
                     DeliveryDetail = order.DeliveryDetail,
                     OrderDate = order.OrderDate,
                     Status = order.Status,
+                    RejectionReason = order.RejectionReason,
                     Items = order.Items.Select(i => new DepotOrderItemDto
                     {
                         Id = i.Id,

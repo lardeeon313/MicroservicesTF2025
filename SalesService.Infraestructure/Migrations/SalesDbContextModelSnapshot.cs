@@ -101,37 +101,12 @@ namespace SalesService.Infraestructure.Migrations
                     b.Property<DateTime>("RegistrationDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("SatisfactionDescription")
-                        .HasColumnType("longtext");
-
-                    b.Property<int?>("SatisfactionScore")
-                        .HasColumnType("int");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.ToTable("Customers");
-                });
-
-            modelBuilder.Entity("SalesService.Domain.Entities.CustomerEntity.CustomerPaymentType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("CustomerId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<int>("PaymentType")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("CustomerPaymentTypes");
                 });
 
             modelBuilder.Entity("SalesService.Domain.Entities.CustomerEntity.CustomerPaymentType", b =>
@@ -167,7 +142,7 @@ namespace SalesService.Infraestructure.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("char(36)");
 
-                    b.Property<int>("DeliveryAddressId")
+                    b.Property<int?>("DeliveryAddressId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("DeliveryDate")
@@ -307,6 +282,67 @@ namespace SalesService.Infraestructure.Migrations
                     b.ToTable("OrderMissingItems");
                 });
 
+            modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderSatisfaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Score")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId")
+                        .IsUnique();
+
+                    b.ToTable("OrderSatisfactions");
+                });
+
+            modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderSatisfactionToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime?>("UsedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.ToTable("OrderSatisfactionTokens");
+                });
+
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderStatusHistory", b =>
                 {
                     b.Property<int>("Id")
@@ -356,17 +392,6 @@ namespace SalesService.Infraestructure.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("SalesService.Domain.Entities.CustomerEntity.CustomerPaymentType", b =>
-                {
-                    b.HasOne("SalesService.Domain.Entities.CustomerEntity.Customer", "Customer")
-                        .WithMany("PaymentTypes")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-                });
-
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.Order", b =>
                 {
                     b.HasOne("SalesService.Domain.Entities.CustomerEntity.Customer", "Customer")
@@ -378,8 +403,7 @@ namespace SalesService.Infraestructure.Migrations
                     b.HasOne("SalesService.Domain.Entities.Address", "DeliveryAddress")
                         .WithMany()
                         .HasForeignKey("DeliveryAddressId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Customer");
 
@@ -427,6 +451,26 @@ namespace SalesService.Infraestructure.Migrations
                     b.Navigation("SalesOrderItem");
                 });
 
+            modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderSatisfaction", b =>
+                {
+                    b.HasOne("SalesService.Domain.Entities.OrderEntity.Order", null)
+                        .WithOne("Satisfaction")
+                        .HasForeignKey("SalesService.Domain.Entities.OrderEntity.OrderSatisfaction", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderSatisfactionToken", b =>
+                {
+                    b.HasOne("SalesService.Domain.Entities.OrderEntity.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderStatusHistory", b =>
                 {
                     b.HasOne("SalesService.Domain.Entities.OrderEntity.Order", "OrderEntity")
@@ -437,7 +481,6 @@ namespace SalesService.Infraestructure.Migrations
 
                     b.Navigation("OrderEntity");
                 });
-
 
             modelBuilder.Entity("SalesService.Domain.Entities.CustomerEntity.Customer", b =>
                 {
@@ -451,6 +494,8 @@ namespace SalesService.Infraestructure.Migrations
                     b.Navigation("Items");
 
                     b.Navigation("MissingReports");
+
+                    b.Navigation("Satisfaction");
                 });
 
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderMissing", b =>

@@ -43,7 +43,7 @@ namespace DepotService.Infraestructure.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("DeliveryAddressId")
+                    b.Property<int?>("DeliveryAddressId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("DeliveryDate")
@@ -331,8 +331,7 @@ namespace DepotService.Infraestructure.Migrations
                     b.HasOne("DepotService.Domain.Entities.OrderAddress", "DeliveryAddress")
                         .WithOne("DepotOrder")
                         .HasForeignKey("DepotService.Domain.Entities.DepotOrderEntity", "DeliveryAddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("AssignedDepotTeam");
 
