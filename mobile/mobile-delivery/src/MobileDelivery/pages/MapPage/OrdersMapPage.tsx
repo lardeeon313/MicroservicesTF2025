@@ -10,7 +10,6 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Truck, AlertTriangle } from "lucide-react-native";
-
 import { useMyOnTheWayOrders } from "../../hocks/useOrdersToOnTheWay";
 import { useGetMyOrdersWithIncident } from "../../hocks/useOrdersWithIncidentes";
 import { DeliveryStackParamList } from "../../types/DeliveryStackType";
@@ -61,7 +60,11 @@ function NativeMap({ markers }: { markers: MarkerType[] }) {
 function WebMap({ markers }: { markers: MarkerType[] }) {
   if (!markers.length) return null;
 
-  const { latitude, longitude } = markers[0];
+  const markersQuery = markers
+    .map(
+      m => `markers=${m.latitude},${m.longitude}`
+    )
+    .join("&");
 
   return (
     <iframe
@@ -69,10 +72,11 @@ function WebMap({ markers }: { markers: MarkerType[] }) {
       height="100%"
       style={{ border: 0 }}
       loading="lazy"
-      src={`https://www.google.com/maps?q=${latitude},${longitude}&z=14&output=embed`}
+      src={`https://www.google.com/maps/embed/v1/map?key=TU_API_KEY&zoom=12&${markersQuery}`}
     />
   );
 }
+
 
 const WINDOW_HEIGHT = Dimensions.get("window").height;
 /* =========================

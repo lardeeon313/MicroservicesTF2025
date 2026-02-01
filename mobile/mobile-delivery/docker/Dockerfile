@@ -12,7 +12,7 @@ RUN npm install --force
 COPY . .
 
 # Build web correcto (único válido hoy)
-RUN npx expo export --platform web
+RUN npx expo export --platform web --clear
 
 
 # Etapa 2: Nginx
