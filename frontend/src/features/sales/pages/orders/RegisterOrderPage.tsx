@@ -2,15 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FilePlus } from "lucide-react";
 import toast from "react-hot-toast";
-
 import RegisterOrderForm from "../../components/Forms/RegisterOrderForm";
-import { RegisterOrderRequest, PaymentType } from "../../types/OrderTypes";
-import {
-  Customer,
-  CustomerResponse,
-  CustomerPaymenType,
-} from "../../types/CustomerTypes";
-
+import { RegisterOrderRequest } from "../../types/OrderTypes";
+import { Customer, CustomerResponse } from "../../types/CustomerTypes";
 import { registerOrder } from "../../services/OrderService";
 import { getAllCustomers } from "../../services/CustomerService";
 import { handleFormikError } from "../../../../components/ErrorHandler";
@@ -45,7 +39,6 @@ export default function RegisterOrderPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingCustomers, setIsLoadingCustomers] = useState(true);
-
   const navigate = useNavigate();
   const { token } = useAuth();
   const userId = token ? getUserIdFromToken(token) : null;
@@ -54,7 +47,6 @@ export default function RegisterOrderPage() {
     const fetchCustomers = async () => {
       try {
         const data: CustomerResponse[] = await getAllCustomers();
-
         const mappedCustomers: Customer[] = data.map((c) => ({
           id: c.id,
           firstName: c.firstName,
@@ -66,12 +58,8 @@ export default function RegisterOrderPage() {
           registrationDate: new Date().toISOString(),
           descriptionsatisfaction: "",
           isActive: true,
-
-          paymentTypes: (c.paymentTypes ?? []).map(
-            (pt: PaymentType) => pt as unknown as CustomerPaymenType
-          ),
+          paymentTypes: c.paymentTypes || [],
         }));
-
         setCustomers(mappedCustomers);
       } catch (error) {
         toast.error("Error al cargar clientes");
@@ -79,7 +67,6 @@ export default function RegisterOrderPage() {
         setIsLoadingCustomers(false);
       }
     };
-
     fetchCustomers();
   }, []);
 
@@ -120,12 +107,7 @@ export default function RegisterOrderPage() {
   };
 
   if (isLoadingCustomers) {
-    return (
-      <LoadingSpinner
-        message="Cargando clientes..."
-        height="h-screen"
-      />
-    );
+    return <LoadingSpinner message="Cargando clientes..." height="h-screen" />;
   }
 
   return (
@@ -133,7 +115,7 @@ export default function RegisterOrderPage() {
       <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 max-w-7xl">
         <BackButton to="/sales/home" />
 
-        {/* Header */}
+        {/* Header Section */}
         <div className="text-center mb-10 mt-6">
           <div className="inline-flex items-center justify-center w-14 h-14 bg-red-100 rounded-full mb-4">
             <FilePlus className="w-7 h-7 text-red-600" />
@@ -146,7 +128,7 @@ export default function RegisterOrderPage() {
           </p>
         </div>
 
-        {/* Form */}
+        {/* Form Container */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <RegisterOrderForm
             initialValues={initialValues}
