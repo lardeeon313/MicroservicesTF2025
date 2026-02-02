@@ -8,7 +8,7 @@ import Pagination from '../components/Pagination';
 import { fetchPendingOrders } from '../hooks/useOrders';
 import OrderTabs from '../../../../components/OrderTabs';
 import EmptyState from '../../../../components/EmptyState';
-import { BadgeCheck, Box, CalendarDays, MapPin, Package, User } from 'lucide-react';
+import { BadgeCheck, Box, CalendarDays, MapPin, Package, User,AlertCircle } from 'lucide-react';
 
 function PendingOrdersPage() {
   const {
@@ -334,6 +334,21 @@ function PendingOrdersPage() {
                           </div>
                         </div>
                       </div>
+
+                      {/* Sección: Motivo de Rechazo */}
+                      {selectedOrder.rejectionReason && (
+                        <div>
+                          <div className="flex items-center gap-2 mb-4">
+                            <AlertCircle className="w-5 h-5 text-red-600" />
+                            <h3 className="text-lg font-semibold text-gray-800">Motivo de Asignacion cancelada</h3>
+                          </div>
+                          <div className="bg-red-50 rounded-xl p-6 border border-red-200">
+                            <p className="text-red-900 text-base leading-relaxed">
+                              {selectedOrder.rejectionReason || "No se rechazo el pedido aun"}
+                            </p>
+                          </div>
+                        </div>
+                      )}
 
                       {/* Sección: Productos */}
                       <div>

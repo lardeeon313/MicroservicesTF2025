@@ -21,6 +21,7 @@ export interface DepotOrderDto {
     assignedDepotTeamId?: number;
     address?: OrderAddressDto;
     paymentType: PaymentType;
+    rejectionReason:string;
 
 }
 

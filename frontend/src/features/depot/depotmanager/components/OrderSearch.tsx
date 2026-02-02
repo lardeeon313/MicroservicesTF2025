@@ -222,6 +222,7 @@ export const OrderSearch = ({ onOrderFound }: OrderSearchProps) => {
                     orderDate: foundOrder.orderDate.toString(),
                     deliveryDate: undefined,
                     deliveryDetail: foundOrder.deliveryDetail || '',
+                    rejectionReason: foundOrder.rejectionReason || '',
                     customerFirstName: foundOrder.customerName.split(' ')[0] || '',
                     customerLastName: foundOrder.customerName.split(' ').slice(1).join(' ') || '',
                     items: foundOrder.items.map((item: any) => ({

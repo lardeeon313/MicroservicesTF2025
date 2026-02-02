@@ -1,6 +1,6 @@
 import { OrderTableData } from "../types/OrderTypes";
 import { OrderItemsTable } from "../../../../components/OrderItemsTable";
-import { User, CalendarDays, MapPin, BadgeCheck, Package } from "lucide-react";
+import { User, CalendarDays, MapPin, BadgeCheck, Package,AlertCircle } from "lucide-react";
 
 type Props = {
   order: OrderTableData;
@@ -77,6 +77,21 @@ export default function OrderDetails({ order }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Sección: Motivo de Rechazo */}
+      {order.rejectionReason && (
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <AlertCircle className="w-5 h-5 text-red-600" />
+            <h3 className="text-lg font-semibold text-gray-800">Motivo de Asignacion cancelada</h3>
+          </div>
+          <div className="bg-red-50 rounded-xl p-6 border border-red-200">
+            <p className="text-red-900 text-base leading-relaxed">
+              {order.rejectionReason}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Sección: Productos */}
       <div>
