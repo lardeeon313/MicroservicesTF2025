@@ -1,13 +1,8 @@
 import { useState } from "react";
-//import { AdminUsePerfomanceSalesReport } from "../Hocks/AdminSalesStaffPerfomanceHock";
 import { AdminUsePerfomanceSalesReport } from "../../../admin/pages/AdminDashboardFeatures/ReportsSales/Hocks/AdminSalesStaffPerfomanceHock";
-//import { AdminSalesStaffPerfomanceTable } from "../Components/AdminSalesStaffPerfomanceTable";
 import { AdminSalesStaffPerfomanceTable } from "../../../admin/pages/AdminDashboardFeatures/ReportsSales/Components/AdminSalesStaffPerfomanceTable";
-//import { AdminGraphSalesStaffPerfomance } from "../Graphs/AdminGraphSalesStaffPerfomance";
 import { AdminGraphSalesStaffPerfomance } from "../../../admin/pages/AdminDashboardFeatures/ReportsSales/Graphs/AdminGraphSalesStaffPerfomance";
-//import AdminSalesPerfomanceReportFilter from "../Filters/AdminSalesStaffPerfomanceFilter";
 import AdminSalesPerfomanceReportFilter from "../../../admin/pages/AdminDashboardFeatures/ReportsSales/Filters/AdminSalesStaffPerfomanceFilter";
-//import BackButton from "../../../../../../components/BackButton";
 import BackButton from "../../../../components/BackButton";
 
 export const SalesStaffPerfomancePage = () => {
