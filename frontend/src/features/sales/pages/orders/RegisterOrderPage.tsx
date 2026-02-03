@@ -123,9 +123,6 @@ export default function RegisterOrderPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Registrar Nueva Orden
           </h1>
-          <p className="text-base text-gray-600">
-            Complete los datos para crear una nueva orden
-          </p>
         </div>
 
         {/* Form Container */}
