@@ -340,6 +340,7 @@ namespace SalesService.API.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("create/satisfaction")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(IEnumerable<OrderDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

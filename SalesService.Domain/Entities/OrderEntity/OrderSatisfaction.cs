@@ -9,7 +9,10 @@ namespace SalesService.Domain.Entities.OrderEntity
     public class OrderSatisfaction
     {
         public int Id { get; private set; }
+
         public int OrderId { get; private set; }
+        public Order Order { get; private set; } = null!;
+
         public Guid CustomerId { get; private set; }
 
         public int Score { get; private set; } // 1 a 10

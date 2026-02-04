@@ -50,10 +50,7 @@ namespace SalesService.Application.Commands.Orders.CreateOrderSatisfaction
             await _repository.AddOrderSatisfactionAsync(satisfaction);
 
             order.SetSatisfaction(satisfaction);
-            
             orderSatisfactionToken.MarkAsUsed();
-
-            await _repository.UpdateAsync(order);
 
             await _repository.SaveChangesAsync();
 
