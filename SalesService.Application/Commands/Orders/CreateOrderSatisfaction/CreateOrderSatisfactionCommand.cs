@@ -8,9 +8,9 @@ namespace SalesService.Application.Commands.Orders.CreateOrderSatisfaction
 {
     public class CreateOrderSatisfactionCommand
     {
-        public string Token { get; }
-        public int Score { get; }
-        public string? Comment { get; }
+        public string Token { get; set; }
+        public int Score { get; set; }
+        public string? Comment { get; set; }
 
         public CreateOrderSatisfactionCommand(string token, int score, string? comment)
         {

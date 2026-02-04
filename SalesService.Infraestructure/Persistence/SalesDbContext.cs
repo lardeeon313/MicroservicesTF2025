@@ -92,8 +92,8 @@ namespace SalesService.Infraestructure
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Order>()
-                .HasOne(os => os.Satisfaction)
-                .WithOne()
+                .HasOne(o => o.Satisfaction)
+                .WithOne(s => s.Order)
                 .HasForeignKey<OrderSatisfaction>(s => s.OrderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
