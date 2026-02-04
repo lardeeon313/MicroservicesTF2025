@@ -160,9 +160,10 @@ namespace SalesService.API.Controllers
 
             var result = await _customerDeleteCommandHandler.DeleteHandle(command);
 
-            return result
-                ? Ok(new { message = "Customer deleted successfully." })
-                : BadRequest(new { error = "Failed to delete customer." });
+            if (!result)
+                return BadRequest(new{error = "No se puede eliminar el cliente porque tiene pedidos asociados."});
+            
+            return Ok(new { message = "Customer deleted successfully." });
         }
 
         /// <summary>

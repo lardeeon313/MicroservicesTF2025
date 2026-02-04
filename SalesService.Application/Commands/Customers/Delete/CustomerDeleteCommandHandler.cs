@@ -21,6 +21,9 @@ namespace SalesService.Application.Commands.Customers.Delete
             if (customer == null)
                 throw new KeyNotFoundException($"Customer with ID {command.Id} not found.");
 
+            var hasOrders = await _customerRepository.HasAssociatedOrdersAsync(command.Id);
+            if (hasOrders) return false; // Devolvemos false si el cliente tiene órdenes asociadas
+
             await _customerRepository.DeleteAsync(customer.Id);
 
             var integrationEvent = new CustomerDeletedIntegrationEvent

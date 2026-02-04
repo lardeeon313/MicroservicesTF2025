@@ -21,6 +21,7 @@ namespace SalesService.Domain.IRepositories
         Task RemoveAddress(Address address);
         Task<List<CustomerPaymentType>> GetPaymentTypesByCustomerIdAsync(Guid customerId);
         Task<bool> IsAddressReferencedInOrdersAsync(int addressId);
+        Task<bool> HasAssociatedOrdersAsync(Guid customerId);
 
     }
 }

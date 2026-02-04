@@ -100,5 +100,11 @@ namespace SalesService.Infraestructure.Persistence.Repositories
         {
             return await _context.Orders.AnyAsync(o => o.DeliveryAddressId == addressId);
         }
+
+        public async Task<bool> HasAssociatedOrdersAsync(Guid customerId)
+        {
+            return await _context.Orders
+                .AnyAsync(o => o.CustomerId == customerId);
+        }
     }
 }
