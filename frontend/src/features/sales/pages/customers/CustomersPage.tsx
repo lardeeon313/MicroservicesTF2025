@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { handleFormikError } from "../../../../components/ErrorHandler";
 import { deleteCustomer } from "../../services/CustomerService";
 import { usePagedCustomers } from "../../hooks/usePagedCustomers";
 import CustomerTable from "../../components/Customers/CustomersTable";
@@ -50,13 +49,12 @@ export default function CustomersPage() {
             await deleteCustomer(id);
             await Swal.fire("Eliminado", "El cliente ha sido eliminado.", "success");
             refetch();
-        } catch (error) {
-            handleFormikError({
-                error,
-                customMessages: {
-                    500: "Error interno al eliminar el cliente",
-                    404: "Cliente no encontrado"
-                },
+        } catch (error: any) {            
+            const mensajeError = error.response?.data?.error || "Ha ocurrido un error al eliminar el cliente.";
+            await Swal.fire({
+                title: "No se pudo eliminar",
+                text: mensajeError,
+                icon: "info" 
             });
         };
     };
