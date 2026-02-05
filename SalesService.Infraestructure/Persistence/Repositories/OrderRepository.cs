@@ -157,6 +157,11 @@ namespace SalesService.Infraestructure.Persistence.Repositories
         {
             await _context.OrderSatisfactions.AddAsync(satisfaction);
         }
+        public async Task<bool> OrderHasSatisfactionAsync(int orderId)
+        {
+            return await _context.OrderSatisfactions
+                .AnyAsync(x => x.OrderId == orderId);
+        }
 
         public async Task SaveChangesAsync()
         {

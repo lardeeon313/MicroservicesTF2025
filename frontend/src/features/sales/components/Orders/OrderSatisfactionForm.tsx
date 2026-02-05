@@ -54,6 +54,10 @@ const OrderSatisfactionForm = () => {
   };
 
   const handleSubmit = async (values: typeof initialValues) => {
+    console.log("📝 Submit satisfacción");
+    console.log("Token:", token);
+    console.log("Score:", values.score);
+    console.log("Comment:", values.comment);
     if (!token) {
       toast.error("El enlace no es válido.");
       return;

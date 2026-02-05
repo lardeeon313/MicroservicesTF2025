@@ -347,8 +347,13 @@ namespace SalesService.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateOrderSatisfaction(CreateOrderSatisfactionRequest request)
         {
+            Console.WriteLine("📩 Llegó request para crear satisfacción");
             try
             {
+                Console.WriteLine($"➡️ Token recibido: {request.Token}");
+                Console.WriteLine($"➡️ Score recibido: {request.Score}");
+                Console.WriteLine($"➡️ Comment recibido: {request.Comment}");
+
                 var command = new CreateOrderSatisfactionCommand(
                     request.Token,
                     request.Score,
@@ -364,7 +369,9 @@ namespace SalesService.API.Controllers
             }
             catch (InvalidOperationException ex)
             {
+                Console.WriteLine($"❌ Error de negocio , no se esta guardando el satifaccion y el culpa del front: {ex.Message}");
                 return BadRequest(new { error = ex.Message });
+
             }
         }
 

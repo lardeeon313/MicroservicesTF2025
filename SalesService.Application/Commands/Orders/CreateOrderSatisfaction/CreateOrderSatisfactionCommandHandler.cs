@@ -37,9 +37,14 @@ namespace SalesService.Application.Commands.Orders.CreateOrderSatisfaction
             if (order.Status != OrderStatus.Delivered)
                 throw new InvalidOperationException("Order is not delivered.");
 
-            if (order.Satisfaction != null)
+            var alreadyRated = await _repository
+                .OrderHasSatisfactionAsync(order.Id);
+
+            if (alreadyRated)
                 throw new InvalidOperationException("Order already rated.");
-            
+
+            Console.WriteLine("➡️ Creando OrderSatisfaction...");
+
             var satisfaction = new OrderSatisfaction(
                 order.Id,
                 order.CustomerId,
@@ -49,10 +54,11 @@ namespace SalesService.Application.Commands.Orders.CreateOrderSatisfaction
 
             await _repository.AddOrderSatisfactionAsync(satisfaction);
 
-            order.SetSatisfaction(satisfaction);
             orderSatisfactionToken.MarkAsUsed();
 
             await _repository.SaveChangesAsync();
+
+            Console.WriteLine("💾 SaveChanges ejecutado correctamente.");
 
             return true;
         }

@@ -204,9 +204,11 @@ builder.Services.AddAuthentication("Bearer")
     });
 
 // Configuración de autorización
-builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("SalesOnly", policy =>
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("SalesOnly", policy =>
         policy.RequireClaim("role", "SalesStaff"));
+});
 
 // Creamos un Http Client IdentityService para consultar los usuarios con role SalesStaff
 builder.Services.AddHttpClient("IdentityService", client =>
