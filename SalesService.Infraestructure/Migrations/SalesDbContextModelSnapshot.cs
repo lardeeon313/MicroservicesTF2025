@@ -453,11 +453,13 @@ namespace SalesService.Infraestructure.Migrations
 
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderSatisfaction", b =>
                 {
-                    b.HasOne("SalesService.Domain.Entities.OrderEntity.Order", null)
+                    b.HasOne("SalesService.Domain.Entities.OrderEntity.Order", "Order")
                         .WithOne("Satisfaction")
                         .HasForeignKey("SalesService.Domain.Entities.OrderEntity.OrderSatisfaction", "OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderSatisfactionToken", b =>

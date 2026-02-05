@@ -11,8 +11,8 @@ using SalesService.Infraestructure;
 namespace SalesService.Infraestructure.Migrations
 {
     [DbContext(typeof(SalesDbContext))]
-    [Migration("20260127160447_InitialCreate_v2")]
-    partial class InitialCreate_v2
+    [Migration("20260204161204_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -456,11 +456,13 @@ namespace SalesService.Infraestructure.Migrations
 
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderSatisfaction", b =>
                 {
-                    b.HasOne("SalesService.Domain.Entities.OrderEntity.Order", null)
+                    b.HasOne("SalesService.Domain.Entities.OrderEntity.Order", "Order")
                         .WithOne("Satisfaction")
                         .HasForeignKey("SalesService.Domain.Entities.OrderEntity.OrderSatisfaction", "OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("SalesService.Domain.Entities.OrderEntity.OrderSatisfactionToken", b =>
