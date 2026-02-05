@@ -269,6 +269,7 @@ namespace DepotService.Infraestructure.Documents.Word
             headerRow.Append(
                 CreateStyledTableCell("Producto", true, "059669", "FFFFFF", JustificationValues.Left),
                 CreateStyledTableCell("Marca", true, "059669", "FFFFFF", JustificationValues.Left),
+                CreateStyledTableCell("Embalaje", true, "059669", "FFFFFF", JustificationValues.Left),
                 CreateStyledTableCell("Cantidad", true, "059669", "FFFFFF", JustificationValues.Center),
                 CreateStyledTableCell("P. Unitario", true, "059669", "FFFFFF", JustificationValues.Right),
                 CreateStyledTableCell("Subtotal", true, "059669", "FFFFFF", JustificationValues.Right)
@@ -298,6 +299,7 @@ namespace DepotService.Infraestructure.Documents.Word
                     itemRow.Append(
                         CreateStyledTableCell(item?.ProductName ?? "N/D", false, bgColor, "000000", JustificationValues.Left),
                         CreateStyledTableCell(item?.ProductBrand ?? "N/D", false, bgColor, "000000", JustificationValues.Left),
+                        CreateStyledTableCell(item?.PackagingType ?? "N/D", false, bgColor, "000000", JustificationValues.Left),
                         CreateStyledTableCell(qty.ToString(), false, bgColor, "000000", JustificationValues.Center),
                         CreateStyledTableCell($"${unitPrice:N2}", false, bgColor, "000000", JustificationValues.Right),
                         CreateStyledTableCell($"${subtotal:N2}", false, bgColor, "000000", JustificationValues.Right, true)

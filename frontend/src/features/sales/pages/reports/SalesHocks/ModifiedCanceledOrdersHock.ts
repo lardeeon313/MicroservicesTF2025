@@ -43,7 +43,7 @@ export function useModifiedCanceledOrdersReport(
       setData(normalizedItems);
       setTotalPages(Math.ceil(response.data.totalCount / pageSize));
 
-      console.log(response)
+      
     } catch (error) {
       console.error("Error fetching modified/canceled orders", error);
     } finally {

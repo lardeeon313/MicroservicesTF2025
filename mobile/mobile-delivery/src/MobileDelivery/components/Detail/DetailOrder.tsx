@@ -73,8 +73,8 @@ export default function DetailOrderComponent({ order, loading, error }: Props) {
         <Text style={styles.text}>{order.deliveryPayment}</Text>
         <Text style={styles.label}>Detalle del pedido: </Text>
         <Text style={styles.text}>{order.deliveryDetail}</Text>
-        <Text style={styles.label}>Recibo de pago:</Text>
-        <Text style={styles.text}>{order.paymentReceipt}</Text>
+
+
         <Text style={styles.label}>Prioridad:</Text>
         <Text style={styles.text}>{order.deliveryPriority}</Text>
         {order.totalAmount && (

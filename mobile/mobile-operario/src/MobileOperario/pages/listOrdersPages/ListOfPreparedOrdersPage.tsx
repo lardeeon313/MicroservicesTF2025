@@ -103,7 +103,7 @@ const ListOfPreparedOrdersPage = () => {
           textAlign: "center",
         }}
       >
-        Pedidos preparados
+        Pedidos armados
       </Text>
       <ScrollView contentContainerStyle={{ padding: 16 }}>
         {filteredOrders.length === 0 ? (

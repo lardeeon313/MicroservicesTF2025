@@ -60,11 +60,7 @@ function NativeMap({ markers }: { markers: MarkerType[] }) {
 function WebMap({ markers }: { markers: MarkerType[] }) {
   if (!markers.length) return null;
 
-  const markersQuery = markers
-    .map(
-      m => `markers=${m.latitude},${m.longitude}`
-    )
-    .join("&");
+  const { latitude, longitude } = markers[0];
 
   return (
     <iframe
@@ -72,10 +68,11 @@ function WebMap({ markers }: { markers: MarkerType[] }) {
       height="100%"
       style={{ border: 0 }}
       loading="lazy"
-      src={`https://www.google.com/maps/embed/v1/map?key=TU_API_KEY&zoom=12&${markersQuery}`}
+      src={`https://www.google.com/maps?q=${latitude},${longitude}&z=14&output=embed`}
     />
   );
 }
+
 
 
 const WINDOW_HEIGHT = Dimensions.get("window").height;
