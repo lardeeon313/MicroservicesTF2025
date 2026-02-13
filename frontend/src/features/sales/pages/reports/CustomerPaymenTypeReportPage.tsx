@@ -1,48 +1,59 @@
-import React, { useState } from "react";
-// Hook del reporte
-import { useCustomerReport } from "./SalesPages/useSalesPaymentTypeReport";
-import { CustomerReportFilters } from "./SalesPages/useSalesPaymentTypeReport";
-// Filtros y tabla
-import CustomerReportFilterPayment from "./SalesFilters/CustomerPaymenTypeReportFilter";
-import CustomerReportPaymentTable from "./SalesComponents/IndividualComponentsSales/CustomerPaymentTypeReportTable";
-// Reutilizables globales
+import React, { useEffect, useState } from "react";
+
+import { useAdminCustomerReport } from "../../../admin/pages/AdminDashboardFeatures/ReportsSales/Hocks/AdminCustomerPaymentReportHock";
+import { AdminCustomerReportFilters } from "../../../admin/pages/AdminDashboardFeatures/ReportsSales/Types/CustomerPaymentType";
+
+import AdminCustomerPaymentFilter from "../../../admin/pages/AdminDashboardFeatures/ReportsSales/Filters/AdminCustomerPaymentFilter";
+import AdminCustomerPaymentReportTable from "../../../admin/pages/AdminDashboardFeatures/ReportsSales/Components/AdminCustomerPaymentReportTable";
+import AdminGraphCustomerPaymenTypeReport from "../../../admin/pages/AdminDashboardFeatures/ReportsSales/Graphs/AdminGraphCustomerPaymentReport";
+import { Pagination } from "../../../../components/Pagination";
 import BackButton from "../../../../components/BackButton";
 import LoadingSpinner from "../../../../components/LoadingSpinner";
-import GraphCustomerPaymenTypeReport from "./SalesGraph/GraphCustomerPaymentTypeReport";
 import { Eye, EyeOff, RefreshCw } from "lucide-react";
 
-const CustomerReportPaymentTypePage: React.FC = () => {
-  const [filters, setFilters] = useState<CustomerReportFilters>({
+const AdminCustomerReportPaymentTypePage: React.FC = () => {
+  const [filters, setFilters] = useState<AdminCustomerReportFilters>({
     name: "",
     startDate: "",
     endDate: "",
     paymentType: [],
   });
 
-  const { data, loading } = useCustomerReport(filters);
+  const {
+    data,
+    loading,
+    page,
+    totalPages,
+    setPage,
+  } = useAdminCustomerReport(filters);
 
-  // Estado para mostrar/ocultar gráfico
-  const [showGraph, setShowGraph] = useState(false);
+  const [showGraph, setShowGraph] = useState(true);
+
+  /* 🔁 Resetear página cuando cambian filtros */
+  useEffect(() => {
+    setPage(1);
+  }, [filters, setPage]);
 
   const handleRefresh = () => {
-    // Refresca recargando la página
     window.location.reload();
   };
 
   if (loading) {
-    return <LoadingSpinner message="Cargando reporte..." height="h-screen" />;
+    return (
+      <LoadingSpinner
+        message="Cargando reporte..."
+        height="h-screen"
+      />
+    );
   }
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
-      {/* 🔙 Botón volver */}
       <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
         <BackButton to="/sales/reports/dashboard" />
       </div>
 
-      {/* 🔹 Contenido principal */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Título */}
         <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
           Tipos de pago por cliente
         </h1>
@@ -51,42 +62,54 @@ const CustomerReportPaymentTypePage: React.FC = () => {
           Aquí podrás visualizar los diferentes tipos de pago utilizados por cada cliente.
         </p>
 
-        {/* 🔍 FILTROS */}
+        {/* Filtros */}
         <div className="mb-4">
-          <CustomerReportFilterPayment filters={filters} setFilters={setFilters} />
+          <AdminCustomerPaymentFilter
+            filters={filters}
+            setFilters={setFilters}
+          />
         </div>
 
-        {/* Botones alineados a la derecha, debajo de los filtros */}
+        {/* Acciones */}
         <div className="flex justify-end gap-2 mb-6">
           <button
             onClick={() => setShowGraph(!showGraph)}
-            className="px-4 py-2 rounded-lg shadow text-white font-medium bg-blue-600 hover:bg-blue-700 transition flex items-center gap-2 whitespace-nowrap"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg shadow text-white font-medium bg-blue-600 hover:bg-blue-700 transition"
           >
-            {showGraph ? (
-              <EyeOff className="w-5 h-5" />
-            ) : (
-              <Eye className="w-5 h-5" />
-            )}
+            {showGraph ? <EyeOff size={20} /> : <Eye size={20} />}
             {showGraph ? "Ocultar Gráfico" : "Mostrar Gráfico"}
           </button>
 
           <button
             onClick={handleRefresh}
-            className="px-4 py-2 rounded-lg shadow text-white font-medium bg-red-600 hover:bg-red-700 transition flex items-center gap-2 whitespace-nowrap"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg shadow text-white font-medium bg-red-600 hover:bg-red-700 transition"
           >
-            <RefreshCw className="w-5 h-5" />
+            <RefreshCw size={20} />
             Refrescar Reporte
           </button>
         </div>
 
+        {/* Tabla */}
+        <AdminCustomerPaymentReportTable
+          data={data}
+          loading={loading}
+        />
 
-        {/* 📊 TABLA */}
-        <CustomerReportPaymentTable data={data} loading={loading} />
-
-        {/* 📉 Gráfico con animación */}
+        {/* Gráfico */}
         {showGraph && (
           <div className="mt-8 animate-fadeIn">
-            <GraphCustomerPaymenTypeReport data={data} />
+            <AdminGraphCustomerPaymenTypeReport data={data} />
+          </div>
+        )}
+
+        {/* Paginación */}
+        {totalPages > 0 && (
+          <div className="mt-6">
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
           </div>
         )}
       </div>
@@ -94,4 +117,4 @@ const CustomerReportPaymentTypePage: React.FC = () => {
   );
 };
 
-export default CustomerReportPaymentTypePage;
+export default AdminCustomerReportPaymentTypePage;

@@ -35,7 +35,7 @@ export const TeamPerformanceTable: React.FC<Props> = ({ data }) => {
         <thead className="bg-gray-100 text-gray-600 text-xs uppercase tracking-wide">
           <tr>
             <th className="p-4 text-left">Equipo</th>
-            <th className="p-4 text-center">Pedidos Armados</th>
+            <th className="p-4 text-center">Total de pedidos</th>
             <th className="p-4 text-center">Faltantes</th>
           </tr>
         </thead>
