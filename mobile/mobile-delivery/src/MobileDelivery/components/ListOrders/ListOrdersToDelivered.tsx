@@ -86,7 +86,7 @@ export default function ListOrdersToDeliveredComponent({
           onPress={onSeeDetail}
         >
           <View style={{flexDirection: "row",alignItems: "center",}}>
-            <ListCollapse size={20} color="#fff"/>
+            <ListCollapse size={20} color="#fff" style={{ marginRight: 8 }}/>
             <Text style={styles.buttonText}>Ver Detalle</Text>
           </View>
         </TouchableOpacity>

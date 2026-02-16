@@ -4,7 +4,7 @@ import { FilterOperatorProductivity } from "../VerificationFilters/FilterOperato
 import { OperatorProductivityTable } from "../VerificationComponents/OperatorProdictivityFolder/OperatorProdictivityReport";
 import { OperatorProductivityFilterEntity } from "../../../../types/FilterReports/FilterReportsEntity";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
-import BackButton from "../../../../../../components/BackButton";
+import BackButton from "../../../../components/BackButton";
 
 export const OperatorProductivityPage: React.FC = () => {
   // ✅ Estado inicial del filtro

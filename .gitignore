@@ -373,7 +373,7 @@ FodyWeavers.xsd
 /SalesService.API/appsettings.json
 /AdminService.API/Migrations
 /SalesService.API/Migrations
-/DepotService.Infraestructure/Migrations
+# /DepotService.Infraestructure/Migrations
 /IdentityService.Infraestructure/Migrations
 /SalesService/API/Migrations
 /.env

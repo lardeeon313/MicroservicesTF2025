@@ -73,8 +73,8 @@ export default function DetailOrderComponent({ order, loading, error }: Props) {
         <Text style={styles.text}>{order.deliveryPayment}</Text>
         <Text style={styles.label}>Detalle del pedido: </Text>
         <Text style={styles.text}>{order.deliveryDetail}</Text>
-        <Text style={styles.label}>Recibo de pago:</Text>
-        <Text style={styles.text}>{order.paymentReceipt}</Text>
+
+
         <Text style={styles.label}>Prioridad:</Text>
         <Text style={styles.text}>{order.deliveryPriority}</Text>
         {order.totalAmount && (
@@ -93,6 +93,7 @@ export default function DetailOrderComponent({ order, loading, error }: Props) {
           order.items.map((item) => (
             <View style={styles.productCard} key={item.id}>
               <Text style={styles.productName}>{item.productName}</Text>
+              <Text style={styles.productMarca}>{item.productBrand}</Text>
               <Text style={styles.productInfo}>* Cantidad: {item.quantity}</Text>
               <Text style={styles.productInfo}>
                 * Precio unitario: ${item.unitPrice?.toFixed(2) ?? "0.00"}
@@ -200,6 +201,12 @@ const styles = StyleSheet.create({
   },
   productName: { 
     fontSize: 17, 
+    fontWeight: "700", 
+    color: "#2c3e50",
+    marginBottom: 8,
+  },
+  productMarca: {
+    fontSize: 15, 
     fontWeight: "700", 
     color: "#2c3e50",
     marginBottom: 8,

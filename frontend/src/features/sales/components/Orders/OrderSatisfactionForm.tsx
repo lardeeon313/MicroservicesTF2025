@@ -54,23 +54,34 @@ const OrderSatisfactionForm = () => {
   };
 
   const handleSubmit = async (values: typeof initialValues) => {
+
+    console.log("📝 Submit satisfacción");
+    console.log("Token:", token);
+    console.log("Score:", values.score);
+    console.log("Comment:", values.comment);
+    
     if (!token) {
+      console.error("❌ Token no encontrado en la URL");
       toast.error("El enlace no es válido.");
       return;
     }
 
     try {
-      await createOrderSatisfaction({
+      console.log("➡️ Enviando createOrderSatisfaction request...");
+      const response = await createOrderSatisfaction({
         token,
         score: values.score,
         comment: values.comment
       });
+      console.log("✅ Respuesta del backend:", response);
       toast.success("¡Gracias por tu valoración!");
     } catch (error: unknown) {
+      console.error("❌ Error al enviar createOrderSatisfaction", error);
       if (error instanceof Error) toast.error(error.message);
       else toast.error("Error inesperado.");
     }
   };
+
 
   return (
     <div className="flex min-h-screen flex-col justify-center bg-gradient-to-br from-gray-50 via-red-50 to-gray-50 px-4 sm:px-6 py-8 sm:py-12 lg:px-8">

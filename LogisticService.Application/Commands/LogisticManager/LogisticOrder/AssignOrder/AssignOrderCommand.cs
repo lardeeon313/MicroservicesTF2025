@@ -20,5 +20,12 @@ namespace LogisticService.Application.Commands.LogisticManager.LogisticOrder.Ass
             OperatorUserId = operatorId;
             DeliveryZoneId = deliveryZoneId;
         }
+
+        public AssignOrderCommand(int logisticOrderId, Guid operatorId)
+        {
+            LogisticOrderId = logisticOrderId;
+            OperatorUserId = operatorId;
+            DeliveryZoneId = deliveryZoneId;
+        }
     }
 }

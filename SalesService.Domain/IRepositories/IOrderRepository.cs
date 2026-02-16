@@ -33,5 +33,6 @@ namespace SalesService.Domain.IRepositories
         //
         Task AddOrderSatisfactionAsync(OrderSatisfaction satisfaction);
         Task SaveChangesAsync();
+        Task<bool> OrderHasSatisfactionAsync(int orderId);
     }
 }

@@ -20,7 +20,7 @@ namespace SalesService.Application.Commands.Orders.Register
     /// Manejador para registrar nota de pedido
     /// </summary>
 
-    public class RegisterOrderCommandHandler(IEmailService emailService ,IOrderRepository orderRepository,IRabbitMQPublisher publisher, ICustomerRepository customerRepository ) : IRegisterOrderCommandHandler
+    public class RegisterOrderCommandHandler(IEmailService emailService, IOrderRepository orderRepository, IRabbitMQPublisher publisher, ICustomerRepository customerRepository) : IRegisterOrderCommandHandler
     {
         private readonly IEmailService _emailService = emailService;
         private readonly IOrderRepository _orderRepository = orderRepository;
@@ -84,7 +84,7 @@ namespace SalesService.Application.Commands.Orders.Register
             };
 
             // Guardar la orden en la base de datos
-            await _orderRepository.AddAsync(order);            
+            await _orderRepository.AddAsync(order);
 
             // Actualizar el estado del cliente a "Active"
             customer.Status = CustomerStatus.Active;

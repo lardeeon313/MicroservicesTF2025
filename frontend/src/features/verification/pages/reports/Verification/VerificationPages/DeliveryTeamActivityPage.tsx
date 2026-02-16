@@ -4,7 +4,7 @@ import DeliveryTeamActivityTable from "../VerificationComponents/DeliveryTeamFol
 
 import { useDeliveryTeamActivity } from "../VerificationHocks/useDeliveryTeamActivityReport";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
-import BackButton from "../../../../../../components/BackButton";
+import BackButton from "../../../../components/BackButton";
 
 const DeliveryTeamActivityPage = () => {
   const { data, loading, fetchReport } = useDeliveryTeamActivity();

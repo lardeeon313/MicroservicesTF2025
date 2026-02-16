@@ -10,7 +10,6 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Truck, AlertTriangle } from "lucide-react-native";
-
 import { useMyOnTheWayOrders } from "../../hocks/useOrdersToOnTheWay";
 import { useGetMyOrdersWithIncident } from "../../hocks/useOrdersWithIncidentes";
 import { DeliveryStackParamList } from "../../types/DeliveryStackType";
@@ -73,6 +72,8 @@ function WebMap({ markers }: { markers: MarkerType[] }) {
     />
   );
 }
+
+
 
 const WINDOW_HEIGHT = Dimensions.get("window").height;
 /* =========================

@@ -10,7 +10,8 @@ namespace LogisticService.Domain.Entities
     public class OrderStatusHistory
     {
         public int Id { get; set; }
-        public int OrderId { get; set; }
+        //ELIMINAR  el ? 
+        public int? OrderId { get; set; }
         public OrderStatus OldStatus { get; set; }
         public OrderStatus NewStatus { get; set; }
         public DateTime ChangedAt { get; set; }

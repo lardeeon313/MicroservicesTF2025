@@ -34,7 +34,7 @@ const ProcessingTimePage = () => {
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="text-center text-4xl font-bold text-red-600 mb-2">
-            Tiempo de Armado / Preparación por Orden
+            Tiempo de Armado por Orden
           </h1>
           <p className="text-center text-lg text-gray-700 mb-12">
             Reporte con los tiempos promedio de armado y preparación por cada orden.

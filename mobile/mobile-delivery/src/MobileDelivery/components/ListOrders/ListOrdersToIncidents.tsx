@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
 import CountIncident from "../Incidents/CountIncident";
 import { ListCollapse,BugOff} from 'lucide-react-native';
+import { AlertTriangle, CheckCircle } from "lucide-react-native";
 
 type Props = {
   id: number;
@@ -111,7 +112,7 @@ export default function ListOrdersToIncidentComponent({
             onPress={onSeeDetail}
           >
             <View style={{flexDirection: "row",alignItems: "center",}}>
-              <ListCollapse size={20} color="#fff"/>
+              <ListCollapse size={20} color="#fff" style={{ marginRight: 8 }}/>
               <Text style={styles.buttonText}>Ver Detalle</Text>
             </View>
           </TouchableOpacity>
@@ -144,7 +145,20 @@ export default function ListOrdersToIncidentComponent({
           style={[styles.button, styles.viewIncidents, styles.fullButton]}
           onPress={onViewIncidents}
         >
-          <Text style={styles.buttonText}>⚠️ Revisar incidentes</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <AlertTriangle size={20} color="#fff" />
+            <Text style={styles.buttonText}>Revisar incidentes</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.button, styles.viewResolutions, styles.fullButton]}
+          onPress={onViewResolutions}
+        >
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <CheckCircle size={20} color="#fff" />
+            <Text style={styles.buttonText}>Revisar resoluciones</Text>
+          </View>
         </TouchableOpacity>
 
         <TouchableOpacity

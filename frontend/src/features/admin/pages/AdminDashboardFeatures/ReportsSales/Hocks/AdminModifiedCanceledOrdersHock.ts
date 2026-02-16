@@ -6,7 +6,7 @@ import { ModifiedCanceledOrderPagedResult } from "../Types/ModifiedCanceledRepor
 import { ModifiedCanceledFilters } from "../Types/ModifiedCanceledReportType"; // mapStatusModifiedCanceledOrdersBadge
 import { mapStatusModifiedCanceledOrdersBadge } from "../Types/ModifiedCanceledOrdersBadge";
 
-export function useModifiedCanceledOrders(
+export function ADMINuseModifiedCanceledOrders(
   page: number,
   pageSize: number,
   filters: ModifiedCanceledFilters

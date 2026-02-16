@@ -44,7 +44,7 @@ namespace DepotService.Application.Commands.DepotOperator.RejectOrder
             var statusHistory = new OrderStatusHistory
             {
                 OrderId = order.DepotOrderId,
-                OldStatus = order.Status,
+                OldStatus = OrderStatus.Assigned,
                 NewStatus = OrderStatus.Received,
                 ChangedAt = DateTime.UtcNow,
             };

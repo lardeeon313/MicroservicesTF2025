@@ -36,7 +36,7 @@ namespace DepotService.Infraestructure.Documents.Excel
             titleCell.Style.Fill.BackgroundColor = XLColor.FromHtml("#C0392B");
             titleCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             titleCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-            worksheet.Range("A1:F1").Merge();
+            worksheet.Range("A1:G1").Merge();
             worksheet.Row(1).Height = 35;
 
             // === INFORMACIÓN DEL PEDIDO Y CLIENTE ===
@@ -85,7 +85,7 @@ namespace DepotService.Infraestructure.Documents.Excel
 
             // === TABLE HEADER ===
             var headerRow = currentRow;
-            var headers = new[] { "Item ID", "Producto", "Marca", "Cantidad", "Precio unitario", "Total" };
+            var headers = new[] { "Item ID", "Producto", "Marca", "Embalaje", "Cantidad", "Precio unitario", "Total" };
 
             for (int i = 0; i < headers.Length; i++)
             {
@@ -117,19 +117,22 @@ namespace DepotService.Infraestructure.Documents.Excel
                 worksheet.Cell(currentRow, 3).Value = item.ProductBrand;
                 worksheet.Cell(currentRow, 3).Style.Fill.BackgroundColor = rowColor;
 
-                worksheet.Cell(currentRow, 4).Value = item.Quantity;
+                worksheet.Cell(currentRow, 4).Value = item.PackagingType;
                 worksheet.Cell(currentRow, 4).Style.Fill.BackgroundColor = rowColor;
-                worksheet.Cell(currentRow, 4).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-                worksheet.Cell(currentRow, 5).Value = item.UnitPrice ?? 0;
+                worksheet.Cell(currentRow, 5).Value = item.Quantity;
                 worksheet.Cell(currentRow, 5).Style.Fill.BackgroundColor = rowColor;
-                worksheet.Cell(currentRow, 5).Style.NumberFormat.Format = "$#,##0.00";
-                worksheet.Cell(currentRow, 5).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                worksheet.Cell(currentRow, 5).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-                worksheet.Cell(currentRow, 6).Value = item.Quantity * (item.UnitPrice ?? 0);
+                worksheet.Cell(currentRow, 6).Value = item.UnitPrice ?? 0;
                 worksheet.Cell(currentRow, 6).Style.Fill.BackgroundColor = rowColor;
                 worksheet.Cell(currentRow, 6).Style.NumberFormat.Format = "$#,##0.00";
                 worksheet.Cell(currentRow, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+                worksheet.Cell(currentRow, 7).Value = item.Quantity * (item.UnitPrice ?? 0);
+                worksheet.Cell(currentRow, 7).Style.Fill.BackgroundColor = rowColor;
+                worksheet.Cell(currentRow, 7).Style.NumberFormat.Format = "$#,##0.00";
+                worksheet.Cell(currentRow, 7).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
 
                 worksheet.Range(currentRow, 1, currentRow, 6).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
                 worksheet.Range(currentRow, 1, currentRow, 6).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
@@ -164,6 +167,7 @@ namespace DepotService.Infraestructure.Documents.Excel
             worksheet.Column(4).Width = 12;
             worksheet.Column(5).Width = 18;
             worksheet.Column(6).Width = 15;
+            worksheet.Column(7).Width = 18;
 
             using var stream = new MemoryStream();
             workbook.SaveAs(stream);

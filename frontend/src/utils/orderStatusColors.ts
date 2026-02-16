@@ -45,56 +45,26 @@ export const orderStatusStyles: Record<OrderStatus, { text: string; bg: string }
     text: "text-red-700",
     bg: "bg-red-100", // rojo = cancelado
   },
-  [OrderStatus.PendingResolution]: {
-    text: "text-yellow-700",
-    bg: "bg-yellow-100", // amarillo claro = pendiente de resolución
-    },
-  [OrderStatus.ReIssued]: {
-    text: "text-amber-700",
-    bg: "bg-amber-100", // amarillo = reemitido
-  },
-  [OrderStatus.PendingReissued]: {
-    text: "text-orange-700",
-    bg: "bg-orange-100", // naranja claro = pendiente de reemision
-  },
-  [OrderStatus.Modified]: {
-    text: "text-gray-800",
-    bg: "bg-gray-300", // gris oscuro = modificado
-  },
-  [OrderStatus.Verify]: {
-    text: "text-yellow-700",
-    bg: "bg-yellow-200", // amarillo = por verificar
-  },
   [OrderStatus.PendingVerification]: {
-    text: "text-lime-700",
-    bg: "bg-lime-100", // lima = pendiente de verificación
-  },
-  [OrderStatus.PendingDelivery]: {
-    text: "text-violet-700",
-    bg: "bg-violet-100", // violeta = pendiente de reparto
-  },
-  [OrderStatus.AssignmentCancelled]: {
-    text: "text-rose-700",
-    bg: "bg-rose-100", // rosa = asignación cancelada
+    text: "text-yellow-600",
+    bg: "bg-yellow-50", //amarillo medio: Pendiente de verificacion 
   },
   [OrderStatus.AssignedDelivery]: {
-    text: "text-fuchsia-700",
-    bg: "bg-fuchsia-100", // fucsia = asignado a reparto
+    text: "text-blue-600",
+    bg: "bg-blue-50", //azul medio: asginado a reparto 
   },
-  [OrderStatus.PendingCashVerification]: {
-    text: "text-stone-700",
-    bg: "bg-stone-100", // piedra = efectivo pendiente de verificación
-  },
-  [OrderStatus.CashVerified]: {
-    text: "text-green-700",
-    bg: "bg-green-50", // verde claro = efectivo verificado
+  [OrderStatus.PendingDelivered]: {
+    text: "text-orange-600",
+    bg: "bg-orange-50", //narajana medio: Pendiente de reparto 
   },
   [OrderStatus.PendingIncidentResolution]: {
-    text: "text-red-800",
-    bg: "bg-red-50", // rojo claro = pendiente de resolución de incidente
+    text: "text-red-600",
+    bg: "bg-red-50", //rojo medio: pendiente de incidente de resolucion 
   },
   [OrderStatus.IncidentResolved]: {
     text: "text-green-600",
-    bg: "bg-green-200", // verde = incidente resuelto
-  },
-};
+    bg: "bg-green-50",
+  }, //verde medio: Incidente resuelto 
+}
+
+

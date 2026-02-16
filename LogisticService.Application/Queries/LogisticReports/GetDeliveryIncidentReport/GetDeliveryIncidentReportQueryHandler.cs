@@ -34,10 +34,10 @@ namespace LogisticService.Application.Queries.LogisticReports
                 query.EndDate,
                 query.DeliveryZoneId,
                 query.DeliveryTeamId,
-                query.OperatorId,   
+                query.OperatorId,
                 query.Resolved,
                 query.PageNumber,
-                query.PageSize  
+                query.PageSize
             );
 
             _logger.LogInformation("Se recuperaron {Count} incidencias (página {Page}) para el reporte.",
@@ -51,7 +51,7 @@ namespace LogisticService.Application.Queries.LogisticReports
             // Crear diccionario para búsqueda rápida
             var operatorsById = deliveryOperators
                 .ToDictionary(op => op.Id.ToLowerInvariant(), op => op);
-            
+
             var result = incidents.Items.Select(i =>
             {
                 string fullNameDelivering = string.Empty;

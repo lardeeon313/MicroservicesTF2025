@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from "react";
 import { Eye, EyeOff, RefreshCw } from "lucide-react";
 import { useDeliveryIncidentsReport } from "../../../../../verification/pages/reports/Verification/VerificationHocks/useDeliveryIncidentsReport";
+import { AdminDeliveryIncidentsFilter } from "../Filters/AdminDeliveryIncidentsFilter";
 import { DeliveryIncidentFilters } from "../../../../../verification/types/FilterReports/FilterReportsEntity";
+import { AdminDeliveryIncidentsTable } from "../Components/DeliveryIncidents/AdminDeliveryIncidentsReport";
 import { AdminGraphDeliveryIncidents } from "../Graphs/AdminGraphDeliveryIncidents";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../../../components/BackButton";
-import { AdminDeliveryIncidentsFilter } from "../Filters/AdminDeliveryIncidentsFilter";
-import { AdminDeliveryIncidentsTable } from "../Components/DeliveryIncidents/AdminDeliveryIncidentsReport";
 
 export const AdminReportDeliveryIncidentsPage: React.FC = () => {
   const [tempFilters, setTempFilters] = useState<DeliveryIncidentFilters>({
@@ -33,7 +33,7 @@ export const AdminReportDeliveryIncidentsPage: React.FC = () => {
     setPageNumber,
   } = useDeliveryIncidentsReport(appliedFilters, refreshKey);
 
-  // ✅ FILTRO REAL DESDE EL FRONT
+  
   const filteredData = useMemo(() => {
     if (appliedFilters.resolved === undefined) return data;
 

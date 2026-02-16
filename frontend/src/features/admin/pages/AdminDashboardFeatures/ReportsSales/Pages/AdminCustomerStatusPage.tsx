@@ -4,7 +4,6 @@ import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import { Pagination } from "../../../../../../components/Pagination";
 import { CustomerStatus } from "../../../../../sales/types/CustomerTypes";
 import { AdminUseCustomerStatusReport } from "../Hocks/AdminCustomerStatusHock";
-
 import { AdminCustomerStatusReportFilter } from "../Filters/AdminCustomerStatusFilter";
 import { AdminCustomerStatusReportTable } from "../Components/AdminCustomerStatusReportTable";
 import AdminGraphCustomerStatus from "../Graphs/AdminGraphCustomerStatus";

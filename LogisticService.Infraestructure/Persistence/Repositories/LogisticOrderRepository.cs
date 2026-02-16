@@ -259,7 +259,7 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
                     .Include(o => o.DeliveryAddress)
                     .Include(o => o.RejectionReasons)
                     .AsNoTracking()
-                    .ToListAsync();                                        
+                    .ToListAsync();
         }
 
 
@@ -289,7 +289,7 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
 
         public async Task<List<LogisticOrder>> GetMyRejectOrders(Guid operatorId)
         {
-            return await _context.LogisticOrders                    
+            return await _context.LogisticOrders
                     .Where(o => _context.DeliveryRejectionReasons.Any(r => r.LogisticOrderId == o.Id && r.DeliveryOperatorId == operatorId))
                     .Include(o => o.Customer)
                     .Include(o => o.Items)
@@ -334,10 +334,18 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
 
         public async Task UpdateDeliveryIncidentAsync(DeliveryIncident incident)
         {
-            await Task.Run(() => 
-            { 
-                _context.DeliveryIncidents.Update(incident);
-            });
+            var existingIncident = await _context.DeliveryIncidents
+                .FirstOrDefaultAsync(x => x.Id == incident.Id);
+
+            if (existingIncident == null)
+                throw new Exception($"No se encontró la incidencia con ID {incident.Id}");
+
+            // Actualizamos los campos directamente en la entidad trackeada
+            existingIncident.Resolved = incident.Resolved;
+            existingIncident.ResolvedAt = incident.ResolvedAt;
+            existingIncident.ResolutionNote = incident.ResolutionNote;
+            existingIncident.DeliveryIncidentStatus = incident.DeliveryIncidentStatus;
+
             await _context.SaveChangesAsync();
         }
 
@@ -361,7 +369,7 @@ namespace LogisticService.Infraestructure.Persistence.Repositories
         public async Task<List<LogisticOrder>> GetOrdersWithDeliveryIncidentsAsync()
         {
             return await _context.LogisticOrders
-                    .Where(o => _context.DeliveryIncidents.Any(r => r.LogisticOrderId == o.Id))                    
+                    .Where(o => _context.DeliveryIncidents.Any(r => r.LogisticOrderId == o.Id))
                     .Include(o => o.Customer)
                     .Include(o => o.Items)
                     .Include(o => o.DeliveryAddress)

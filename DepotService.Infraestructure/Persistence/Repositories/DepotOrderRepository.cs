@@ -150,13 +150,15 @@ namespace DepotService.Infraestructure.Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<DepotOrderEntity>> GetAssignedPendingOrdersByOperatorIdAsync()
+        public async Task<List<DepotOrderEntity>> GetAssignedPendingOrdersByOperatorIdAsync(Guid operatorId)
         {
             return await _context.DepotOrders
                 .Include(o => o.Items)
                 .Include(o => o.DeliveryAddress)
-                .Where(o => o.AssignedOperatorId != null &&
-                            (o.Status == OrderStatus.Assigned || o.Status == OrderStatus.ReReceived))
+                .Where(o =>
+                    o.AssignedOperatorId == operatorId &&
+                    (o.Status == OrderStatus.Assigned || o.Status == OrderStatus.ReReceived)
+                )
                 .ToListAsync();
         }
 

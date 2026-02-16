@@ -14,6 +14,7 @@ using DepotService.Infraestructure.Documents;
 using DepotService.Infraestructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SalesService.Domain.IRepositories;
 
 namespace DepotService.API.Controllers
 {

@@ -23,11 +23,15 @@ const AcceptOrderPage = () => {
   const { params } = useRoute<AcceptOrderPageProp>();
   const navigation = useNavigation<NavigationProp>();
 
+  
+
   const [showAcceptModal, setShowAcceptModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successType, setSuccessType] = useState<SuccessType | null>(null);
 
   const { userId, name, role, isAuthenticated, logout, team } = useAuth();
+
+  
 
   const teamName = typeof team === "object" ? team?.teamName : team;
 
@@ -36,11 +40,15 @@ const AcceptOrderPage = () => {
       ? { id: userId, name, role, team: teamName ?? null }
       : null;
 
+  
+
   const {
     order: fetchedOrder,
     loading,
     error,
   } = useGetOneOrder(params.order.depotOrderId, user?.id ?? "");
+
+  
 
   const {
     order,
@@ -55,21 +63,26 @@ const AcceptOrderPage = () => {
     setShowSuccessModal
   );
 
+  
+
   const handleAcceptOrder = async () => {
+    
     setShowAcceptModal(false);
     setSuccessType("accept");
     setShowSuccessModal(true);
 
     try {
-      await acceptOrder();
+      const result = await acceptOrder();
+      console.log("=== [AcceptOrderPage] acceptOrder - resultado ===", result);
     } catch (e) {
-      console.error(e);
+      console.error("=== [AcceptOrderPage] acceptOrder - ERROR ===", e);
     }
-    
   };
 
   const onConfirmReject = async (reason: string) => {
+    
     const success = await ConfirmRejectWithReason(reason);
+    
 
     if (success) {
       setSuccessType("reject");
@@ -78,7 +91,10 @@ const AcceptOrderPage = () => {
   };
 
   if (loading) return <ActivityIndicator size="large" color="#000" />;
-  if (error) return <Text>ERROR: {error}</Text>;
+  if (error) {
+    
+    return <Text>ERROR: {error}</Text>;
+  }
 
   return (
     <View style={{ flex: 1 }}>

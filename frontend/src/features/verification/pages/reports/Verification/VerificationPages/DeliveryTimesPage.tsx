@@ -5,7 +5,7 @@ import { DeliveryReportOnTimeTable } from "../VerificationComponents/DeliveryTim
 import { DeliveryReportLateTable } from "../VerificationComponents/DeliveryTimesFolder/DeliveryReportOnTimeTable"; // Nota: Revisa si la importación coincide con el nombre real del componente
 import { useDeliveryTimesReport } from "../VerificationHocks/useDeliveryTimesReport";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner"; // Asegúrate que la ruta sea correcta
-import BackButton from "../../../../../../components/BackButton"; // Asegúrate que la ruta sea correcta
+import BackButton from "../../../../components/BackButton"; // Asegúrate que la ruta sea correcta
 
 export const DeliveryTimesReportPage = () => {
   const {

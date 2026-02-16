@@ -25,6 +25,10 @@ export default function OrdersPage() {
       OrderStatus.PendingReissued,
     ];
 
+    const getStatusLabel = (status: OrderStatus) => OrderStatusLabels[status] ?? status;
+
+
+
     const filteredOrders = orders.filter((order) => {
         const idMatch = order.id.toString().includes(searchId.toLowerCase());
         const nameMatch = `${order.customerFirstName?? ''} ${order.customerLastName?? ''}`
@@ -100,7 +104,7 @@ export default function OrdersPage() {
         };
 
         if (order.status === statusMap[action]) {
-          return Swal.fire("Acción no permitida", `La órden ya se encuentra en "${OrderStatusLabels[order.status]}".`, "info" )
+          return Swal.fire("Acción no permitida", `La órden ya se encuentra en "${getStatusLabel(order.status)}".`, "info" )
         }
 
         const confirmResult = await Swal.fire({
@@ -125,7 +129,7 @@ export default function OrdersPage() {
           });
           Swal.fire(
             "Estado actualizado",
-            `El pedido #${id} fue marcado como "${OrderStatusLabels[newStatus]}".`,
+            `El pedido #${id} fue marcado como "${getStatusLabel(newStatus)}".`,
             "success"
           );
           refetch(); // Actualiza la pagina

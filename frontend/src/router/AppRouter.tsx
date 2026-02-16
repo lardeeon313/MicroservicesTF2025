@@ -23,7 +23,12 @@ import { DashboardPage } from "../features/sales/pages/DashboardPage";
 import { DashboardReportsPage } from "../features/sales/pages/DashboardReportsPage";
 import CustomerReportPage from "../features/sales/pages/reports/CustomerReportPage";
 import CustomerSatisfactionPage from "../features/sales/pages/reports/CustomerSatisfactionReportPage";
+//import CustomerInactiveReportPage from "../features/sales/pages/reports/CustomerInactiveReportPage";
+import { CustomerStatusReportPage } from "../features/sales/pages/reports/CustomerInactiveReportPage";
 import ModifiedCanceledOrdersPage from "../features/sales/pages/reports/ModifiedCanceledOrdersPage";
+import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
+import CreatePasswordPage from "../features/auth/pages/CreatePasswordPage";
+import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
 //SalesStaffPerfomancePage
 import { SalesStaffPerfomancePage } from "../features/sales/pages/reports/SalesPerfomanceReportPage";
 import MissingOrdersSalesPage from "../features/sales/pages/orders/MissingOrderSalesPage";
@@ -36,7 +41,6 @@ import PendingOrdersPageDepot from "../features/depot/depotmanager/pages/Pending
 import InPreparationOrdersPage from "../features/depot/depotmanager/pages/InPreparationOrdersPage";
 import PreparedOrdersPage from "../features/depot/depotmanager/pages/PreparedOrdersPage";
 import MissingOrdersPage from "../features/depot/depotmanager/pages/MissingOrdersPage";
-//import { DashboardDepotReportsPage } from "../features/depot/pages/DashboardDepotReportsPage";
 import ProcessingTimePage from "../features/depot/pages/reports/Depot/DepotPages/AverageTimeOrderPage";
 import DailyMissingPage from "../features/depot/pages/reports/Depot/DepotPages/DailyMissingPage";
 import { CompletedOrdersReportPage } from "../features/depot/pages/reports/Depot/DepotPages/OrderCompletedDayPage";
@@ -62,7 +66,7 @@ import PendingOrdersVerificationPage from "../features/verification/pages/Pendin
 import PendingOrdersVerificationDetailsPage from "../features/verification/pages/PendingOrderVerificationDetailsPage";
 import OrdersInRoutePage from "../features/verification/pages/OrdersInRoutePage";
 import OrdersInRouteDetailsPage from "../features/verification/pages/OrdersInRouteDetailsPage";
-import { DeliveryIncidentsPage } from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryIncidentsPage";
+import { ReportDeliveryIncidentsPage } from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryIncidentsPage";
 import DeliveryRejectionsPage from "../features/verification/pages/reports/Verification/VerificationPages/DeliveryRejectionsPage";
 import { OrdersByStatusReportPage } from "../features/verification/pages/reports/Verification/VerificationPages/OrderByStatusPage";
 import { OrderStatusHistoryReportPage } from "../features/verification/pages/reports/Verification/VerificationPages/OrderByStatusHistoryPage";
@@ -85,7 +89,7 @@ import { AdminDashboardLogisticReportPage } from "../features/admin/pages/AdminD
 import EmployeesDetailPage from "../features/admin/pages/EmployeesDetailPage";
 
 //REPORTES DE SALES PARA ADMIN
-//AdminCustomerReportPaymentTypePage
+
 import AdminCustomerReportPaymentTypePage from "../features/admin/pages/AdminDashboardFeatures/ReportsSales/Pages/AdminCustomerPaymentReportPage";
 import AdminCustomerReportPage from "../features/admin/pages/AdminDashboardFeatures/ReportsSales/Pages/AdminCustomerReportPage";
 import { AdminCustomerStatusReportPage } from "../features/admin/pages/AdminDashboardFeatures/ReportsSales/Pages/AdminCustomerStatusPage";
@@ -121,7 +125,6 @@ import BillingDispatcherReportsIndex from "../features/admin/dispatcher/BillingD
 import DepotDispatcherReportsIndex from "../features/admin/dispatcher/DepotDispatcherConst";
 import LogisticDispatcherReportsIndex from "../features/admin/dispatcher/LogisticDispatcherConst";
 import SalesDispatcherReportsIndex from "../features/admin/dispatcher/SalesDispatcherConst";
-import { CustomerStatusReportPage } from "../features/sales/pages/reports/CustomerInactiveReportPage";
 
 const AppRouter = () => {
   return (
@@ -134,6 +137,10 @@ const AppRouter = () => {
       <Route path="/unauthorized" element={<Unauthorized />} />
       <Route path="/404notfound" element={<NotFoundPage />} />
 
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/create-password" element={<CreatePasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
+      
       {/* SALES */}
       <Route
         path="/sales"
@@ -156,7 +163,7 @@ const AppRouter = () => {
         <Route path="reports/dashboard" element={<DashboardReportsPage />} />
         <Route path="reports/customersReport" element={<CustomerReportPage />} />
         <Route path="reports/customerSatisfactionReport" element={<CustomerSatisfactionPage />} />
-        <Route path="reports/customerStatusReport" element={<CustomerStatusReportPage/>} />
+        <Route path="reports/customerStatusReport" element={<CustomerStatusReportPage />} />
         <Route path="reports/modifiedCanceledReport" element={<ModifiedCanceledOrdersPage />} />
         <Route path="reports/salesPerfomance" element={<SalesStaffPerfomancePage />} />
         <Route path="reports/customerpaymentypereport" element={<CustomerReportPaymentTypePage />} />
@@ -314,7 +321,7 @@ const AppRouter = () => {
         <Route index element={<LogisticDispatcherReportsIndex />} />
 
         {/* REPORTES OPERATIVOS (VerificationManager) */}
-        <Route path="OrderIncidents" element={<DeliveryIncidentsPage />} />
+        <Route path="OrderIncidents" element={<ReportDeliveryIncidentsPage />} />
         <Route path="RejectOrders" element={<DeliveryRejectionsPage />} />
         <Route path="OrderStatus" element={<OrdersByStatusReportPage />} />
         <Route path="OrderStatusHistory" element={<OrderStatusHistoryReportPage />} />

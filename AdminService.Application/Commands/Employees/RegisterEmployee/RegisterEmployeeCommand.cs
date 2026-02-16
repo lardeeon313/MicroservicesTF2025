@@ -27,6 +27,7 @@ namespace AdminService.Application.Commands.Employees.RegisterEmployee
             EmployeeRole role,
             EmployeeStatus status,
             EmployeeSector sector)
+
         {
             UserName = userName;
             FirstName = firstName;

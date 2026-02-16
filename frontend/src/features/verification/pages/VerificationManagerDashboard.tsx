@@ -56,4 +56,4 @@ const VerificationManagerDashboardPage = () => {
   );
 };
 
-export default VerificationManagerDashboardPage; 
+export default VerificationManagerDashboardPage;

@@ -22,7 +22,7 @@ const DeliveryFAQButton = () => {
 const styles = StyleSheet.create({
   button: {
     position: "absolute",
-    bottom: 38,
+    bottom: 60,
     left: 24,
     width: 56,
     height: 56,

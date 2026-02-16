@@ -161,6 +161,7 @@ namespace DepotService.Infraestructure.Documents.Pdf
                 {
                     cols.RelativeColumn(3); // Producto
                     cols.RelativeColumn(2); // Marca
+                    cols.RelativeColumn(2); // Embalaje
                     cols.RelativeColumn(1); // Cantidad
                     cols.RelativeColumn(2); // Precio Unitario
                     cols.RelativeColumn(2); // Subtotal
@@ -172,6 +173,8 @@ namespace DepotService.Infraestructure.Documents.Pdf
                           .Text("Producto").FontColor(Colors.White).FontSize(11).Bold();
                     header.Cell().Background(Colors.Green.Darken1).Padding(10)
                           .Text("Marca").FontColor(Colors.White).FontSize(11).Bold();
+                    header.Cell().Background(Colors.Green.Darken1).Padding(10)
+                          .Text("Embalaje").FontColor(Colors.White).FontSize(11).Bold();
                     header.Cell().Background(Colors.Green.Darken1).Padding(10).AlignCenter()
                           .Text("Cant.").FontColor(Colors.White).FontSize(11).Bold();
                     header.Cell().Background(Colors.Green.Darken1).Padding(10).AlignRight()
@@ -192,6 +195,8 @@ namespace DepotService.Infraestructure.Documents.Pdf
                              .Text(item?.ProductName ?? "N/D").FontSize(10);
                         table.Cell().Background(backgroundColor).Padding(8)
                              .Text(item?.ProductBrand ?? "N/D").FontSize(10);
+                        table.Cell().Background(backgroundColor).Padding(8)
+                             .Text(item?.PackagingType ?? "N/D").FontSize(10);
                         table.Cell().Background(backgroundColor).Padding(8).AlignCenter()
                              .Text(item?.Quantity.ToString() ?? "0").FontSize(10);
                         table.Cell().Background(backgroundColor).Padding(8).AlignRight()

@@ -1,4 +1,4 @@
-using FluentValidation;
+锘縰sing FluentValidation;
 using LogisticService.API.RequestDtos.LogisticOrders;
 using LogisticService.API.RequestDtos.Reports;
 using LogisticService.API.RequestDtos.VerificationManager.DeliveryTeams;
@@ -111,7 +111,7 @@ builder.Services.AddSwaggerGen(options =>
         Description = "Microservicio encargado de la verificacion de pagos y gestion de la logistca del pedido.",
         Contact = new OpenApiContact
         {
-            Name = "Milton Arg黣llo, Bustos Santiago, Diego Aguirre"
+            Name = "Milton Arg眉ello, Bustos Santiago, Diego Aguirre"
         }
     });
 });
@@ -233,7 +233,7 @@ builder.Services.AddScoped<IRabbitMQPublisher, RabbitMQPublisher>();
 
 //////////////////// Configuracion DbContext //////////////////////
 
-// Obtener las variables de configuraci髇
+// Obtener las variables de configuraci贸n
 var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
 var rabbitHost = builder.Configuration["RabbitMQ:Host"];
 var rabbitPort = builder.Configuration["RabbitMQ:Port"];
@@ -246,9 +246,9 @@ var mailApi = builder.Configuration["MailSettings:ApiKey"];
 // Registrar el DbContext
 builder.Services.AddDbContext<LogisticDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
-        b => b.MigrationsAssembly("LogisticService.API")));
+        b => b.MigrationsAssembly("LogisticService.Infraestructure")));
 
-// Configuraci髇 de autenticaci髇 JWT
+// Configuraci贸n de autenticaci贸n JWT
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
@@ -265,7 +265,7 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
-// Configuraci髇 de autorizaci髇
+// Configuraci贸n de autorizaci贸n
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("LogisticAcces", policy =>
         policy.RequireClaim("role", "VerificationManager, DeliveryOperator"));

@@ -129,7 +129,7 @@ const ListOfPreparedOrders = ({ order, id, customer, onSeeDetail, onSendToBill }
       >
         <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.4)', justifyContent: 'center', alignItems: 'center' }}>
           <View style={{ backgroundColor: '#fff', borderRadius: 12, padding: 20, width: '85%', alignItems: 'center', elevation: 10 }}>
-            <Text style={{ fontSize: 17, fontWeight: 'bold', marginBottom: 12 }}>¿Confirmas facturación del pedido {order.depotOrderId}?</Text>
+            <Text style={{ fontSize: 17, fontWeight: 'bold', marginBottom: 12 }}>¿Quieres enviar a factuar el pedido:  {order.depotOrderId}?</Text>
             <Text style={{fontSize: 16,color: "#374151",marginBottom: 6,}}>
               <Text style={{fontWeight: "bold",color: "#111827",}}>Número del pedido: </Text>
               {order.depotOrderId}

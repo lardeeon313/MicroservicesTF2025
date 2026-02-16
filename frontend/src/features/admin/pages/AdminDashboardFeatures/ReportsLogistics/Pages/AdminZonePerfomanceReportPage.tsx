@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useZonePerformanceReport } from "../../../../../verification/pages/reports/Verification/VerificationHocks/useZonePerfomance";
+import { AdminUseZonePerformanceReport } from "../Hocks/AdminUseZonePerfomance";
 import { AdminFilterZonePerformance } from "../Filters/AdminZonePerfomanceFilter";
 import { AdminZonePerformanceTable } from "../Components/ZonePerfomanceFolder/AdminZonePerfomanceTable";
 import AdminGraphZonePerformance from "../Graphs/AdminGraphZonePerfomance";
@@ -8,7 +8,7 @@ import BackButton from "../../../../../../components/BackButton";
 import { BarChart3, Eye, EyeOff, RefreshCw } from "lucide-react";
 
 export const AdminReportZonePerformanceReportPage: React.FC = () => {
-  const { data, loading, error, fetchReport } = useZonePerformanceReport();
+  const { data, loading, error, fetchReport } = AdminUseZonePerformanceReport();
   const [showChart, setShowChart] = useState(true);
 
   useEffect(() => {

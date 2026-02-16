@@ -47,21 +47,33 @@
       }
     },
     {
-      "DownstreamPathTemplate": "/api/{everything}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "depotservice",
-          "Port": 8080
+        "DownstreamPathTemplate": "/api/{everything}",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+            {
+                "Host": "depotservice",
+                "Port": 8080
+            }
+        ],
+        "UpstreamPathTemplate": "/depot/{everything}",
+        "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+        "AuthenticationOptions": {
+            "AuthenticationProviderKey": "JwtBearer",
+            "AllowedScopes": [],
+            "Authority": "http://identityservice:8080"
         }
-      ],
-      "UpstreamPathTemplate": "/depot/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "JwtBearer",
-        "AllowedScopes": [],
-        "Authority": "http://identityservice:8080"
-      }
+    },
+    {
+        "DownstreamPathTemplate": "/api/order/create/satisfaction",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+            {
+                "Host": "salesservice",
+                "Port": 8080
+            }
+        ],
+        "UpstreamPathTemplate": "/sales/order/create/satisfaction",
+        "UpstreamHttpMethod": [ "POST" ]
     },
     {
       "DownstreamPathTemplate": "/api/{everything}",

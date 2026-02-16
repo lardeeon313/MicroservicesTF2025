@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, Button, Alert } from "react-native";
 import { MarkItemIsReady, UnMarkItemIsReady } from "../../../services/PostAddPackings";
-import type { MarkItemCommand, UnMarkItemReadyCommand } from "../../../types/AddPackings";
+import type {
+  MarkItemCommand,
+  UnMarkItemReadyCommand,
+} from "../../../types/AddPackings";
 import AddPackingForm from "../AddPackings/AddPackingForm";
 import { DepotOrderStatus } from "../../../types/OrderDTO";
 import AllProductsMarkedModal from "./AllProductsMarkedModal";
@@ -34,9 +37,15 @@ const ItemOrdersComponent: React.FC<Props> = ({
   const [items, setItems] = useState<OrderItem[]>(pedidoItems);
   const [showAllMarkedModal, setShowAllMarkedModal] = useState(false);
   const [showNoPackingModal, setShowNoPackingModal] = useState(false);
+  const [showBackToPreparationModal, setShowBackToPreparationModal] = useState(false);
 
   const navigation =
     useNavigation<NativeStackNavigationProp<DepotStackParamList>>();
+
+  // 🔁 SINCRONIZA cuando el pedido cambia desde afuera
+  useEffect(() => {
+    setItems(pedidoItems);
+  }, [pedidoItems]);
 
   const isDisabled = [
     DepotOrderStatus.Assigned,
@@ -49,13 +58,12 @@ const ItemOrdersComponent: React.FC<Props> = ({
       i.id === itemId ? { ...i, embalaje: packaging } : i
     );
     setItems(updatedItems);
-    onPackagingChange(itemId, packaging); // Llama a la función para actualizar el embalaje en el objeto order
+    onPackagingChange(itemId, packaging);
   };
-
 
   const handleMarkToggle = async (item: OrderItem) => {
     try {
-      // 🚫 BLOQUEO REAL: no hay embalaje
+      // 🚫 bloqueo real: sin embalaje no se puede marcar
       if (
         !item.marcado &&
         (!item.embalaje || item.embalaje.trim().length === 0)
@@ -80,6 +88,13 @@ const ItemOrdersComponent: React.FC<Props> = ({
       );
 
       setItems(updatedItems);
+
+      if (
+        pedidoStatus === DepotOrderStatus.Prepared &&
+        updatedItems.every((i) => !i.marcado)
+      ) {
+        setShowBackToPreparationModal(true);
+      }
 
       if (updatedItems.every((i) => i.marcado)) {
         setShowAllMarkedModal(true);
@@ -131,23 +146,18 @@ const ItemOrdersComponent: React.FC<Props> = ({
               shadowRadius: 4,
             }}
           >
-            <Text style={{ fontSize: 16, fontWeight: "bold", marginBottom: 4 }}>
+            <Text style={{ fontSize: 16, fontWeight: "bold" }}>
               Producto: {item.nombre}
             </Text>
-            <Text style={{ fontSize: 16, fontWeight: "bold", marginBottom: 4 }}>
+            <Text style={{ fontSize: 16, fontWeight: "bold" }}>
               Marca: {item.marca}
             </Text>
-            <Text
-              style={{
-                fontSize: 14,
-                color: "gray",
-                fontWeight: "500",
-                marginBottom: 2,
-              }}
-            >
+
+            <Text style={{ fontSize: 14, color: "gray" }}>
               Embalaje: {item.embalaje || "—"}
             </Text>
-            <Text style={{ fontSize: 14, color: "#555" }}>
+
+            <Text style={{ fontSize: 14 }}>
               Cantidad: {item.cantidad}
             </Text>
 
@@ -155,7 +165,9 @@ const ItemOrdersComponent: React.FC<Props> = ({
               depotOrderItemId={item.id}
               pedidoStatus={pedidoStatus}
               onSuccess={() => {}}
-              onPackagingChange={onPackagingChange}
+              onPackagingChange={(packaging: string) =>
+                handlePackagingChange(item.id, packaging)
+              }
             />
 
             <Button
@@ -168,7 +180,6 @@ const ItemOrdersComponent: React.FC<Props> = ({
         )}
       />
 
-      
       <AllProductsMarkedModal
         visible={showAllMarkedModal}
         onClose={() => setShowAllMarkedModal(false)}
@@ -178,19 +189,14 @@ const ItemOrdersComponent: React.FC<Props> = ({
         }}
       />
 
-      
       {showNoPackingModal && (
         <View
           style={{
             position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            inset: 0,
             backgroundColor: "rgba(0,0,0,0.6)",
             justifyContent: "center",
             alignItems: "center",
-            zIndex: 999,
           }}
         >
           <View
@@ -201,17 +207,50 @@ const ItemOrdersComponent: React.FC<Props> = ({
               width: "85%",
             }}
           >
-            <Text style={{ fontSize: 16, fontWeight: "bold", marginBottom: 10 }}>
+            <Text style={{ fontWeight: "bold", marginBottom: 10 }}>
               Embalaje requerido
             </Text>
-
             <Text style={{ marginBottom: 20 }}>
               Debes introducir el embalaje antes de marcar el producto como listo.
             </Text>
-
             <Button
               title="Entendido"
               onPress={() => setShowNoPackingModal(false)}
+            />
+          </View>
+        </View>
+      )}
+      {showBackToPreparationModal && (
+        <View
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: "rgba(0,0,0,0.6)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "#fff",
+              padding: 20,
+              borderRadius: 12,
+              width: "85%",
+            }}
+          >
+            <Text style={{ fontWeight: "bold", marginBottom: 10 }}>
+              Pedido en preparación
+            </Text>
+            <Text style={{ marginBottom: 20 }}>
+              Todos los productos fueron desmarcados.
+              El pedido volvió al listado de pedidos en preparación.
+            </Text>
+            <Button
+              title="Entendido"
+                onPress={() => {
+                  setShowBackToPreparationModal(false);
+                  navigation.navigate("OperatorDashboard");
+                }}
             />
           </View>
         </View>

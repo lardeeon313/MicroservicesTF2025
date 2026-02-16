@@ -23,7 +23,7 @@ namespace SalesService.Application.Commands.Orders.Register
         public string CreatedByUserId { get; set; } = string.Empty;
         public int? DeliveryAddressId { get; set; }
         public AddressRequest? DeliveryAddress { get; set; } = new();
-        public PaymentType? PaymentType { get; set; } 
+        public PaymentType? PaymentType { get; set; }
 
         public RegisterOrderCommand(Guid customerId, List<RegisterOrderItemRequest> items, DateTime? deliverDate, string? deliveryDetail, string createdByUserId, AddressRequest? deliveryAddress, int? deliveryAddressId, PaymentType? paymentType)
         {
@@ -36,6 +36,6 @@ namespace SalesService.Application.Commands.Orders.Register
             DeliveryAddress = deliveryAddress;
             PaymentType = paymentType;
         }
-            
+
     }
 }

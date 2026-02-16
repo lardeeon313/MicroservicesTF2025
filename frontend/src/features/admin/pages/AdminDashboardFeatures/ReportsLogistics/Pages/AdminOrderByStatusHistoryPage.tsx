@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { RefreshCw, EyeOff, Eye } from "lucide-react";
-import { useOrderStatusHistoryReport } from "../../../../../verification/pages/reports/Verification/VerificationHocks/useOrderByStatusHistory";
-import { OrderStatusHistoryTable } from "../../../../../verification/pages/reports/Verification/VerificationComponents/OrderByStatusHistoryFolder/OrderByStatusHistoryReport";
+import { AdminUseOrderStatusHistoryReport } from "../Hocks/AdminUseOrderByStatusHistory";
+import { AdminOrderStatusHistoryFiltersFilter } from "../Filters/AdminOrderByStatusHistoryFilter";
+import { AdminOrderStatusHistoryTable } from "../Components/OrderByStatusHistoryFolder/AdminOrderByStatusHistoryReport";
 import { AdminGraphOrderByStatusHistory } from "../Graphs/AdminGraphOrderByStatusHistory";
 import { Pagination } from "../../../../../../components/Pagination";
 import LoadingSpinner from "../../../../../../components/LoadingSpinner";
 import BackButton from "../../../../../../components/BackButton";
-import { AdminOrderStatusHistoryFiltersFilter } from "../Filters/AdminOrderByStatusHistoryFilter";
 
 export const AdminReportOrderStatusHistoryReportPage = () => {
   const {
@@ -16,7 +16,7 @@ export const AdminReportOrderStatusHistoryReportPage = () => {
     loading,
     fetchData,
     pagination,
-  } = useOrderStatusHistoryReport();
+  } = AdminUseOrderStatusHistoryReport();
 
   const [showGraph, setShowGraph] = useState(true);
 
@@ -92,7 +92,7 @@ export const AdminReportOrderStatusHistoryReportPage = () => {
         {!loading && (
           <div className="space-y-8">
             {/* Tabla */}
-            <OrderStatusHistoryTable data={data} />
+            <AdminOrderStatusHistoryTable data={data} />
             
             {/* Paginación mejorada */}
             {pagination.totalPages > 0 && (

@@ -35,11 +35,12 @@ export const RejectOrder = async (DepotOrderId: number, OperatorUserId: string,R
         const response = await API.post('depot/depotoperator/reject-order', {
             DepotOrderId,
             OperatorUserId,
-            RejectReason,
+            RejectionReason: RejectReason,
         });
-        console.log("Respuesta del backend:", response.data);
+
         return response.data;
     }catch(error){
+
         throw error;
     }
 }

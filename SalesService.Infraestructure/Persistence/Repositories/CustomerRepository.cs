@@ -36,10 +36,10 @@ namespace SalesService.Infraestructure.Persistence.Repositories
 
         public async Task<Customer?> GetByEmailAsync(string? email)
         {
-             return await _context.Customers
-                .Include(o => o.Addresses)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.Email == email);
+            return await _context.Customers
+               .Include(o => o.Addresses)
+               .AsNoTracking()
+               .FirstOrDefaultAsync(c => c.Email == email);
         }
 
         public async Task<Customer?> GetByIdAsync(Guid customerId)

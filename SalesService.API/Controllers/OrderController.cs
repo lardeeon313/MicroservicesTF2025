@@ -42,7 +42,7 @@ namespace SalesService.API.Controllers
         IGetOrderByStatusQueryHandler getOrderByStatusQueryHandler,
         IGetAllOrdersQueryHandler getAllOrdersQueryHandler,
         IGetOrderByIdCustomerQueryHandler getOrderByIdCustomerQueryHandler,
-        IGetPagedOrdersQueryHandler getPagedOrdersQueryHandler,        
+        IGetPagedOrdersQueryHandler getPagedOrdersQueryHandler,
         IValidator<UpdateOrderStatusRequest> updateOrderStatusValidator,
         IValidator<RegisterOrderRequest> registerOrderValidator,
         IValidator<RegisterOrderItemRequest> registerOrderItemValidator,
@@ -72,12 +72,12 @@ namespace SalesService.API.Controllers
         private readonly IGetPagedOrdersQueryHandler _getPagedOrdersQueryHandler = getPagedOrdersQueryHandler;
         private readonly IGetOrderByIdQueryHandler _getOrderByIdQueryHandler = getOrderByIdQueryHandler;
         private readonly IGetOrderByStatusQueryHandler _getOrderByStatusQueryHandler = getOrderByStatusQueryHandler;
-        private readonly IGetAllOrdersQueryHandler _getAllOrdersQueryHandler = getAllOrdersQueryHandler;       
-        private readonly IGetOrderByIdCustomerQueryHandler _getOrderByIdCustomerQueryHandler = getOrderByIdCustomerQueryHandler;        
+        private readonly IGetAllOrdersQueryHandler _getAllOrdersQueryHandler = getAllOrdersQueryHandler;
+        private readonly IGetOrderByIdCustomerQueryHandler _getOrderByIdCustomerQueryHandler = getOrderByIdCustomerQueryHandler;
         private readonly IValidator<UpdateOrderStatusRequest> _updateOrderStatusValidator = updateOrderStatusValidator;
         private readonly IValidator<RegisterOrderRequest> _registerOrderValidator = registerOrderValidator;
         private readonly IValidator<RegisterOrderItemRequest> _registerOrderItemValidator = registerOrderItemValidator;
-        private readonly IValidator<UpdateOrderRequest> _updateOrderValidator = updateOrderValidator;        
+        private readonly IValidator<UpdateOrderRequest> _updateOrderValidator = updateOrderValidator;
         private readonly IGetOrderForSatisfactionQueryHandler getOrderForSatisfactionQueryHandler = getOrderForSatisfactionQueryHandler;
 
 
@@ -347,8 +347,13 @@ namespace SalesService.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateOrderSatisfaction(CreateOrderSatisfactionRequest request)
         {
+            Console.WriteLine("📩 Llegó request para crear satisfacción");
             try
             {
+                Console.WriteLine($"➡️ Token recibido: {request.Token}");
+                Console.WriteLine($"➡️ Score recibido: {request.Score}");
+                Console.WriteLine($"➡️ Comment recibido: {request.Comment}");
+
                 var command = new CreateOrderSatisfactionCommand(
                     request.Token,
                     request.Score,
@@ -364,7 +369,9 @@ namespace SalesService.API.Controllers
             }
             catch (InvalidOperationException ex)
             {
+                Console.WriteLine($"❌ Error de negocio , no se esta guardando el satifaccion y el culpa del front: {ex.Message}");
                 return BadRequest(new { error = ex.Message });
+
             }
         }
 

@@ -7,6 +7,7 @@ import { FormikHelpers } from "formik";
 import { useState } from "react";
 import { handleFormikError } from "../../../../components/ErrorHandler";
 import BackButton from "../../../../components/BackButton";
+import { User } from "lucide-react";
 
 export default function RegisterCustomerPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,12 +37,21 @@ export default function RegisterCustomerPage() {
 
   return (
     <div className="container m-0 pt-10 min-w-full min-h-full">
-      <div className="container mx-auto py-10 px-16 sm:max-w-8xl">
+      <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8 max-w-7xl">
         <BackButton to="/sales/home"></BackButton>
-        <h2 className="text-center text-4xl font-bold text-red-600 mb-12">
-          Registrar Cliente
-        </h2>
-        <RegisterCustomerForm isSubmitting={isSubmitting} onSubmit={handleSubmit} />
+
+        {/* Header Section */}
+        <div className="text-center mb-10 mt-6">
+          <div className="inline-flex items-center justify-center w-14 h-14 bg-red-100 rounded-full mb-4">
+            <User className="w-7 h-7 text-red-600" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Registrar Nuevo Cliente
+          </h1>
+        </div>
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <RegisterCustomerForm isSubmitting={isSubmitting} onSubmit={handleSubmit} />
+        </div>
       </div>
     </div>
   );

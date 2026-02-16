@@ -25,10 +25,10 @@ namespace IdentityService.Application.Commands.Employees.ForgotPassword
         public async Task<ForgotPasswordResponse> HandleAsync(ForgotPasswordCommand command)
         {
             var user = await _userManager.FindByEmailAsync(command.Email);
-            
+
             if (user == null)
                 return new ForgotPasswordResponse { RequiresPasswordCreation = false };
-            
+
             if (user.MustCreatePassword)
             {
                 return new ForgotPasswordResponse
@@ -37,8 +37,8 @@ namespace IdentityService.Application.Commands.Employees.ForgotPassword
                     UserId = user.Id
                 };
             }
-            
-            var token =  await _tokenService.GenerateResetPasswordToken(user);
+
+            var token = await _tokenService.GenerateResetPasswordToken(user);
 
             await _emailService.SendResetPasswordEmail(user.Email!, token);
 

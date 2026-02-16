@@ -8,12 +8,14 @@ import { useAuth } from "../../Login/context/useAuth";
 import { useMyRejectOrders } from "../../hocks/useGetRejectOrders";
 import { LogisticOrder } from "../../types/DeliveryOrderTypeDto";
 import OrdersNotFound from "../../../components/OrdersNotFound";
+import { useNavigation } from "@react-navigation/native";
 
 type Props = {
   operatorId?: string;
 };
 
 export default function ListRejectOrdersPage({ operatorId }: Props) {
+  const navigation = useNavigation<any>();
   const { userId, name, role, isAuthenticated, logout, team } = useAuth();
 
   const validOperatorId = operatorId ?? userId ?? "";
@@ -170,9 +172,18 @@ export default function ListRejectOrdersPage({ operatorId }: Props) {
         />
       ) : (
         // Si hay pedidos
-        <ListRejectOrdersComponent items={items} />
-      )}
+        <ListRejectOrdersComponent 
+          items={items}
+          onSeeDetail={(orderId) => {
+            const orderSelected = orders.find(o => o.id === orderId);
+            if (!orderSelected) return;
 
+            navigation.navigate("OrderDetail", {
+              order: orderSelected,
+            });
+          }}
+          />
+        )}
       <Footer />
     </View>
   );

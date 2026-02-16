@@ -15,7 +15,7 @@ export const UseCustomerReportHock = () => {
         "/sales/SalesReport/reports-customers",
         filters
       );
-      console.log(response)
+      
       setData(response.data);
     } finally {
       setLoading(false);
