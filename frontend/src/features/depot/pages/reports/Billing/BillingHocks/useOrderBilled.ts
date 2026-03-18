@@ -33,7 +33,7 @@ type Filters = {
 };
 
 // 🔥 ESTADOS FACTURADOS REALES
-const INVOICED_STATUSES = [8];
+const INVOICED_STATUSES = [8, 9, 12, 13, 14, 16, 17, 18, 19];
 
 export function useInvoicedOrdersByCustomer() {
   const [data, setData] = useState<DepotOrderDtoBilling[]>([]);
@@ -75,7 +75,7 @@ export function useInvoicedOrdersByCustomer() {
           INVOICED_STATUSES.includes(order.status);
 
         if (!valid) {
-          console.warn("DESCARTADO POR STATUS:", {
+          console.warn("DESCARTADO POR ESTADO:", {
             salesOrderId: order.salesOrderId,
             status: order.status,
             total: order.totalAmount,
@@ -101,8 +101,6 @@ export function useInvoicedOrdersByCustomer() {
       });
 
       const sanitized = Array.from(unique.values());
-
-      console.log("FACTURADOS REALES:", sanitized);
 
       setData(sanitized);
     } catch (err: any) {

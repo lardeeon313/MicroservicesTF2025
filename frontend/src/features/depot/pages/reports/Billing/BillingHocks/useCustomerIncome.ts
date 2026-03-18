@@ -26,9 +26,7 @@ export const useCustomerIncome = () => {
       // ✅ Este endpoint YA devuelve solo facturadas
       setOrders(res.data);
 
-      console.log("Órdenes facturadas (general):", res.data);
-    } catch (err) {
-      console.error("Error al obtener órdenes:", err);
+    } catch (err) {    
       setError("Error al conectar con el servidor.");
       setOrders([]);
     } finally {
@@ -51,11 +49,6 @@ export const useCustomerIncome = () => {
         order.customerName
           .toLowerCase()
           .includes(customerName.toLowerCase())
-      );
-
-      console.log(
-        "Pedidos facturados del cliente (desde general):",
-        filtered
       );
 
       setFilteredByCustomer(filtered);

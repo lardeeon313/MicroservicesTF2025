@@ -173,10 +173,24 @@ namespace DepotService.Infraestructure.Persistence.Repositories
 
         public async Task<List<DepotOrderEntity>> GetAllInvoicedOrdersAsync()
         {
+            var invoicedAndBeyond = new[]
+            {
+                OrderStatus.Invoiced,
+                OrderStatus.Issued,
+                OrderStatus.OnTheWay,
+                OrderStatus.Delivered,
+                OrderStatus.Verify,
+                OrderStatus.AssignedDelivery,
+                OrderStatus.PendingDelivered,
+                OrderStatus.PendingIncidentResolution,
+                OrderStatus.IncidentResolved,
+            };
+
             return await _context.DepotOrders
                 .Include(o => o.Items)
                 .Include(o => o.DeliveryAddress)
-                .Where(o => o.Status == OrderStatus.Invoiced)
+                .Where(o => invoicedAndBeyond.Contains(o.Status))
+                .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
         }
 

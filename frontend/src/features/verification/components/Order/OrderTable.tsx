@@ -6,6 +6,10 @@ import LoadingSpinner from "../../../../components/LoadingSpinner";
 import EmptyState from "../../../../components/EmptyState";
 import { LogisticOrderDto } from "../../types/OrderTypes";
 import { OrderStatusBadge } from "./OrderStatusBadge";
+import { useMemo, useState } from "react";
+import { Pagination } from "../../../../components/Pagination";
+
+const ITEMS_PER_PAGE = 10;
 
 interface Props {
   orders: LogisticOrderDto[];
@@ -33,6 +37,17 @@ export default function OrderTable({
   onViewIncidents,
   onViewRejectionReasons
 }: Props) {
+
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  const totalPages = Math.max(1, Math.ceil(orders.length / ITEMS_PER_PAGE));
+  const safePage = Math.min(currentPage, totalPages);
+
+  const paginatedOrders = useMemo(() => {
+    const start = (safePage - 1) * ITEMS_PER_PAGE;
+    return orders.slice(start, start + ITEMS_PER_PAGE);
+  }, [orders, safePage]);
+
   if (loading)
     return (
       <LoadingSpinner message="Cargando órdenes..."/>
@@ -52,6 +67,7 @@ export default function OrderTable({
     );
 
   return (
+    <div className="space-y-4">
       <div className="w-full overflow-hidden rounded-lg border border-gray-200 shadow">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-gray-800" data-active-tab={activeTab}>
@@ -66,7 +82,7 @@ export default function OrderTable({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {orders.map((order) => (
+              {paginatedOrders.map((order) => (
                 <tr key={order.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3 font-medium">L-{order.id}</td>
                   <td className="px-4 py-3">
@@ -133,5 +149,13 @@ export default function OrderTable({
           </table>
         </div>
       </div>
+      {totalPages > 1 && (
+      <Pagination
+        currentPage={safePage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
+      )}
+    </div>
   );
 }

@@ -133,6 +133,7 @@ function MissingOrdersPage() {
           )}
 
           <MissingOrdersGrid
+            key={activeStatus}
             orders={orderToShow}
             onView={setSelectedMissingOrder}
             onReport={handleReportToSales}

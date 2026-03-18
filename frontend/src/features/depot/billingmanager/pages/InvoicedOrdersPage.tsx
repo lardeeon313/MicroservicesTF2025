@@ -7,7 +7,7 @@ import OrderTable from '../components/OrderTable';
 import BackButton from '../../../../components/BackButton';
 import Pagination from '../../depotmanager/components/Pagination';
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 
 const InvoicedOrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<any[]>([]);
@@ -81,10 +81,7 @@ const InvoicedOrdersPage: React.FC = () => {
             </div>
           </div>
           <OrderTable
-            orders={paginatedOrders
-              //FILTRA UNICAMENTE LOS PEDIDOS CON ESTADO DE FACTURADA O CON EL STATUS 8
-              .filter(order => order.status === 8 || order.status === '8' || order.status === 'Facturada')
-              .map(order => ({
+            orders={paginatedOrders.map(order => ({
                 id: order.depotOrderId,
                 customerFirstName: order.customerName,
                 orderDate: order.orderDate,

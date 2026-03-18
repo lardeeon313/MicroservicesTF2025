@@ -180,6 +180,7 @@ const OrdersInRoutePage = () => {
 
           {/* Tabla de órdenes */}
           <OrderTable
+            key={activeTab}
             orders={currentOrders.orders}
             loading={currentOrders.loading}
             error={currentOrders.error}
